@@ -1,0 +1,88 @@
+# ── ROBOTS.TXT — mnmukt.com ──────────────────────────────────
+# Last updated: 2025-04-13
+
+# ── ALLOW ALL MAJOR SEARCH ENGINES ──
+User-agent: Googlebot
+Allow: /
+Disallow: /login
+Disallow: /signup
+Disallow: /account
+Disallow: /checkout
+Disallow: /cart
+Disallow: /order-confirmation
+Disallow: /admin
+Disallow: /api/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /login
+Disallow: /signup
+Disallow: /account
+Disallow: /checkout
+Disallow: /cart
+Disallow: /order-confirmation
+Disallow: /admin
+Disallow: /api/
+
+User-agent: Slurp
+Allow: /
+Disallow: /login
+Disallow: /signup
+Disallow: /account
+Disallow: /checkout
+Disallow: /cart
+Disallow: /admin
+Disallow: /api/
+
+# ── ALLOW IMAGE CRAWLERS ──
+User-agent: Googlebot-Image
+Allow: /
+
+# ── BLOCK BAD BOTS ──
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+# ── DEFAULT (ALL OTHER BOTS) ──
+User-agent: *
+Allow: /
+Disallow: /login
+Disallow: /signup
+Disallow: /account
+Disallow: /checkout
+Disallow: /cart
+Disallow: /order-confirmation
+Disallow: /admin
+Disallow: /api/
+
+# ── SITEMAP ──
+Sitemap: https://mnmukt.com/sitemap.xml

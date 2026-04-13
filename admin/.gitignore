@@ -1,0 +1,64 @@
+# ── LOGS ──
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ── DEPENDENCIES ──
+node_modules
+
+# ── BUILD OUTPUTS ──
+dist
+dist-ssr
+
+# ── ENV FILES (CRITICAL 🔥) ──
+.env
+.env.*
+!.env.example
+
+# ── LOCAL FILES ──
+*.local
+
+# ── EDITOR ──
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ── OS FILES ──
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── FIREBASE (SENSITIVE 🔥) ──
+serviceAccountKey.json
+firebase-adminsdk*.json
+*-service-account*.json
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# ── CLOUDINARY / API SECRETS ──
+*.key
+*.pem
+secrets.*
+
+# ── VITE CACHE ──
+.vite
+.cache
+
+# ── COVERAGE / TESTING ──
+coverage
+*.lcov
+
+# ── MISC ──
+*.zip
+*.tar.gz
