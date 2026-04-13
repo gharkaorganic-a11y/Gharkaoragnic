@@ -26,7 +26,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 
-import { db } from "../../../../config/firebaseAuth";
+import { db } from "../../../../config/firebaseDB";
 
 /* ─────────────────────────────────────
    ORDER ID GENERATOR

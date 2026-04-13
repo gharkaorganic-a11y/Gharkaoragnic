@@ -10,7 +10,7 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../../config/firebaseauth";
+import { db } from "../../config/firebase";
 
 // Import our new split components
 import AdminGuide from "../../components/allcustomers/AdminGuide";

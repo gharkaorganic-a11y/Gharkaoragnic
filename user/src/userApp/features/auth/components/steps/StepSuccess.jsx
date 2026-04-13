@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { auth } from "../../../../../config/firebaseAuth";
+import { auth } from "../../../../../config/firebaseDB";
 import { sendEmailVerification } from "firebase/auth";
 
 /* ════════════════════════════════════════════════════════════

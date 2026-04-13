@@ -28,7 +28,7 @@ import {
   getDocs,
   where,
 } from "firebase/firestore";
-import { db } from "../../../../config/firebaseAuth";
+import { db } from "../../../../config/firebaseDB";
 import {
   SlidersHorizontal,
   Grid2X2,
