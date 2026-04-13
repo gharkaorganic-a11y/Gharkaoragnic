@@ -1,6 +1,6 @@
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { updateProfile } from "firebase/auth"; // ✅ NEW: Import this
-import { db, auth } from "../../../../config/firebaseAuth"; // ✅ NEW: Import auth
+import { db, auth } from "../../../../config/firebaseDB"; // ✅ NEW: Import auth
 
 /**
  * Edit user profile and sync fields
