@@ -14,11 +14,16 @@ import { productSections } from "../../../homepage/config/productCollection";
 import { accountMenuData } from "../../data/accountMenuData";
 import { IMAGES } from "../../../../../assets/images";
 
+const PRIMARY = "#c8102e";
+const PRIMARY_LIGHT = "#fdf0f2";
+
 const BadgeCount = ({ count }) => {
   if (!count || count <= 0) return null;
   return (
-    <span className="absolute -top-1 -right-1.5 bg-[#A65E00] text-white text-[10px] font-bold rounded-full min-w-[17px] h-[17px] flex items-center justify-center border-2 border-white shadow-sm z-10">
-      {count > 99 ? "99" : count}
+    <span
+      className="absolute -top-1 -right-1.5 text-white text-[10px] font-bold rounded-full min-w-[17px] h-[17px] flex items-center justify-center border-2 border-white shadow-sm z-10"
+      style={{ backgroundColor: PRIMARY }}>
+      {count > 99 ? "99+" : count}
     </span>
   );
 };
@@ -26,6 +31,7 @@ const BadgeCount = ({ count }) => {
 const MobileNavbar = ({ cartCount = 0, wishlistCount = 0, promoData }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -50,34 +56,37 @@ const MobileNavbar = ({ cartCount = 0, wishlistCount = 0, promoData }) => {
             ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100"
             : "bg-white border-b border-gray-100"
         }`}>
-        {/* Organic Promo Bar (Matches Desktop Green) */}
+        {/* 🔴 Promo Bar */}
         {promoData && promoData.length > 0 && (
           <div
-            className={`transition-all duration-500 ease-in-out overflow-hidden bg-[#1B4332] text-[#F5F5DC] ${
+            className={`transition-all duration-500 ease-in-out overflow-hidden text-white ${
               scrolled ? "max-h-0 opacity-0" : "max-h-[36px] opacity-100"
-            }`}>
+            }`}
+            style={{ backgroundColor: PRIMARY }}>
             <PromotionalNavbar items={promoData} speed={45} />
           </div>
         )}
 
+        {/* 🔻 Main Row */}
         <div className="flex items-center justify-between h-[64px] px-4 w-full">
-          {/* LEFT: Menu & Search (Consistently Brand Colored) */}
+          {/* LEFT */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => setMenuOpen(true)}
-              className="p-2 -ml-2 text-[#A65E00] active:scale-90 transition-transform"
-              aria-label="Open menu">
+              className="p-2 -ml-2 active:scale-90 transition-transform"
+              style={{ color: PRIMARY }}>
               <Bars3BottomLeftIcon className="w-7 h-7" strokeWidth={2} />
             </button>
 
             <button
               onClick={() => navigate("/search")}
-              className="p-2 text-[#A65E00] active:scale-90">
+              className="p-2 active:scale-90"
+              style={{ color: PRIMARY }}>
               <MagnifyingGlassIcon className="w-6 h-6" strokeWidth={1.8} />
             </button>
           </div>
 
-          {/* CENTER: Logo */}
+          {/* CENTER LOGO */}
           <div
             onClick={() => navigate("/")}
             className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center cursor-pointer active:scale-95 transition-transform">
@@ -86,19 +95,19 @@ const MobileNavbar = ({ cartCount = 0, wishlistCount = 0, promoData }) => {
               className={`transition-all duration-300 object-contain ${
                 scrolled ? "h-10" : "h-12"
               }`}
-              alt="Ghar Ka Organic"
+              alt="Logo"
             />
           </div>
 
-          {/* RIGHT: Wishlist & Cart (Using Brand Color for Icons) */}
+          {/* RIGHT */}
           <div className="flex items-center gap-1">
             <NavLink
               to="/wishlist"
               className={({ isActive }) =>
-                `relative p-2 active:scale-90 transition-all ${
+                `relative p-2 transition-all active:scale-90 ${
                   isActive
-                    ? "text-[#A65E00]"
-                    : "text-[#A65E00]/70 hover:text-[#A65E00]"
+                    ? "text-[#c8102e]"
+                    : "text-gray-500 hover:text-[#c8102e]"
                 }`
               }>
               <HeartIcon className="w-6 h-6" strokeWidth={1.8} />
@@ -108,10 +117,10 @@ const MobileNavbar = ({ cartCount = 0, wishlistCount = 0, promoData }) => {
             <NavLink
               to="/checkout/cart"
               className={({ isActive }) =>
-                `relative p-2 active:scale-90 transition-all ${
+                `relative p-2 transition-all active:scale-90 ${
                   isActive
-                    ? "text-[#A65E00]"
-                    : "text-[#A65E00]/70 hover:text-[#A65E00]"
+                    ? "text-[#c8102e]"
+                    : "text-gray-500 hover:text-[#c8102e]"
                 }`
               }>
               <ShoppingBagIcon className="w-6 h-6" strokeWidth={1.8} />
@@ -121,11 +130,14 @@ const MobileNavbar = ({ cartCount = 0, wishlistCount = 0, promoData }) => {
         </div>
       </header>
 
-      {/* Dynamic Spacer for Content */}
+      {/* Spacer */}
       <div
-        className={`md:hidden transition-all duration-300 ${promoData && !scrolled ? "h-[100px]" : "h-[64px]"}`}
+        className={`md:hidden transition-all duration-300 ${
+          promoData && !scrolled ? "h-[100px]" : "h-[64px]"
+        }`}
       />
 
+      {/* Drawer */}
       <NavbarDropdown
         isOpen={menuOpen}
         onClose={() => setMenuOpen(false)}

@@ -1,4 +1,4 @@
-import { SkeletonCard } from "./SkeletonCard ";
+import { SkeletonCard } from "./SkeletonCard";
 
 const ProductGridLoader = ({ gridClass, count = 8 }) => {
   return (

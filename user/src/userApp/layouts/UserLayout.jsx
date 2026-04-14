@@ -16,37 +16,39 @@ const UserLayout = () => {
   }, [location.pathname]);
 
   return (
-    <div className="relative min-h-screen flex flex-col bg-white font-sans selection:bg-[#ff3f6c] selection:text-white">
-      {/* HEADER SECTION */}
-      <header className="fixed top-0 left-0 z-[101] w-full shadow-sm">
-        {/* Main Navigation */}
+    <div className="min-h- flex flex-col bg-white font-sans antialiased selection:bg-gray-900 selection:text-white">
+      {/* 🔷 HEADER - sticky instead of fixed to avoid layout shift */}
+      <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 border-b border-gray-100">
         <UserNavbar />
       </header>
 
-      {/* MAIN CONTENT - Added pt (padding-top) to account for fixed header height */}
-      <main className="flex-1 w-full flex flex-col pt-[110px] md:mt-[99px]">
+      {/* 🔻 MAIN CONTENT - no more hardcoded padding */}
+      <main className="flex-1 w-full flex flex-col pb- md:pb-0">
         <div
           key={location.pathname}
-          className="flex-1 w-full animate-in fade-in duration-500 fill-mode-both">
+          className="flex-1 w-full animate-in fade-in duration-300">
           <Outlet />
         </div>
       </main>
 
-      {/* POPUPS & UTILITIES */}
-      <div className="z-[102]">
+      {/* 🔶 FOOTER - hidden on mobile if bottom nav exists */}
+      <div className="hidden md:block relative z-10">
+        <Footer />
+      </div>
+
+      {/* 🔔 POPUPS & FLOATERS - managed z-index layer */}
+      <div className="z-30">
         <UnverifiedEmailPopup />
+        <SalesNotificationPopup />
       </div>
 
-      <WhatsAppButton />
-      <SalesNotificationPopup />
-
-      {/* FOOTER */}
-      <div className="relative z-[100]">
-        <Footer className="md:pb-0 pb-[70px]" />
+      {/* WhatsApp - above bottom nav but below modals */}
+      <div className="fixed bottom- md:bottom-6 right-4 z-30">
+        <WhatsAppButton />
       </div>
 
-      {/* MOBILE NAV */}
-      <div className="fixed bottom-0 left-0 right-0 z-[110] md:hidden bg-white border-t">
+      {/* 📱 FLOATING MOBILE NAV - safe area aware */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 pb-[env(safe-area-inset-bottom)] bg-white border-t border-gray-100">
         <BottomNavbar />
       </div>
     </div>

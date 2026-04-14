@@ -13,6 +13,7 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
 
   /*
   ─────────────────────────────────────────
@@ -71,6 +72,7 @@ export const CartProvider = ({ children }) => {
 
       return updatedCart;
     });
+    setCartOpen(true);
   };
 
   /*
@@ -166,6 +168,8 @@ export const CartProvider = ({ children }) => {
         syncing,
         addToCart,
         updateQuantity,
+        cartOpen,
+        setCartOpen,
         updateSize,
         remove,
         clear,

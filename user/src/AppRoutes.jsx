@@ -7,6 +7,8 @@ import UserLayout from "./userApp/layouts/UserLayout";
 import LoadingScreen from "./userApp/components/loading/LoadingScreen";
 import NotFoundPage from "./userApp/pages/NotFoundPage";
 import ErrorBoundary from "./shared/components/ErrorBoundary";
+import CustomerReviewsPage from "./userApp/reviews/pages/CustomerReviewsPage";
+import SitemapPage from "./userApp/pages/SitemapPage";
 
 /* ─── Lazy: Auth ─────────────────────────────────────────────────────────── */
 const AuthRoutes = lazy(() => import("./userApp/routes/AuthRoutes"));
@@ -34,9 +36,7 @@ const ContactUsPage = lazy(() => import("./userApp/pages/ContactUsPage"));
 const AboutUsPage = lazy(() => import("./userApp/pages/AboutUsPage")); // ✅ Fixed: was eager before
 
 /* ─── Lazy: Protected Pages ──────────────────────────────────────────────── */
-const WishlistPage = lazy(
-  () => import("./userApp/features/wishList/pages/WishlistPage"),
-);
+
 const NotificationPreferencesPage = lazy(
   () => import("./userApp/pages/NotificationPreferences"),
 );
@@ -119,6 +119,15 @@ const AppRoutes = () => (
         </Suspense>
       }
     />
+
+    <Route
+      path="/sitemap"
+      element={
+        <Suspense fallback={<InlineLoader />}>
+          <SitemapPage />
+        </Suspense>
+      }
+    />
     <Route
       path="/order-success/:orderId"
       element={
@@ -149,6 +158,16 @@ const AppRoutes = () => (
               <HomePage />
             </Suspense>
           </ErrorBoundary>
+        }
+      />
+
+      {/* customer-reviews */}
+      <Route
+        path="/customer-reviews"
+        element={
+          <Suspense fallback={<InlineLoader />}>
+            <CustomerReviewsPage />
+          </Suspense>
         }
       />
 
@@ -209,14 +228,6 @@ const AppRoutes = () => (
           inside ProtectedRoute will overlay the page during auth check.
       */}
       <Route element={<ProtectedRoute />}>
-        <Route
-          path="/wishlist"
-          element={
-            <Suspense fallback={<InlineLoader />}>
-              <WishlistPage />
-            </Suspense>
-          }
-        />
         <Route
           path="/notifications"
           element={

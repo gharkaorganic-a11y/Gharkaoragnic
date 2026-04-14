@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
@@ -13,13 +13,16 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENTID,
 };
 
-// Safety check (optional but good for debugging)
-if (!firebaseConfig.apiKey) {
-  console.warn("⚠ Firebase environment variables are missing!");
+// ✅ Strict validation (production safe)
+const requiredKeys = Object.entries(firebaseConfig);
+for (const [key, value] of requiredKeys) {
+  if (!value) {
+    console.warn(`⚠ Missing Firebase env: ${key}`);
+  }
 }
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// ✅ Singleton initialization (IMPORTANT)
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
 // Services
 export const auth = getAuth(app);

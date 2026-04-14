@@ -9,113 +9,118 @@ Query Keys
 */
 
 export const PRODUCT_KEYS = {
-  all: () => ["products", "all"],
-  byId: (id) => ["products", "id", String(id)],
-  bySlug: (slug) => ["products", "slug", slug],
-  byCategory: (cat) => ["products", "category", cat],
-  byCollection: (types, limit) => [
-    "products",
-    "collection",
-    [...types].sort().join(","),
-    limit,
-  ],
-  byIds: (ids) => ["products", "ids", [...ids].sort().join(",")],
+  all:            ()              => ["products", "all"],
+  byId:           (id)            => ["products", "id", String(id)],
+  bySlug:         (slug)          => ["products", "slug", slug],
+  byCategory:     (cat)           => ["products", "category", cat],
+  byCategoryLimit:(cat, limit)    => ["products", "category", cat, "limit", limit],
+  byCollection:   (types, limit)  => ["products", "collection", [...types].sort().join(","), limit],
+  byIds:          (ids)           => ["products", "ids", [...ids].sort().join(",")],
 };
 
 /*
 ────────────────────────────────────────
 Query Config
 ────────────────────────────────────────
+  Two tiers:
+  - META_OPTS  → descriptions, images, categories (safe to cache 5 min)
+  - PRICE_OPTS → prices, stock (always fresh, never stale)
+────────────────────────────────────────
 */
 
-const STALE = 30 * 60 * 1000;
-const GC = 60 * 60 * 1000;
+const META_STALE  = 5  * 60 * 1000;  // 5 min
+const PRICE_STALE = 0;                // always stale — always re-fetched
+const GC_TIME     = 60 * 60 * 1000;  // 1 hr in-memory retention
 
-const Q_OPTS = {
-  staleTime: STALE,
-  gcTime: GC,
-  refetchOnMount: false,
-  refetchOnWindowFocus: false,
-  refetchOnReconnect: "always",
+const META_OPTS = {
+  staleTime:            META_STALE,
+  gcTime:               GC_TIME,
+  refetchOnMount:       true,
+  refetchOnWindowFocus: true,
+  refetchOnReconnect:   "always",
 };
+
+// Export so price/stock queries in other files can use the same config
+export const PRICE_OPTS = {
+  staleTime:            PRICE_STALE,
+  gcTime:               5 * 60 * 1000,  // evict from memory after 5 min
+  refetchOnMount:       "always",
+  refetchOnWindowFocus: true,
+  refetchOnReconnect:   "always",
+};
+
+/*
+────────────────────────────────────────
+Hook
+────────────────────────────────────────
+*/
 
 export const useProducts = () => {
   const qc = useQueryClient();
   const [errors, setErrors] = useState({});
 
   /*
-  ────────────────────────────────────────
+  ──────────────────
   Normalize Helper
-  ────────────────────────────────────────
+  Cross-populates byId and bySlug caches from any product fetch
+  ──────────────────
   */
-
   const normalizeProducts = useCallback(
     (products) => {
       if (!products) return;
-
       const list = Array.isArray(products) ? products : [products];
-
       list.forEach((p) => {
         if (!p) return;
-
         qc.setQueryData(PRODUCT_KEYS.byId(p.id), p);
-
-        if (p.slug) {
-          qc.setQueryData(PRODUCT_KEYS.bySlug(p.slug), p);
-        }
+        if (p.slug) qc.setQueryData(PRODUCT_KEYS.bySlug(p.slug), p);
       });
     },
     [qc]
   );
 
   /*
-  ────────────────────────────────────────
-  Cache-first Fetch Helper
-  ────────────────────────────────────────
+  ──────────────────
+  Cache-first Fetch
+  Single source of truth for all fetching + error handling
+  ──────────────────
   */
-
   const fetchIt = useCallback(
-    async (key, fetchFn, primeType = null) => {
+    async (key, fetchFn, opts = META_OPTS, fallback = null) => {
       try {
         const cached = qc.getQueryData(key);
-
         if (cached) return cached;
 
         const res = await qc.fetchQuery({
           queryKey: key,
-          queryFn: fetchFn,
-          ...Q_OPTS,
+          queryFn:  fetchFn,
+          ...opts,
         });
 
         if (res) normalizeProducts(res);
-
         return res;
       } catch (err) {
         setErrors((prev) => ({
           ...prev,
           [JSON.stringify(key)]: err.message,
         }));
-
-        return primeType === "array" ? [] : null;
+        return fallback;
       }
     },
     [qc, normalizeProducts]
   );
 
   /*
-  ────────────────────────────────────────
-  Prefetch (hover optimizations)
-  ────────────────────────────────────────
+  ──────────────────
+  Prefetch (hover)
+  ──────────────────
   */
-
   const prefetchBySlug = useCallback(
     (slug) => {
       if (!slug) return;
-
       qc.prefetchQuery({
         queryKey: PRODUCT_KEYS.bySlug(slug),
-        queryFn: () => productService.getProductBySlug(slug),
-        staleTime: STALE,
+        queryFn:  () => productService.getProductBySlug(slug),
+        staleTime: META_STALE,
       });
     },
     [qc]
@@ -124,11 +129,10 @@ export const useProducts = () => {
   const prefetchById = useCallback(
     (id) => {
       if (!id) return;
-
       qc.prefetchQuery({
         queryKey: PRODUCT_KEYS.byId(id),
-        queryFn: () => productService.getProductById(id),
-        staleTime: STALE,
+        queryFn:  () => productService.getProductById(id),
+        staleTime: META_STALE,
       });
     },
     [qc]
@@ -136,13 +140,11 @@ export const useProducts = () => {
 
   const prefetchCategory = useCallback(
     (categoryId) => {
-      console.log(categoryId)
       if (!categoryId) return;
-
       qc.prefetchQuery({
         queryKey: PRODUCT_KEYS.byCategory(categoryId),
-        queryFn: () => productService.getProductsByCategory(categoryId),
-        staleTime: STALE,
+        queryFn:  () => productService.getProductsByCategory(categoryId),
+        staleTime: META_STALE,
       });
     },
     [qc]
@@ -151,126 +153,106 @@ export const useProducts = () => {
   const prefetchNextPage = useCallback(
     (lastDoc) => {
       if (!lastDoc) return;
-
       qc.prefetchQuery({
         queryKey: ["products", "page", lastDoc?.id],
-        queryFn: () => productService.getProducts({ lastDoc }),
-        staleTime: STALE,
+        queryFn:  () => productService.getProducts({ lastDoc }),
+        staleTime: META_STALE,
       });
     },
     [qc]
   );
 
   /*
-  ────────────────────────────────────────
+  ──────────────────
   Queries
-  ────────────────────────────────────────
+  ──────────────────
   */
-
   const getProductBySlug = useCallback(
-    async (slug) => {
-      if (!slug) return null;
-
-      const cached = qc.getQueryData(PRODUCT_KEYS.bySlug(slug));
-      if (cached) return cached;
-
+    (slug) => {
+      if (!slug) return Promise.resolve(null);
       return fetchIt(
         PRODUCT_KEYS.bySlug(slug),
         () => productService.getProductBySlug(slug),
-        "single"
+        META_OPTS,
+        null
       );
     },
-    [fetchIt, qc]
+    [fetchIt]
   );
 
   const getProductById = useCallback(
-    async (id) => {
-      if (!id) return null;
-
-      const cached = qc.getQueryData(PRODUCT_KEYS.byId(id));
-      if (cached) return cached;
-
+    (id) => {
+      if (!id) return Promise.resolve(null);
       return fetchIt(
         PRODUCT_KEYS.byId(id),
         () => productService.getProductById(id),
-        "single"
+        META_OPTS,
+        null
       );
     },
-    [fetchIt, qc]
+    [fetchIt]
   );
 
   const getProductsByCategory = useCallback(
-    async (cat) => {
-      if (!cat) return [];
-
+    (cat) => {
+      if (!cat) return Promise.resolve([]);
       return fetchIt(
         PRODUCT_KEYS.byCategory(cat),
         () => productService.getProductsByCategory(cat),
-        "array"
+        META_OPTS,
+        []
       );
     },
     [fetchIt]
   );
 
   const getProductsByCategoryLimited = useCallback(
-  async (categoryId, limit = 5) => {
-    if (!categoryId) return [];
-
-    // Create a unique query key including the limit
-    const key = ["products", "category", categoryId, "limit", limit];
-
-    // Check cache first
-    const cached = qc.getQueryData(key);
-    if (cached) return cached;
-
-    // Fetch from service with limit
-    return fetchIt(
-      key,
-      async () => {
-        const allProducts = await productService.getProductsByCategory(categoryId);
-        return allProducts?.slice(0, limit) || [];
-      },
-      "array"
-    );
-  },
-  [fetchIt, qc]
-);
+    (categoryId, limit = 5) => {
+      if (!categoryId) return Promise.resolve([]);
+      return fetchIt(
+        PRODUCT_KEYS.byCategoryLimit(categoryId, limit),
+        // Pass limit to Firestore — do NOT fetch all then slice
+        () => productService.getProductsByCategory(categoryId, { limit }),
+        META_OPTS,
+        []
+      );
+    },
+    [fetchIt]
+  );
 
   const getProductsByIds = useCallback(
-  async (ids = []) => {
-    if (!ids.length) return [];
+    (ids = []) => {
+      if (!ids.length) return Promise.resolve([]);
+      const sortedIds = [...ids].sort();
+      return fetchIt(
+        PRODUCT_KEYS.byIds(sortedIds),
+        () => productService.getProductsByIds(sortedIds),
+        META_OPTS,
+        []
+      );
+    },
+    [fetchIt]
+  );
 
-    const sortedIds = [...ids].sort();
-
-    const cached = qc.getQueryData(PRODUCT_KEYS.byIds(sortedIds));
-    if (cached) return cached;
-
-    return fetchIt(
-      PRODUCT_KEYS.byIds(sortedIds),
-      () => productService.getProductsByIds(sortedIds),
-      "array"
-    );
-  },
-  [fetchIt, qc]
-);
   /*
-  ────────────────────────────────────────
+  ──────────────────
   Search
-  ────────────────────────────────────────
+  NOTE: client-side search on full catalog is a scalability risk.
+  Consider Algolia/Typesense for catalogs > ~500 products.
+  ──────────────────
   */
-
   const searchProducts = useCallback(
     async (term) => {
-      const cached = qc.getQueryData(PRODUCT_KEYS.all());
+      if (!term?.trim()) return [];
 
-      if (cached) {
-        return productService.searchProducts(term, cached);
-      }
+      const cached = qc.getQueryData(PRODUCT_KEYS.all());
+      if (cached) return productService.searchProducts(term, cached);
 
       const products = await fetchIt(
         PRODUCT_KEYS.all(),
         () => productService.getAllProducts(),
-        "array"
+        META_OPTS,
+        []
       );
 
       return productService.searchProducts(term, products);
@@ -279,23 +261,25 @@ export const useProducts = () => {
   );
 
   /*
-  ────────────────────────────────────────
+  ──────────────────
   Return API
-  ────────────────────────────────────────
+  ──────────────────
   */
-
   return {
     errors,
 
+    // Queries
     getProductBySlug,
     getProductById,
     getProductsByCategory,
+    getProductsByCategoryLimited,
+    getProductsByIds,
     searchProducts,
-getProductsByIds,
+
+    // Prefetch
     prefetchBySlug,
     prefetchById,
     prefetchCategory,
     prefetchNextPage,
-    getProductsByCategoryLimited
   };
 };

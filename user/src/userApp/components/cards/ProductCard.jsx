@@ -1,11 +1,26 @@
-import React, { useState, useMemo, useCallback } from "react";
-import { Check, Star } from "lucide-react";
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+  useEffect,
+} from "react";
+import {
+  CheckIcon,
+  ShoppingBagIcon,
+  StarIcon,
+} from "@heroicons/react/24/solid";
 import { useCart } from "../../features/cart/context/CartContext";
 import { useNavigate } from "react-router-dom";
 import NotificationProduct from "./NotificationProduct";
 
+/* ─── Price formatter ─── */
 const priceFormatter = new Intl.NumberFormat("en-IN");
+const formatPrice = (price) => priceFormatter.format(price);
 
+/* ─────────────────────────────────────────────
+   ProductCard - Heroicons + Clean Design
+───────────────────────────────────────────── */
 const ProductCard = ({ product }) => {
   const [isAdded, setIsAdded] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
@@ -14,62 +29,72 @@ const ProductCard = ({ product }) => {
     message: "",
     type: "",
   });
+  const timerRef = useRef(null);
 
-  const { addToCart, syncing: cartSyncing } = useCart();
+  const { addToCart, syncing: cartSyncing, setCartOpen } = useCart();
   const navigate = useNavigate();
 
   const mainImage = product.banner || product.images?.[0];
-
-  // Defaults
-  const rating = product.rating || 4.7;
-  const reviews = product.reviews || 1823;
-  const tags = product.tags || [
-    "Medium spicy",
+  const rating = product.rating ?? 4.7;
+  const reviews = product.reviews ?? 1823;
+  const tags = product.tags ?? [
+    "Medium Spicy",
     "Jain Friendly",
     "Sunflower Oil",
   ];
 
   const discount = useMemo(() => {
     if (!product.originalPrice || !product.price) return 0;
-
     return Math.round(
       ((product.originalPrice - product.price) / product.originalPrice) * 100,
     );
   }, [product.originalPrice, product.price]);
 
-  const formatPrice = (price) => priceFormatter.format(price);
+  useEffect(() => () => clearTimeout(timerRef.current), []);
 
   const handleNavigate = useCallback(() => {
     navigate(`/product/${product.slug || product.id}`);
   }, [navigate, product.slug, product.id]);
 
-  const handleAddToCart = async (e) => {
-    e.stopPropagation();
+  const handleAddToCart = useCallback(
+    async (e) => {
+      e.stopPropagation();
+      if (isAdded || cartSyncing) return;
 
-    try {
-      await addToCart({
-        id: product.id,
-        selectedSize: "",
-        selectedQuantity: 1,
-      });
+      try {
+        await addToCart({
+          id: product.id,
+          selectedSize: "",
+          selectedQuantity: 1,
+        });
 
-      setIsAdded(true);
+        setIsAdded(true);
+        setNotification({
+          show: true,
+          message: "Item Added to cart!",
+          type: "success",
+        });
 
-      setNotification({
-        show: true,
-        message: "Added to cart",
-        type: "success",
-      });
+        setTimeout(() => {
+          setCartOpen(true);
+        }, 400);
 
-      setTimeout(() => setIsAdded(false), 2000);
-    } catch {
-      setNotification({
-        show: true,
-        message: "Error adding to cart",
-        type: "error",
-      });
-    }
-  };
+        timerRef.current = setTimeout(() => setIsAdded(false), 2000);
+      } catch {
+        setNotification({
+          show: true,
+          message: "Couldn't add to cart",
+          type: "error",
+        });
+      }
+    },
+    [isAdded, cartSyncing, addToCart, product.id, setCartOpen],
+  );
+
+  const closeNotification = useCallback(
+    () => setNotification((p) => ({ ...p, show: false })),
+    [],
+  );
 
   return (
     <>
@@ -77,86 +102,103 @@ const ProductCard = ({ product }) => {
         <NotificationProduct
           message={notification.message}
           type={notification.type}
-          onClose={() => setNotification((prev) => ({ ...prev, show: false }))}
+          onClose={closeNotification}
         />
       )}
-
-      <div
-        className="group flex flex-col w-full cursor-pointer font-[Poppins]"
-        onClick={handleNavigate}>
-        {/* Image */}
-        <div className="relative w-full aspect-[3/4] bg-[#fdf7f2] overflow-hidden">
+      <article
+        className="group flex flex-col w-full cursor-pointer bg-white  border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:-translate-y-1 active:scale-[0.98]"
+        onClick={handleNavigate}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === "Enter" && handleNavigate()}>
+        {/* ── Image ── */}
+        <div className="relative w-full aspect-[4/5] overflow-hidden bg-gray-50">
           {!imgLoaded && (
-            <div className="absolute inset-0 bg-gray-100 animate-pulse" />
+            <div className="absolute inset-0 animate-pulse bg-gray-100" />
           )}
-
           <img
             src={mainImage}
             alt={product.name}
+            loading="lazy"
+            decoding="async"
             onLoad={() => setImgLoaded(true)}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className={`w-full h-full object-cover transition duration-500 group-hover:scale-105 ${
+              imgLoaded ? "opacity-100" : "opacity-0"
+            }`}
           />
+          {discount > 0 && (
+            <span className="absolute top-2.5 left-2.5 bg-[#c8102e] text-white  px-2 py-1 ">
+              {discount}% OFF
+            </span>
+          )}
         </div>
 
-        {/* Info */}
-        <div className="pt-2 pb-3 px-1.5 sm:px-2 text-center">
+        {/* ── Info ── */}
+        <div className="flex flex-col p-3 sm:p-3.5 gap-2 flex-1">
           {/* Name */}
-          <h3 className="text-[12px] sm:text-[14px] font-semibold text-gray-800 leading-snug line-clamp-2 min-h-[34px]">
+          <h3 className="text- sm:text-sm font-semibold text-gray-900 leading-snug line-clamp-2 min-h-[2.5em]">
             {product.name}
           </h3>
 
           {/* Rating */}
-          <div className="flex items-center justify-center gap-1 mt-1 text-[11px] sm:text-sm text-gray-700">
-            <Star size={12} className="text-yellow-500 fill-yellow-500" />
-            <span className="font-medium">{rating}</span>
-            <span className="text-gray-500">| {reviews}</span>
+          <div className="flex items-center gap-1 text-xs text-gray-500">
+            <StarIcon className="w-3.5 h-3.5 text-amber-400" />
+            <span className="font-semibold text-gray-900">{rating}</span>
+            <span>·</span>
+            <span>
+              {reviews > 999 ? `${(reviews / 1000).toFixed(1)}k` : reviews}
+            </span>
           </div>
 
-          {/* Tags (limit on mobile) */}
-          <div className="flex justify-center gap-1.5 mt-2">
-            {(window.innerWidth < 640 ? tags.slice(0, 2) : tags).map(
-              (tag, i) => (
+          {/* Tags - max 2 on mobile */}
+          {tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {tags.slice(0, 2).map((tag, i) => (
                 <span
                   key={i}
-                  className="text-[10px] sm:text-[11px] px-2 py-0.5 rounded bg-yellow-200 text-gray-800 font-medium whitespace-nowrap">
+                  className="text- font-medium px-2 py-0.5 bg-[#fef9ee] text-[#92640a] ">
                   {tag}
                 </span>
-              ),
-            )}
-          </div>
+              ))}
+            </div>
+          )}
 
           {/* Price */}
-          <div className="flex items-center justify-center gap-1 mt-2">
-            <span className="text-[13px] sm:text-[15px] font-semibold text-gray-900">
+          <div className="flex items-baseline gap-2 mt-auto pt-1">
+            <span className="text-base sm:text-lg font-bold text-gray-900">
               ₹{formatPrice(product.price)}
             </span>
-
             {discount > 0 && (
-              <span className="text-[10px] sm:text-[12px] text-gray-400 line-through">
+              <span className="text-xs text-gray-400 line-through">
                 ₹{formatPrice(product.originalPrice)}
               </span>
             )}
           </div>
 
-          {/* Add to Cart */}
+          {/* Cart button */}
           <button
-            onClick={handleAddToCart}
-            disabled={cartSyncing || isAdded}
-            className={`mt-2 w-full py-2 text-[11px] sm:text-[13px] font-semibold tracking-wide rounded transition-all duration-300 ${
+            className={`w-full py-2.5  text-xs font-bold tracking-wide uppercase transition-all duration-200 flex items-center justify-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.97] disabled:opacity-70
+            ${
               isAdded
-                ? "bg-green-600 text-white"
-                : "bg-red-500 text-white hover:bg-red-600"
-            }`}>
+                ? "bg-[#1a7f4b] text-white focus:ring-[#1a7f4b]/30"
+                : "bg-[#c8102e] text-white hover:bg-[#a80d27] focus:ring-[#c8102e]/30"
+            }`}
+            onClick={handleAddToCart}
+            disabled={cartSyncing || isAdded}>
             {isAdded ? (
-              <span className="flex items-center justify-center gap-1">
-                <Check size={14} /> Added
-              </span>
+              <>
+                <CheckIcon className="w-3.5 h-3.5" />
+                Added
+              </>
             ) : (
-              "ADD TO CART"
+              <>
+                <ShoppingBagIcon className="w-3.5 h-3.5" />
+                Add to Cart
+              </>
             )}
           </button>
         </div>
-      </div>
+      </article>
     </>
   );
 };

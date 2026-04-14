@@ -16,6 +16,8 @@ import {
 import RunningBrandTicker from "../homepage/RunningBrandTicker";
 import SocialFeed from "../homepage/SocialFeed";
 import ScrollToTopButton from "../../shared/components/ScrollToTopButton";
+import CustomerReviewsScore from "../reviews/componenst/CustomerReviewsScore";
+import ReviewsGrid from "../reviews/componenst/ReviewsGrid";
 
 /* ---------- Lazy Components ---------- */
 const HeroSection = React.lazy(() => import("../homepage/HeroSection"));
@@ -221,11 +223,9 @@ const HomePage = () => {
 
   const {
     products: homeProducts = {},
-    categories = [],
     testimonials = [],
     collections: collectionItems = [],
     loadingKeys,
-    categoriesLoading,
     testimonialsLoading,
     collectionsLoading,
   } = useHomepageProducts(productSections);
@@ -305,7 +305,7 @@ const HomePage = () => {
   };
 
   return (
-    <main className="w-full min-h-screen bg-white text-[#111] overflow-x-hidden selection:bg-[#6b4f2c] selection:text-white">
+    <main className=" min-h-screen bg-white text-[#111] overflow-x-hidden selection:bg-[#6b4f2c] selection:text-white">
       {/* ══════════════════════════════════════════
           SEO HEAD — Maximum Coverage
       ══════════════════════════════════════════ */}
@@ -448,10 +448,12 @@ const HomePage = () => {
       {/* HERO */}
       <Section>
         <Suspense fallback={<HeroSkeleton />}>
-          <HeroSection
-            desktopSlides={desktopSlides}
-            mobileSlides={mobileSlides}
-          />
+          <div className="w-full h-[45vh] sm:h-[55vh] md:h-[70vh]">
+            <HeroSection
+              desktopSlides={desktopSlides}
+              mobileSlides={mobileSlides}
+            />
+          </div>
         </Suspense>
       </Section>
 
@@ -497,9 +499,7 @@ const HomePage = () => {
       {!isMobile && (
         <Section>
           <Suspense fallback={<HeroSkeleton />}>
-            <ViewportLoader>
-              <VideoSection />
-            </ViewportLoader>
+            <ViewportLoader>{/* <VideoSection /> */}</ViewportLoader>
           </Suspense>
         </Section>
       )}
@@ -533,13 +533,13 @@ const HomePage = () => {
       </Section>
 
       {/* CUSTOMER SPOTLIGHT */}
-      <Section>
+      {/* <Section>
         <Suspense fallback={<HeroSkeleton />}>
-          <ViewportLoader>
-            <CustomerSpotlight />
-          </ViewportLoader>
+          <ViewportLoader> */}
+      <CustomerReviewsScore />
+      {/* </ViewportLoader>
         </Suspense>
-      </Section>
+      </Section> */}
 
       {/* EXPLORE 2 (desktop only) */}
       {!isMobile && (
@@ -559,14 +559,11 @@ const HomePage = () => {
 
       {/* TESTIMONIALS */}
       <Section className="pb-16">
-        <Suspense fallback={<TestimonialsSkeleton />}>
-          <ViewportLoader>
-            <TestimonialsSection
-              testimonials={testimonials}
-              loading={testimonialsLoading}
-            />
-          </ViewportLoader>
-        </Suspense>
+        {/* <Suspense fallback={<TestimonialsSkeleton />}> */}
+        {/* <ViewportLoader> */}
+        <ReviewsGrid />
+        {/* </ViewportLoader> */}
+        {/* </Suspense> */}
       </Section>
 
       <ScrollToTopButton />

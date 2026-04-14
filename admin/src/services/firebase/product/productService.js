@@ -13,360 +13,335 @@ import {
   limit,
   startAfter,
   increment,
+  writeBatch,
 } from "firebase/firestore";
 
 import { db } from "../../../config/firebase";
+import {
+  createEmptyProduct,
+  WRITABLE_FIELDS,
+} from "../../../modal/product.model";
 
 const PRODUCTS_COLLECTION = "products";
 const PAGE_SIZE = 20;
+const CACHE_TTL_MS = 60_000;
 
-/*
-  ─── Firestore Product Document Shape ─────────────────────────────────────────
-
-  {
-    name:           string,
-    slug:           string,
-    description:    string,
-    banner:         string,
-    images:         string[],
-    price:          number,
-    originalPrice:  number,
-    stock:          number,
-    sizes:          string[],
-    colors:         { name, image }[],
-    material:       string,
-    brand:          string,
-    categoryId:     string,
-
-    // UPDATED
-    collectionTypes: string[],
-
-    isActive:       boolean,
-    createdAt:      Timestamp,
-    updatedAt:      Timestamp,
-  }
-*/
-
-// ─── In-memory cache ─────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// CACHE (simple TTL memory cache)
+// ─────────────────────────────────────────────
 const cache = new Map();
+
+const cacheGet = (key) => {
+  const item = cache.get(key);
+  if (!item) return null;
+
+  if (Date.now() > item.expiresAt) {
+    cache.delete(key);
+    return null;
+  }
+
+  return item.value;
+};
+
+const cacheSet = (key, value, ttl = CACHE_TTL_MS) => {
+  cache.set(key, {
+    value,
+    expiresAt: Date.now() + ttl,
+  });
+};
+
+const cacheDelete = (key) => cache.delete(key);
+const cacheClear = () => cache.clear();
+
 const buildCacheKey = (params) => JSON.stringify(params);
 
-export const productService = {
+// ─────────────────────────────────────────────
+// SANITIZE UPDATE (prevents Firestore pollution)
+// ─────────────────────────────────────────────
+const sanitizeUpdate = (data) => {
+  const clean = {};
 
-  // ═══════════════════════════════════════
-  // CREATE PRODUCT
-  // ═══════════════════════════════════════
+  for (const key of WRITABLE_FIELDS) {
+    if (data[key] !== undefined) clean[key] = data[key];
+  }
+
+  return {
+    ...clean,
+    price: Number(clean.price) || 0,
+    originalPrice: Number(clean.originalPrice) || 0,
+    stock: Number(clean.stock) || 0,
+
+    images: Array.isArray(clean.images) ? clean.images : [],
+    sizes: Array.isArray(clean.sizes) ? clean.sizes : [],
+    collectionTypes: Array.isArray(clean.collectionTypes)
+      ? clean.collectionTypes
+      : [],
+    tags: Array.isArray(clean.tags) ? clean.tags : [],
+  };
+};
+
+// ─────────────────────────────────────────────
+// MAP FIRESTORE DOC → PRODUCT OBJECT
+// ─────────────────────────────────────────────
+const mapDoc = (d) => {
+  const data = d.data();
+
+  return {
+    id: d.id,
+    name: data.name ?? "",
+    slug: data.slug ?? "",
+    description: data.description ?? "",
+    banner: data.banner ?? "",
+    images: Array.isArray(data.images) ? data.images : [],
+    price: data.price ?? 0,
+    originalPrice: data.originalPrice ?? 0,
+    stock: data.stock ?? 0,
+    sizes: Array.isArray(data.sizes) ? data.sizes : [],
+    colors: Array.isArray(data.colors) ? data.colors : [],
+    material: data.material ?? "",
+    brand: data.brand ?? "",
+    categoryId: data.categoryId ?? "",
+    collectionTypes: Array.isArray(data.collectionTypes)
+      ? data.collectionTypes
+      : [],
+    tags: Array.isArray(data.tags) ? data.tags : [],
+    isActive: !!data.isActive,
+    isDeleted: !!data.isDeleted,
+    deletedAt: data.deletedAt ?? null,
+    createdAt: data.createdAt ?? null,
+    updatedAt: data.updatedAt ?? null,
+  };
+};
+
+// ─────────────────────────────────────────────
+// SERVICE
+// ─────────────────────────────────────────────
+export const productService = {
+  // ───────── CREATE ─────────
   async createProduct(productData) {
     try {
-
       const product = {
-        name: productData.name ?? "",
-        slug: productData.slug ?? "",
-        description: productData.description ?? "",
-
-        banner: productData.banner ?? "",
-        images: Array.isArray(productData.images) ? productData.images : [],
+        ...createEmptyProduct(),
+        ...productData,
 
         price: Number(productData.price) || 0,
         originalPrice: Number(productData.originalPrice) || 0,
         stock: Number(productData.stock) || 0,
 
-        sizes: Array.isArray(productData.sizes) ? productData.sizes : [],
-        colors: Array.isArray(productData.colors) ? productData.colors : [],
-
-        categoryId: productData.categoryId ?? "",
-
-        // ARRAY SUPPORT
+        images: Array.isArray(productData.images)
+          ? productData.images
+          : [],
+        sizes: Array.isArray(productData.sizes)
+          ? productData.sizes
+          : [],
         collectionTypes: Array.isArray(productData.collectionTypes)
           ? productData.collectionTypes
           : [],
+        tags: Array.isArray(productData.tags)
+          ? productData.tags
+          : [],
 
-        isActive: productData.isActive ?? true,
+        isDeleted: false,
+        deletedAt: null,
 
         createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       };
 
-      const docRef = await addDoc(collection(db, PRODUCTS_COLLECTION), product);
+      const docRef = await addDoc(
+        collection(db, PRODUCTS_COLLECTION),
+        product
+      );
 
-      cache.clear();
+      cacheClear();
 
       return { id: docRef.id, ...product };
-
-    } catch (error) {
-      throw new Error(`Create product failed: ${error.message}`);
+    } catch (err) {
+      throw new Error(`Create product failed: ${err.message}`);
     }
   },
 
-  // ═══════════════════════════════════════
-  // PAGINATED PRODUCT LIST
-  // ═══════════════════════════════════════
+  // ───────── LIST (PAGINATION) ─────────
   async getProducts({
     lastDoc = null,
-    category = "all",
     collectionType = "all",
     status = "all",
     pageSize = PAGE_SIZE,
   } = {}) {
+    const cacheKey = buildCacheKey({
+      lastDoc: lastDoc?.id || null,
+      collectionType,
+      status,
+      pageSize,
+    });
 
-    const params = { lastDoc: lastDoc?.id, category, collectionType, status, pageSize };
-    const cacheKey = buildCacheKey(params);
-
-    if (cache.has(cacheKey)) return cache.get(cacheKey);
+    const cached = cacheGet(cacheKey);
+    if (cached) return cached;
 
     try {
-
       const constraints = [];
 
-      if (category !== "all")
-        constraints.push(where("categoryId", "==", category));
+     
 
-      if (collectionType !== "all")
-        constraints.push(where("collectionTypes", "array-contains", collectionType));
+      if (collectionType !== "all") {
+        constraints.push(
+          where("collectionTypes", "array-contains", collectionType)
+        );
+      }
 
-      if (status !== "all")
-        constraints.push(where("isActive", "==", status === "active"));
+      if (status !== "all") {
+        constraints.push(
+          where("isActive", "==", status === "active")
+        );
+      }
 
       constraints.push(orderBy("createdAt", "desc"));
 
-      if (lastDoc) constraints.push(startAfter(lastDoc));
+      if (lastDoc) {
+        constraints.push(startAfter(lastDoc));
+      }
 
       constraints.push(limit(pageSize));
 
-      const q = query(collection(db, PRODUCTS_COLLECTION), ...constraints);
-      const snapshot = await getDocs(q);
+      const snapshot = await getDocs(
+        query(collection(db, PRODUCTS_COLLECTION), ...constraints)
+      );
 
-      const products = snapshot.docs.map((d) => {
-        const data = d.data();
-
-        return {
-          id: d.id,
-          name: data.name,
-          slug: data.slug,
-          banner: data.banner,
-          price: data.price,
-          originalPrice: data.originalPrice,
-          stock: data.stock,
-          sizes: data.sizes,
-          colors: data.colors,
-          categoryId: data.categoryId,
-
-          // UPDATED
-          collectionTypes: data.collectionTypes,
-
-          isActive: data.isActive,
-          createdAt: data.createdAt,
-        };
-      });
-
-      const newLastDoc =
-        snapshot.docs.length > 0
-          ? snapshot.docs[snapshot.docs.length - 1]
-          : null;
+      const products = snapshot.docs.map(mapDoc);
 
       const result = {
         products,
-        lastDoc: newLastDoc,
+        lastDoc:
+          snapshot.docs.length > 0
+            ? snapshot.docs[snapshot.docs.length - 1]
+            : null,
         hasMore: snapshot.docs.length === pageSize,
       };
 
-      cache.set(cacheKey, result);
+      cacheSet(cacheKey, result);
 
       return result;
-
-    } catch (error) {
-      throw new Error(`Fetch products failed: ${error.message}`);
+    } catch (err) {
+      throw new Error(`Fetch products failed: ${err.message}`);
     }
   },
 
-  // ═══════════════════════════════════════
-  // GET SINGLE PRODUCT
-  // ═══════════════════════════════════════
+  // ───────── SINGLE PRODUCT ─────────
   async getProduct(id) {
+    const key = `product_${id}`;
+    const cached = cacheGet(key);
+    if (cached) return cached;
 
-    const cacheKey = `product_${id}`;
+    const snap = await getDoc(doc(db, PRODUCTS_COLLECTION, id));
 
-    if (cache.has(cacheKey)) return cache.get(cacheKey);
-
-    try {
-
-      const docRef = doc(db, PRODUCTS_COLLECTION, id);
-      const snapshot = await getDoc(docRef);
-
-      if (!snapshot.exists()) {
-        throw new Error("Product not found");
-      }
-
-      const product = { id: snapshot.id, ...snapshot.data() };
-
-      cache.set(cacheKey, product);
-
-      return product;
-
-    } catch (error) {
-
-      if (error.message === "Product not found") throw error;
-
-      throw new Error(`Fetch product failed: ${error.message}`);
+    if (!snap.exists()) {
+      throw new Error("Product not found");
     }
+
+    const product = mapDoc(snap);
+    cacheSet(key, product);
+
+    return product;
   },
 
-  // ═══════════════════════════════════════
-  // UPDATE PRODUCT
-  // ═══════════════════════════════════════
-  async updateProduct(id, productData) {
+  // ───────── UPDATE ─────────
+  async updateProduct(id, data) {
+    const clean = sanitizeUpdate(data);
 
-    const docRef = doc(db, PRODUCTS_COLLECTION, id);
+    await updateDoc(doc(db, PRODUCTS_COLLECTION, id), {
+      ...clean,
+      updatedAt: serverTimestamp(),
+    });
 
-    const updates = {
-      ...productData,
-      updatedAt: serverTimestamp()
-    };
-
-    if ("collectionTypes" in productData) {
-      updates.collectionTypes = Array.isArray(productData.collectionTypes)
-        ? productData.collectionTypes
-        : [];
-    }
-
-    if ("images" in productData) {
-      updates.images = Array.isArray(productData.images)
-        ? productData.images
-        : [];
-    }
-
-    if ("sizes" in productData) {
-      updates.sizes = Array.isArray(productData.sizes)
-        ? productData.sizes
-        : [];
-    }
-
-    if ("colors" in productData) {
-      updates.colors = Array.isArray(productData.colors)
-        ? productData.colors
-        : [];
-    }
-
-    await updateDoc(docRef, updates);
-
-    cache.clear();
+    cacheDelete(`product_${id}`);
+    cacheClear();
 
     return true;
   },
 
-  // ═══════════════════════════════════════
-  // DELETE PRODUCT
-  // ═══════════════════════════════════════
-  async deleteProduct(id) {
-    try {
+ // ───────── HARD DELETE ─────────
+async deleteProduct(id) {
+  try {
+    await deleteDoc(doc(db, PRODUCTS_COLLECTION, id));
 
-      await deleteDoc(doc(db, PRODUCTS_COLLECTION, id));
+    // clear cache after deletion
+    cacheDelete(`product_${id}`);
+    cacheClear();
 
-      cache.clear();
+    return true;
+  } catch (err) {
+    throw new Error(`Hard delete failed: ${err.message}`);
+  }
+},
 
-      return true;
+  // ───────── RESTORE ─────────
+  async restoreProduct(id) {
+    await updateDoc(doc(db, PRODUCTS_COLLECTION, id), {
+      isDeleted: false,
+      isActive: true,
+      deletedAt: null,
+      updatedAt: serverTimestamp(),
+    });
 
-    } catch (error) {
+    cacheDelete(`product_${id}`);
+    cacheClear();
 
-      if (error.code === "permission-denied") {
-        throw new Error("Permission denied while deleting product.");
-      }
-
-      throw new Error(`Delete product failed: ${error.message}`);
-    }
+    return true;
   },
 
-  // ═══════════════════════════════════════
-  // UPDATE STOCK
-  // ═══════════════════════════════════════
+  async deleteProductsBulk(ids = []) {
+  const batch = writeBatch(db);
+
+  ids.forEach((id) => {
+    batch.delete(doc(db, "products", id));
+  });
+
+  await batch.commit();
+
+  cacheClear();
+},
+  // ───────── STOCK UPDATE ─────────
   async updateProductStock(id, delta) {
-    try {
+    await updateDoc(doc(db, PRODUCTS_COLLECTION, id), {
+      stock: increment(delta),
+      updatedAt: serverTimestamp(),
+    });
 
-      const docRef = doc(db, PRODUCTS_COLLECTION, id);
+    cacheDelete(`product_${id}`);
+    cacheClear();
 
-      await updateDoc(docRef, {
-        stock: increment(delta),
-        updatedAt: serverTimestamp(),
-      });
-
-      cache.clear();
-
-      return true;
-
-    } catch (error) {
-
-      throw new Error(`Stock update failed: ${error.message}`);
-    }
+    return true;
   },
 
-  // ═══════════════════════════════════════
-  // LOW STOCK
-  // ═══════════════════════════════════════
-  async getLowStockProducts(threshold = 10) {
+  // ───────── SEARCH (PREFIX ONLY) ─────────
+  async searchProducts(term, { pageSize = PAGE_SIZE } = {}) {
+    if (!term?.trim()) return [];
 
-    const cacheKey = `low_stock_${threshold}`;
+    const t = term.trim();
+    const cacheKey = `search_${t}_${pageSize}`;
 
-    if (cache.has(cacheKey)) return cache.get(cacheKey);
+    const cached = cacheGet(cacheKey);
+    if (cached) return cached;
 
-    try {
+    const q = query(
+      collection(db, PRODUCTS_COLLECTION),
+      where("isDeleted", "==", false),
+      where("name", ">=", t),
+      where("name", "<", t + "\uf8ff"),
+      orderBy("name"),
+      limit(pageSize)
+    );
 
-      const q = query(
-        collection(db, PRODUCTS_COLLECTION),
-        where("stock", "<=", threshold),
-        where("stock", ">", 0),
-        orderBy("stock", "asc"),
-        limit(PAGE_SIZE)
-      );
+    const snap = await getDocs(q);
+    const result = snap.docs.map(mapDoc);
 
-      const snapshot = await getDocs(q);
+    cacheSet(cacheKey, result, 30000);
 
-      const result = snapshot.docs.map((d) => ({
-        id: d.id,
-        ...d.data()
-      }));
-
-      cache.set(cacheKey, result);
-
-      return result;
-
-    } catch (error) {
-
-      throw new Error(`Fetch low stock failed: ${error.message}`);
-    }
+    return result;
   },
 
-  // ═══════════════════════════════════════
-  // OUT OF STOCK
-  // ═══════════════════════════════════════
-  async getOutOfStockProducts() {
-
-    const cacheKey = "out_of_stock";
-
-    if (cache.has(cacheKey)) return cache.get(cacheKey);
-
-    try {
-
-      const q = query(
-        collection(db, PRODUCTS_COLLECTION),
-        where("stock", "==", 0),
-        orderBy("updatedAt", "desc"),
-        limit(PAGE_SIZE)
-      );
-
-      const snapshot = await getDocs(q);
-
-      const result = snapshot.docs.map((d) => ({
-        id: d.id,
-        ...d.data()
-      }));
-
-      cache.set(cacheKey, result);
-
-      return result;
-
-    } catch (error) {
-
-      throw new Error(`Fetch out-of-stock failed: ${error.message}`);
-    }
+  // ───────── CLEAR CACHE ─────────
+  clearCache() {
+    cacheClear();
   },
 };

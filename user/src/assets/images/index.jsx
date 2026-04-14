@@ -22,13 +22,16 @@ const AUTH_BANNERS = {
 
 // --- Hero Slides (Desktop) ---
 const HERO_SLIDES_DESKTOP = [
-  "https://www.farmdidi.com/cdn/shop/files/mango_banner_mohatsav-01-1_jpg.jpg",
-  "https://www.farmdidi.com/cdn/shop/files/impact_created-04_1.webp",
+  "https://www.jhajistore.com/cdn/shop/files/Jan_26_Sample_Pack_Collection_Desktop_Banner_1477x332.webp",
+  "https://www.jhajistore.com/cdn/shop/files/five-pickle-sample-pack-with-garlic-bihari-oal-garlic-chilli-ginger-tomato-jackfruit-lal-mirch_d904d762-f590-41ec-8486-4f15e27914b5.webp?v=1769637461",
   "/Gemini_Generated_Image_rxn6avrxn6avrxn6.png",
 ];
 
 // --- Hero Slides (Mobile) ---
-const HERO_SLIDES_MOBILE = ["/fc84ad98-075f-46bc-80ac-17ef4beb6674.png"];
+const HERO_SLIDES_MOBILE = [
+  "https://www.jhajistore.com/cdn/shop/files/jhaji-store-lal-mirch-achar-bestseller_720x.webp",
+  "https://www.jhajistore.com/cdn/shop/files/five-pickle-sample-pack-with-garlic-bihari-oal-garlic-chilli-ginger-tomato-jackfruit-lal-mirch_d904d762-f590-41ec-8486-4f15e27914b5_720x.webp",
+];
 
 // ==========================================
 // 5. MAIN EXPORT

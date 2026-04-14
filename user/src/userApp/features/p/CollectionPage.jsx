@@ -1,50 +1,46 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import React, { useEffect, useRef, useState, useMemo } from "react";
+import { useParams } from "react-router-dom";
 
 import { useCollection } from "./Usecollection";
-
-import DesktopSidebar from "./components/DesktopSidebar";
-import CollectionToolbar from "./components/CollectionToolbar";
-import MobileFilterSheet from "./components/MobileFilterSheet";
-import MobileSortSheet from "./components/MobileSortSheet";
-import MobileBottomFilterBar from "./components/MobileBottomFilterBar";
-
 import Breadcrumb from "./components/Breadcrumb";
-import ActiveChips from "./components/ActiveChips";
-
-// import CollectionHeader from "./components/CollectionHeader";
-import CollectionSearch from "./components/CollectionSearch";
 import ProductGrid from "./components/ProductGrid";
+import ResponsiveBanner from "./components/ResponsiveBanner";
+import { productSections } from "../homepage/config/productCollection";
+import SortDropdown from "../account/components/dropdown/SortDropdown";
 
-import { COLLECTION_LABELS, SORT_OPTIONS } from "./constants/filters";
+const sectionMap = Object.fromEntries(productSections.map((s) => [s.key, s]));
 
-import countActive from "./utils/countActive";
-import { readFilters } from "./utils/filterUtils";
+/* SEO helper */
+const formatTitle = (key = "") =>
+  key.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
 const CollectionPage = () => {
   const { collectionType = "all" } = useParams();
-
-  const [sp, setSp] = useSearchParams();
-  const filters = useMemo(() => readFilters(sp), [sp]);
-
   const [sort, setSort] = useState("newest");
-  const [gridCols, setGridCols] = useState(4);
-
-  const [showFilterSheet, setShowFilterSheet] = useState(false);
-  const [showSortSheet, setShowSortSheet] = useState(false);
-
   const {
     displayProducts,
-    facets,
-    totalFetched,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
     isLoading,
     isError,
-  } = useCollection({ collectionType, filters, sort });
+  } = useCollection({
+    collectionType: collectionType === "all" ? "all" : collectionType,
+    sort,
+  });
 
-  /* Infinite Scroll */
+  /* ───────── SEO + CONTENT MATCHING ───────── */
+  const section = sectionMap[collectionType];
+
+  const title = section?.title || formatTitle(collectionType);
+  const subtitle = section?.subtitle || "";
+
+  const description = useMemo(() => {
+    if (subtitle) return subtitle;
+    return `Explore premium ${title.toLowerCase()} crafted with natural ingredients and traditional methods. Delivered fresh from FarmDidi kitchens to yours.`;
+  }, [subtitle, title]);
+
+  /* ───────── INFINITE SCROLL ───────── */
   const sentinelRef = useRef(null);
 
   useEffect(() => {
@@ -57,119 +53,80 @@ const CollectionPage = () => {
           fetchNextPage();
         }
       },
-      { rootMargin: "500px" },
+      { rootMargin: "600px" },
     );
 
     obs.observe(el);
     return () => obs.disconnect();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  /* Body Scroll Lock */
-  useEffect(() => {
-    document.body.style.overflow =
-      showFilterSheet || showSortSheet ? "hidden" : "";
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [showFilterSheet, showSortSheet]);
-
-  /* Title */
-  const title =
-    COLLECTION_LABELS[collectionType] ??
-    collectionType.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-
-  const filterCnt = countActive(filters);
-
-  const gridClass = {
-    2: "grid-cols-2",
-    3: "grid-cols-2 sm:grid-cols-3",
-    4: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4",
-  }[gridCols];
-
   return (
-    <>
-      <style>{`
-        @keyframes fadeUp {
-          from { opacity:0; transform:translateY(16px); }
-          to { opacity:1; transform:translateY(0); }
-        }
-      `}</style>
+    <main className="min-h-screen bg-white text-gray-900 antialiased">
+      {/* Space from top */}
+      <div className="pt-8 md:pt-12" />
 
-      <div className="min-h-screen bg-white pb-[80px] lg:pb-20 font-sans selection:bg-[#da127d] selection:text-white">
-        {/* Mobile Sheets */}
-        {showFilterSheet && (
-          <MobileFilterSheet
-            facets={facets}
-            filters={filters}
-            onClose={() => setShowFilterSheet(false)}
-            setSp={setSp}
+      {/* ───────── BREADCRUMB ───────── */}
+      <div className="bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <Breadcrumb
+            items={[{ label: "Home", href: "/" }, { label: title }]}
           />
-        )}
+        </div>
+      </div>
 
-        {showSortSheet && (
-          <MobileSortSheet
-            sort={sort}
-            onSelect={setSort}
-            onClose={() => setShowSortSheet(false)}
-          />
-        )}
-
-        {/* Breadcrumb */}
-        <Breadcrumb items={[{ label: "Home", href: "/" }, { label: title }]} />
-
-        <div className="flex px-6 lg:px-12 mt-6 lg:mt-10">
-          {/* Desktop Sidebar */}
-          <DesktopSidebar facets={facets} filters={filters} setSp={setSp} />
-
-          {/* Products Column */}
-          <div className="flex-1 min-w-0">
-            {/* Desktop Search */}
-            <CollectionSearch value={filters.search} sp={sp} setSp={setSp} />
-
-            {/* Desktop Toolbar */}
-            <CollectionToolbar
-              title={title}
-              gridCols={gridCols}
-              setGridCols={setGridCols}
-              sort={sort}
-              setSort={setSort}
-            />
-
-            {/* Mobile Search */}
-            <CollectionSearch
-              mobile
-              value={filters.search}
-              sp={sp}
-              setSp={setSp}
-            />
-
-            {/* Active Filters */}
-            <ActiveChips filters={filters} />
-
-            {/* Product Grid */}
-            <ProductGrid
-              isLoading={isLoading}
-              isError={isError}
-              displayProducts={displayProducts}
-              gridClass={gridClass}
-              isFetchingNextPage={isFetchingNextPage}
-              hasNextPage={hasNextPage}
-              sentinelRef={sentinelRef}
-              clearFilters={() => setSp({})}
+      {/* ───────── BANNER - No text overlay ───────── */}
+      <section className="mt-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="rounded-3xl overflow-hidden border border-gray-100">
+            <ResponsiveBanner
+              desktopImage="https://www.farmdidi.com/cdn/shop/files/mango_pickle_banner-07_4.jpg"
+              mobileImage="https://www.jhajistore.com/cdn/shop/files/Jan_26_Sample_Pack_Collection_Mobile_Banner.webp"
+              alt={`${title} Collection`}
             />
           </div>
         </div>
+      </section>
 
-        {/* Mobile Bottom Filter Bar */}
-        <MobileBottomFilterBar
-          filterCount={filterCnt}
-          sort={sort}
-          onOpenFilter={() => setShowFilterSheet(true)}
-          onOpenSort={() => setShowSortSheet(true)}
-        />
+      {/* ───────── SEO HEADER BLOCK - Separate from banner ───────── */}
+      <header className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 mt-12 mb-8">
+        <h1 className="text-3xl md:text-5xl lg:text-6xl font-serif font-medium tracking-tight text-gray-900">
+          {title}
+        </h1>
+        <p className="mt-4 text-gray-600 text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
+          {description}
+        </p>
+      </header>
+
+      {/* ───────── TOOLBAR: Count + Sort ───────── */}
+      <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm border-y border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+          {!isLoading ? (
+            <p className="text-sm text-gray-600">
+              <span className="font-medium text-gray-900">
+                {displayProducts?.length}
+              </span>{" "}
+              products
+            </p>
+          ) : (
+            <div className="h-5 w-24 bg-gray-100 rounded animate-pulse" />
+          )}
+          <SortDropdown sort={sort} setSort={setSort} />
+        </div>
       </div>
-    </>
+
+      {/* ───────── PRODUCTS SECTION ───────── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <ProductGrid
+          isLoading={isLoading}
+          isError={isError}
+          displayProducts={displayProducts}
+          gridClass="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-12"
+          isFetchingNextPage={isFetchingNextPage}
+          hasNextPage={hasNextPage}
+          sentinelRef={sentinelRef}
+        />
+      </section>
+    </main>
   );
 };
 

@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import { useCategories } from "../hooks/Usecategories";
 import ErrorState from "../../p/components/ErrorState";
-import { SkeletonCard } from "../../p/components/SkeletonCard ";
+import { SkeletonCard } from "../../p/components/SkeletonCard";
 import EmptyState from "../../p/components/EmptyState";
 import Breadcrumb from "../../p/components/Breadcrumb";
 

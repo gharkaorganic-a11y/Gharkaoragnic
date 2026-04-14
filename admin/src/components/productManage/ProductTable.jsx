@@ -9,6 +9,7 @@ import {
   PackageOpen,
   Loader2,
 } from "lucide-react";
+
 import StockBadge from "./StockBadge";
 import StatusPill from "./StatusPill";
 
@@ -22,195 +23,234 @@ const ProductTable = ({
   navigate,
   getDiscount,
   formatPKR,
+  loadMoreProducts,
+
+  // 🔥 BULK ACTION PROPS
+  selectedProducts,
+  toggleSelectProduct,
+  toggleSelectAll,
+  handleBulkDelete,
 }) => {
-  // --- Loading Skeleton ---
+  // ---------------- LOADING STATE ----------------
   if (loading && products.length === 0) {
     return (
-      <div className="bg-white border border-gray-200 rounded-sm shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] overflow-hidden">
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
         {[1, 2, 3, 4, 5].map((i) => (
           <div
             key={i}
-            className="flex items-center gap-4 p-4 border-b border-gray-100 animate-pulse">
-            <div className="w-14 h-14 bg-gray-200 rounded-sm shrink-0"></div>
-            <div className="flex-1 space-y-2">
-              <div className="h-4 bg-gray-200 w-1/3 rounded"></div>
-              <div className="h-3 bg-gray-200 w-1/4 rounded"></div>
+            className="flex items-center gap-6 p-5 border-b border-gray-100 animate-pulse">
+            <div className="w-4 h-4 bg-gray-200 rounded" />
+            <div className="w-12 h-12 bg-gray-200 rounded-lg shrink-0" />
+            <div className="flex-1 space-y-2.5">
+              <div className="h-4 bg-gray-200 w-1/3 rounded" />
+              <div className="h-3 bg-gray-100 w-1/4 rounded" />
             </div>
-            <div className="hidden lg:block h-6 bg-gray-200 w-24 rounded"></div>
-            <div className="hidden lg:block h-6 bg-gray-200 w-20 rounded-full"></div>
-            <div className="hidden lg:block h-8 bg-gray-200 w-24 rounded"></div>
+            <div className="hidden md:block w-24 h-4 bg-gray-200 rounded" />
+            <div className="hidden lg:block w-20 h-6 bg-gray-200 rounded-full" />
           </div>
         ))}
       </div>
     );
   }
 
-  // --- Empty State ---
-  if (products.length === 0) {
+  // ---------------- EMPTY STATE ----------------
+  if (!loading && products.length === 0) {
     return (
-      <div className="bg-white border border-gray-200 rounded-sm shadow-sm p-12 flex flex-col items-center justify-center text-center">
-        <div className="w-16 h-16 bg-[#f1f3f6] rounded-full flex items-center justify-center mb-4">
-          <PackageOpen size={32} className="text-[#878787]" />
+      <div className="bg-white border border-gray-200 border-dashed rounded-xl p-16 text-center flex flex-col items-center justify-center">
+        <div className="w-16 h-16 bg-gray-50 flex items-center justify-center rounded-full mb-4">
+          <PackageOpen size={32} className="text-gray-400" />
         </div>
-        <h3 className="text-[16px] font-medium text-[#212121] mb-1">
+        <h3 className="text-lg font-semibold text-gray-900 mb-1">
           No Products Found
         </h3>
-        <p className="text-[13px] text-[#878787] max-w-sm">
-          We couldn't find any products matching your current filters. Try
-          adjusting your search criteria or add a new product.
+        <p className="text-sm text-gray-500 max-w-sm">
+          Get started by creating a new product or try adjusting your filters to
+          find what you're looking for.
         </p>
       </div>
     );
   }
 
+  const allSelected =
+    selectedProducts?.length > 0 && selectedProducts.length === products.length;
+
   return (
-    <div className="bg-white border border-gray-200 rounded-sm shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] overflow-hidden">
-      {/* Table Header (Desktop Only) */}
-      <div className="hidden lg:grid grid-cols-[60px_1fr_150px_120px_110px_80px_120px] gap-4 px-6 py-3.5 bg-[#f9fafb] border-b border-gray-200 text-[12px] font-semibold text-[#878787] uppercase tracking-wider items-center">
-        <div>Image</div>
-        <div>Product Details</div>
-        <div>Price</div>
-        <div>Inventory</div>
-        <div>Status</div>
-        <div className="text-center">Visibility</div>
-        <div className="text-right pr-2">Actions</div>
-      </div>
+    <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+      {/* ---------------- BULK ACTION BAR ---------------- */}
+      {selectedProducts?.length > 0 && (
+        <div className="flex items-center justify-between px-6 py-3.5 bg-indigo-50/80 border-b border-indigo-100 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="flex items-center gap-3">
+            <span className="flex items-center justify-center w-6 h-6 bg-indigo-600 text-white text-xs font-bold rounded-full">
+              {selectedProducts.length}
+            </span>
+            <span className="text-sm font-medium text-indigo-900">
+              Products selected
+            </span>
+          </div>
 
-      {/* Product Rows */}
-      <div className="divide-y divide-gray-100">
-        {products.map((product) => {
-          const disc = getDiscount(product.price, product.originalPrice);
+          <div className="flex items-center gap-3">
+            <button
+              onClick={toggleSelectAll}
+              className="px-4 py-1.5 text-sm font-medium text-indigo-700 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-50 transition-colors shadow-sm">
+              {allSelected ? "Clear Selection" : "Select All"}
+            </button>
 
-          return (
-            <div
-              key={product.id}
-              className="flex flex-col lg:grid lg:grid-cols-[60px_1fr_150px_120px_110px_80px_120px] gap-4 p-4 lg:px-6 lg:py-4 items-center hover:bg-[#f8fafd] transition-colors group">
-              {/* Image & Mobile Header Wrapper */}
-              <div className="flex items-center gap-4 w-full lg:w-auto lg:contents">
-                {/* Image */}
-                <div className="w-16 h-16 lg:w-14 lg:h-14 rounded-sm overflow-hidden border border-gray-200 bg-[#f1f3f6] shrink-0 flex items-center justify-center relative">
-                  {product.banner ? (
-                    <img
-                      src={product.banner}
-                      alt={product.name}
-                      className="w-full h-full object-cover"
+            <button
+              onClick={handleBulkDelete}
+              className="px-4 py-1.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm focus:ring-2 focus:ring-offset-1 focus:ring-red-500">
+              Delete Selected
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ---------------- TABLE CONTAINER ---------------- */}
+      <div className="overflow-x-auto">
+        <div className="min-w-[1000px]">
+          {/* ---------------- HEADER ---------------- */}
+          <div className="grid grid-cols-[48px_64px_1fr_140px_120px_100px_160px] items-center gap-4 px-6 py-3.5 bg-gray-50/50 border-b border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider">
+            <div className="flex items-center h-full">
+              <input
+                type="checkbox"
+                checked={allSelected}
+                onChange={toggleSelectAll}
+                className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+              />
+            </div>
+            <div>Image</div>
+            <div>Product Details</div>
+            <div>Price</div>
+            <div>Stock</div>
+            <div>Status</div>
+            <div className="text-right">Actions</div>
+          </div>
+
+          {/* ---------------- ROWS ---------------- */}
+          <div className="divide-y divide-gray-100">
+            {products.map((product) => {
+              const disc = getDiscount(product.price, product.originalPrice);
+              const isSelected = selectedProducts?.includes(product.id);
+
+              return (
+                <div
+                  key={product.id}
+                  className={`grid grid-cols-[48px_64px_1fr_140px_120px_100px_160px] items-center gap-4 px-6 py-4 transition-colors group ${
+                    isSelected ? "bg-indigo-50/30" : "hover:bg-gray-50/80"
+                  }`}>
+                  {/* Checkbox */}
+                  <div className="flex items-center h-full">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => toggleSelectProduct(product.id)}
+                      className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer transition-all"
                     />
-                  ) : (
-                    <ImageIcon className="text-[#c2c2c2] w-6 h-6" />
-                  )}
-                  {/* Mobile Status Indicator */}
-                  <div className="lg:hidden absolute top-1 right-1">
-                    <span
-                      className={`block w-2.5 h-2.5 rounded-full ${product.isActive ? "bg-green-500" : "bg-gray-400 border border-white"}`}></span>
                   </div>
-                </div>
 
-                {/* Mobile Info (Hidden on Desktop) */}
-                <div className="flex-1 min-w-0 lg:hidden">
-                  <p className="text-[14px] font-medium text-[#212121] line-clamp-2 leading-tight mb-1">
-                    {product.name}
-                  </p>
-                  <div className="flex items-center gap-2 text-[13px]">
-                    <span className="font-semibold text-[#212121]">
+                  {/* Image */}
+                  <div className="w-12 h-12 bg-gray-50 border border-gray-100 rounded-lg overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
+                    {product.banner ? (
+                      <img
+                        src={product.banner}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <ImageIcon size={20} className="text-gray-300" />
+                    )}
+                  </div>
+
+                  {/* Name & ID */}
+                  <div className="min-w-0 pr-4">
+                    <p className="text-sm font-semibold text-gray-900 truncate mb-0.5 group-hover:text-indigo-600 transition-colors">
+                      {product.name}
+                    </p>
+                    <p className="text-[11px] font-medium text-gray-400 truncate">
+                      ID: {product.id}
+                    </p>
+                  </div>
+
+                  {/* Price */}
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">
                       {formatPKR(product.price)}
-                    </span>
+                    </p>
+                    {disc > 0 && (
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <p className="text-[11px] text-gray-400 line-through">
+                          {formatPKR(product.originalPrice)}
+                        </p>
+                        <p className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
+                          {disc}% OFF
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Stock */}
+                  <div>
                     <StockBadge stock={product.stock} />
                   </div>
-                </div>
 
-                {/* Product Name (Desktop) */}
-                <div className="hidden lg:flex flex-col min-w-0 pr-4">
-                  <p className="text-[14px] font-medium text-[#212121] line-clamp-2 leading-snug group-hover:text-[#2874F0] transition-colors">
-                    {product.name}
-                  </p>
-                  <span className="text-[11px] text-[#878787] font-mono mt-1 truncate">
-                    ID: {product.id}
-                  </span>
-                </div>
-              </div>
-
-              {/* Price */}
-              <div className="hidden lg:flex flex-col">
-                <span className="text-[14px] font-semibold text-[#212121]">
-                  {formatPKR(product.price)}
-                </span>
-                {disc > 0 && (
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="text-[12px] text-[#878787] line-through">
-                      {formatPKR(product.originalPrice)}
-                    </span>
-                    <span className="text-[11px] font-bold text-[#388e3c]">
-                      {disc}% OFF
-                    </span>
+                  {/* Status */}
+                  <div>
+                    <StatusPill isActive={product.isActive} />
                   </div>
-                )}
-              </div>
 
-              {/* Stock */}
-              <div className="hidden lg:block">
-                <StockBadge stock={product.stock} />
-              </div>
+                  {/* Actions */}
+                  <div className="flex items-center justify-end gap-1 opacity-100 lg:opacity-60 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => handleToggleVisibility(product)}
+                      title={product.isActive ? "Hide Product" : "Show Product"}
+                      className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-all">
+                      {product.isActive ? (
+                        <Eye size={18} />
+                      ) : (
+                        <EyeOff size={18} />
+                      )}
+                    </button>
 
-              {/* Status */}
-              <div className="hidden lg:block">
-                <StatusPill isActive={product.isActive} />
-              </div>
+                    <a
+                      href={`/product/${product.slug}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      title="View on Store"
+                      className="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-all">
+                      <ExternalLink size={18} />
+                    </a>
 
-              {/* Visibility Toggle */}
-              <div className="hidden lg:flex justify-center">
-                <button
-                  onClick={() => handleToggleVisibility(product)}
-                  title={product.isActive ? "Hide from store" : "Show on store"}
-                  className={`p-2 rounded-full transition-all ${
-                    product.isActive
-                      ? "text-[#2874F0] bg-blue-50 hover:bg-blue-100"
-                      : "text-[#878787] bg-gray-100 hover:bg-gray-200"
-                  }`}>
-                  {product.isActive ? <Eye size={16} /> : <EyeOff size={16} />}
-                </button>
-              </div>
+                    <div className="w-[1px] h-4 bg-gray-200 mx-1" />
 
-              {/* Actions */}
-              <div className="flex lg:justify-end gap-2 mt-3 lg:mt-0 w-full lg:w-auto border-t border-gray-100 pt-3 lg:border-0 lg:pt-0">
-                <button
-                  onClick={() => navigate(`/products/edit/${product.id}`)}
-                  title="Edit Product"
-                  className="flex-1 lg:flex-none flex items-center justify-center p-2 text-[#878787] hover:text-[#2874F0] hover:bg-blue-50 rounded-sm transition-colors border border-transparent hover:border-blue-100">
-                  <Edit2 size={16} />
-                </button>
+                    <button
+                      onClick={() => navigate(`/products/edit/${product.id}`)}
+                      title="Edit Product"
+                      className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all">
+                      <Edit2 size={18} />
+                    </button>
 
-                <a
-                  href={`/product/${product.slug}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  title="View Live Product"
-                  className="flex-1 lg:flex-none flex items-center justify-center p-2 text-[#878787] hover:text-[#2e7d32] hover:bg-green-50 rounded-sm transition-colors border border-transparent hover:border-green-100">
-                  <ExternalLink size={16} />
-                </a>
-
-                <button
-                  onClick={() => setDeleteTarget(product)}
-                  title="Delete Product"
-                  className="flex-1 lg:flex-none flex items-center justify-center p-2 text-[#878787] hover:text-[#c62828] hover:bg-red-50 rounded-sm transition-colors border border-transparent hover:border-red-100">
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            </div>
-          );
-        })}
+                    <button
+                      onClick={() => setDeleteTarget(product)}
+                      title="Delete Product"
+                      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-all">
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
-      {/* Load More Row */}
+      {/* ---------------- LOAD MORE ---------------- */}
       {hasMore && (
-        <div className="border-t border-gray-200 bg-[#f9fafb] p-4 flex justify-center">
+        <div className="p-4 flex justify-center border-t border-gray-100 bg-gray-50/50">
           <button
-            onClick={() => {
-              /* Assuming loadProducts is passed or handled via parent. The parent manages loadingMore state. */
-            }}
+            onClick={loadMoreProducts}
             disabled={loadingMore}
-            className="flex items-center gap-2 px-6 py-2 bg-white border border-[#d7d7d7] text-[#212121] text-[14px] font-medium rounded-sm shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50">
+            className="px-6 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 hover:text-gray-900 transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
             {loadingMore && (
-              <Loader2 size={16} className="animate-spin text-[#2874F0]" />
+              <Loader2 className="animate-spin text-gray-400" size={16} />
             )}
             {loadingMore ? "Loading..." : "Load More Products"}
           </button>

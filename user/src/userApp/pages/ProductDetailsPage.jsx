@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 
 import { useProducts } from "../features/product/hook/useProducts";
-import { useWishlist } from "../features/wishList/context/WishlistContext";
 import { useCart } from "../features/cart/context/CartContext";
 import { useAuth } from "../features/auth/context/UserContext";
 
@@ -93,9 +92,6 @@ const ProductDetailsPage = () => {
   const [pincode, setPincode] = useState("");
   const [pincodeMsg, setPincodeMsg] = useState("");
 
-  const { isWishlisted, toggleWishlist } = useWishlist();
-  const wishlisted = product ? isWishlisted(product.id) : false;
-
   // ─── Fetch Product ───────────────────────────────────────────────────────
   // getProductBySlug is already cache-first internally (checks React Query cache
   // before hitting Firestore), so no manual cache check needed here.
@@ -151,17 +147,6 @@ const ProductDetailsPage = () => {
     setNotification({ type, message });
     setTimeout(() => setNotification(null), 3000);
   }, []);
-
-  const handleWishlist = () => {
-    if (!product) return;
-    if (!isLoggedIn) return setShowLoginModal(true);
-    toggleWishlist(product.id);
-    const nowWishlisted = isWishlisted(product.id);
-    notify(
-      nowWishlisted ? "success" : "info",
-      nowWishlisted ? "Saved to wishlist" : "Removed from wishlist",
-    );
-  };
 
   const handleAddToCart = async (redirect = false) => {
     if (!isLoggedIn) return setShowLoginModal(true);

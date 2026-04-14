@@ -1,15 +1,15 @@
 import React from "react";
 
 const DEFAULT_ITEMS = [
-  { message: "Buy 3 Get 3 Gifts" },
-  { message: "Extra 3% Off on Prepaid orders" },
-  { message: "Buy 2 Get Freeshipping" },
-  { message: "Buy 6 Get Tote bag Free" },
-  { message: "Offers automatically applied at checkout" },
+  { message: "Buy 3 Get 3 Free Gifts" },
+  { message: "Extra 3% Off on Prepaid Orders" },
+  { message: "Free Shipping on 2+ Items" },
+  { message: "Free Tote Bag on 6 Items" },
+  { message: "Offers Applied Automatically at Checkout" },
 ];
 
-const PromotionalNavbar = ({ items = DEFAULT_ITEMS, speed = 25 }) => {
-  const looped = [...items, ...items, ...items]; // Using 3x for smoother continuous loop
+const PromotionalNavbar = ({ items = DEFAULT_ITEMS, speed = 22 }) => {
+  const looped = [...items, ...items];
   const duration = `${items.length * speed}s`;
 
   return (
@@ -17,7 +17,7 @@ const PromotionalNavbar = ({ items = DEFAULT_ITEMS, speed = 25 }) => {
       <style>{`
         @keyframes scroll-x {
           0% { transform: translateX(0); }
-          100% { transform: translateX(-33.33%); }
+          100% { transform: translateX(-50%); }
         }
 
         .promo-track {
@@ -29,32 +29,27 @@ const PromotionalNavbar = ({ items = DEFAULT_ITEMS, speed = 25 }) => {
         .promo-track:hover {
           animation-play-state: paused;
         }
-
-        .promo-text b {
-          font-weight: 700;
-        }
       `}</style>
 
-      {/* Background Color: #F39C12 (Vibrant Orange) */}
-      <div className="w-full overflow-hidden bg-[#F39C12] border-y border-black/10">
-        <div className="h-[40px] flex items-center w-full">
+      <div className="w-full overflow-hidden bg-[#c8102e] text-white border-b border-white/10">
+        <div className="h-[36px] flex items-center">
           <div className="promo-track">
             {looped.map((item, i) => (
               <div
                 key={i}
-                className="promo-text flex items-center whitespace-nowrap px-8 text-[13px] font-medium text-[#2D2D2D] tracking-tight">
-                {/* Logic to bold numbers or specific words like in the image */}
+                className="flex items-center whitespace-nowrap px-6 text-[12.5px] font-medium tracking-wide">
+                {/* Text */}
                 <span
                   dangerouslySetInnerHTML={{
                     __html: item.message.replace(
-                      /(\d+%?|Get|Prepaid|at checkout|Tote bag Free)/g,
-                      "<b>$1</b>",
+                      /(\d+%?|Free|Get|Prepaid|Shipping|Tote Bag)/g,
+                      "<b class='font-semibold'>$1</b>",
                     ),
                   }}
                 />
 
-                {/* Separator Pipe: Darker shade or black with low opacity */}
-                <span className="ml-8 text-[#2D2D2D]/40 font-light">|</span>
+                {/* Divider */}
+                <span className="ml-6 text-white/40">•</span>
               </div>
             ))}
           </div>

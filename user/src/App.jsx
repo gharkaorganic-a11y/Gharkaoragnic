@@ -4,7 +4,6 @@ import AppRoutes from "./AppRoutes";
 
 import { AuthProvider } from "./userApp/features/auth/context/UserContext";
 import { CartProvider } from "./userApp/features/cart/context/CartContext";
-import { WishlistProvider } from "./userApp/features/wishList/context/WishlistContext";
 
 const App = () => {
   // (function () {
@@ -51,9 +50,7 @@ const App = () => {
     <BrowserRouter>
       <AuthProvider>
         <CartProvider>
-          <WishlistProvider>
-            <AppRoutes />
-          </WishlistProvider>
+          <AppRoutes />
         </CartProvider>
       </AuthProvider>
     </BrowserRouter>

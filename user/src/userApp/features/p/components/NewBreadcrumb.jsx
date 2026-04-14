@@ -1,43 +1,75 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-const NewBreadcrumb = ({ product }) => {
-  const navigate = useNavigate();
+const Breadcrumb = ({ items = [], product }) => {
+  // Backward compatibility for product page
+  const resolvedItems =
+    items.length > 0
+      ? items
+      : [
+          { label: "Home", to: "/" },
+          { label: "Products", to: "/collections/all" },
+          { label: product?.name, isLast: true },
+        ];
 
-  const crumbs = [
-    { label: "Home", onClick: () => navigate("/") },
-    { label: "Product", onClick: () => navigate("/products") },
-    { label: product?.name, isLast: true },
-  ];
+  if (resolvedItems.length <= 1) return null;
 
   return (
-    <div className="w-full bg-gray-100 border-b border-gray-200">
-      <div className="max-w-[1440px] mx-auto px-4 md:px-8 py-2.5">
-        <div className="flex items-center text-[13px] text-gray-500">
-          {crumbs.map((crumb, index) => (
-            <React.Fragment key={index}>
-              <span
-                onClick={crumb.onClick}
-                className={`
-                  ${
-                    crumb.isLast
-                      ? "text-gray-900 font-medium"
-                      : "hover:text-gray-800 cursor-pointer"
-                  }
-                  transition-colors
-                `}>
-                {crumb.label}
-              </span>
+    <nav
+      className="w-full border-b border-gray-100 bg-white"
+      aria-label="Breadcrumb">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <ol className="flex items-center py-2.5 text-xs sm:text-sm overflow-hidden">
+          {resolvedItems.map((item, index) => {
+            const isLast = item.isLast || index === resolvedItems.length - 1;
+            const isFirst = index === 0;
 
-              {index !== crumbs.length - 1 && (
-                <span className="mx-2 text-gray-400">/</span>
-              )}
-            </React.Fragment>
-          ))}
-        </div>
+            return (
+              <li
+                key={index}
+                className={`flex items-center min-w-0 ${
+                  isFirst ? "" : "ml-1 sm:ml-1.5"
+                }`}>
+                {/* Separator */}
+                {index > 0 && (
+                  <span
+                    className="text-gray-300 mx-1 sm:mx-1.5 select-none"
+                    aria-hidden="true">
+                    /
+                  </span>
+                )}
+
+                {/* Item */}
+                {isLast ? (
+                  <span
+                    className="font-medium text-gray-900 truncate max-w- xs:max-w- sm:max-w-none"
+                    aria-current="page"
+                    title={item.label}>
+                    {item.label}
+                  </span>
+                ) : item.to ? (
+                  <Link
+                    to={item.to}
+                    onClick={item.onClick}
+                    className="text-gray-500 hover:text-gray-900 transition-colors truncate max-w- xs:max-w- sm:max-w-none"
+                    title={item.label}>
+                    {item.label}
+                  </Link>
+                ) : (
+                  <button
+                    onClick={item.onClick}
+                    className="text-gray-500 hover:text-gray-900 transition-colors truncate max-w- xs:max-w- sm:max-w-none text-left"
+                    title={item.label}>
+                    {item.label}
+                  </button>
+                )}
+              </li>
+            );
+          })}
+        </ol>
       </div>
-    </div>
+    </nav>
   );
 };
 
-export default NewBreadcrumb;
+export default Breadcrumb;

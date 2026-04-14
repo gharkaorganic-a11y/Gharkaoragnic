@@ -7,34 +7,20 @@ import {
   uploadMultipleImages,
 } from "../../../services/cloudinary/uploadImage";
 
+import { createEmptyProduct } from "../../../modal/product.model";
+
+/* ─────────────────────────────
+   Constants
+───────────────────────────── */
+
 const PRESET_SIZES = [
-  "50g",
-  "100g",
-  "250g",
-  "500g",
-  "1kg",
-  "2kg",
-  "100ml",
-  "250ml",
-  "500ml",
-  "1L",
+  "50g","100g","250g","500g","1kg","2kg",
+  "100ml","250ml","500ml","1L",
 ];
-const INITIAL_PRODUCT = {
-  name: "",
-  description: "",
-  price: "",
-  originalPrice: "",
-  stock: "",
-  banner: "",
-  collectionTypes: [],
-  images: [],
-  sizes: [],
-   ingredients: "",
-  shelfLife: "",
 
-  isActive: true,
-};
-
+/* ─────────────────────────────
+   Slug generator
+───────────────────────────── */
 const generateSlug = (name) => {
   if (!name) return "";
   return name
@@ -43,6 +29,9 @@ const generateSlug = (name) => {
     .replace(/(^-|-$)+/g, "");
 };
 
+/* ─────────────────────────────
+   Hook
+───────────────────────────── */
 export const useProductForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -51,12 +40,8 @@ export const useProductForm = () => {
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
   const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
-  // Top of uploadImageToCloudinary function, add this:
-// console.log("cloudName:", cloudName);
-// console.log("uploadPreset:", uploadPreset);
-// console.log("file:", file?.name, file?.type, file?.size);
-  const [product, setProduct] = useState(INITIAL_PRODUCT);
-  const [newCollection, setNewCollection] = useState("");
+  /* ───────── State ───────── */
+  const [product, setProduct] = useState(createEmptyProduct());
 
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -68,11 +53,13 @@ export const useProductForm = () => {
   const [uploadingGallery, setUploadingGallery] = useState(false);
   const [uploadingColorIdx, setUploadingColorIdx] = useState(null);
 
+  const [newCollection, setNewCollection] = useState("");
   const [customSizeInput, setCustomSizeInput] = useState("");
+
   const customSizeRef = useRef(null);
 
   /* ─────────────────────────────
-     Load product for editing
+     Load product (edit mode)
   ───────────────────────────── */
   useEffect(() => {
     if (!id) return;
@@ -80,22 +67,19 @@ export const useProductForm = () => {
     const fetchProduct = async () => {
       try {
         setPageLoading(true);
+
         const data = await productService.getProduct(id);
 
         setProduct({
-          ...INITIAL_PRODUCT,
+          ...createEmptyProduct(),
           ...data,
+
           price: data.price?.toString() ?? "",
           originalPrice: data.originalPrice?.toString() ?? "",
           stock: data.stock?.toString() ?? "",
-          images: data.images ?? [],
-          sizes: data.sizes ?? [],
-          collectionTypes: data.collectionTypes ?? [],
-          ingredients: data.ingredients ?? "",
-  shelfLife: data.shelfLife ?? "",
         });
       } catch (err) {
-        setError("Could not load this product.");
+        setError("Could not load product.");
       } finally {
         setPageLoading(false);
       }
@@ -105,16 +89,17 @@ export const useProductForm = () => {
   }, [id]);
 
   /* ─────────────────────────────
-     Field change
+     Generic field change
   ───────────────────────────── */
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
-    setProduct((p) => ({
-      ...p,
+
+    setProduct((prev) => ({
+      ...prev,
       [name]: value,
     }));
-    // Clear errors when the user starts typing again
-    setError(null); 
+
+    setError(null);
   }, []);
 
   /* ─────────────────────────────
@@ -126,10 +111,16 @@ export const useProductForm = () => {
 
     try {
       setUploadingBanner(true);
-      const res = await uploadImageToCloudinary(file, cloudName, uploadPreset);
+
+      const res = await uploadImageToCloudinary(
+        file,
+        cloudName,
+        uploadPreset
+      );
+
       setProduct((p) => ({ ...p, banner: res.url }));
-    } catch (err) {
-      setError("Failed to upload banner image.");
+    } catch {
+      setError("Failed to upload banner.");
     } finally {
       setUploadingBanner(false);
     }
@@ -137,50 +128,55 @@ export const useProductForm = () => {
 
   /* ─────────────────────────────
      Gallery upload
-  ───────────────────────────── */
+───────────────────────────── */
   const handleGalleryUpload = async (e) => {
     const files = Array.from(e.target.files ?? []);
     if (!files.length) return;
 
     try {
       setUploadingGallery(true);
-      const res = await uploadMultipleImages(files, cloudName, uploadPreset);
+
+      const res = await uploadMultipleImages(
+        files,
+        cloudName,
+        uploadPreset
+      );
+
       setProduct((p) => ({
         ...p,
         images: [...p.images, ...res.map((r) => r.url)],
       }));
-    } catch (err) {
-      setError("Failed to upload gallery images.");
+    } catch {
+      setError("Failed to upload images.");
     } finally {
       setUploadingGallery(false);
     }
   };
 
-
- 
   /* ─────────────────────────────
      Sizes
-  ───────────────────────────── */
-  const togglePresetSize = (size) =>
+───────────────────────────── */
+  const togglePresetSize = (size) => {
     setProduct((p) => ({
       ...p,
       sizes: p.sizes.includes(size)
         ? p.sizes.filter((s) => s !== size)
         : [...p.sizes, size],
     }));
+  };
 
   const addCustomSize = () => {
     const val = customSizeInput.trim();
     if (!val) return;
 
-    // Prevent duplicate sizes
-    if (!product.sizes.includes(val)) {
-      setProduct((p) => ({ ...p, sizes: [...p.sizes, val] }));
-    }
+    setProduct((p) => ({
+      ...p,
+      sizes: p.sizes.includes(val) ? p.sizes : [...p.sizes, val],
+    }));
+
     setCustomSizeInput("");
   };
 
-  // ✅ NEW: removeSize function added here
   const removeSize = (sizeToRemove) => {
     setProduct((p) => ({
       ...p,
@@ -189,17 +185,16 @@ export const useProductForm = () => {
   };
 
   /* ─────────────────────────────
-     Submit
-  ───────────────────────────── */
+     Submit (CREATE / UPDATE)
+───────────────────────────── */
   const handleSubmit = async () => {
-    // Basic Client-Side Validation
     if (!product.name.trim()) {
       setError("Product name is required.");
       return;
     }
-    
+
     if (!product.price || Number(product.price) <= 0) {
-      setError("Please enter a valid selling price.");
+      setError("Valid price required.");
       return;
     }
 
@@ -209,9 +204,11 @@ export const useProductForm = () => {
 
       const payload = {
         ...product,
+
         slug: generateSlug(product.name),
         price: Number(product.price),
-        originalPrice: Number(product.originalPrice) || Number(product.price),
+        originalPrice:
+          Number(product.originalPrice) || Number(product.price),
         stock: Number(product.stock) || 0,
       };
 
@@ -224,46 +221,52 @@ export const useProductForm = () => {
       setSuccess(true);
       setTimeout(() => navigate("/products"), 1200);
     } catch (err) {
-      setError(err.message || "Something went wrong while saving.");
+      setError(err.message || "Save failed.");
     } finally {
       setLoading(false);
     }
   };
 
+  /* ─────────────────────────────
+     Return
+───────────────────────────── */
   return {
+    /* state */
     product,
     setProduct,
+
     error,
     setError,
     success,
     setSuccess,
+
     loading,
     pageLoading,
-
-    handleChange,
-    handleSubmit,
 
     uploadingBanner,
     uploadingGallery,
     uploadingColorIdx,
 
-    handleBannerUpload,
-    handleGalleryUpload,
-
-  
-
-    togglePresetSize,
-    addCustomSize,
-    removeSize, 
+    newCollection,
+    setNewCollection,
 
     customSizeInput,
     setCustomSizeInput,
     customSizeRef,
 
-    newCollection,
-    setNewCollection,
+    /* handlers */
+    handleChange,
+    handleSubmit,
+    handleBannerUpload,
+    handleGalleryUpload,
 
+    togglePresetSize,
+    addCustomSize,
+    removeSize,
+
+    /* constants */
     PRESET_SIZES,
+
     isEditing,
   };
 };
