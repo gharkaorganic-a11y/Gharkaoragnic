@@ -3,7 +3,6 @@
  *
  * Usage:
  *   <PageHeader title="Order History" navigate={navigate} tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
- *   <PageHeader title="My Wishlist" navigate={navigate} />   ← no tabs needed
  */
 
 import React, { useEffect, useState } from "react";

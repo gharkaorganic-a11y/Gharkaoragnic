@@ -29,7 +29,6 @@ import EmailVerificationNotice from "../user/pages/EmailVerificationNotice";
 import NotFoundPage from "../user/pages/NotFoundPage";
 import HomePage from "../user/pages/HomePage";
 import CollectionPage from "../user/pages/CollectionsPage";
-import WishlistPage from "../user/pages/WishlistPage";
 
 /* ----------------- CHECK LOGIN ----------------- */
 const user = JSON.parse(localStorage.getItem("user"));
@@ -62,7 +61,6 @@ const AppRoutes = () => {
           />
           <Route path="item" element={<CollectionPage />} />
 
-          <Route path="wishlist" element={<WishlistPage />} />
           <Route path="cart" element={<CartPage />} />
 
           <Route path="checkout" element={<CheckoutPage />} />

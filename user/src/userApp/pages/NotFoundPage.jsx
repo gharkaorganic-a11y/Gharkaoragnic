@@ -111,15 +111,6 @@ const NotFoundPage = () => {
                 <div className="absolute top-3 left-3 text-[9px] font-bold text-white bg-gray-900 uppercase tracking-widest px-2.5 py-1.5">
                   {product.badge}
                 </div>
-
-                {/* Wishlist Icon */}
-                <button className="absolute top-3 right-3 w-9 h-9 bg-white/90 backdrop-blur-md flex items-center justify-center hover:bg-[#da127d] hover:text-white transition-all duration-300 group/heart">
-                  <Heart
-                    size={16}
-                    className="text-gray-900 group-hover/heart:text-white"
-                    strokeWidth={1.5}
-                  />
-                </button>
               </div>
 
               {/* Product Info */}

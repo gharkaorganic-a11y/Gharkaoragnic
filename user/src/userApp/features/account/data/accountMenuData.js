@@ -25,16 +25,4 @@ export const accountMenuData = [
     icon: Heart,
     path: "/cart",
   },
-  // {
-  //   label: "Change Addresses",
-  //   desc: "All your saved locations",
-  //   icon: MapPin,
-  //   path: "/user/address",
-  // },
-  // {
-  //   label: "My Bank Account",
-  //   desc: "Manage your saved bank accounts",
-  //   icon: CreditCard,
-  //   path: "/user/bank",
-  // },
-];
+]

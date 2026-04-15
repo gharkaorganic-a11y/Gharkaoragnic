@@ -22,7 +22,6 @@ const NAV_ITEMS = [
 
 const ACTIVITY_ITEMS = [
   { label: "My Orders", icon: Package, path: "/user/orders" },
-  { label: "Wishlist", icon: Heart, path: "/wishlist" },
 ];
 
 const NavbarDropdown = ({ isOpen, onClose, menuItems = [] }) => {

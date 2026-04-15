@@ -1,20 +1,53 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef, useState, useEffect, memo } from "react";
 import { useNavigate } from "react-router-dom";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import ProductCard from "../cards/ProductCard";
 
 /* ─────────────────────────────────────────────
    Skeleton Card
 ───────────────────────────────────────────── */
-const SkeletonCard = () => (
-  <div className="w-full bg-[#f3f3f3] rounded-xl overflow-hidden animate-pulse">
-    <div className="w-full aspect-[3/4] bg-[#ebebeb]" />
-    <div className="p-3 md:p-4">
-      <div className="h-3 w-3/4 bg-[#e8e8e8] rounded mb-2" />
-      <div className="h-3 w-[45%] bg-[#e8e8e8] rounded mb-2.5" />
-      <div className="h-2.5 w-[55%] bg-[#e8e8e8] rounded" />
+const SkeletonCard = memo(() => (
+  <div
+    className="w-full bg-white rounded-2xl border border-gray-100 overflow-hidden animate-pulse"
+    aria-hidden="true">
+    <div className="w-full aspect-[3/4] bg-gray-100" />
+    <div className="p-4 space-y-2.5">
+      <div className="h-3 w-3/4 bg-gray-100 rounded" />
+      <div className="h-3 w-1/2 bg-gray-100 rounded" />
+      <div className="h-2.5 w-1/3 bg-gray-100 rounded" />
     </div>
   </div>
-);
+));
+
+/* ─────────────────────────────────────────────
+   SVG Background Pattern
+───────────────────────────────────────────── */
+const BackgroundPattern = memo(() => (
+  <svg
+    className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.02] text-gray-900"
+    aria-hidden="true">
+    <defs>
+      <pattern
+        id="product-section-pattern"
+        x="0"
+        y="0"
+        width="60"
+        height="60"
+        patternUnits="userSpaceOnUse">
+        <circle cx="30" cy="30" r="0.8" fill="currentColor" />
+        <circle
+          cx="30"
+          cy="30"
+          r="6"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="0.3"
+        />
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#product-section-pattern)" />
+  </svg>
+));
 
 /* ─────────────────────────────────────────────
    Main Component
@@ -25,17 +58,50 @@ const ProductSection = ({
   badge,
   products = [],
   loading = false,
-  themeColor = "",
   maxItems = 8,
   navigateTo = "/products",
+  skeletonCount,
 }) => {
   const navigate = useNavigate();
+  const scrollRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   const safeProducts = Array.isArray(products) ? products : [];
   const visibleProducts = useMemo(
-    () => safeProducts.slice(0, maxItems),
+    () => safeProducts.slice(0, Math.max(0, maxItems)),
     [safeProducts, maxItems],
   );
+
+  const skeletonItems = skeletonCount ?? Math.min(maxItems, 8);
+
+  // Check scroll position for arrows + fades
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const checkScroll = () => {
+      setCanScrollLeft(el.scrollLeft > 8);
+      setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 8);
+    };
+
+    checkScroll();
+    el.addEventListener("scroll", checkScroll, { passive: true });
+    window.addEventListener("resize", checkScroll);
+    return () => {
+      el.removeEventListener("scroll", checkScroll);
+      window.removeEventListener("resize", checkScroll);
+    };
+  }, [loading, visibleProducts.length]);
+
+  const scroll = (dir) => {
+    if (!scrollRef.current) return;
+    const width = scrollRef.current.offsetWidth * 0.85;
+    scrollRef.current.scrollBy({
+      left: dir === "left" ? -width : width,
+      behavior: "smooth",
+    });
+  };
 
   if (!loading && safeProducts.length === 0) return null;
 
@@ -43,103 +109,146 @@ const ProductSection = ({
 
   return (
     <section
-      style={{
-        backgroundColor: themeColor || "#ffffff",
-        fontFamily: "'DM Sans', sans-serif",
-      }}
-      className="w-full py-10 md:py-16 overflow-hidden">
-      <div className="max-w-[1400px] mx-auto">
-        {/* ── Header ── */}
-        <div className="px-4 sm:px-6 text-center mb-8 md:mb-12">
+      className="relative w-full py-12 md:py-20 bg-white overflow-hidden"
+      aria-busy={loading}>
+      <BackgroundPattern />
+
+      <div className="relative max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center px-4 sm:px-6 mb-10 md:mb-14">
           {badge && (
-            <span className="inline-block mb-2.5 text-[10px] font-medium tracking-[0.16em] uppercase text-[#c8102e] bg-[#fdf0f2] rounded-sm px-2.5 py-1">
+            <span className="inline-block mb-3 text- font-medium uppercase tracking-[0.15em] text-amber-700 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-100">
               {badge}
             </span>
           )}
 
           {title && (
-            <h2
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
-              className="text-2xl sm:text-3xl md:text-[38px] font-bold text-[#111] leading-tight tracking-[-0.02em]">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-900 tracking-tight">
               {title}
             </h2>
           )}
 
           {subtitle && (
             <>
-              <div className="flex items-center justify-center gap-3.5 mt-3 mb-2.5">
-                <div className="h-[1px] w-12 bg-[#e8e8e8]" />
-                <div className="w-1.5 h-1.5 rounded-full bg-[#c8102e] opacity-60" />
-                <div className="h-[1px] w-12 bg-[#e8e8e8]" />
+              <div
+                className="flex items-center justify-center gap-2 mt-4 mb-3"
+                aria-hidden="true">
+                <div className="h- w-10 bg-gray-200" />
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                <div className="h- w-10 bg-gray-200" />
               </div>
-              <p className="text-[13px] sm:text-[15px] text-[#6b6b6b] font-light tracking-[0.01em] max-w-xl mx-auto">
+              <p className="text-sm sm:text-base text-gray-500 font-light max-w-2xl mx-auto leading-relaxed">
                 {subtitle}
               </p>
             </>
           )}
 
           {!loading && safeProducts.length > 0 && (
-            <p className="mt-2 text-[11px] text-[#6b6b6b] tracking-[0.04em]">
-              {safeProducts.length} item
-              {safeProducts.length !== 1 ? "s" : ""}
+            <p className="mt-2 text-xs text-gray-400 tracking-wide">
+              {safeProducts.length}{" "}
+              {safeProducts.length === 1 ? "item" : "items"}
             </p>
+          )}
+
+          {/* Desktop arrows */}
+          {visibleProducts.length > 4 && (
+            <div className="hidden md:flex justify-center gap-3 mt-6">
+              <button
+                onClick={() => scroll("left")}
+                disabled={!canScrollLeft}
+                aria-label="Scroll left"
+                className="w-10 h-10 rounded-full bg-white border border-gray-200 text-gray-600
+                  hover:bg-gray-50 hover:border-gray-300 transition disabled:opacity-30
+                  disabled:cursor-not-allowed flex items-center justify-center shadow-sm
+                  focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2
+                  motion-reduce:transition-none">
+                <ChevronLeftIcon className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => scroll("right")}
+                disabled={!canScrollRight}
+                aria-label="Scroll right"
+                className="w-10 h-10 rounded-full bg-white border border-gray-200 text-gray-600
+                  hover:bg-gray-50 hover:border-gray-300 transition disabled:opacity-30
+                  disabled:cursor-not-allowed flex items-center justify-center shadow-sm
+                  focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2
+                  motion-reduce:transition-none">
+                <ChevronRightIcon className="w-5 h-5" />
+              </button>
+            </div>
           )}
         </div>
 
-        {/* ── Products Layout ── */}
-        <div className="w-full">
-          {/* 📱 Mobile Scroll */}
-          <div className="flex md:hidden overflow-x-auto snap-x snap-mandatory gap-3 px-4 pb-4 pt-2 scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-            {loading
-              ? Array.from({ length: maxItems }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="snap-start flex-none w-[75vw] sm:w-[60vw]">
-                    <SkeletonCard />
-                  </div>
-                ))
-              : visibleProducts.map((product, i) => (
-                  <div
-                    key={product.id ?? product.name ?? i}
-                    className="snap-start flex-none w-[75vw] sm:w-[60vw] transition-transform duration-300 hover:-translate-y-1">
-                    <ProductCard product={product} />
-                  </div>
-                ))}
-          </div>
+        {/* Products: One responsive layout */}
+        <div className="relative">
+          {/* Mobile fade edges */}
+          <div
+            className={`pointer-events-none absolute left-0 top-0 bottom-4 z-10 w-8 bg-gradient-to-r from-white to-transparent transition-opacity md:hidden ${
+              canScrollLeft ? "opacity-100" : "opacity-0"
+            }`}
+            aria-hidden="true"
+          />
+          <div
+            className={`pointer-events-none absolute right-0 top-0 bottom-4 z-10 w-8 bg-gradient-to-l from-white to-transparent transition-opacity md:hidden ${
+              canScrollRight ? "opacity-100" : "opacity-0"
+            }`}
+            aria-hidden="true"
+          />
 
-          {/* 💻 Desktop Grid */}
-          <div className="hidden md:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 lg:gap-6 px-6 lg:px-8">
+          <div
+            ref={scrollRef}
+            role="list"
+            aria-label={title || "Products"}
+            className="
+              flex overflow-x-auto snap-x snap-mandatory gap-4 px-4 pb-4 scroll-smooth
+              [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden
+              [scroll-padding-inline:1rem] motion-reduce:scroll-auto
+              md:grid md:overflow-visible md:snap-none md:grid-cols-3 md:gap-6 md:px-6 lg:grid-cols-4 lg:px-8
+            ">
             {loading
-              ? Array.from({ length: maxItems }).map((_, i) => (
-                  <div key={i}>
+              ? Array.from({ length: skeletonItems }).map((_, i) => (
+                  <div
+                    key={`skeleton-${i}`}
+                    role="listitem"
+                    className="snap-start flex-none w-[70%] sm:w-[45%] md:w-auto">
                     <SkeletonCard />
                   </div>
                 ))
               : visibleProducts.map((product, i) => (
                   <div
-                    key={product.id ?? product.name ?? i}
-                    className="transition-transform duration-300 hover:-translate-y-1">
+                    key={product.id ?? product.slug ?? `${product.name}-${i}`}
+                    role="listitem"
+                    className="snap-start flex-none w-[70%] sm:w-[45%] md:w-auto
+                      transition-transform duration-300 hover:-translate-y-1
+                      motion-reduce:transition-none motion-reduce:hover:transform-none
+                      [content-visibility:auto]">
                     <ProductCard product={product} />
                   </div>
                 ))}
           </div>
         </div>
 
-        {/* ── CTA Button ── */}
+        {/* CTA */}
         {showButton && (
-          <div className="mt-6 md:mt-10 flex justify-center px-4">
+          <div className="mt-10 md:mt-14 flex justify-center px-4">
             <button
               onClick={() => navigate(navigateTo)}
-              className="group flex items-center gap-2 px-7 py-2.5 border-[1.5px] border-[#c8102e] text-[#c8102e] hover:bg-[#c8102e] hover:text-white text-xs font-medium uppercase tracking-[0.12em] rounded transition-all duration-200 bg-transparent">
+              aria-label={`View full ${title || "product"} collection`}
+              className="group flex items-center gap-2 px-7 py-3 text-sm font-medium rounded-xl
+                border border-amber-500 text-amber-700 bg-white
+                hover:bg-amber-500 hover:text-white hover:shadow-lg hover:shadow-amber-500/20
+                transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-400
+                focus:ring-offset-2 motion-reduce:transition-none">
               View Collection
               <svg
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
                 fill="none"
-                className="transform transition-transform duration-200 group-hover:translate-x-1">
+                className="transform transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none"
+                aria-hidden="true">
                 <path
-                  d="M2 7h10M8 3l4 4-4 4"
+                  d="M3 8h10M9 4l4 4-4 4"
                   stroke="currentColor"
                   strokeWidth="1.5"
                   strokeLinecap="round"

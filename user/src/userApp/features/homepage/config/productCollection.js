@@ -1,5 +1,11 @@
 export const productSections = [
   {
+    key: "new",
+    title: "Most Loved by Our Customers",
+    subtitle: "Pure, natural and traditionally made products trusted by families across India."
+,
+  },
+  {
     key: "honey",
     title: "Pure Pahadi Honey",
     subtitle: "Raw, unprocessed honey sourced from the hills of Uttarakhand.",

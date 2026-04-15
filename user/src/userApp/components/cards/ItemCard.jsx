@@ -7,11 +7,6 @@ const ItemCard = ({ product }) => {
   return (
     <div className="group flex flex-col mb-10 cursor-pointer">
       <div className="relative">
-        {/* Wishlist icon */}
-        <button className="absolute top-3 right-3 bg-white p-1 rounded-full shadow-md hover:scale-110 transition">
-          <Heart size={18} color="#d33" />
-        </button>
-
         {/* Image slider */}
         <ImageSlider images={product.images} />
       </div>

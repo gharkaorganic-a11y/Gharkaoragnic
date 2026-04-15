@@ -11,7 +11,6 @@ import PromotionalNavbar from "./PromotionalNavbar";
 import NavbarDropdown from "../dropdown/NavbarDropdwown";
 
 import { productSections } from "../../../homepage/config/productCollection";
-import { accountMenuData } from "../../data/accountMenuData";
 import { IMAGES } from "../../../../../assets/images";
 
 const PRIMARY = "#c8102e";
@@ -27,8 +26,29 @@ const BadgeCount = ({ count }) => {
     </span>
   );
 };
-
-const MobileNavbar = ({ cartCount = 0, wishlistCount = 0, promoData }) => {
+const accountMenuData = [
+  {
+    label: "My Profile",
+    desc: "All your personal details",
+    path: "/user/profile",
+  },
+  {
+    label: "My Orders",
+    desc: "All your confirmed orders",
+    path: "/orders",
+  },
+  {
+    label: "My Wishlist",
+    desc: "All your curated favorites",
+    path: "/wishlist",
+  },
+  {
+    label: "My Cart",
+    desc: "All your curated favorites",
+    path: "/cart",
+  },
+];
+const MobileNavbar = ({ cartCount = 0, promoData }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -101,19 +121,6 @@ const MobileNavbar = ({ cartCount = 0, wishlistCount = 0, promoData }) => {
 
           {/* RIGHT */}
           <div className="flex items-center gap-1">
-            <NavLink
-              to="/wishlist"
-              className={({ isActive }) =>
-                `relative p-2 transition-all active:scale-90 ${
-                  isActive
-                    ? "text-[#c8102e]"
-                    : "text-gray-500 hover:text-[#c8102e]"
-                }`
-              }>
-              <HeartIcon className="w-6 h-6" strokeWidth={1.8} />
-              <BadgeCount count={wishlistCount} />
-            </NavLink>
-
             <NavLink
               to="/checkout/cart"
               className={({ isActive }) =>

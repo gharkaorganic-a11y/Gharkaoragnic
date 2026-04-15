@@ -54,7 +54,6 @@ const sitemapData = [
     links: [
       { name: "My Account", path: "/user/profile" },
       { name: "Order History", path: "/user/orders" },
-      { name: "Wishlist", path: "/wishlist" },
       { name: "Shopping Bag", path: "/checkout/cart" },
       { name: "Login / Register", path: "/auth/login" },
     ],

@@ -1,12 +1,7 @@
 import React from "react";
 import ItemCard from "./ItemCard";
 
-const ProductsGrid = ({
-  products,
-  onProductClick,
-  onAddToCart,
-  onAddToWishlist,
-}) => {
+const ProductsGrid = ({ products, onProductClick, onAddToCart }) => {
   if (!products || products.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-sm p-8 text-center">
@@ -28,7 +23,6 @@ const ProductsGrid = ({
           product={product}
           onClick={() => onProductClick(product)}
           onAddToCart={onAddToCart}
-          onAddToWishlist={onAddToWishlist}
         />
       ))}
     </div>

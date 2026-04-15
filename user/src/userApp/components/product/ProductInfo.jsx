@@ -27,8 +27,7 @@ const ProductInfo = ({
   quantity,
   setQuantity,
   handleAddToCart,
-  handleWishlistToggle,
-  isWishlisted,
+
   isAdding,
 }) => {
   const isLowStock = useMemo(
@@ -55,21 +54,6 @@ const ProductInfo = ({
               <span className="text-[#ff356c] italic font-serif">.</span>
             </h1>
           </div>
-
-          <button
-            onClick={handleWishlistToggle}
-            className={`group p-4 md:p-5 border transition-all duration-500 active:scale-90 ${
-              isWishlisted
-                ? "bg-slate-950 border-slate-950 text-[#ff356c] shadow-2xl"
-                : "bg-white border-slate-100 text-slate-300 hover:border-slate-950 hover:text-slate-950"
-            }`}>
-            <Heart
-              size={20}
-              fill={isWishlisted ? "currentColor" : "none"}
-              className="transition-transform duration-500 group-hover:scale-110"
-              strokeWidth={1.5}
-            />
-          </button>
         </div>
 
         {/* METADATA HUD */}

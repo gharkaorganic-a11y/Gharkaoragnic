@@ -8,7 +8,6 @@ import {
 
 import { useAuth } from "../features/auth/context/UserContext";
 import { useCart } from "../features/cart/context/CartContext";
-import { useWishlist } from "../features/wishList/context/WishlistContext";
 
 /* ─── The Brand Accent Color ─── */
 const BRAND_HEX = "#da127d";
@@ -71,7 +70,6 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const { user, address, authLoading, logout } = useAuth();
   const { cart } = useCart();
-  const { wishlist } = useWishlist();
 
   const [showAddress, setShowAddress] = useState(false);
 
@@ -90,7 +88,6 @@ const ProfilePage = () => {
     .toUpperCase();
 
   const cartCount = cart?.length || 0;
-  const wishlistCount = wishlist?.length || 0;
 
   const memberSince = user.createdAt?.seconds
     ? new Date(user.createdAt.seconds * 1000).toLocaleDateString("en-IN", {
@@ -146,12 +143,6 @@ const ProfilePage = () => {
               label="Orders"
               count={cartCount}
               onClick={() => navigate("/user/orders")}
-            />
-            <Tile
-              icon={HeartIcon}
-              label="Wishlist"
-              count={wishlistCount}
-              onClick={() => navigate("/wishlist")}
             />
           </div>
 

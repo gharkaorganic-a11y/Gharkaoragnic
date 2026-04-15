@@ -18,7 +18,7 @@ import {
 
 const THEME_COLOR = "#c8102e";
 
-const BottomNavbar = ({ wishlistCount = 0 }) => {
+const BottomNavbar = ({}) => {
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -42,13 +42,7 @@ const BottomNavbar = ({ wishlistCount = 0 }) => {
       IconOutline: ExploreOutline,
       IconSolid: ExploreSolid,
     },
-    {
-      name: "Saved",
-      path: "/wishlist",
-      IconOutline: HeartOutline,
-      IconSolid: HeartSolid,
-      badge: wishlistCount,
-    },
+
     {
       name: "Profile",
       path: "/user/profile",

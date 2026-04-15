@@ -182,11 +182,6 @@ const CartItemCard = ({
         </button>
 
         <div className="w-[1px] h-6 bg-gray-200"></div>
-
-        <button className="flex-1 flex justify-center items-center gap-1.5 py-3 sm:py-3.5 text-[12px] font-bold text-gray-600 uppercase tracking-wide hover:bg-gray-100 transition-colors">
-          <Heart className="w-4 h-4 text-gray-400" />
-          Wishlist
-        </button>
       </div>
 
       {/* --- POPUPS --- */}
