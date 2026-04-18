@@ -1,10 +1,4 @@
 // ==========================================
-// 1. LOCAL ASSETS
-// ==========================================
-// import appLogo from "./appLogo.png";
-import whiteAppLogo from "./whiteAppLogo.png";
-
-// ==========================================
 // 2. REMOTE ASSETS (CONSTANTS)
 // ==========================================
 
@@ -43,7 +37,6 @@ export const IMAGES = {
    */
   brand: {
     logo: appLogo,
-    logoWhite: whiteAppLogo,
     googleIcon: GOOGLE_ICON_BASE64,
   },
 
