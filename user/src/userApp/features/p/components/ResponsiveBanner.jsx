@@ -3,26 +3,22 @@ import React from "react";
 const ResponsiveBanner = ({
   desktopImage,
   mobileImage,
-  alt = "banner",
-  onClick,
+  alt = "Collection Banner",
   className = "",
 }) => {
   return (
-    <div className={`w-full overflow-hidden ${className}`} onClick={onClick}>
-      {/* Desktop */}
+    <picture className={`block w-full ${className}`}>
+      <source media="(max-width: 768px)" srcSet={mobileImage} />
       <img
         src={desktopImage}
         alt={alt}
-        className="hidden md:block w-full object-cover"
+        className="w-full h-auto object-cover object-center aspect-[3/1] md:aspect-[15/5]"
+        loading="eager"
+        fetchPriority="high"
+        width={1500}
+        height={500}
       />
-
-      {/* Mobile */}
-      <img
-        src={mobileImage || desktopImage}
-        alt={alt}
-        className="block md:hidden w-full object-cover"
-      />
-    </div>
+    </picture>
   );
 };
 
