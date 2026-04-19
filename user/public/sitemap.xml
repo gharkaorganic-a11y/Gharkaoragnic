@@ -1,103 +1,250 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 
-  <!-- ═══════════════════════════════════════════
-       HOME
-  ═══════════════════════════════════════════ -->
   <url>
     <loc>https://gharkaorganic.com/</loc>
-    <lastmod>2026-04-13</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
-  <!-- ═══════════════════════════════════════════
-       COLLECTION HUB (All Products)
-  ═══════════════════════════════════════════ -->
   <url>
-    <loc>https://gharkaorganic.com/collections/all</loc>
-    <lastmod>2026-04-13</lastmod>
+    <loc>https://gharkaorganic.com/all</loc>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
-  <!-- ═══════════════════════════════════════════
-       PICKLE COLLECTIONS
-       Target: "achar online", "homemade pickle India"
-  ═══════════════════════════════════════════ -->
   <url>
-    <loc>https://gharkaorganic.com/collections/pickle</loc>
-    <lastmod>2026-04-13</lastmod>
+    <loc>https://gharkaorganic.com/best-sellers</loc>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://gharkaorganic.com/collections/lemon-pickle</loc>
-    <lastmod>2026-04-13</lastmod>
+    <loc>https://gharkaorganic.com/pahadi-achar-online</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://gharkaorganic.com/buy-desi-ghee-online</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://gharkaorganic.com/raw-honey-uttarakhand</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://gharkaorganic.com/buy-mango-pickle-online</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- <url>
+    <loc>https://gharkaorganic.com/nimbu-achar-online</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url> -->
+
+  <url>
+    <loc>https://gharkaorganic.com/buy-a2-ghee-online</loc>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://gharkaorganic.com/collections/mixed-pickle</loc>
-    <lastmod>2026-04-13</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- ═══════════════════════════════════════════
-       OTHER ORGANIC COLLECTIONS
-       Target: "organic honey Uttarakhand", "desi ghee Kumaon"
-  ═══════════════════════════════════════════ -->
-  <url>
-    <loc>https://gharkaorganic.com/collections/organic-honey</loc>
-    <lastmod>2026-04-13</lastmod>
+    <loc>https://gharkaorganic.com/bilona-ghee-uttarakhand</loc>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://gharkaorganic.com/collections/organic-ghee</loc>
-    <lastmod>2026-04-13</lastmod>
+    <loc>https://gharkaorganic.com/raw-honey-online-india</loc>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://gharkaorganic.com/collections/oils</loc>
-    <lastmod>2026-04-13</lastmod>
+    <loc>https://gharkaorganic.com/reviews</loc>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+
+<!-- 
+  <url>
+    <loc>https://gharkaorganic.com/nimbu-ka-achar</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url> -->
+
+  <url>
+    <loc>https://gharkaorganic.com/pages/our-story</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
-  <!-- ═══════════════════════════════════════════
-       STATIC PAGES
-  ═══════════════════════════════════════════ -->
-  <url>
-    <loc>https://gharkaorganic.com/about</loc>
-    <lastmod>2026-04-13</lastmod>
+  <!-- <url>
+    <loc>https://gharkaorganic.com/blogs/recipes/aam-ka-achar-recipe-ghar-par</loc>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-  </url>
+  </url> -->
+
+  <!-- <url>
+    <loc>https://gharkaorganic.com/blogs/health/benefits-of-a2-bilona-ghee</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url> -->
 
   <url>
-    <loc>https://gharkaorganic.com/contact</loc>
-    <lastmod>2026-04-13</lastmod>
+    <loc>https://gharkaorganic.com/pages/contact</loc>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
-  <!-- ═══════════════════════════════════════════
-       ADD INDIVIDUAL PRODUCT PAGES BELOW
-       Example format — replace with real slugs from Firestore
-       <url>
-         <loc>https://gharkaorganic.com/product/aam-ka-achar-500g</loc>
-         <lastmod>2026-04-13</lastmod>
-         <changefreq>weekly</changefreq>
-         <priority>0.7</priority>
-       </url>
-  ═══════════════════════════════════════════ -->
+    <!-- SEO COLLECTION PAGES -->
+  <url>
+    <loc>https://gharkaorganic.com/desi-ghee</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://gharkaorganic.com/organic-honey</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://gharkaorganic.com/homemade-pickles</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- LONG-TAIL SEO PAGES -->
+  <url>
+    <loc>https://gharkaorganic.com/buy-organic-ghee-online-india</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gharkaorganic.com/pure-desi-ghee-price-india</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- <url>
+    <loc>https://gharkaorganic.com/benefits-of-bilona-ghee</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url> -->
+
+  <!-- <url>
+    <loc>https://gharkaorganic.com/why-a2-ghee-is-better</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url> -->
+
+  <!-- <url>
+    <loc>https://gharkaorganic.com/raw-honey-benefits</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url> -->
+
+  <!-- LOCATION SEO -->
+  <url>
+    <loc>https://gharkaorganic.com/organic-products-india</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gharkaorganic.com/organic-products-delhi</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://gharkaorganic.com/organic-products-uttarakhand</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- TRUST / CONVERSION PAGES -->
+  <!-- <url>
+    <loc>https://gharkaorganic.com/pages/shipping-policy</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url> -->
+
+  <!-- <url>
+    <loc>https://gharkaorganic.com/pages/refund-policy</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url> -->
+
+  <!-- <url>
+    <loc>https://gharkaorganic.com/pages/privacy-policy</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url> -->
+
+  <!-- BLOG / CONTENT (VERY IMPORTANT FOR RANKING) -->
+  <url>
+    <loc>https://gharkaorganic.com/pages/blogs</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- <url>
+    <loc>https://gharkaorganic.com/blogs/health</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url> -->
+
+  <!-- <url>
+    <loc>https://gharkaorganic.com/blogs/recipes</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url> -->
 
 </urlset>

@@ -9,7 +9,7 @@ import {
 import { db } from "../../../../config/firebaseDB";
 
 /* ─────────────────────────────
-   CACHE SYSTEM
+   CACHE
 ───────────────────────────── */
 const memoryCache = new Map();
 const promiseCache = new Map();
@@ -23,10 +23,24 @@ const loadPersistentCache = () => {
   }
 };
 
+// BUG FIX: wrap setItem in try/catch — crashes in incognito/private mode
 const savePersistentCache = (key, data) => {
-  const cache = loadPersistentCache();
-  cache[key] = { data, timestamp: Date.now() };
-  localStorage.setItem("homepageCache", JSON.stringify(cache));
+  try {
+    const cache = loadPersistentCache();
+    cache[key] = { data, timestamp: Date.now() };
+    localStorage.setItem("homepageCache", JSON.stringify(cache));
+  } catch {
+    // silent fail — memory cache still works
+  }
+};
+
+const isMemoryFresh = (key, now) => {
+  const cached = memoryCache.get(key);
+  return cached && now - cached.timestamp < CACHE_TTL;
+};
+
+const isPersistentFresh = (persistent, key, now) => {
+  return persistent[key] && now - persistent[key].timestamp < CACHE_TTL;
 };
 
 /* ─────────────────────────────
@@ -35,24 +49,22 @@ const savePersistentCache = (key, data) => {
 export const homepageService = {
 
   /* ───────── PRODUCTS BY COLLECTION ───────── */
+  // Requires products in Firestore to have:
+  //   collectionTypes: ["new", "pickle", "honey", ...]
+  //   isActive: true
   async getProductsByCollection(type, size = 8) {
-    const key = `${type}-${size}`;
+    const key = `products-${type}-${size}`;
     const now = Date.now();
 
-    /* memory cache */
-    if (memoryCache.has(key)) {
-      const cached = memoryCache.get(key);
-      if (now - cached.timestamp < CACHE_TTL) return cached.data;
-    }
+    if (isMemoryFresh(key, now)) return memoryCache.get(key).data;
 
-    /* persistent cache */
     const persistent = loadPersistentCache();
-    if (persistent[key] && now - persistent[key].timestamp < CACHE_TTL) {
+    if (isPersistentFresh(persistent, key, now)) {
       memoryCache.set(key, persistent[key]);
       return persistent[key].data;
     }
 
-    /* dedupe */
+    // BUG FIX: dedupe — if a fetch for this key is already in-flight, return it
     if (promiseCache.has(key)) return promiseCache.get(key);
 
     const promise = (async () => {
@@ -64,25 +76,20 @@ export const homepageService = {
           where("isActive", "==", true),
           where("collectionTypes", "array-contains", cleanType),
           orderBy("createdAt", "desc"),
-          limit(size)
+          limit(size),
         );
 
         const snap = await getDocs(qRef);
+        const products = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 
-        const products = snap.docs.map((d) => ({
-          id: d.id,
-          ...d.data(),
-        }));
-
-        const cacheEntry = { data: products, timestamp: now };
-
-        memoryCache.set(key, cacheEntry);
+        memoryCache.set(key, { data: products, timestamp: now });
         savePersistentCache(key, products);
 
         return products;
       } catch (err) {
-        console.error(`[homepageService] ${type} error:`, err.message);
-        return memoryCache.get(key)?.data || [];
+        console.error(`[homepageService] getProductsByCollection(${type}):`, err.message);
+        // serve stale memory cache on error rather than crashing
+        return memoryCache.get(key)?.data ?? [];
       } finally {
         promiseCache.delete(key);
       }
@@ -93,31 +100,33 @@ export const homepageService = {
   },
 
   /* ───────── CATEGORIES ───────── */
-  async getHomepageCategories(size = 8) {
+  async getHomepageCategories() {
     const key = "categories";
     const now = Date.now();
 
-    if (memoryCache.has(key)) {
-      const cached = memoryCache.get(key);
-      if (now - cached.timestamp < CACHE_TTL) return cached.data;
+    if (isMemoryFresh(key, now)) return memoryCache.get(key).data;
+
+    const persistent = loadPersistentCache();
+    if (isPersistentFresh(persistent, key, now)) {
+      memoryCache.set(key, persistent[key]);
+      return persistent[key].data;
     }
+
+    // BUG FIX: was missing promiseCache check — could double-read Firestore
+    if (promiseCache.has(key)) return promiseCache.get(key);
 
     const promise = (async () => {
       try {
         const snap = await getDocs(collection(db, "categories"));
-
-        const data = snap.docs.map((d) => ({
-          id: d.id,
-          ...d.data(),
-        }));
+        const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 
         memoryCache.set(key, { data, timestamp: now });
         savePersistentCache(key, data);
 
         return data;
       } catch (err) {
-        console.error("Categories error:", err);
-        return [];
+        console.error("[homepageService] getHomepageCategories:", err.message);
+        return memoryCache.get(key)?.data ?? [];
       } finally {
         promiseCache.delete(key);
       }
@@ -132,10 +141,15 @@ export const homepageService = {
     const key = `testimonials-${size}`;
     const now = Date.now();
 
-    if (memoryCache.has(key)) {
-      const cached = memoryCache.get(key);
-      if (now - cached.timestamp < CACHE_TTL) return cached.data;
+    if (isMemoryFresh(key, now)) return memoryCache.get(key).data;
+
+    const persistent = loadPersistentCache();
+    if (isPersistentFresh(persistent, key, now)) {
+      memoryCache.set(key, persistent[key]);
+      return persistent[key].data;
     }
+
+    if (promiseCache.has(key)) return promiseCache.get(key);
 
     const promise = (async () => {
       try {
@@ -143,23 +157,19 @@ export const homepageService = {
           collection(db, "testimonials"),
           where("isActive", "==", true),
           orderBy("createdAt", "desc"),
-          limit(size)
+          limit(size),
         );
 
         const snap = await getDocs(qRef);
-
-        const data = snap.docs.map((d) => ({
-          id: d.id,
-          ...d.data(),
-        }));
+        const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 
         memoryCache.set(key, { data, timestamp: now });
         savePersistentCache(key, data);
 
         return data;
       } catch (err) {
-        console.error("Testimonials error:", err);
-        return [];
+        console.error("[homepageService] getTestimonials:", err.message);
+        return memoryCache.get(key)?.data ?? [];
       } finally {
         promiseCache.delete(key);
       }
@@ -174,29 +184,30 @@ export const homepageService = {
     const key = `collections-${size}`;
     const now = Date.now();
 
-    if (memoryCache.has(key)) {
-      const cached = memoryCache.get(key);
-      if (now - cached.timestamp < CACHE_TTL) return cached.data;
+    if (isMemoryFresh(key, now)) return memoryCache.get(key).data;
+
+    const persistent = loadPersistentCache();
+    if (isPersistentFresh(persistent, key, now)) {
+      memoryCache.set(key, persistent[key]);
+      return persistent[key].data;
     }
+
+    if (promiseCache.has(key)) return promiseCache.get(key);
 
     const promise = (async () => {
       try {
         const snap = await getDocs(
-          query(collection(db, "itemsCollection"), limit(size))
+          query(collection(db, "itemsCollection"), limit(size)),
         );
-
-        const data = snap.docs.map((d) => ({
-          id: d.id,
-          ...d.data(),
-        }));
+        const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 
         memoryCache.set(key, { data, timestamp: now });
         savePersistentCache(key, data);
 
         return data;
       } catch (err) {
-        console.error("Collections error:", err);
-        return [];
+        console.error("[homepageService] getCollections:", err.message);
+        return memoryCache.get(key)?.data ?? [];
       } finally {
         promiseCache.delete(key);
       }
@@ -209,6 +220,11 @@ export const homepageService = {
   /* ───────── CLEAR CACHE ───────── */
   clearCache() {
     memoryCache.clear();
-    localStorage.removeItem("homepageCache");
+    promiseCache.clear();
+    try {
+      localStorage.removeItem("homepageCache");
+    } catch {
+      // silent
+    }
   },
 };

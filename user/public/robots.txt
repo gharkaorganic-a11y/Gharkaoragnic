@@ -1,0 +1,26 @@
+User-agent: *
+
+# Core site access
+Allow: /
+
+# Private / user pages
+Disallow: /cart
+Disallow: /checkout
+Disallow: /orders
+Disallow: /account
+Disallow: /login
+Disallow: /password
+
+# Search & duplicate content control
+Disallow: /search
+Disallow: /*?sort_by=
+Disallow: /*?filter=
+Disallow: /*?page=
+Disallow: /*?view=
+Disallow: /*?variant=
+Disallow: /*?utm_=
+Disallow: /*?ref=
+Disallow: /*?session=
+
+# Sitemap
+Sitemap: https://gharkaorganic.com/sitemap.xml

@@ -16,21 +16,25 @@ const AUTH_BANNERS = {
 
 // --- Hero Slides (Desktop) ---
 const HERO_SLIDES_DESKTOP = [
-  "https://www.jhajistore.com/cdn/shop/files/Jan_26_Sample_Pack_Collection_Desktop_Banner_1477x332.webp",
-  "https://www.jhajistore.com/cdn/shop/files/five-pickle-sample-pack-with-garlic-bihari-oal-garlic-chilli-ginger-tomato-jackfruit-lal-mirch_d904d762-f590-41ec-8486-4f15e27914b5.webp?v=1769637461",
+  "/banner/pahadiseid.png",
+  "/banner/himlayanbanner.png",
+  "/banner/pahadipickle.png",
+  "/banner/natural.png",
   "/Gemini_Generated_Image_rxn6avrxn6avrxn6.png",
 ];
 
 // --- Hero Slides (Mobile) ---
 const HERO_SLIDES_MOBILE = [
-  "https://www.jhajistore.com/cdn/shop/files/jhaji-store-lal-mirch-achar-bestseller_720x.webp",
-  "https://www.jhajistore.com/cdn/shop/files/five-pickle-sample-pack-with-garlic-bihari-oal-garlic-chilli-ginger-tomato-jackfruit-lal-mirch_d904d762-f590-41ec-8486-4f15e27914b5_720x.webp",
+  "/banner/pahadiseid.png",
+  "/banner/himlayanbanner.png",
+  "/banner/pahadipickle.png",
+  "/banner/natural.png",
 ];
 
 // ==========================================
 // 5. MAIN EXPORT
 // ==========================================
-const appLogo = "/gharka.png";
+const appLogo = "/logo/gharka-logo-mobile.png";
 export const IMAGES = {
   /**
    * Brand Identity & Logos

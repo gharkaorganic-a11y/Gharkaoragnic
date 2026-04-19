@@ -1,133 +1,58 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
+  MagnifyingGlassIcon,
   UserIcon,
   ShoppingBagIcon,
   ChevronDownIcon,
-  MapPinIcon,
-  TruckIcon,
 } from "@heroicons/react/24/outline";
-import PromotionalNavbar from "./PromotionalNavbar";
-import { IMAGES } from "../../../../../assets/images";
-import LoginPopup from "../../../../components/pop-up/LoginPoup";
-import { useAuth } from "../../../auth/context/UserContext";
 
-const PRIMARY = "#c8102e";
-const PRIMARY_LIGHT = "#fdf0f2";
-
-const DesktopNavbar = ({ app_name = "FarmDidi", cartCount = 0, promoData }) => {
+const DesktopNavbar = ({ cartCount = 0 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
 
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [loginOpen, setLoginOpen] = useState(false);
+  const logoUrl = "/logo/gharka-logo.png";
 
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const handleProtectedRoute = (path) => {
-    if (user) navigate(path);
-    else setLoginOpen(true);
-  };
-
-  const isHomePage = location.pathname === "/";
-
+  // ✅ Added more links
   const navItems = [
-    { label: "New Arrivals", path: "/new", highlight: true },
-    { label: "Pickles & Chutneys", path: "/category/pickles" },
-    { label: "Hand-pounded Masala", path: "/category/masala" },
-    { label: "A2 Desi Ghee", path: "/category/ghee" },
-    { label: "Healthy Snacks", path: "/category/snacks" },
-    { label: "Our Story", path: "/our-story" },
+    { label: "Home", path: "/" },
+    { label: "Shop", path: "/shop", dropdown: true },
+    { label: "Best Sellers", path: "/best-sellers" },
+    { label: "Our Story", path: "/pages/our-story" },
+    { label: "Contact", path: "/pages/contact" },
+    { label: "Blogs", path: "/pages/blogs" },
   ];
 
   return (
-    <div className="hidden lg:block w-full">
-      {/* 🔶 Promo */}
-      {isHomePage && (
-        <div className="w-full">
-          <PromotionalNavbar items={promoData} />
-        </div>
-      )}
+    <header className="w-full bg-white sticky top-0 z-50 border-b border-gray-100 shadow-sm">
+      <div className="max-w-[1400px] mx-auto px-8 h-[80px] flex items-center justify-between relative">
+        {/* 🟢 LEFT: LOGO */}
+        <div
+          className="flex items-center cursor-pointer shrink-0"
+          onClick={() => navigate("/")}>
+          <img
+            src={logoUrl}
+            alt="Ghar Ka Organic Logo"
+            className="h-[50px] w-auto object-contain"
+            onError={(e) => {
+              e.currentTarget.style.display = "none";
+              if (e.currentTarget.nextSibling) {
+                e.currentTarget.nextSibling.style.display = "flex";
+              }
+            }}
+          />
 
-      {/* 🔷 Header */}
-      <header
-        className={`bg-white border-b border-gray-100 transition-all duration-300 ${
-          isScrolled ? "shadow-sm" : ""
-        }`}>
-        <div className="max-w-[1400px] mx-auto px-8 flex items-center justify-between h-[80px]">
-          {/* 📍 Left */}
-          <div className="flex items-center gap-6 text-sm text-gray-600">
-            <div className="flex items-center gap-1">
-              <MapPinIcon className="w-4 h-4" />
-              <span className="font-medium">Delivering to India</span>
-            </div>
-
-            <div className="hidden xl:flex items-center gap-1 text-gray-500">
-              <TruckIcon className="w-4 h-4" />
-              <span>Free shipping above ₹499</span>
-            </div>
-          </div>
-
-          {/* 🟢 Logo (FIXED SIZE) */}
-          <div className="flex justify-center">
-            <img
-              src={IMAGES.brand.logo}
-              alt={app_name}
-              className="h-16 object-contain cursor-pointer"
-              onClick={() => navigate("/")}
-            />
-          </div>
-
-          {/* 🛒 Right */}
-          <div className="flex items-center gap-8">
-            {/* Account */}
-            <button
-              onClick={() => handleProtectedRoute("/user/profile")}
-              className="flex items-center gap-2 group">
-              <UserIcon className="w-6 h-6 text-gray-700 group-hover:text-[#c8102e]" />
-              <div className="text-left hidden xl:block">
-                <p className="text-[10px] text-gray-400">Account</p>
-                <p className="text-[13px] font-semibold text-gray-800 uppercase">
-                  {user ? user.name.split(" ")[0] : "Login"}
-                </p>
-              </div>
-            </button>
-
-            {/* Cart */}
-            <button
-              onClick={() => handleProtectedRoute("/checkout/cart")}
-              className="flex items-center gap-2 group relative">
-              <div className="relative">
-                <ShoppingBagIcon className="w-6 h-6 text-gray-700 group-hover:text-[#c8102e]" />
-                <span
-                  className="absolute -top-2 -right-2 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full"
-                  style={{ backgroundColor: PRIMARY }}>
-                  {cartCount}
-                </span>
-              </div>
-
-              <div className="text-left hidden xl:block">
-                <p className="text-[10px] text-gray-400">My Basket</p>
-                <p className="text-[13px] font-semibold text-gray-800 uppercase">
-                  View Cart
-                </p>
-              </div>
-            </button>
+          {/* Fallback */}
+          <div className="hidden flex-col">
+            <span className="font-bold text-[20px] tracking-widest text-[#4B5E3C]">
+              GHAR KA
+            </span>
+            <span className="text-xs text-gray-500">organic</span>
           </div>
         </div>
-      </header>
 
-      {/* 🔻 Navigation */}
-      <nav
-        className={`w-full bg-white sticky top-0 z-40 border-b border-gray-200 transition-all ${
-          isScrolled ? "shadow-md" : ""
-        }`}>
-        <div className="max-w-6xl mx-auto flex justify-center gap-10 py-4">
+        {/* 🟡 CENTER: NAV LINKS */}
+        <nav className="absolute left-1/2 -translate-x-1/2 hidden lg:flex items-center gap-10">
           {navItems.map((item, idx) => {
             const isActive = location.pathname === item.path;
 
@@ -135,33 +60,54 @@ const DesktopNavbar = ({ app_name = "FarmDidi", cartCount = 0, promoData }) => {
               <button
                 key={idx}
                 onClick={() => navigate(item.path)}
-                className={`group relative px-3 py-1 rounded-md text-[14px] font-medium tracking-wide transition-all duration-300
+                className={`group relative flex items-center gap-1 text-[14.5px] transition-all duration-300
                   ${
                     isActive
-                      ? "text-[#c8102e]"
-                      : "text-gray-700 hover:text-[#c8102e] hover:bg-[#fdf0f2]"
+                      ? "text-black font-medium"
+                      : "text-gray-600 hover:text-black"
                   }
                 `}>
                 {item.label}
 
-                {/* underline */}
+                {item.dropdown && (
+                  <ChevronDownIcon className="w-3.5 h-3.5 mt-[1px] text-gray-400 group-hover:text-black" />
+                )}
+
+                {/* Underline */}
                 <span
-                  className={`absolute left-0 -bottom-2 h-[2px] bg-[#c8102e] transition-all duration-300
+                  className={`absolute -bottom-2 left-0 h-[1.5px] bg-black transition-all duration-300
                     ${isActive ? "w-full" : "w-0 group-hover:w-full"}
                   `}
                 />
-
-                {item.dropdown && (
-                  <ChevronDownIcon className="w-3 h-3 inline ml-1 opacity-60" />
-                )}
               </button>
             );
           })}
-        </div>
-      </nav>
+        </nav>
 
-      <LoginPopup isOpen={loginOpen} onClose={() => setLoginOpen(false)} />
-    </div>
+        {/* 🔴 RIGHT: ICONS */}
+        <div className="flex items-center gap-6">
+          {/* User */}
+          <button
+            onClick={() => navigate("/user/profile")}
+            className="text-black hover:text-gray-500 transition active:scale-95">
+            <UserIcon className="w-6 h-6 stroke-[1.5px]" />
+          </button>
+
+          {/* Cart */}
+          <button
+            onClick={() => navigate("/checkout/cart")}
+            className="text-black hover:text-gray-500 transition relative active:scale-95">
+            <ShoppingBagIcon className="w-6 h-6 stroke-[1.5px]" />
+
+            {cartCount > 0 && (
+              <span className="absolute -top-1.5 -right-2 bg-black text-white text-[10px] font-medium w-[18px] h-[18px] flex items-center justify-center rounded-full border-2 border-white shadow-sm">
+                {cartCount > 99 ? "99+" : cartCount}
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
+    </header>
   );
 };
 

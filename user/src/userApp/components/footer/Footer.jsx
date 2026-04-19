@@ -35,23 +35,14 @@ const Footer = () => {
           {/* Column 1: Brand - spans 4 on desktop */}
           <div className="lg:col-span-4 space-y-6 lg:pr-8">
             {/* Logo */}
+            {/* Logo */}
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm -0">
-                <img
-                  src="/gharka.png"
-                  alt="Ghar ka Organic Logo"
-                  className="w-full h-full object-contain"
-                  loading="lazy"
-                />
-              </div>
-              <div>
-                <h3 className="text-2xl font-bold text-gray-900 font-serif tracking-tight">
-                  GharKaOrganic
-                </h3>
-                <p className="text-xs font-medium text-[#c8102e] uppercase tracking-widest mt-0.5">
-                  Homemade with Love
-                </p>
-              </div>
+              <img
+                src="/logo/gharka-logo.png"
+                alt="Ghar Ka Organic Logo"
+                className="h-14 sm:h-16 w-auto object-contain"
+                loading="lazy"
+              />
             </div>
 
             <p className="text-sm leading-relaxed text-gray-600 max-w-sm">
@@ -62,9 +53,6 @@ const Footer = () => {
 
             {/* Social */}
             <div className="pt-2">
-              <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-gray-900 mb-4">
-                Join the Didigiri
-              </p>
               <div className="flex gap-3">
                 {[
                   { Icon: Instagram, label: "Instagram", href: "#" },
@@ -91,7 +79,7 @@ const Footer = () => {
             </h4>
             <ul className="space-y-3.5 text-[14px] font-medium">
               {[
-                "Homemade Pickles",
+                "Homemade Pickle India",
                 "Mustard Oil Pickles",
                 "Spicy Pickles",
                 "Tangy Pickles",
@@ -101,7 +89,7 @@ const Footer = () => {
               ].map((item) => (
                 <li key={item}>
                   <Link
-                    to={`/collection/${item.toLowerCase().replace(/\s+/g, "-")}`}
+                    to={`/${item.toLowerCase().replace(/\s+/g, "-")}`}
                     className="text-gray-600 hover:text-[#c8102e] hover:translate-x-1.5 inline-block transition-all duration-300">
                     {item}
                   </Link>
@@ -117,8 +105,8 @@ const Footer = () => {
             </h4>
             <ul className="space-y-3.5 text-[14px] font-medium">
               {[
-                { label: "Our Story", to: "/our-story" },
-                { label: "Blogs & Recipes", to: "/blog" },
+                { label: "Our Story", to: "/pages/our-story" },
+                { label: "Blogs & Recipes", to: "/pages/blog" },
                 { label: "Terms & Conditions", to: "/terms" },
                 { label: "Privacy Policy", to: "/privacy" },
                 { label: "Refund Policy", to: "/cancellation" },

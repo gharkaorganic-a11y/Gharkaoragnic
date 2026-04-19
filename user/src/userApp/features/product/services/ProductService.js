@@ -1,3 +1,8 @@
+/**
+ * productService.js
+ * Production-ready Firestore product service with LRU cache, TTL, and request coalescing.
+ */
+
 import {
   collection,
   doc,
@@ -11,30 +16,153 @@ import {
 } from "firebase/firestore";
 import { db } from "../../../../config/firebaseDB";
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   CONSTANTS
+───────────────────────────────────────────────────────────────────────────── */
+
 const COL = "products";
-const PAGE_SIZE = 20;
+const DEFAULT_PAGE_SIZE = 20;
+const MAX_CACHE_ENTRIES = 200;
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const FIRESTORE_IN_LIMIT = 10; // Firestore "in" / "__name__ in" clause max
 
-// ─── In-memory cache ──────────────────────────────────────────────────────────
-// Two-layer: primary key cache + cross-reference maps for zero-cost lookups
-const cache = new Map();          // key → value
-const slugToId = new Map();       // slug  → id  (cross-reference)
-const idToSlug = new Map();       // id    → slug (cross-reference)
+/* ─────────────────────────────────────────────────────────────────────────────
+   TYPED ERRORS
+───────────────────────────────────────────────────────────────────────────── */
 
-const buildCacheKey = (params) => JSON.stringify(params);
-
-// ─── Prime cross-reference maps after any product fetch ──────────────────────
-const primeRefs = (product) => {
-  if (!product) return;
-  if (product.slug && product.id) {
-    slugToId.set(product.slug, product.id);
-    idToSlug.set(product.id, product.slug);
-    // Also cache under the other key so either lookup hits cache first
-    cache.set(`product_${product.id}`, product);
-    cache.set(`slug_${product.slug}`, product);
+export class ProductNotFoundError extends Error {
+  constructor(identifier) {
+    super(`Product not found: ${identifier}`);
+    this.name = "ProductNotFoundError";
+    this.identifier = identifier;
   }
+}
+
+export class ProductServiceError extends Error {
+  constructor(message, cause) {
+    super(message);
+    this.name = "ProductServiceError";
+    this.cause = cause;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LRU CACHE WITH TTL
+   A lightweight Map-based LRU. Each entry stores { value, expiresAt }.
+   On get: evict if expired. On set: evict LRU entry when over capacity.
+───────────────────────────────────────────────────────────────────────────── */
+
+class LRUCache {
+  #map = new Map();
+  #maxSize;
+  #ttlMs;
+
+  constructor(maxSize = MAX_CACHE_ENTRIES, ttlMs = CACHE_TTL_MS) {
+    this.#maxSize = maxSize;
+    this.#ttlMs = ttlMs;
+  }
+
+  has(key) {
+    const entry = this.#map.get(key);
+    if (!entry) return false;
+    if (Date.now() > entry.expiresAt) {
+      this.#map.delete(key);
+      return false;
+    }
+    return true;
+  }
+
+  get(key) {
+    const entry = this.#map.get(key);
+    if (!entry) return undefined;
+    if (Date.now() > entry.expiresAt) {
+      this.#map.delete(key);
+      return undefined;
+    }
+    // Refresh position (LRU touch)
+    this.#map.delete(key);
+    this.#map.set(key, entry);
+    return entry.value;
+  }
+
+  set(key, value) {
+    // Evict existing key first to re-insert at end (most-recent position)
+    if (this.#map.has(key)) this.#map.delete(key);
+
+    // Evict LRU entry if at capacity
+    if (this.#map.size >= this.#maxSize) {
+      const lruKey = this.#map.keys().next().value;
+      this.#map.delete(lruKey);
+    }
+
+    this.#map.set(key, { value, expiresAt: Date.now() + this.#ttlMs });
+  }
+
+  delete(key) {
+    this.#map.delete(key);
+  }
+
+  /** Delete all keys matching a predicate. */
+  deleteWhere(predicate) {
+    for (const key of this.#map.keys()) {
+      if (predicate(key)) this.#map.delete(key);
+    }
+  }
+
+  clear() {
+    this.#map.clear();
+  }
+
+  get size() {
+    return this.#map.size;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MODULE-LEVEL STATE
+───────────────────────────────────────────────────────────────────────────── */
+
+const cache = new LRUCache();
+
+// Bidirectional slug ↔ id lookup (these are identity maps, no TTL needed)
+const slugToId = new Map();
+const idToSlug = new Map();
+
+// In-flight request coalescing: key → Promise
+const inFlight = new Map();
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   HELPERS
+───────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * Wrap a single async fetch with in-flight deduplication.
+ * If an identical request is already pending, return the same Promise.
+ */
+const dedupe = (key, fetchFn) => {
+  if (inFlight.has(key)) return inFlight.get(key);
+  const promise = fetchFn().finally(() => inFlight.delete(key));
+  inFlight.set(key, promise);
+  return promise;
 };
 
-// ─── Normalization ────────────────────────────────────────────────────────────
+/**
+ * Prime both slug↔id maps and populate the cache after a successful fetch.
+ */
+const primeRefs = (product) => {
+  if (!product?.id) return;
+  if (product.slug) {
+    slugToId.set(product.slug, product.id);
+    idToSlug.set(product.id, product.slug);
+    cache.set(`slug_${product.slug}`, product);
+  }
+  cache.set(`product_${product.id}`, product);
+};
+
+/**
+ * Normalize a raw Firestore document into a clean product shape.
+ * All fields have safe defaults — consumers never need to guard for undefined.
+ */
 const normalize = (id, data) => ({
   id: String(id),
   name: data.name ?? "",
@@ -46,211 +174,258 @@ const normalize = (id, data) => ({
   originalPrice: Number(data.originalPrice ?? data.price ?? 0),
   stock: Number(data.stock ?? 0),
   sizes: Array.isArray(data.sizes) ? data.sizes : [],
-  colors: Array.isArray(data.colors) ? data.colors : [],
-  categoryId: data.categoryId ?? "",
   collectionTypes: Array.isArray(data.collectionTypes) ? data.collectionTypes : [],
   isActive: data.isActive ?? true,
   createdAt: data.createdAt ?? null,
   tags: Array.isArray(data.tags) ? data.tags : [],
 });
 
-// ─── USER PRODUCT SERVICE ─────────────────────────────────────────────────────
+/**
+ * Split an array into chunks of at most `size` elements.
+ */
+const chunk = (arr, size) => {
+  const chunks = [];
+  for (let i = 0; i < arr.length; i += size) chunks.push(arr.slice(i, i + size));
+  return chunks;
+};
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SERVICE
+───────────────────────────────────────────────────────────────────────────── */
+
 export const productService = {
-
-  // ─── PAGINATED PRODUCTS ─────────────────────────────────────────────────────
-  async getProducts({
-    lastDoc = null,
-    category = "all",
-    collectionType = "all",
-    status = "active",
-    pageSize = PAGE_SIZE,
-  } = {}) {
-    const params = { lastDoc: lastDoc?.id, category, collectionType, status, pageSize };
-    const cacheKey = buildCacheKey(params);
-    if (cache.has(cacheKey)) return cache.get(cacheKey);
-
+  /* ───────────────────────────────────────────────────────────────────────
+     getProducts — cursor-paginated list, optionally filtered by collection type.
+     Returns { products, lastDoc, hasMore }.
+  ─────────────────────────────────────────────────────────────────────── */
+async getProducts({
+  lastDoc = null,
+  collectionType = null,
+  pageSize = DEFAULT_PAGE_SIZE,
+  activeOnly = true,
+} = {}) {
+  try {
     const constraints = [];
-    if (category !== "all") constraints.push(where("categoryId", "==", category));
-    if (collectionType !== "all") constraints.push(where("collectionTypes", "array-contains", collectionType));
-    if (status !== "all") constraints.push(where("isActive", "==", status === "active"));
+
+    if (activeOnly) {
+      constraints.push(where("isActive", "==", true));
+    }
+
+    if (collectionType) {
+      console.log("[ProductService] Filtering by collectionType:", collectionType);
+      constraints.push(where("collectionTypes", "array-contains", collectionType));
+    } else {
+      console.log("[ProductService] Fetching ALL products - no collectionTypes filter");
+    }
 
     constraints.push(orderBy("createdAt", "desc"));
     if (lastDoc) constraints.push(startAfter(lastDoc));
     constraints.push(limit(pageSize));
 
-    const q = query(collection(db, COL), ...constraints);
-    const snapshot = await getDocs(q);
+    const snapshot = await getDocs(query(collection(db, COL),...constraints));
+    console.log("[ProductService] Found", snapshot.docs.length, "docs");
 
     const products = snapshot.docs.map((d) => {
       const p = normalize(d.id, d.data());
-      primeRefs(p); // ← save slug↔id cross-refs on every fetch
+      primeRefs(p);
       return p;
     });
 
-    const newLastDoc = snapshot.docs.length
-      ? snapshot.docs[snapshot.docs.length - 1]
-      : null;
-
-    const result = {
+    return {
       products,
-      lastDoc: newLastDoc,
+      lastDoc: snapshot.docs.at(-1)?? null,
       hasMore: snapshot.docs.length === pageSize,
     };
+  } catch (err) {
+    console.error("[ProductService] Error:", err);
+    throw new ProductServiceError("Failed to fetch products page", err);
+  }
+},
 
-    cache.set(cacheKey, result);
-    return result;
-  },
-
-  // ─── GET ALL PRODUCTS (flat list for hook's allProducts) ───────────────────
-  // Separate from paginated so React Query can cache a flat array.
+  /* ───────────────────────────────────────────────────────────────────────
+     getAllProducts — cached full list of active products (use sparingly).
+  ─────────────────────────────────────────────────────────────────────── */
   async getAllProducts() {
     const cacheKey = "all_products";
     if (cache.has(cacheKey)) return cache.get(cacheKey);
 
-    const q = query(
-      collection(db, COL),
-      where("isActive", "==", true),
-      orderBy("createdAt", "desc"),
-    );
-    const snapshot = await getDocs(q);
-    const products = snapshot.docs.map((d) => {
-      const p = normalize(d.id, d.data());
-      primeRefs(p);
-      return p;
-    });
+    return dedupe(cacheKey, async () => {
+      try {
+        const snapshot = await getDocs(
+          query(
+            collection(db, COL),
+            where("isActive", "==", true),
+            orderBy("createdAt", "desc")
+          )
+        );
 
-    cache.set(cacheKey, products);
-    return products;
+        const products = snapshot.docs.map((d) => {
+          const p = normalize(d.id, d.data());
+          primeRefs(p);
+          return p;
+        });
+
+        cache.set(cacheKey, products);
+        return products;
+      } catch (err) {
+        throw new ProductServiceError("Failed to fetch all products", err);
+      }
+    });
   },
 
-  // ─── GET PRODUCT BY ID ──────────────────────────────────────────────────────
+  /* ───────────────────────────────────────────────────────────────────────
+     getProductById — fetch a single product by Firestore document ID.
+     Returns null if not found (does NOT throw ProductNotFoundError).
+  ─────────────────────────────────────────────────────────────────────── */
   async getProductById(id) {
     if (!id) return null;
-    const cacheKey = `product_${id}`;
-    if (cache.has(cacheKey)) return cache.get(cacheKey); // ← hits if primeRefs ran before
+    const safeId = String(id);
+    const cacheKey = `product_${safeId}`;
 
-    const snapshot = await getDoc(doc(db, COL, String(id)));
-    if (!snapshot.exists()) return null;
-
-    const product = normalize(snapshot.id, snapshot.data());
-    primeRefs(product); // saves slug cross-ref too
-    return product;
-  },
-
-  // ─── GET PRODUCTS BY IDs (batched, avoids N individual calls) ──────────────
-  // Firestore doesn't support array-of-ids natively, so we chunk into "in" queries (max 10).
-async getProductsByIds(ids = []) {
-  if (!ids.length) return [];
-
-  const unique = [...new Set(ids.map(String))];
-
-  // 1️⃣ Get cached products
-  const cachedProducts = unique
-    .map(id => cache.get(`product_${id}`))
-    .filter(Boolean);
-
-  // 2️⃣ Find missing ids
-  const missingIds = unique.filter(id => !cache.has(`product_${id}`));
-
-  if (!missingIds.length) return cachedProducts;
-
-  // 3️⃣ Firestore allows max 10 in "in" query
-  const chunks = [];
-  for (let i = 0; i < missingIds.length; i += 10) {
-    chunks.push(missingIds.slice(i, i + 10));
-  }
-
-  const results = await Promise.all(
-    chunks.map(chunk =>
-      getDocs(query(collection(db, COL), where("__name__", "in", chunk)))
-    )
-  );
-
-  const fetched = results
-    .flatMap(snap => snap.docs)
-    .map(d => {
-      const p = normalize(d.id, d.data());
-      primeRefs(p);
-      return p;
-    });
-
-  return [...cachedProducts, ...fetched];c
-},
-
-  // ─── GET PRODUCTS BY CATEGORY ───────────────────────────────────────────────
-  async getProductsByCategory(categoryId, pageSize = PAGE_SIZE) {
-    if (!categoryId) return [];
-    const cacheKey = `category_${categoryId}_${pageSize}`;
     if (cache.has(cacheKey)) return cache.get(cacheKey);
 
-    const q = query(
-      collection(db, COL),
-      where("categoryId", "==", categoryId),
-      where("isActive", "==", true),
-      orderBy("createdAt", "desc"),
-      limit(pageSize)
-    );
-    const snap = await getDocs(q);
-    const products = snap.docs.map((d) => {
-      const p = normalize(d.id, d.data());
-      primeRefs(p);
-      return p;
-    });
+    return dedupe(cacheKey, async () => {
+      try {
+        const snapshot = await getDoc(doc(db, COL, safeId));
+        if (!snapshot.exists()) return null;
 
-    cache.set(cacheKey, products);
-    return products;
+        const product = normalize(snapshot.id, snapshot.data());
+        primeRefs(product);
+        return product;
+      } catch (err) {
+        throw new ProductServiceError(`Failed to fetch product by id: ${safeId}`, err);
+      }
+    });
   },
 
-  // ─── GET PRODUCTS BY COLLECTION TYPES ──────────────────────────────────────
+  /* ───────────────────────────────────────────────────────────────────────
+     getProductsByIds — batch-fetch multiple products.
+     Hits cache first; fetches missing IDs in parallel Firestore chunks.
+     Returns results in the same order as the input `ids` array.
+  ─────────────────────────────────────────────────────────────────────── */
+  async getProductsByIds(ids = []) {
+    if (!ids.length) return [];
+
+    try {
+      const unique = [...new Set(ids.map(String))];
+      const byId = new Map();
+
+      // Populate from cache
+      const missing = [];
+      for (const id of unique) {
+        const cached = cache.get(`product_${id}`);
+        if (cached) byId.set(id, cached);
+        else missing.push(id);
+      }
+
+      // Fetch missing in Firestore-safe chunks
+      if (missing.length) {
+        const snapshots = await Promise.all(
+          chunk(missing, FIRESTORE_IN_LIMIT).map((c) =>
+            getDocs(query(collection(db, COL), where("__name__", "in", c)))
+          )
+        );
+
+        for (const snap of snapshots) {
+          for (const d of snap.docs) {
+            const p = normalize(d.id, d.data());
+            primeRefs(p);
+            byId.set(p.id, p);
+          }
+        }
+      }
+
+      // Return in original input order, skipping not-found IDs
+      return ids.map(String).reduce((acc, id) => {
+        const p = byId.get(id);
+        if (p) acc.push(p);
+        return acc;
+      }, []);
+    } catch (err) {
+      throw new ProductServiceError("Failed to fetch products by ids", err);
+    }
+  },
+
+  /* ───────────────────────────────────────────────────────────────────────
+     getProductsByCollections — fetch active products matching any of the
+     given collection type strings (array-contains-any).
+  ─────────────────────────────────────────────────────────────────────── */
   async getProductsByCollections(types = [], maxResults = 8) {
     if (!types.length) return [];
-    const normalizedTypes = [...new Set(types.map((t) => t.toLowerCase()))];
-    const cacheKey = `collection_${normalizedTypes.join(",")}_${maxResults}`;
-    if (cache.has(cacheKey)) return cache.get(cacheKey);
 
-    const q = query(
-      collection(db, COL),
-      where("isActive", "==", true),
-      where("collectionTypes", "array-contains-any", normalizedTypes.slice(0, 10)),
-      limit(maxResults)
-    );
-    const snap = await getDocs(q);
-    const products = snap.docs.map((d) => {
-      const p = normalize(d.id, d.data());
-      primeRefs(p);
-      return p;
-    });
+    try {
+      const normalizedTypes = [...new Set(types.map((t) => t.toLowerCase()))];
+      const cacheKey = `collection_${normalizedTypes.join(",")}__${maxResults}`;
 
-    cache.set(cacheKey, products);
-    return products;
+      if (cache.has(cacheKey)) return cache.get(cacheKey);
+
+      return dedupe(cacheKey, async () => {
+        const snapshot = await getDocs(
+          query(
+            collection(db, COL),
+            where("isActive", "==", true),
+            where("collectionTypes", "array-contains-any", normalizedTypes.slice(0, FIRESTORE_IN_LIMIT)),
+            orderBy("createdAt", "desc"),
+            limit(maxResults)
+          )
+        );
+
+        const products = snapshot.docs.map((d) => {
+          const p = normalize(d.id, d.data());
+          primeRefs(p);
+          return p;
+        });
+
+        cache.set(cacheKey, products);
+        return products;
+      });
+    } catch (err) {
+      throw new ProductServiceError("Failed to fetch products by collections", err);
+    }
   },
 
-  // ─── GET PRODUCT BY SLUG ────────────────────────────────────────────────────
+  /* ───────────────────────────────────────────────────────────────────────
+     getProductBySlug — fetch a single product by its URL slug.
+     Returns null if not found.
+  ─────────────────────────────────────────────────────────────────────── */
   async getProductBySlug(slug) {
     if (!slug) return null;
-    const cacheKey = `slug_${slug}`;
-    if (cache.has(cacheKey)) return cache.get(cacheKey); // ← hits if primeRefs ran before
 
-    // Try cross-ref shortcut: slug → id → already cached product
-    if (slugToId.has(slug)) {
-      const id = slugToId.get(slug);
-      const idKey = `product_${id}`;
-      if (cache.has(idKey)) return cache.get(idKey);
+    const slugCacheKey = `slug_${slug}`;
+    if (cache.has(slugCacheKey)) return cache.get(slugCacheKey);
+
+    // Try resolving through slug→id map without a new network call
+    const knownId = slugToId.get(slug);
+    if (knownId) {
+      const cached = cache.get(`product_${knownId}`);
+      if (cached) return cached;
     }
 
-    const q = query(collection(db, COL), where("slug", "==", slug), limit(1));
-    const snap = await getDocs(q);
-    if (snap.empty) return null;
+    return dedupe(slugCacheKey, async () => {
+      try {
+        const snap = await getDocs(
+          query(collection(db, COL), where("slug", "==", slug), limit(1))
+        );
 
-    const product = normalize(snap.docs[0].id, snap.docs[0].data());
-    primeRefs(product); // saves id cross-ref too
-    return product;
+        if (snap.empty) return null;
+
+        const product = normalize(snap.docs[0].id, snap.docs[0].data());
+        primeRefs(product);
+        return product;
+      } catch (err) {
+        throw new ProductServiceError(`Failed to fetch product by slug: ${slug}`, err);
+      }
+    });
   },
 
-  // ─── SEARCH (client-side, no extra API call) ────────────────────────────────
+  /* ───────────────────────────────────────────────────────────────────────
+     searchProducts — client-side full-text search over a pre-fetched list.
+     Searches name, description, and tags.
+  ─────────────────────────────────────────────────────────────────────── */
   searchProducts(term, allProducts = []) {
     if (!term?.trim()) return [];
     const lower = term.toLowerCase();
+
     return allProducts.filter(
       (p) =>
         p.name?.toLowerCase().includes(lower) ||
@@ -259,45 +434,44 @@ async getProductsByIds(ids = []) {
     );
   },
 
-  // ─── GET PRODUCTS BY CATEGORY ───────────────────────────────────────────────
-async getProductsByCategory(categoryId, pageSize = PAGE_SIZE) {
-  if (!categoryId) return [];
-  const cacheKey = `category_${categoryId}_${pageSize}`;
-  if (cache.has(cacheKey)) return cache.get(cacheKey);
-
-  const q = query(
-    collection(db, COL),
-    where("categoryId", "==", categoryId),
-    where("isActive", "==", true),
-    orderBy("createdAt", "desc"),
-    limit(pageSize)
-  );
-  const snap = await getDocs(q);
-  const products = snap.docs.map((d) => {
-    const p = normalize(d.id, d.data());
-    primeRefs(p);
-    return p;
-  });
-
-  cache.set(cacheKey, products);
-  return products;
-},
-  // ─── CACHE UTILS ────────────────────────────────────────────────────────────
-  /** Call after mutations to bust stale entries */
-  bustCache(id, slug) {
-    if (id) cache.delete(`product_${id}`);
-    if (slug) cache.delete(`slug_${slug}`);
-    cache.delete("all_products");
-    // Bust any paginated/category/collection keys that could contain this product
-    for (const key of cache.keys()) {
-      if (
-        key.startsWith("{") ||          // paginated
-        key.startsWith("category_") ||
-        key.startsWith("collection_") ||
-        key.startsWith("ids_")
-      ) {
-        cache.delete(key);
+  /* ───────────────────────────────────────────────────────────────────────
+     bustCache — invalidate cache entries for a specific product and/or
+     all collection/list queries. Call this after any write operation.
+  ─────────────────────────────────────────────────────────────────────── */
+  bustCache({ id, slug } = {}) {
+    if (id) {
+      cache.delete(`product_${id}`);
+      const s = idToSlug.get(String(id));
+      if (s) {
+        cache.delete(`slug_${s}`);
+        slugToId.delete(s);
+        idToSlug.delete(String(id));
       }
     }
+
+    if (slug) {
+      cache.delete(`slug_${slug}`);
+      const resolvedId = slugToId.get(slug);
+      if (resolvedId) {
+        cache.delete(`product_${resolvedId}`);
+        idToSlug.delete(resolvedId);
+      }
+      slugToId.delete(slug);
+    }
+
+    // Always clear list/collection caches on any write
+    cache.delete("all_products");
+    cache.deleteWhere(
+      (key) => key.startsWith("collection_") || key.startsWith("{")
+    );
+  },
+
+  /* ───────────────────────────────────────────────────────────────────────
+     clearCache — nuke everything. Useful for logout / user switch.
+  ─────────────────────────────────────────────────────────────────────── */
+  clearCache() {
+    cache.clear();
+    slugToId.clear();
+    idToSlug.clear();
   },
 };

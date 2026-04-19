@@ -1,27 +1,20 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
+
 import { useAuth } from "./userApp/features/auth/context/UserContext";
 
-/* ─── Eager Components (only what renders on EVERY page) ─────────────────── */
+/* ───────── EAGER ───────── */
 import UserLayout from "./userApp/layouts/UserLayout";
 import LoadingScreen from "./userApp/components/loading/LoadingScreen";
 import NotFoundPage from "./userApp/pages/NotFoundPage";
 import ErrorBoundary from "./shared/components/ErrorBoundary";
-import CustomerReviewsPage from "./userApp/reviews/pages/CustomerReviewsPage";
 import SitemapPage from "./userApp/pages/SitemapPage";
+import ReviewsPage from "./userApp/reviews/pages/CustomerReviewsPage";
+import BlogListPage from "./userApp/pages/blog/BlogListPage";
+import BlogDetailPage from "./userApp/pages/blog/BlogDetailPage";
 
-/* ─── Lazy: Auth ─────────────────────────────────────────────────────────── */
+/* ───────── LAZY ───────── */
 const AuthRoutes = lazy(() => import("./userApp/routes/AuthRoutes"));
-
-/* ─── Lazy: Standalone Public (no layout) ────────────────────────────────── */
-const EmailVerificationHelp = lazy(
-  () => import("./userApp/features/auth/pages/EmailHelpPage"),
-);
-const OrderConfirmationPage = lazy(
-  () => import("./userApp/components/pop-up/OrderConfirmationPage"),
-);
-
-/* ─── Lazy: Public Storefront ────────────────────────────────────────────── */
 const HomePage = lazy(() => import("./userApp/pages/HomePage"));
 const CollectionPage = lazy(
   () => import("./userApp/features/p/CollectionPage"),
@@ -32,57 +25,38 @@ const CategoriesPage = lazy(
 const ProductDetailsPage = lazy(
   () => import("./userApp/pages/ProductDetailsPage"),
 );
+// const BlogListPage = lazy(() => import("./userApp/pages/blog/BlogListPage"));
 const ContactUsPage = lazy(() => import("./userApp/pages/ContactUsPage"));
-const AboutUsPage = lazy(() => import("./userApp/pages/AboutUsPage")); // ✅ Fixed: was eager before
-
-/* ─── Lazy: Protected Pages ──────────────────────────────────────────────── */
-
-const NotificationPreferencesPage = lazy(
-  () => import("./userApp/pages/NotificationPreferences"),
-);
-
-/* ─── Lazy: Sub-routers ──────────────────────────────────────────────────── */
+const OurStoryPage = lazy(() => import("./userApp/pages/OurStoryPage"));
+const FaqPage = lazy(() => import("./userApp/pages/FaqPage"));
 const AccountRoutes = lazy(() => import("./userApp/routes/AccountRoutes"));
 const CheckoutRoutes = lazy(() => import("./userApp/routes/CheckoutRoutes"));
 
-/* ════════════════════════════════════════════════════════════
-   LOADERS
-════════════════════════════════════════════════════════════ */
-
-/**
- * Full-screen loader — used only for:
- *  - Auth routes (own layout, user hasn't landed yet)
- *  - Heavy sub-routers with their own layout (/user/*, /checkout/*, /taruveda-*)
- *  - ProtectedRoute while auth state is resolving
- *
- * Keeps the loading UX intentional and avoids flashing a blank screen
- * for pages that are just inside UserLayout.
- */
+/* ───────── LOADERS ───────── */
 const FullScreenLoader = () => (
-  <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white">
-    <LoadingScreen text="Curating your experience..." />
-  </div>
-);
-
-/**
- * Inline loader — used for all pages inside UserLayout.
- * Navbar and Footer stay mounted; only the page content area shows a spinner.
- * This prevents the layout from unmounting/remounting on every navigation.
- */
-const InlineLoader = () => (
-  <div className="flex items-center justify-center min-h-[60vh] w-full bg-[#f4f4f5]">
+  <div className="fixed inset-0 flex items-center justify-center bg-white z-[9999]">
     <LoadingScreen text="Loading..." />
   </div>
 );
 
-/* ════════════════════════════════════════════════════════════
-   PROTECTED ROUTE GATEWAY
-════════════════════════════════════════════════════════════ */
+const InlineLoader = () => (
+  <div className="flex items-center justify-center min-h-[60vh]">
+    <LoadingScreen text="Loading..." />
+  </div>
+);
+
+/* ───────── SCROLL RESTORE ───────── */
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => window.scrollTo(0, 0), [pathname]);
+  return null;
+};
+
+/* ───────── AUTH GUARD ───────── */
 const ProtectedRoute = () => {
   const { isLoggedIn, user, authLoading } = useAuth();
   const location = useLocation();
 
-  // Show full-screen loader while auth state resolves (e.g. token refresh)
   if (authLoading) return <FullScreenLoader />;
 
   if (!isLoggedIn || !user) {
@@ -92,180 +66,136 @@ const ProtectedRoute = () => {
   return <Outlet />;
 };
 
-/* ════════════════════════════════════════════════════════════
-   APP ROUTES
-════════════════════════════════════════════════════════════ */
+/* ───────── SAFE WRAPPER ───────── */
+const SafeCollectionPage = () => (
+  <ErrorBoundary>
+    <Suspense fallback={<InlineLoader />}>
+      <CollectionPage />
+    </Suspense>
+  </ErrorBoundary>
+);
+
+/* ─────────────────────────────────────────────
+   CENTRAL SEO SLUG ROUTE (IMPORTANT CHANGE)
+   ─────────────────────────────────────────────
+   Instead of 50+ routes → ONE dynamic SEO router
+   CollectionPage handles slug resolution itself.
+───────────────────────────────────────────── */
+const SEOCollectionRoute = () => <SafeCollectionPage />;
+
+/* ══════════════════════════════════════════════
+   APP ROUTES (OPTIMIZED)
+══════════════════════════════════════════════ */
 const AppRoutes = () => (
-  <Routes>
-    {/* ── A. AUTH (own layout inside AuthRoutes) ────────────────────────── */}
-    {/*
-        FullScreenLoader is correct here: the user has no layout yet,
-        and AuthRoutes loads its own shell.
-    */}
-    <Route
-      path="/auth/*"
-      element={
-        <Suspense fallback={<FullScreenLoader />}>
-          <AuthRoutes />
-        </Suspense>
-      }
-    />
+  <>
+    <ScrollToTop />
 
-    <Route
-      path="/help/email-verification"
-      element={
-        <Suspense fallback={<InlineLoader />}>
-          <EmailVerificationHelp />
-        </Suspense>
-      }
-    />
-
-    <Route
-      path="/sitemap"
-      element={
-        <Suspense fallback={<InlineLoader />}>
-          <SitemapPage />
-        </Suspense>
-      }
-    />
-    <Route
-      path="/order-success/:orderId"
-      element={
-        <Suspense fallback={<InlineLoader />}>
-          <OrderConfirmationPage />
-        </Suspense>
-      }
-    />
-
-    {/* ── D. PUBLIC STOREFRONT (Navbar + Footer via UserLayout) ─────────── */}
-    {/*
-        UserLayout is eager — it always mounts immediately so the Navbar
-        and Footer are never delayed. Only the page-content slot (Outlet)
-        suspends while the lazy chunk downloads.
-
-        One Suspense boundary wraps the Outlet inside UserLayout itself
-        (or per-route as below) so the shell stays stable.
-
-        Rule: Use InlineLoader for everything inside UserLayout.
-    */}
-    <Route element={<UserLayout />}>
-      {/* Home */}
+    <Routes>
+      {/* ───────── AUTH ───────── */}
       <Route
-        index
+        path="/auth/*"
         element={
-          <ErrorBoundary>
-            <Suspense fallback={<InlineLoader />}>
-              <HomePage />
-            </Suspense>
-          </ErrorBoundary>
-        }
-      />
-
-      {/* customer-reviews */}
-      <Route
-        path="/customer-reviews"
-        element={
-          <Suspense fallback={<InlineLoader />}>
-            <CustomerReviewsPage />
+          <Suspense fallback={<FullScreenLoader />}>
+            <AuthRoutes />
           </Suspense>
         }
       />
 
-      {/* Collections */}
+      {/* ───────── SITEMAP ───────── */}
       <Route
-        path="/collections/:collectionType"
+        path="/sitemap.xml"
         element={
           <Suspense fallback={<InlineLoader />}>
-            <CollectionPage />
+            <SitemapPage />
           </Suspense>
         }
       />
 
-      {/* Product detail */}
+      {/* ───────── MAIN LAYOUT ───────── */}
       <Route
-        path="/product/:slug"
         element={
           <Suspense fallback={<InlineLoader />}>
-            <ProductDetailsPage />
+            <UserLayout />
           </Suspense>
-        }
-      />
-
-      {/* Categories */}
-      <Route
-        path="/categories"
-        element={
-          <Suspense fallback={<InlineLoader />}>
-            <CategoriesPage />
-          </Suspense>
-        }
-      />
-
-      {/* Contact */}
-      <Route
-        path="/contact-us"
-        element={
-          <Suspense fallback={<InlineLoader />}>
-            <ContactUsPage />
-          </Suspense>
-        }
-      />
-
-      {/* About — ✅ Fixed: now lazy, was eagerly imported before */}
-      <Route
-        path="/about-us"
-        element={
-          <Suspense fallback={<InlineLoader />}>
-            <AboutUsPage />
-          </Suspense>
-        }
-      />
-
-      {/* ── E. PROTECTED STOREFRONT (same Navbar/Footer) ──────────────── */}
-      {/*
-          ProtectedRoute sits inside UserLayout so the Navbar stays
-          mounted even while auth state is resolving. The FullScreenLoader
-          inside ProtectedRoute will overlay the page during auth check.
-      */}
-      <Route element={<ProtectedRoute />}>
+        }>
+        {/* HOME */}
         <Route
-          path="/notifications"
+          index
           element={
-            <Suspense fallback={<InlineLoader />}>
-              <NotificationPreferencesPage />
-            </Suspense>
+            <ErrorBoundary>
+              <Suspense fallback={<InlineLoader />}>
+                <HomePage />
+              </Suspense>
+            </ErrorBoundary>
           }
         />
+
+        {/* PRODUCT DETAIL */}
+        <Route
+          path="/product/:slug"
+          element={
+            <ErrorBoundary>
+              <Suspense fallback={<InlineLoader />}>
+                <ProductDetailsPage />
+              </Suspense>
+            </ErrorBoundary>
+          }
+        />
+
+        {/* LEGACY */}
+        <Route
+          path="/products/:slug"
+          element={<Navigate to="/product/:slug" replace />}
+        />
+
+        {/* COLLECTION LISTING */}
+        <Route path="/collections" element={<CollectionPage />} />
+        <Route path="/shop" element={<Navigate to="/collections" replace />} />
+
+        {/* BLOGS */}
+        <Route path="/blogs" element={<BlogListPage />} />
+        <Route path="/blogs/:slug" element={<BlogDetailPage />} />
+
+        <Route path="/pages/blogs" element={<BlogListPage />} />
+        <Route path="/pages/blogs/:slug" element={<BlogDetailPage />} />
+
+        {/* STATIC PAGES */}
+        <Route path="/pages/our-story" element={<OurStoryPage />} />
+        <Route path="/reviews" element={<ReviewsPage />} />
+        <Route path="/pages/faq" element={<FaqPage />} />
+        <Route path="/pages/contact" element={<ContactUsPage />} />
+
+        {/* CLEAN REDIRECTS */}
+        <Route
+          path="/about-us"
+          element={<Navigate to="/pages/our-story" replace />}
+        />
+        <Route
+          path="/contact-us"
+          element={<Navigate to="/pages/contact" replace />}
+        />
+        <Route path="/faq" element={<Navigate to="/pages/faq" replace />} />
+
+        {/* ─────────────────────────────────────────
+           🚀 SINGLE SEO COLLECTION ROUTE (FIXED)
+           ─────────────────────────────────────────
+           Instead of 50+ routes:
+           ALL SEO slugs are handled here
+           inside CollectionPage resolver
+        ───────────────────────────────────────── */}
+        <Route path="/:slug" element={<SEOCollectionRoute />} />
+
+        {/* 404 */}
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
 
-      {/* ── G. 404 (inside UserLayout so Navbar shows) ────────────────── */}
-      <Route path="*" element={<NotFoundPage />} />
-    </Route>
-
-    {/* ── F. PROTECTED SUB-ROUTERS (own layouts inside) ────────────────── */}
-    {/*
-        These have their own full-screen layouts (/user/*, /checkout/*),
-        so FullScreenLoader is correct — the sub-router renders its own shell.
-    */}
-    <Route element={<ProtectedRoute />}>
-      <Route
-        path="/user/*"
-        element={
-          <Suspense fallback={<FullScreenLoader />}>
-            <AccountRoutes />
-          </Suspense>
-        }
-      />
-      <Route
-        path="/checkout/*"
-        element={
-          <Suspense fallback={<FullScreenLoader />}>
-            <CheckoutRoutes />
-          </Suspense>
-        }
-      />
-    </Route>
-  </Routes>
+      {/* ───────── PROTECTED ───────── */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/user/*" element={<AccountRoutes />} />
+        <Route path="/checkout/*" element={<CheckoutRoutes />} />
+      </Route>
+    </Routes>
+  </>
 );
 
 export default AppRoutes;

@@ -4,7 +4,7 @@ import ProductGridLoader from "./ProductGridLoader";
 import EmptyState from "./EmptyState";
 import ErrorState from "./ErrorState";
 import InfiniteSentinel from "./InfiniteSentinel";
-import { SkeletonCard } from "./SkeletonCard"; // FIXED
+import { SkeletonCard } from "./SkeletonCard";
 
 const ProductGrid = memo(
   ({
@@ -17,29 +17,25 @@ const ProductGrid = memo(
     sentinelRef,
     clearFilters,
   }) => {
+    // Simple responsive grid: 2 cols mobile, 3 tablet, 4 desktop
+    const defaultGridClass = "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4";
+    const finalGridClass = gridClass || defaultGridClass;
+
     if (isError) return <ErrorState retry={() => window.location.reload()} />;
-    if (isLoading) return <ProductGridLoader gridClass={gridClass} />;
+    if (isLoading) return <ProductGridLoader gridClass={finalGridClass} />;
     if (!displayProducts?.length)
       return <EmptyState clearFilters={clearFilters} />;
 
     return (
       <>
-        <div className={`grid ${gridClass}`}>
-          {displayProducts.map((product, i) => (
-            <div
-              key={product.id}
-              className="animate-fade-up"
-              style={{
-                animationDelay: `${Math.min(i % 8, 7) * 35}ms`,
-                animationFillMode: "both",
-              }}>
-              <ProductCard product={product} />
-            </div>
+        <div className={`grid ${finalGridClass}`}>
+          {displayProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
 
         {isFetchingNextPage && (
-          <div className={`grid ${gridClass} mt-8 md:mt-12`}>
+          <div className={`grid ${finalGridClass} mt-6`}>
             {Array.from({ length: 4 }).map((_, i) => (
               <SkeletonCard key={`skeleton-${i}`} />
             ))}
@@ -49,28 +45,10 @@ const ProductGrid = memo(
         <InfiniteSentinel sentinelRef={sentinelRef} />
 
         {!hasNextPage && displayProducts.length > 8 && (
-          <div className="pt-16 pb-8">
-            <div className="flex items-center justify-center gap-3">
-              <div className="h-px w-12 bg-gray-200" />
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-gray-400">
-                You’ve reached the end
-              </p>
-              <div className="h-px w-12 bg-gray-200" />
-            </div>
+          <div className="text-center py-8">
+            <p className="text-sm text-gray-500">You've reached the end</p>
           </div>
         )}
-
-        <style>
-          {`
-            @keyframes fade-up {
-              from { opacity: 0; transform: translateY(12px); }
-              to { opacity: 1; transform: translateY(0); }
-            }
-            .animate-fade-up {
-              animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            }
-          `}
-        </style>
       </>
     );
   },
