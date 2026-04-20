@@ -122,7 +122,7 @@ const HomePage = () => {
     <main className="min-h-screen bg-white">
       {/* SEO — light, heavy meta already in index.html */}
       <Helmet>
-        <title>{SITE_NAME} | Organic Food from Uttarakhand</title>
+        <title>Ghar Ka Organic | Organic Achar & Honey</title>
         <meta
           name="description"
           content="Buy pahadi organic food online — achar, ghee, honey & more from Uttarakhand. 100% natural, homemade."
@@ -130,6 +130,9 @@ const HomePage = () => {
         <link rel="canonical" href={`${SITE_URL}/`} />
       </Helmet>
 
+      <h1 className="sr-only">
+        Ghar Ka Organic - Pure Pahadi Organic Food from Uttarakhand
+      </h1>
       {/* hero */}
       <section className="w-full">
         <div className="w-full aspect-[16/9] sm:aspect-[16/7] md:aspect-[16/6]">

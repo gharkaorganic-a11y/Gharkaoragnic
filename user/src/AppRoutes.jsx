@@ -103,7 +103,7 @@ const AppRoutes = () => (
 
       {/* ───────── SITEMAP ───────── */}
       <Route
-        path="/sitemap.xml"
+        path="/sitemap"
         element={
           <Suspense fallback={<InlineLoader />}>
             <SitemapPage />
