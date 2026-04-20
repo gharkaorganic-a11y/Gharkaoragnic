@@ -127,7 +127,7 @@ const HomePage = () => {
           name="description"
           content="Buy pahadi organic food online — achar, ghee, honey & more from Uttarakhand. 100% natural, homemade."
         />
-        <link rel="canonical" href={`${SITE_URL}/`} />
+        <link rel="canonical" href="https://gharkaorganic.com/" />{" "}
       </Helmet>
 
       <h1 className="sr-only">
@@ -145,7 +145,7 @@ const HomePage = () => {
 
       {/* category tabs — full productSections for complete tab list */}
       <section className="w-full mt-6 md:mt-10 max-w-7xl mx-auto px-4">
-        <ProductSectionTabs productSections={productSections} />
+        <ProductSectionTabs productSections={productSections} />{" "}
       </section>
 
       {/* section 1 — Most Loved / Bestsellers */}
@@ -159,7 +159,7 @@ const HomePage = () => {
         <ExploreOurPicks
           data={{
             img: "/banner/pahadiseid.png",
-            label: "Explore Our Picks",
+            label: "Uttarakhand Himalayan Organic Pickles Collection",
             link: "/collections/all",
           }}
         />
@@ -173,7 +173,7 @@ const HomePage = () => {
         <ExploreOurPicks
           data={{
             img: "/banner/pahadipickle.png",
-            label: "Explore More",
+            label: "Traditional Pahadi Organic Products from Uttarakhand",
             link: "/collections/all",
           }}
         />

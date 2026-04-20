@@ -1,10 +1,11 @@
 {
-  "name": "Mnmukt",
-  "short_name": "Mnmukt",
+  "name": "Ghar Ka Organic",
+  "short_name": "GharKaOrganic",
+  "description": "Uttarakhand Himalayan organic food brand — handmade pickles, pure desi ghee, and raw forest honey.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#da127d",
+  "theme_color": "#6b4f2c",
   "icons": [
     {
       "src": "/favicon.png",

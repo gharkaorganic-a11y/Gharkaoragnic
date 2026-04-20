@@ -1,350 +1,155 @@
 <!doctype html>
 <html lang="en-IN" dir="ltr">
   <head>
-    <!-- ═══════════════════════════════════════════════════════════
-         GHAR KA ORGANIC — index.html
-         Static SEO layer. Loads before React hydrates.
-         Rule: Everything here is STATIC and SITE-WIDE.
-         Dynamic/page-specific meta goes in react-helmet (HomePage.jsx).
-    ═══════════════════════════════════════════════════════════ -->
+    <!-- ═══════════════════════════════════════════════════════
+         GHAR KA ORGANIC — SEO MASTER INDEX
+         Uttarakhand Himalayan Organic Food Authority Setup
+    ═══════════════════════════════════════════════════════ -->
 
-    <!-- ── BASIC ──────────────────────────────────────────────── -->
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
-    <!-- ── PRIMARY SEO ────────────────────────────────────────── -->
+    <!-- ── CORE SEO ───────────────────────────── -->
     <meta
       name="description"
-      content="Shop pahadi organic food online — handmade pickles, desi ghee & raw honey from Uttarakhand. 100% natural & preservative-free." />
+      content="Shop authentic Uttarakhand Himalayan organic food — handmade pahadi pickles, pure desi ghee & raw forest honey. 100% natural, chemical-free, directly sourced from Himalayan villages." />
+
     <meta
       name="robots"
       content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+
     <meta name="author" content="Ghar Ka Organic" />
-    <meta name="copyright" content="Ghar Ka Organic" />
     <meta name="rating" content="general" />
     <meta name="format-detection" content="telephone=no" />
 
-    <!-- ── GOOGLE SEARCH CONSOLE VERIFICATION ─────────────────── -->
+    <!-- ── GEO TARGETING ───────────────────────── -->
+    <meta name="geo.region" content="IN-UT" />
+    <meta name="geo.placename" content="Bhimtal, Uttarakhand, India" />
+    <meta name="geo.position" content="29.3459;79.5618" />
+    <meta name="ICBM" content="29.3459, 79.5618" />
+
+    <!-- ── GOOGLE VERIFICATION ─────────────────── -->
     <meta
       name="google-site-verification"
       content="mfQjYaDw_YelyPtU6UN97Zla8BOrzscHJ1m82zhdkXQ" />
 
-    <!-- ── GEO SEO — Bhimtal, Uttarakhand ─────────────────────── -->
-    <meta name="geo.region" content="IN-UT" />
-    <meta
-      name="geo.placename"
-      content="Bhimtal, Nainital, Uttarakhand, India" />
-    <meta name="geo.position" content="29.3459;79.5618" />
-    <meta name="ICBM" content="29.3459, 79.5618" />
-
-    <!-- ── CANONICAL & HREFLANG ───────────────────────────────── -->
-    <!--
-      hreflang for /hi/ intentionally absent.
-      Google penalises fake alternates that don't serve real translated content.
-    -->
-    <link rel="canonical" href="https://gharkaorganic.com/" />
-    <link rel="alternate" hreflang="en-IN" href="https://gharkaorganic.com/" />
-    <link
-      rel="alternate"
-      hreflang="x-default"
-      href="https://gharkaorganic.com/" />
-
-    <!-- ── APPLE / PWA META ────────────────────────────────────── -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="Ghar Ka Organic" />
-
-    <!-- ── THEME ──────────────────────────────────────────────── -->
-    <meta name="theme-color" content="#6b4f2c" />
-    <meta name="msapplication-TileColor" content="#6b4f2c" />
-    <meta name="msapplication-TileImage" content="/gharka-logo.png" />
-
-    <!-- ── OPEN GRAPH (static fallback) ──────────────────────── -->
-    <!--
-      react-helmet overrides these per page with specific values.
-      These act as fallback if React fails to hydrate (bots, slow connections).
-    -->
+    <!-- ── OPEN GRAPH ──────────────────────────── -->
     <meta property="og:type" content="website" />
     <meta
       property="og:title"
-      content="Ghar Ka Organic — Authentic Pahadi Achar & Organic Food from Uttarakhand" />
+      content="Ghar Ka Organic — Uttarakhand Himalayan Organic Food" />
+
     <meta
       property="og:description"
-      content="Handcrafted pahadi pickles, pure desi ghee, raw honey & organic spices from Kumaon, Uttarakhand. No chemicals. No preservatives. Delivered across India." />
+      content="Handmade pahadi pickles, desi ghee & raw honey from Uttarakhand Himalayas. Pure, traditional, chemical-free food." />
+
     <meta property="og:url" content="https://gharkaorganic.com/" />
-    <meta property="og:site_name" content="Ghar Ka Organic" />
-    <meta property="og:locale" content="en_IN" />
+
     <meta
       property="og:image"
-      content="https://gharkaorganic.com/logo/gharka-logo.png" />
-    <meta
-      property="og:image:secure_url"
-      content="https://gharkaorganic.com/logo/gharka-logo.png" />
+      content="https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp" />
+
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:type" content="image/png" />
-    <meta
-      property="og:image:alt"
-      content="Ghar Ka Organic — Pahadi Achar, Ghee and Honey from Uttarakhand" />
 
-    <!-- ── TWITTER / X (static fallback) ─────────────────────── -->
+    <!-- ── TWITTER ─────────────────────────────── -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@gharkaorganic" />
-    <meta name="twitter:creator" content="@gharkaorganic" />
     <meta
       name="twitter:title"
-      content="Ghar Ka Organic — Authentic Pahadi Achar from Uttarakhand" />
+      content="Uttarakhand Himalayan Organic Food — Ghar Ka Organic" />
+
     <meta
       name="twitter:description"
-      content="Handcrafted organic pickles, ghee & honey from Kumaon, Uttarakhand. Pure, preservative-free. Delivered across India." />
+      content="Pure pahadi pickles, desi ghee & raw honey from Himalayan villages." />
+
     <meta
       name="twitter:image"
-      content="https://gharkaorganic.com/og-cover.png" />
-    <meta name="twitter:image:alt" content="Ghar Ka Organic Pahadi Products" />
+      content="https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp" />
 
-    <!-- ── PERFORMANCE — preconnect critical origins ──────────── -->
+    <!-- ── PERFORMANCE ─────────────────────────── -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="https://firestore.googleapis.com" />
 
-    <!-- ── FONTS — NON-BLOCKING (FIX APPLIED) ─────────────────── -->
-    <!--
-      preload + media="print" trick = zero render-blocking.
-      display=swap in URL prevents invisible text during font load (FOIT).
-      noscript fallback for JS-disabled crawlers.
-    -->
-    <link
-      rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@400;500;600&display=swap" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@400;500;600&display=swap"
-      media="print"
-      onload="this.media = 'all'" />
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@400;500;600&display=swap" />
-    </noscript>
+    <!-- ── FAVICON ─────────────────────────────── -->
+    <link rel="icon" href="/favicon.png" />
 
-    <!-- ── FAVICON ────────────────────────────────────────────── -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
+    <!-- ═══════════════════════════════════════════
+         STRUCTURED DATA (SEO AUTHORITY LAYER)
+    ═══════════════════════════════════════════ -->
 
-    <!-- ── LCP HERO IMAGE PRELOAD — SPLIT BY DEVICE (FIX APPLIED) -->
-    <!--
-      CRITICAL for Core Web Vitals / LCP score.
-      Separate preloads so mobile doesn't download the large desktop image.
-      Replace filenames with your actual hero images.
-      Always use .webp for best compression.
-    -->
-    <link
-      rel="preload"
-      href="/hero-banner-1-mobile.png"
-      as="image"
-      type="image/webp"
-      fetchpriority="high"
-      media="(max-width: 767px)" />
-    <link
-      rel="preload"
-      href="/hero-banner-1-mobile.png"
-      as="image"
-      type="image/webp"
-      fetchpriority="high"
-      media="(min-width: 768px)" />
-
-    <!-- ══════════════════════════════════════════════════════════
-         STRUCTURED DATA / JSON-LD
-         All STATIC schemas live here — loaded before React.
-         Dynamic schemas (ItemList per page) go in react-helmet.
-
-         Schema priority for Google ranking:
-         1. LocalBusiness — LOCAL search dominance
-         2. Organization  — brand knowledge panel
-         3. WebSite       — sitelinks searchbox
-         4. BreadcrumbList — breadcrumb in SERP
-         5. FAQPage       — People Also Ask box
-    ══════════════════════════════════════════════════════════ -->
-
-    <!-- ── 1. LocalBusiness ───────────────────────────────────── -->
+    <!-- ── LOCAL BUSINESS ─────────────────────── -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": ["LocalBusiness", "FoodEstablishment", "Store"],
+        "@type": ["LocalBusiness", "OnlineStore"],
         "name": "Ghar Ka Organic",
-        "alternateName": ["GharKaOrganic", "Ghar Ka Organic Pahadi Foods"],
         "url": "https://gharkaorganic.com/",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://gharkaorganic.com/gharka-logo.png",
-          "width": 200,
-          "height": 200
-        },
-        "image": [
-          "https://gharkaorganic.com/og-cover.png",
-          "https://gharkaorganic.com/gharka-logo.png"
-        ],
-        "description": "Authentic homemade pahadi organic food — handcrafted pickles (achar), pure desi ghee, raw honey, and spices from Kumaon, Uttarakhand. No preservatives, no chemicals.",
-        "priceRange": "₹₹",
-        "currenciesAccepted": "INR",
-        "paymentAccepted": "Cash, UPI, Credit Card, Debit Card, Net Banking, COD",
-        "openingHoursSpecification": [
-          {
-            "@type": "OpeningHoursSpecification",
-            "dayOfWeek": [
-              "Monday",
-              "Tuesday",
-              "Wednesday",
-              "Thursday",
-              "Friday",
-              "Saturday",
-              "Sunday"
-            ],
-            "opens": "09:00",
-            "closes": "18:00"
-          }
-        ],
+        "telephone": "+91-7983990550",
+
+        "image": "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp",
+
         "address": {
           "@type": "PostalAddress",
-          "streetAddress": "Bhimtal",
           "addressLocality": "Bhimtal",
           "addressRegion": "Uttarakhand",
-          "postalCode": "263136",
           "addressCountry": "IN"
         },
+
         "geo": {
           "@type": "GeoCoordinates",
           "latitude": 29.3459,
           "longitude": 79.5618
         },
-        "areaServed": [
-          { "@type": "Country", "name": "India" },
-          { "@type": "AdministrativeArea", "name": "Uttarakhand" }
+
+        "areaServed": {
+          "@type": "Country",
+          "name": "India"
+        },
+
+        "knowsAbout": [
+          "Uttarakhand Himalayan Organic Food",
+          "Pahadi Pickles (Achar)",
+          "Raw Forest Honey",
+          "A2 Desi Ghee",
+          "Traditional Kumaoni Food"
         ],
-        "hasOfferCatalog": {
-          "@type": "OfferCatalog",
-          "name": "Pahadi Organic Products",
-          "itemListElement": [
-            {
-              "@type": "OfferCatalog",
-              "name": "Pickles & Achar",
-              "url": "https://gharkaorganic.com/collections/pickle"
-            },
-            {
-              "@type": "OfferCatalog",
-              "name": "Organic Ghee",
-              "url": "https://gharkaorganic.com/collections/organic-ghee"
-            },
-            {
-              "@type": "OfferCatalog",
-              "name": "Raw Honey",
-              "url": "https://gharkaorganic.com/collections/organic-honey"
-            },
-            {
-              "@type": "OfferCatalog",
-              "name": "Cold-Pressed Oils",
-              "url": "https://gharkaorganic.com/collections/oils"
-            },
-            {
-              "@type": "OfferCatalog",
-              "name": "Homemade Masalas & Spices",
-              "url": "https://gharkaorganic.com/collections/masala"
-            }
-          ]
-        },
-        "contactPoint": {
-          "@type": "ContactPoint",
-          "contactType": "customer service",
-          "availableLanguage": ["English", "Hindi"],
-          "email": "support@gharkaorganic.com"
-        },
-        "sameAs": [
-          "https://www.instagram.com/gharkaorganic",
-          "https://www.facebook.com/gharkaorganic"
-        ]
+
+        "sameAs": ["https://www.instagram.com/gharkaorganic/"]
       }
     </script>
 
-    <!-- ── 2. Organization ────────────────────────────────────── -->
+    <!-- ── ORGANIZATION ───────────────────────── -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": "Ghar Ka Organic",
-        "alternateName": "GharKaOrganic",
         "url": "https://gharkaorganic.com/",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://gharkaorganic.com/gharka-logo.png",
-          "width": 200,
-          "height": 200
-        },
-        "description": "Authentic pahadi organic food brand from Bhimtal, Uttarakhand. Handcrafted pickles, pure ghee, raw honey — no preservatives, no chemicals.",
-        "foundingLocation": {
-          "@type": "Place",
-          "name": "Bhimtal, Nainital, Uttarakhand, India"
-        },
-        "areaServed": { "@type": "Country", "name": "India" },
-        "sameAs": [
-          "https://www.instagram.com/gharkaorganic",
-          "https://www.facebook.com/gharkaorganic"
-        ]
+        "logo": "https://gharkaorganic.com/gharka-logo.png",
+        "knowsAbout": ["Himalayan Organic Food", "Natural Indian Food Products"]
       }
     </script>
 
-    <!-- ── 3. WebSite + Sitelinks Searchbox ──────────────────── -->
+    <!-- ── WEBSITE ───────────────────────────── -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "WebSite",
         "name": "Ghar Ka Organic",
-        "alternateName": "GharKaOrganic Store",
         "url": "https://gharkaorganic.com/",
-        "inLanguage": "en-IN",
         "potentialAction": {
           "@type": "SearchAction",
-          "target": {
-            "@type": "EntryPoint",
-            "urlTemplate": "https://gharkaorganic.com/search?q={search_term_string}"
-          },
-          "query-input": "required name=search_term_string"
+          "target": "https://gharkaorganic.com/search?q={query}",
+          "query-input": "required name=query"
         }
       }
     </script>
 
-    <!-- ── 4. BreadcrumbList — Homepage root ─────────────────── -->
-    <!--
-      Each inner page adds its own BreadcrumbList via react-helmet.
-      This is the homepage root entry only.
-    -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": "https://gharkaorganic.com/"
-          }
-        ]
-      }
-    </script>
-
-    <!-- ── 5. FAQPage — People Also Ask box ──────────────────── -->
-    <!--
-      Targets PAA rich results. Questions tuned to high-intent searches.
-      FAQ section is visible on homepage — schema lives here for bot access
-      before React hydrates.
-    -->
+    <!-- ── FAQ (KEEP ONLY HIGH QUALITY QUESTIONS) ─ -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -355,110 +160,15 @@
             "name": "What is Ghar Ka Organic?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Ghar Ka Organic is a homemade organic food brand from Bhimtal, Uttarakhand. We handcraft traditional pahadi pickles (achar), pure desi ghee, raw forest honey, and cold-pressed oils using ancestral recipes — with no preservatives, no chemicals, and no artificial colours."
+              "text": "A Uttarakhand Himalayan organic food brand offering handmade pickles, ghee, and raw honey."
             }
           },
           {
             "@type": "Question",
-            "name": "Are Ghar Ka Organic pickles preservative-free?",
+            "name": "Are products chemical-free?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Yes. All our pickles are made with natural ingredients only — raw mangoes, mustard oil, rock salt, and traditional pahadi spices. No artificial colours, no vinegar, no chemical preservatives of any kind."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Does Ghar Ka Organic deliver pan India?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes, we deliver across all major cities and states in India. Free shipping is available on orders above ₹499."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "What is pahadi achar?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Pahadi achar refers to traditional pickles made in the Himalayan hill regions of Uttarakhand. They use locally sourced wild ingredients, cold-pressed mustard oil, and regional mountain spices — giving them a unique bold flavour distinct from plains-style pickles."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "What products does Ghar Ka Organic sell?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "We sell pahadi pickles (achar), pure desi ghee, raw forest honey, cold-pressed oils, homemade masalas, and other organic wellness products — all sourced and handcrafted in Uttarakhand."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "What payment methods does Ghar Ka Organic accept?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "We accept UPI, Credit Card, Debit Card, Net Banking, and Cash on Delivery (COD) for all orders across India."
-            }
-          }
-        ]
-      }
-    </script>
-
-    <!-- ── 6. Static ItemList fallback (top products) ────────── -->
-    <!--
-      Bot/no-JS fallback for product discovery.
-      react-helmet generates the dynamic version with real prices/images.
-      This static version ensures Google sees SOMETHING even before hydration.
-      Update handles when your actual collection slugs are final.
-    -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "ItemList",
-        "name": "Featured Organic Products from Uttarakhand",
-        "description": "Hand-picked organic pahadi food from Ghar Ka Organic",
-        "url": "https://gharkaorganic.com/",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "item": {
-              "@type": "Product",
-              "name": "Pahadi Mango Pickle (Achar)",
-              "image": "https://gharkaorganic.com/images/products/mango-pickle.jpeg",
-              "url": "https://gharkaorganic.com/products/pahadi-mango-pickle",
-              "brand": {
-                "@type": "Brand",
-                "name": "Ghar Ka Organic"
-              },
-              "offers": {
-                "@type": "Offer",
-                "priceCurrency": "INR",
-                "price": "249",
-                "availability": "https://schema.org/InStock",
-                "url": "https://gharkaorganic.com/products/pahadi-mango-pickle",
-                "priceValidUntil": "2027-12-31"
-              }
-            }
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "item": {
-              "@type": "Product",
-              "name": "Pure Desi Ghee",
-              "image": "https://gharkaorganic.com/images/products/desi-ghee.jpeg",
-              "url": "https://gharkaorganic.com/products/pure-desi-ghee",
-              "brand": {
-                "@type": "Brand",
-                "name": "Ghar Ka Organic"
-              },
-              "offers": {
-                "@type": "Offer",
-                "priceCurrency": "INR",
-                "price": "799",
-                "availability": "https://schema.org/InStock",
-                "url": "https://gharkaorganic.com/products/pure-desi-ghee",
-                "priceValidUntil": "2027-12-31"
-              }
+              "text": "Yes, all products are 100% natural and preservative-free."
             }
           }
         ]

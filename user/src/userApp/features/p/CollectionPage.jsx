@@ -64,7 +64,7 @@ const resolveSection = (param) => {
 };
 
 const buildCanonical = (sectionKey) => {
-  if (!sectionKey || sectionKey === "all") return `${BASE_URL}/collections`;
+  if (!sectionKey || sectionKey === "all") return `${BASE_URL}/`;
   const slug = preferredSlug[sectionKey];
   return slug ? `${BASE_URL}/${slug}` : `${BASE_URL}/collections/${sectionKey}`;
 };
@@ -196,28 +196,57 @@ const CollectionPage = () => {
   return (
     <main className="min-h-screen bg-white">
       <Helmet>
+        {/* Robots */}
+        <meta
+          name="robots"
+          content={productCount === 0 ? "noindex, follow" : "index, follow"}
+        />
+
+        {/* Title + Description */}
         <title>{section.seoTitle}</title>
         {section.seoDescription && (
           <meta name="description" content={section.seoDescription} />
         )}
+
+        {/* Canonical */}
         <link rel="canonical" href={canonical} />
+
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
         <meta property="og:title" content={section.seoTitle} />
         <meta property="og:description" content={section.seoDescription} />
         <meta property="og:url" content={canonical} />
-        <meta property="og:type" content="website" />
+
+        {/* OG IMAGE (your cloudinary one) */}
+        <meta
+          property="og:image"
+          content="https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp"
+        />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+          name="twitter:image"
+          content="https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp"
+        />
       </Helmet>
 
       {/* Hero Banner */}
       <section className="bg-gray-50 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
           <Breadcrumb
-            items={[{ label: "Home", href: "/" }, { label: section.title }]}
+            items={[
+              { label: "Home", href: "/" },
+              { label: section.title, href: canonical },
+            ]}
           />
           <div className="mt-6 text-center sm:text-left">
             <h1
               className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight"
               style={{ fontFamily: "'Playfair Display', serif" }}>
-              {section.title}
+              {section.title} from Uttarakhand Himalayas{" "}
             </h1>
             {section.seoDescription && (
               <p className="mt-3 text-gray-600 text-sm sm:text-base max-w-2xl">
