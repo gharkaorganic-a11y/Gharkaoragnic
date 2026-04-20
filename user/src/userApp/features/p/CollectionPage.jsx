@@ -174,17 +174,65 @@ const CollectionPage = () => {
   });
 
   /* ── 6. Early returns ───────────────────────────────────────────────── */
-
   if (!section) {
     return (
-      <main className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Page not found
-          </h1>
-          <p className="text-gray-500">
-            The collection you're looking for doesn't exist.
+      <main className="min-h-screen flex items-center justify-center bg-white">
+        <Helmet>
+          <title>Page Not Found | Ghar Ka Organic</title>
+          <meta name="robots" content="noindex, follow" />
+          <meta
+            name="description"
+            content="The page you're looking for does not exist. Explore organic products from Uttarakhand Himalayas."
+          />
+        </Helmet>
+
+        <div className="text-center max-w-lg px-4">
+          <h1 className="text-3xl font-bold text-gray-900">Page Not Found</h1>
+
+          <p className="text-gray-500 mt-3">
+            The collection you're looking for doesn’t exist or may have been
+            removed.
           </p>
+
+          {/* 🔍 Optional search (BIG UX WIN) */}
+          <div className="mt-6">
+            <input
+              type="text"
+              placeholder="Search for organic products..."
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600"
+            />
+          </div>
+
+          {/* 🔗 Internal links (SEO helpful) */}
+          <div className="mt-6 flex flex-col gap-3">
+            <a
+              href="/"
+              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+              Go to Homepage
+            </a>
+
+            <a
+              href="/collections"
+              className="text-green-600 font-medium hover:underline">
+              Browse All Collections
+            </a>
+
+            {/* 👇 Add top categories manually */}
+            <div className="mt-4 text-sm text-gray-500">
+              Popular:
+              <div className="flex flex-wrap justify-center gap-2 mt-2">
+                <a href="/organic-honey" className="hover:text-green-600">
+                  Organic Honey
+                </a>
+                <a href="/desi-ghee" className="hover:text-green-600">
+                  Desi Ghee
+                </a>
+                <a href="/organic-pulses" className="hover:text-green-600">
+                  Organic Pulses
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
     );
@@ -197,10 +245,7 @@ const CollectionPage = () => {
     <main className="min-h-screen bg-white">
       <Helmet>
         {/* Robots */}
-        <meta
-          name="robots"
-          content={productCount === 0 ? "noindex, follow" : "index, follow"}
-        />
+        <meta name="robots" content="index, follow" />
 
         {/* Title + Description */}
         <title>{section.seoTitle}</title>
@@ -208,6 +253,15 @@ const CollectionPage = () => {
           <meta name="description" content={section.seoDescription} />
         )}
 
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            name: section.title,
+            description: section.seoDescription,
+            url: canonical,
+          })}
+        </script>
         {/* Canonical */}
         <link rel="canonical" href={canonical} />
 
@@ -304,11 +358,33 @@ const CollectionPage = () => {
             </p>
           </div>
         ) : productCount === 0 ? (
-          <div className="text-center py-20 bg-gray-50 rounded-2xl">
-            <p className="text-gray-700 font-medium">No products found</p>
-            <p className="text-sm text-gray-500 mt-1">
-              Try a different category or check back later
+          <div className="py-16 px-4 bg-gray-50 rounded-2xl max-w-3xl mx-auto text-center">
+            {/* ✅ Strong H2 for SEO */}
+            <h2 className="text-2xl font-semibold text-gray-900">
+              {section.title}
+            </h2>
+
+            {/* ✅ Use your SEO description */}
+            {section.seoDescription && (
+              <p className="mt-3 text-gray-600">{section.seoDescription}</p>
+            )}
+
+            {/* ✅ Extra keyword-rich content */}
+            <p className="mt-4 text-sm text-gray-500">
+              We are currently updating our inventory for this category. Explore
+              our range of authentic organic products sourced directly from the
+              Uttarakhand Himalayas. New items will be available soon.
             </p>
+
+            {/* ✅ Internal linking (VERY IMPORTANT) */}
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
+              <a href="/collections" className="text-green-600 hover:underline">
+                View All Collections
+              </a>
+              <a href="/" className="text-green-600 hover:underline">
+                Go to Homepage
+              </a>
+            </div>
           </div>
         ) : (
           <>
