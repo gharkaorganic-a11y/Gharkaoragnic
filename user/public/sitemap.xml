@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+<urlset 
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 
+  <!-- Homepage -->
   <url>
-    <loc>https://gharkaorganic.com</loc>
+    <loc>https://gharkaorganic.com/</loc>
     <lastmod>2026-04-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
       <image:loc>https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp</image:loc>
       <image:title>Ghar Ka Organic – Uttarakhand Himalayan Pure Desi Ghee &amp; Natural Products</image:title>
-      <image:caption>Authentic homemade organic products from Uttarakhand Himalayas – pure Desi Ghee, raw honey, and traditional natural foods sourced from mountain villages</image:caption>
+      <image:caption>
+        Authentic homemade organic products from Uttarakhand Himalayas – pure Desi Ghee, raw honey, and traditional foods.
+      </image:caption>
     </image:image>
   </url>
 
+  <!-- Product Page -->
   <url>
     <loc>https://gharkaorganic.com/raw-honey-uttarakhand</loc>
     <lastmod>2026-04-20</lastmod>
@@ -22,9 +27,18 @@
     <image:image>
       <image:loc>https://res.cloudinary.com/dwgro3zo7/image/upload/v1776692760/raw-organic-honey_uxbtrx.webp</image:loc>
       <image:title>Uttarakhand Himalayan Raw Organic Honey – Ghar Ka Organic</image:title>
-      <image:caption>Pure raw honey sourced from the forests and villages of Uttarakhand Himalayas, unprocessed and natural</image:caption>
-      <image:license>https://gharkaorganic.com/license</image:license>
+      <image:caption>
+        Pure raw honey sourced from Uttarakhand forests, unprocessed and natural.
+      </image:caption>
     </image:image>
+  </url>
+
+  <!-- Collections -->
+  <url>
+    <loc>https://gharkaorganic.com/all-products</loc>
+    <lastmod>2026-04-20</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
   </url>
 
   <url>
@@ -34,25 +48,19 @@
     <priority>0.8</priority>
   </url>
 
-  <url>
-    <loc>https://gharkaorganic.com/all-products</loc>
-    <lastmod>2026-04-20</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-
+  <!-- Pages -->
   <url>
     <loc>https://gharkaorganic.com/pages/our-story</loc>
     <lastmod>2026-04-20</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
 
   <url>
     <loc>https://gharkaorganic.com/pages/contact</loc>
     <lastmod>2026-04-20</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
 
 </urlset>
