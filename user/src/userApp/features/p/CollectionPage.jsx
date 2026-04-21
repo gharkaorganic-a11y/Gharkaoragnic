@@ -244,6 +244,8 @@ const CollectionPage = () => {
     name: section.seoTitle ?? section.title,
     description: section.seoDescription ?? "",
     url: canonical,
+    image:
+      "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp",
     inLanguage: "en-IN",
     isPartOf: {
       "@type": "WebSite",
@@ -415,6 +417,38 @@ const CollectionPage = () => {
           </div>
         ) : (
           <>
+            {isAllSection && (
+              <section className="mb-10">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                  Explore Our Organic Collections
+                </h2>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+                  {productSections
+                    .filter((s) => s.key !== "all")
+                    .map((s) => {
+                      const url = toRelativePath(buildCanonical(s.key));
+
+                      return (
+                        <a
+                          key={s.key}
+                          href={url}
+                          className="group p-5 border rounded-xl hover:shadow-md transition bg-white">
+                          <h3 className="font-semibold text-gray-900 group-hover:text-green-600">
+                            {s.title}
+                          </h3>
+
+                          {/* 👇 ADD THIS (very important for SEO) */}
+                          <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+                            {s.seoDescription ||
+                              `Shop ${s.title.toLowerCase()} sourced from Uttarakhand Himalayas.`}
+                          </p>
+                        </a>
+                      );
+                    })}
+                </div>
+              </section>
+            )}
             <ProductGrid
               isLoading={false}
               isError={false}
@@ -428,6 +462,22 @@ const CollectionPage = () => {
                 <GridSkeleton />
               </div>
             )}
+
+            <p>
+              Explore our popular categories like{" "}
+              <a href="/organic-honey" className="text-green-600">
+                organic honey
+              </a>
+              ,{" "}
+              <a href="/desi-ghee" className="text-green-600">
+                A2 desi ghee
+              </a>{" "}
+              and traditional{" "}
+              <a href="/pahadi-pickles" className="text-green-600">
+                pahadi pickles
+              </a>
+              .
+            </p>
           </>
         )}
       </div>

@@ -13,8 +13,7 @@ import ProductGrid from "./components/ProductGrid";
 const BASE_URL = "https://gharkaorganic.com";
 const BRAND_GREEN = "#0B8A52";
 const INFINITE_SCROLL_MARGIN = "500px";
-const CANONICAL = `${BASE_URL}/best-sellers`;
-
+const CANONICAL = "https://gharkaorganic.com/shop/best-sellers";
 const SORT_OPTIONS = [
   { value: "createdAt_desc", label: "Newest First" },
   { value: "price_asc", label: "Price: Low to High" },
@@ -30,6 +29,8 @@ const JSONLD_WEBPAGE = JSON.stringify({
   description:
     "Shop our most loved organic products from Uttarakhand Himalayas — A2 desi ghee, raw pahadi honey, pahadi pickles, and more. Trusted by thousands of customers across India.",
   url: CANONICAL,
+  image:
+    "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp",
   inLanguage: "en-IN",
   isPartOf: {
     "@type": "WebSite",
@@ -180,7 +181,11 @@ const BestSellersPage = () => {
           content="Best selling organic products from Uttarakhand — Ghar Ka Organic"
         />
         <meta property="og:locale" content="en_IN" />
-
+        <link
+          rel="preload"
+          as="image"
+          href="https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp"
+        />
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta
@@ -208,7 +213,7 @@ const BestSellersPage = () => {
           <Breadcrumb
             items={[
               { label: "Home", href: "/" },
-              { label: "Best Sellers", href: "/best-sellers" },
+              { label: "Best Sellers", href: "/shop/best-sellers" },
             ]}
           />
           <div className="mt-6 sm:flex sm:items-end sm:justify-between gap-8">
