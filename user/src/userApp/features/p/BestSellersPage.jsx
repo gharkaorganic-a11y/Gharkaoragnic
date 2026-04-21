@@ -19,42 +19,8 @@ const SORT_OPTIONS = [
   { value: "price_asc", label: "Price: Low to High" },
   { value: "price_desc", label: "Price: High to Low" },
   { value: "name_asc", label: "Name: A–Z" },
+  { value: "popularity_desc", label: "Most Popular" },
 ];
-
-/* ───────── JSON-LD ───────── */
-const JSONLD_WEBPAGE = JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "CollectionPage",
-  name: "Best Selling Organic Products | Ghar Ka Organic",
-  description:
-    "Shop our most loved organic products from Uttarakhand Himalayas — A2 desi ghee, raw pahadi honey, pahadi pickles, and more. Trusted by thousands of customers across India.",
-  url: CANONICAL,
-  image:
-    "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp",
-  inLanguage: "en-IN",
-  isPartOf: {
-    "@type": "WebSite",
-    name: "Ghar Ka Organic",
-    url: BASE_URL,
-  },
-  breadcrumb: {
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: BASE_URL,
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Best Sellers",
-        item: CANONICAL,
-      },
-    ],
-  },
-});
 
 /* ───────── SKELETON ───────── */
 const ProductSkeleton = () => (
@@ -100,9 +66,9 @@ const BestSellersPage = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const handleSortChange = useCallback((v) => setSort(v), []);
 
-  /* ── 1. Fixed section — always "best" ── */
+  /* ── 1. Correct section key ── */
   const section = useMemo(
-    () => productSections.find((s) => s.key === "new"), // ✅ FIXED — was "new"
+    () => productSections.find((s) => s.key === "new"),
     [],
   );
 
@@ -115,7 +81,7 @@ const BestSellersPage = () => {
     isLoading,
     isError,
   } = useCollection({
-    collectionType: "new", // ✅ FIXED — was "new"
+    collectionType: "new",
     sort,
     enabled: true,
   });
@@ -132,33 +98,85 @@ const BestSellersPage = () => {
 
   const productCount = displayProducts?.length ?? 0;
 
+  /* ── 4. JSON-LD with ItemList for products ── */
+  const jsonLd = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "CollectionPage",
+          "@id": CANONICAL,
+          name: "Best Selling Organic Products | Ghar Ka Organic",
+          description:
+            "Shop our most loved organic products from Uttarakhand Himalayas — A2 desi ghee, raw pahadi honey, pahadi pickles, and more. Trusted by thousands across India.",
+          url: CANONICAL,
+          image:
+            "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp",
+          inLanguage: "en-IN",
+          isPartOf: {
+            "@type": "WebSite",
+            name: "Ghar Ka Organic",
+            url: BASE_URL,
+          },
+          breadcrumb: {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: BASE_URL,
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Best Sellers",
+                item: CANONICAL,
+              },
+            ],
+          },
+        },
+        {
+          "@type": "ItemList",
+          name: "Best Selling Organic Products",
+          itemListElement:
+            displayProducts?.slice(0, 10).map((p, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              url: `${BASE_URL}/products/${p.slug}`,
+              name: p.name,
+            })) || [],
+        },
+      ],
+    }),
+    [displayProducts],
+  );
+
   return (
     <main className="min-h-screen bg-white">
       {/* ═══════════════════════════════════════════
-          SEO — ALL signals Google needs to index
+          SEO — INDEXING SIGNALS
       ═══════════════════════════════════════════ */}
       <Helmet>
-        {/* Core indexing signals */}
         <title>
           Best Selling Organic Products from Uttarakhand | Ghar Ka Organic
         </title>
         <meta
           name="description"
-          content="Shop Ghar Ka Organic's best selling products — A2 desi ghee, raw pahadi honey, pickles, pulses and more from Uttarakhand Himalayas. 100% natural, farm-sourced, free shipping on ₹499+."
+          content="Shop Ghar Ka Organic's best sellers — A2 desi ghee, raw pahadi honey, pickles & more from Uttarakhand Himalayas. 100% natural, farm-sourced. Free shipping ₹499+."
         />
         <link rel="canonical" href={CANONICAL} />
-        {/* max-snippet etc. tells Google it can show rich snippets */}
         <meta
           name="robots"
           content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
         />
 
-        {/* Geo signals — helps for Uttarakhand local SEO */}
+        {/* Geo + Language */}
         <meta name="geo.region" content="IN-UT" />
         <meta name="geo.placename" content="Uttarakhand, India" />
         <meta name="language" content="en-IN" />
 
-        {/* Open Graph — required for Google rich results + sharing */}
+        {/* Open Graph */}
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Ghar Ka Organic" />
         <meta
@@ -181,12 +199,8 @@ const BestSellersPage = () => {
           content="Best selling organic products from Uttarakhand — Ghar Ka Organic"
         />
         <meta property="og:locale" content="en_IN" />
-        <link
-          rel="preload"
-          as="image"
-          href="https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp"
-        />
-        {/* Twitter Card */}
+
+        {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta
           name="twitter:title"
@@ -201,75 +215,87 @@ const BestSellersPage = () => {
           content="https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp"
         />
 
-        {/* JSON-LD: CollectionPage + BreadcrumbList */}
-        <script type="application/ld+json">{JSONLD_WEBPAGE}</script>
+        {/* Preload LCP image */}
+        <link
+          rel="preload"
+          as="image"
+          href="https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp"
+        />
+
+        {/* JSON-LD: CollectionPage + ItemList + Breadcrumb */}
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
 
       {/* ═══════════════════════════════════════════
-          HERO — Best Sellers specific
+          HERO
       ═══════════════════════════════════════════ */}
-      <section className="bg-gradient-to-b from-green-50 to-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+      <section className="bg-gradient-to-b from-green-50/70 to-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-16">
           <Breadcrumb
             items={[
               { label: "Home", href: "/" },
               { label: "Best Sellers", href: "/shop/best-sellers" },
             ]}
           />
-          <div className="mt-6 sm:flex sm:items-end sm:justify-between gap-8">
-            <div>
-              {/* Badge — signals this is a curated bestseller list */}
+          <div className="mt-6 sm:mt-8 grid lg:grid-cols-12 gap-8 items-end">
+            <div className="lg:col-span-8">
               <span
                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-widest mb-4"
                 style={{ backgroundColor: "#E8F5EE", color: BRAND_GREEN }}>
-                <span>★</span> Customer Favourites
+                ★ Customer Favourites
               </span>
 
               <h1
                 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight leading-tight"
                 style={{ fontFamily: "'Playfair Display', serif" }}>
-                Best Selling Organic
-                <br className="hidden sm:block" />
-                Products from Uttarakhand
+                Best Selling Organic Products from Uttarakhand
               </h1>
 
-              <p className="mt-4 text-gray-600 text-sm sm:text-base max-w-xl leading-relaxed">
-                Hand-picked by thousands of customers — our A2 desi ghee, raw
-                pahadi honey, Himalayan pickles and more. Sourced directly from
-                farms in Uttarakhand, delivered fresh to your door.
+              <p className="mt-4 text-gray-600 text-sm sm:text-base max-w-2xl leading-relaxed">
+                Hand-picked by thousands of families — pure A2 Badri ghee, raw
+                forest honey, traditional pahadi pickles, and Himalayan spices.
+                Sourced directly from women-led farms in Uttarakhand, delivered
+                fresh to your door.
               </p>
             </div>
 
-            {/* Trust checklist — desktop only */}
-            <div className="hidden lg:flex flex-col gap-2 text-sm shrink-0">
-              {[
-                "100% natural & organic",
-                "No preservatives or additives",
-                "Directly from Uttarakhand farms",
-                "15-day freshness guarantee",
-              ].map((text) => (
-                <div
-                  key={text}
-                  className="flex items-center gap-2 text-gray-700">
-                  <span
-                    className="font-bold text-base"
-                    style={{ color: BRAND_GREEN }}>
-                    ✓
-                  </span>
-                  {text}
-                </div>
-              ))}
+            {/* Trust checklist */}
+            <div className="lg:col-span-4">
+              <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                  Why Our Best Sellers?
+                </p>
+                <ul className="space-y-2.5 text-sm">
+                  {[
+                    "100% natural & chemical-free",
+                    "No preservatives or additives",
+                    "Directly from Uttarakhand farms",
+                    "15-day freshness guarantee",
+                  ].map((text) => (
+                    <li
+                      key={text}
+                      className="flex items-start gap-2 text-gray-700">
+                      <span
+                        className="font-bold text-base mt-0.5"
+                        style={{ color: BRAND_GREEN }}>
+                        ✓
+                      </span>
+                      {text}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ───────── CATEGORY TABS ───────── */}
-      <div className="border-b border-gray-200 bg-white sticky top-0 z-30">
+      <div className="border-b border-gray-200 bg-white sticky top-0 z-30 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ProductSectionTabs
             productSections={productSections}
-            currentKey="best" // ✅ correct
+            currentKey="best"
           />
         </div>
       </div>
@@ -279,6 +305,7 @@ const BestSellersPage = () => {
         {/* Toolbar */}
         <div className="flex items-center justify-between gap-4 pb-6 mb-6 border-b border-gray-200">
           <div className="flex items-center gap-4">
+            <h2 className="sr-only">Products</h2>
             <p className="text-sm text-gray-700">
               <span className="font-semibold text-gray-900">
                 {isLoading ? "..." : productCount}
@@ -287,7 +314,8 @@ const BestSellersPage = () => {
             </p>
             <button
               onClick={() => setMobileFiltersOpen(true)}
-              className="lg:hidden flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-gray-900">
+              className="lg:hidden flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-gray-900"
+              aria-label="Open filters">
               <AdjustmentsHorizontalIcon className="w-5 h-5" />
               Filters
             </button>
@@ -318,15 +346,19 @@ const BestSellersPage = () => {
               Our most loved organic products from the Uttarakhand Himalayas.
             </p>
             <p className="mt-4 text-sm text-gray-500">
-              We are currently updating our best sellers inventory. Explore our
-              full range of authentic organic products sourced directly from
-              Uttarakhand. New items will be available soon.
+              We're updating our best sellers inventory. Explore our full range
+              of authentic organic products sourced directly from Uttarakhand.
             </p>
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <a href="/collections" className="text-green-600 hover:underline">
+            <div className="mt-6 flex flex-wrap justify-center gap-3 text-sm">
+              <a
+                href="/all-products"
+                className="text-green-700 hover:underline font-medium">
                 View All Collections
               </a>
-              <a href="/" className="text-green-600 hover:underline">
+              <span className="text-gray-300">•</span>
+              <a
+                href="/"
+                className="text-green-700 hover:underline font-medium">
                 Go to Homepage
               </a>
             </div>
@@ -351,41 +383,44 @@ const BestSellersPage = () => {
       </div>
 
       {/* ═══════════════════════════════════════════
-          WHY BEST SELLERS — keyword-rich editorial
-          Google needs crawlable text to understand
-          what this page is about beyond product tiles
+          EDITORIAL SEO BLOCK - CRITICAL FOR INDEXING
+          Google needs crawlable text, not just tiles
       ═══════════════════════════════════════════ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-gray-100">
-        <div className="grid sm:grid-cols-3 gap-8 text-sm text-gray-600">
-          <div>
-            <h2 className="text-base font-semibold text-gray-900 mb-2">
-              Why Customers Love These Products
-            </h2>
-            <p className="leading-relaxed">
-              Our best sellers are the products customers come back for — pure
-              A2 desi ghee churned by hand, raw pahadi honey harvested from
-              Himalayan forests, and traditional pickles made with no
-              preservatives.
+        <div className="max-w-4xl">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Why These Are Our Best Selling Organic Products
+          </h2>
+          <div className="prose prose-sm text-gray-600 max-w-none space-y-4">
+            <p>
+              <strong>Ghar Ka Organic’s best sellers</strong> represent the
+              products our customers trust and reorder most — pure{" "}
+              <strong>A2 Badri Desi Ghee</strong> churned using the traditional
+              bilona method, <strong>raw forest honey</strong> harvested from
+              Himalayan wildflowers, and <strong>pahadi pickles</strong> made
+              with age-old Kumaoni recipes without preservatives or artificial
+              vinegar.
             </p>
-          </div>
-          <div>
-            <h3 className="text-base font-semibold text-gray-900 mb-2">
-              Sourced from Uttarakhand Himalayas
-            </h3>
-            <p className="leading-relaxed">
-              Every product in this collection comes directly from verified
-              farmers in Uttarakhand — Kumaon and Garhwal regions. No middlemen,
-              no chemicals, just pure mountain goodness.
+            <p>
+              Every item is{" "}
+              <strong>
+                sourced directly from women-led farmer groups in Uttarakhand
+              </strong>
+              across Kumaon and Garhwal regions. We work with communities in
+              Bhimtal, Almora, and Pithoragarh who use chemical-free,
+              small-batch methods passed down generations. No middlemen, no cold
+              storage — just fresh produce from the Himalayas to your kitchen.
             </p>
-          </div>
-          <div>
-            <h3 className="text-base font-semibold text-gray-900 mb-2">
-              Freshness &amp; Quality Guarantee
+            <h3 className="text-lg font-semibold text-gray-900!mb-2">
+              Freshness & Quality Promise
             </h3>
-            <p className="leading-relaxed">
-              Each order is dispatched within 48 hours. We stand behind every
-              product with a 15-day freshness guarantee — if you're not
-              satisfied, we'll make it right.
+            <p>
+              All best seller orders are packed within 48 hours of your order
+              and ship with our
+              <strong> 15-day freshness guarantee</strong>. If you’re not
+              satisfied with the aroma, taste, or quality, we’ll replace it or
+              refund you — no questions asked. Free shipping across India on
+              orders above ₹499.
             </p>
           </div>
         </div>
@@ -400,13 +435,13 @@ const BestSellersPage = () => {
             <div>
               <div className="text-2xl font-bold">100%</div>
               <div className="text-xs uppercase tracking-wider text-green-100 mt-1">
-                Organic
+                Organic Certified
               </div>
             </div>
             <div>
               <div className="text-2xl font-bold">48hr</div>
               <div className="text-xs uppercase tracking-wider text-green-100 mt-1">
-                Dispatch
+                Dispatch Time
               </div>
             </div>
             <div>

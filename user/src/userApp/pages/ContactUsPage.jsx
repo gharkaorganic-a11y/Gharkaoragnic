@@ -17,7 +17,7 @@ import {
 const BASE_URL = "https://gharkaorganic.com";
 const CANONICAL = `${BASE_URL}/pages/contact`;
 const OG_IMAGE =
-  "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp";
+  "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1776770687/Organic_Himalayan_food_from_Bhimtal_Uttarakhand_by_Ghar_Ka_Organic_wbolwx.webp";
 const ACCENT = "#F59E0B";
 
 /* ─── JSON-LD ─── */
@@ -57,7 +57,7 @@ const JSONLD = JSON.stringify({
       name: "Ghar Ka Organic",
       url: `${BASE_URL}/`,
       telephone: "+91-7983990550",
-      email: "care@gharkaorganic.com",
+      email: "gharkaorganic@gmail.com",
       image: OG_IMAGE,
       address: {
         "@type": "PostalAddress",
@@ -151,6 +151,8 @@ const ContactUsPage = () => {
           name="description"
           content="Contact Ghar Ka Organic for A2 desi ghee, raw pahadi honey, Himalayan pickles, order support or bulk inquiries. We respond within 24 hours. Based in Bhimtal, Uttarakhand."
         />
+        <meta property="og:image" content="YOUR_BANNER_IMAGE" />
+        <meta name="twitter:image" content="YOUR_BANNER_IMAGE" />
         {/* ✅ Canonical — explicitly declared so Google doesn't have to guess */}
         <link rel="canonical" href={CANONICAL} />
         <meta
@@ -196,7 +198,31 @@ const ContactUsPage = () => {
         {/* JSON-LD: ContactPage + BreadcrumbList + LocalBusiness */}
         <script type="application/ld+json">{JSONLD}</script>
       </Helmet>
+      {/* ── HERO BANNER ── */}
+      <section className="w-full relative h-[45vh] md:h-[60vh] overflow-hidden">
+        <img
+          src="https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1776770687/Organic_Himalayan_food_from_Bhimtal_Uttarakhand_by_Ghar_Ka_Organic_wbolwx.webp"
+          alt="Organic Himalayan food from Bhimtal Uttarakhand by Ghar Ka Organic"
+          className="w-full h-full object-cover"
+          loading="eager"
+          fetchPriority="high"
+        />
 
+        {/* dark overlay for text readability */}
+        <div className="absolute inset-0 bg-black/30"></div>
+
+        {/* optional SEO text layer (hidden from clutter but indexable) */}
+        <div className="absolute inset-0 flex items-center justify-center px-4">
+          <div className="text-center max-w-3xl">
+            <h1 className="text-white text-2xl md:text-4xl font-light tracking-wide">
+              Contact Ghar Ka Organic
+            </h1>
+            <p className="text-white/80 text-sm md:text-base mt-3">
+              A2 Desi Ghee • Raw Honey • Pahadi Pickles from Uttarakhand
+            </p>
+          </div>
+        </div>
+      </section>
       {/* ── HEADER ── */}
       <header className="w-full pt-24 pb-16 px-6 text-center">
         <div className="max-w-3xl mx-auto">
@@ -225,37 +251,39 @@ const ContactUsPage = () => {
       </header>
 
       {/* ── MAIN ── */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="flex flex-col lg:flex-row border border-gray-100 rounded-sm overflow-hidden shadow-sm">
-          {/* FORM */}
-          <section className="flex-[1.5] bg-white p-8 sm:p-12 lg:p-16">
-            <h2 className="text-2xl text-gray-900 mb-8">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+        <div className="grid lg:grid-cols-2 gap-10">
+          {/* ───────── CONTACT FORM ───────── */}
+          <section className="bg-white">
+            <h2 className="text-2xl text-gray-900 mb-6">
               Send us a <span className="italic text-gray-600">Message</span>
             </h2>
 
-            {/* ✅ FIXED: border-l-2 now has a color (was invisible before) */}
+            {/* Status Messages */}
             {status === "success" && (
-              <div className="mb-8 border-l-2 border-amber-500 bg-amber-50 p-4 flex gap-3 text-amber-800 text-sm font-medium">
-                <Check size={18} className="shrink-0 mt-0.5" />
-                <p>Thanks! We'll reply within 24 hours.</p>
+              <div className="mb-6 p-4 bg-green-50 text-green-800 text-sm rounded">
+                <Check className="inline mr-2" size={16} />
+                Thanks! We'll reply within 24 hours.
               </div>
             )}
 
             {status === "error" && (
-              <div className="mb-8 border-l-2 border-red-500 bg-red-50 p-4 text-red-700 text-sm">
+              <div className="mb-6 p-4 bg-red-50 text-red-700 text-sm rounded">
                 Something went wrong. Please try again.
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            {/* FORM */}
+            <form onSubmit={handleSubmit} className="space-y-4">
               <input
                 name="name"
                 required
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Name"
-                className="w-full border-b border-gray-200 py-2 outline-none focus:border-amber-500 transition-colors bg-transparent"
+                className="w-full border border-gray-200 rounded px-3 py-2 focus:border-amber-500 outline-none"
               />
+
               <input
                 type="email"
                 name="email"
@@ -263,22 +291,25 @@ const ContactUsPage = () => {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Email"
-                className="w-full border-b border-gray-200 py-2 outline-none focus:border-amber-500 transition-colors bg-transparent"
+                className="w-full border border-gray-200 rounded px-3 py-2 focus:border-amber-500 outline-none"
               />
+
               <input
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="Phone (optional)"
-                className="w-full border-b border-gray-200 py-2 outline-none focus:border-amber-500 transition-colors bg-transparent"
+                className="w-full border border-gray-200 rounded px-3 py-2 focus:border-amber-500 outline-none"
               />
+
               <input
                 name="orderId"
                 value={formData.orderId}
                 onChange={handleChange}
                 placeholder="Order ID (if applicable)"
-                className="w-full border-b border-gray-200 py-2 outline-none focus:border-amber-500 transition-colors bg-transparent"
+                className="w-full border border-gray-200 rounded px-3 py-2 focus:border-amber-500 outline-none"
               />
+
               <textarea
                 name="message"
                 required
@@ -286,13 +317,13 @@ const ContactUsPage = () => {
                 value={formData.message}
                 onChange={handleChange}
                 placeholder="Message"
-                className="w-full border-b border-gray-200 py-2 outline-none focus:border-amber-500 transition-colors bg-transparent resize-none"
+                className="w-full border border-gray-200 rounded px-3 py-2 focus:border-amber-500 outline-none resize-none"
               />
 
               <button
                 type="submit"
                 disabled={status === "loading"}
-                className="bg-gray-900 text-white px-6 py-3 flex items-center gap-2 hover:bg-gray-800 transition-colors disabled:opacity-60">
+                className="bg-gray-900 text-white px-6 py-3 rounded flex items-center gap-2 hover:bg-gray-800 transition">
                 {status === "loading" ? (
                   <Loader2 size={16} className="animate-spin" />
                 ) : (
@@ -304,125 +335,76 @@ const ContactUsPage = () => {
             </form>
           </section>
 
-          {/* INFO */}
-          <aside className="flex-1 bg-stone-50 p-8 sm:p-12 lg:p-16 border-t lg:border-t-0 lg:border-l border-gray-100">
-            <h2 className="text-lg font-medium text-gray-900 mb-8">
+          {/* ───────── CONTACT INFO ───────── */}
+          <aside className="bg-gray-50 p-6 rounded-lg space-y-6">
+            <h2 className="text-lg font-semibold text-gray-900">
               Get in Touch
             </h2>
-            <div className="space-y-7">
-              <div className="flex items-start gap-3">
-                <MapPin
-                  size={16}
-                  className="mt-0.5 shrink-0"
-                  style={{ color: ACCENT }}
-                />
-                <div>
-                  <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">
-                    Location
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Bhimtal, Uttarakhand, India
-                  </p>
-                </div>
-              </div>
 
-              <div className="flex items-start gap-3">
-                <Phone
-                  size={16}
-                  className="mt-0.5 shrink-0"
-                  style={{ color: ACCENT }}
-                />
-                <div>
-                  <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">
-                    Phone
-                  </p>
-                  <a
-                    href="tel:+917983990550"
-                    className="text-sm text-gray-600 hover:text-amber-600 transition-colors">
-                    +91 7983990550
-                  </a>
-                </div>
-              </div>
+            {/* Location */}
+            <div>
+              <p className="text-xs text-gray-500 uppercase mb-1">Location</p>
+              <p className="text-sm text-gray-700">
+                Bhimtal, Uttarakhand, India
+              </p>
+            </div>
 
-              <div className="flex items-start gap-3">
-                <Mail
-                  size={16}
-                  className="mt-0.5 shrink-0"
-                  style={{ color: ACCENT }}
-                />
-                <div>
-                  <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">
-                    Email
-                  </p>
-                  <a
-                    href="mailto:care@gharkaorganic.com"
-                    className="text-sm text-gray-600 hover:text-amber-600 transition-colors">
-                    care@gharkaorganic.com
-                  </a>
-                </div>
-              </div>
+            {/* Phone */}
+            <div>
+              <p className="text-xs text-gray-500 uppercase mb-1">Phone</p>
+              <a
+                href="tel:+917983990550"
+                className="text-sm text-gray-700 hover:text-amber-600">
+                +91 7983990550
+              </a>
+            </div>
 
-              <div className="flex items-start gap-3">
-                <Clock
-                  size={16}
-                  className="mt-0.5 shrink-0"
-                  style={{ color: ACCENT }}
-                />
-                <div>
-                  <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">
-                    Hours
-                  </p>
-                  <p className="text-sm text-gray-600">Mon – Sat, 10AM – 7PM</p>
-                </div>
-              </div>
+            {/* Email */}
+            <div>
+              <p className="text-xs text-gray-500 uppercase mb-1">Email</p>
+              <a
+                href="mailto:gharkaorganic@gmail.com"
+                className="text-sm text-gray-700 hover:text-amber-600">
+                gharkaorganic@gmail.com
+              </a>
+            </div>
 
-              <div className="flex items-start gap-3">
-                <Instagram
-                  size={16}
-                  className="mt-0.5 shrink-0"
-                  style={{ color: ACCENT }}
-                />
-                <div>
-                  <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">
-                    Instagram
-                  </p>
-                  <a
-                    href="https://instagram.com/gharkaorganic"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-sm text-gray-600 hover:text-amber-600 transition-colors">
-                    @gharkaorganic
-                  </a>
-                </div>
-              </div>
+            {/* Hours */}
+            <div>
+              <p className="text-xs text-gray-500 uppercase mb-1">Hours</p>
+              <p className="text-sm text-gray-700">Mon – Sat, 10AM – 7PM</p>
+            </div>
+
+            {/* Instagram */}
+            <div>
+              <p className="text-xs text-gray-500 uppercase mb-1">Instagram</p>
+              <a
+                href="https://instagram.com/gharkaorganic"
+                target="_blank"
+                rel="noreferrer"
+                className="text-sm text-gray-700 hover:text-amber-600">
+                @gharkaorganic
+              </a>
             </div>
           </aside>
         </div>
 
-        {/* Internal linking */}
-        <div className="mt-12 text-sm text-gray-500 text-center">
+        {/* ───────── INTERNAL LINKS ───────── */}
+        <div className="mt-12 text-sm text-center text-gray-600">
           Explore our{" "}
-          <a
-            href="/collections"
-            className="text-amber-600 underline hover:text-amber-700">
+          <a href="/collections" className="text-amber-600 underline">
             organic Himalayan products
           </a>{" "}
           including{" "}
-          <a
-            href="/desi-ghee"
-            className="text-amber-600 underline hover:text-amber-700">
+          <a href="/desi-ghee" className="text-amber-600 underline">
             A2 desi ghee
           </a>
           ,{" "}
-          <a
-            href="/organic-honey"
-            className="text-amber-600 underline hover:text-amber-700">
+          <a href="/organic-honey" className="text-amber-600 underline">
             raw honey
           </a>
           , and{" "}
-          <a
-            href="/collections"
-            className="text-amber-600 underline hover:text-amber-700">
+          <a href="/collections" className="text-amber-600 underline">
             pahadi pickles
           </a>
           .

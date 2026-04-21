@@ -13,6 +13,7 @@ export const routeAliases = {
 
   /* PICKLE */
   "pahadi-achar-online": "pickle",
+  "buy-pahadi-achar-online": "pickle",
   "homemade-pickle-india": "pickle",
   "buy-pahadi-achar": "pickle",
   "kumaoni-achar-online": "pickle",

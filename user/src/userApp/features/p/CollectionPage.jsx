@@ -3,17 +3,17 @@
  * Production-ready collection/category listing page.
  *
  * Route shapes handled:
- *   /collections        → "all" section  (canonical: /collections  NOT /)
- *   /collections/:slug  → specific section
- *   /:preferredSlug     → canonical URL (e.g. /organic-rice)
+ * /collections → "all" section (canonical: /collections NOT /)
+ * /collections/:slug → specific section
+ * /:preferredSlug → canonical URL (e.g. /organic-rice)
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Navigate, useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import {
   AdjustmentsHorizontalIcon,
-  XMarkIcon,
+  CheckBadgeIcon,
 } from "@heroicons/react/24/outline";
 
 import { productSections } from "../homepage/config/productCollection";
@@ -33,6 +33,7 @@ const BRAND_GREEN = "#0B8A52";
 const INFINITE_SCROLL_MARGIN = "500px";
 
 const SORT_OPTIONS = [
+  { value: "popularity_desc", label: "Most Popular" },
   { value: "createdAt_desc", label: "Newest First" },
   { value: "price_asc", label: "Price: Low to High" },
   { value: "price_desc", label: "Price: High to Low" },
@@ -57,11 +58,6 @@ const resolveSection = (param) => {
   return null;
 };
 
-/**
- * ✅ FIXED: "all" section now canonicalises to /collections, NOT to /
- * The old logic returned BASE_URL + "/" for "all", which made Google
- * treat every collection page as a duplicate of the homepage.
- */
 const buildCanonical = (sectionKey) => {
   if (!sectionKey || sectionKey === "all") return `${BASE_URL}/collections`;
   const slug = preferredSlug[sectionKey];
@@ -80,22 +76,18 @@ const useSentinel = (
   { enabled = true, rootMargin = "0px" } = {},
 ) => {
   const ref = useRef(null);
-
   useEffect(() => {
     const el = ref.current;
     if (!el || !enabled) return;
-
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) onIntersect();
       },
       { rootMargin },
     );
-
     obs.observe(el);
     return () => obs.disconnect();
   }, [onIntersect, enabled, rootMargin]);
-
   return ref;
 };
 
@@ -127,7 +119,7 @@ const CollectionPage = () => {
   const { slug: urlSlug } = useParams();
   const { pathname } = useLocation();
 
-  const [sort, setSort] = useState("createdAt_desc");
+  const [sort, setSort] = useState("popularity_desc");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const handleSortChange = useCallback((v) => setSort(v), []);
 
@@ -186,22 +178,12 @@ const CollectionPage = () => {
             content="The page you're looking for does not exist. Explore organic products from Uttarakhand Himalayas."
           />
         </Helmet>
-
         <div className="text-center max-w-lg px-4">
           <h1 className="text-3xl font-bold text-gray-900">Page Not Found</h1>
           <p className="text-gray-500 mt-3">
             The collection you're looking for doesn't exist or may have been
             removed.
           </p>
-
-          <div className="mt-6">
-            <input
-              type="text"
-              placeholder="Search for organic products..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600"
-            />
-          </div>
-
           <div className="mt-6 flex flex-col gap-3">
             <a
               href="/"
@@ -213,20 +195,6 @@ const CollectionPage = () => {
               className="text-green-600 font-medium hover:underline">
               Browse All Collections
             </a>
-            <div className="mt-4 text-sm text-gray-500">
-              Popular:
-              <div className="flex flex-wrap justify-center gap-2 mt-2">
-                <a href="/organic-honey" className="hover:text-green-600">
-                  Organic Honey
-                </a>
-                <a href="/desi-ghee" className="hover:text-green-600">
-                  Desi Ghee
-                </a>
-                <a href="/organic-pulses" className="hover:text-green-600">
-                  Organic Pulses
-                </a>
-              </div>
-            </div>
           </div>
         </div>
       </main>
@@ -237,54 +205,129 @@ const CollectionPage = () => {
   const productCount = displayProducts?.length ?? 0;
   const isAllSection = section.key === "all";
 
-  /* Build JSON-LD per section */
-  const jsonLd = JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    name: section.seoTitle ?? section.title,
-    description: section.seoDescription ?? "",
-    url: canonical,
-    image:
-      "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp",
-    inLanguage: "en-IN",
-    isPartOf: {
-      "@type": "WebSite",
-      name: "Ghar Ka Organic",
-      url: BASE_URL,
-    },
-    breadcrumb: {
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: BASE_URL },
+  /* Build JSON-LD with ItemList + Product + FAQ for rich results */
+  const jsonLd = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@graph": [
         {
-          "@type": "ListItem",
-          position: 2,
-          name: section.title,
-          item: canonical,
+          "@type": "CollectionPage",
+          "@id": canonical,
+          name: section.seoTitle ?? section.title,
+          description: section.seoDescription ?? "",
+          url: canonical,
+          image:
+            section.bannerImage ||
+            "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp",
+          inLanguage: "en-IN",
+          isPartOf: {
+            "@type": "WebSite",
+            name: "Ghar Ka Organic",
+            url: BASE_URL,
+          },
+          breadcrumb: {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: BASE_URL,
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: section.title,
+                item: canonical,
+              },
+            ],
+          },
+        },
+        {
+          "@type": "ItemList",
+          name: `${section.title} - Product List`,
+          itemListElement:
+            displayProducts?.slice(0, 24).map((p, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              url: `${BASE_URL}/products/${p.slug}`,
+              item: {
+                "@type": "Product",
+                name: p.name,
+                image: p.image,
+                description: p.description?.substring(0, 160),
+                sku: p.sku || p.slug,
+                brand: { "@type": "Brand", name: "Ghar Ka Organic" },
+                offers: {
+                  "@type": "Offer",
+                  price: String(p.price),
+                  priceCurrency: "INR",
+                  availability: p.inStock
+                    ? "https://schema.org/InStock"
+                    : "https://schema.org/OutOfStock",
+                  url: `${BASE_URL}/products/${p.slug}`,
+                },
+                ...(p.rating && {
+                  aggregateRating: {
+                    "@type": "AggregateRating",
+                    ratingValue: String(p.rating),
+                    reviewCount: String(p.reviewCount || 1),
+                  },
+                }),
+              },
+            })) || [],
+        },
+        {
+          "@type": "FAQPage",
+          mainEntity: [
+            {
+              "@type": "Question",
+              name: `Is ${section.title} from Ghar Ka Organic 100% natural?`,
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: `Yes, all ${section.title.toLowerCase()} from Ghar Ka Organic are sourced directly from verified farmers in Uttarakhand. We use no preservatives, chemicals, or artificial additives.`,
+              },
+            },
+            {
+              "@type": "Question",
+              name: "What is the delivery time for Uttarakhand products?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "We dispatch all orders within 48 hours. Delivery across India takes 3-7 business days. Free shipping on orders above ₹499.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "Do you offer a freshness guarantee?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Yes, we offer a 15-day freshness guarantee. If you're not satisfied with the quality, we’ll replace it or refund you.",
+              },
+            },
+          ],
         },
       ],
-    },
-  });
+    }),
+    [section, canonical, displayProducts],
+  );
 
   return (
     <main className="min-h-screen bg-white">
       {/* ═══════════════════════════════════════════
-          SEO — full indexing signals
+          SEO — INDEXING SIGNALS
       ═══════════════════════════════════════════ */}
       <Helmet>
-        {/* Core */}
         <title>{section.seoTitle}</title>
         {section.seoDescription && (
           <meta name="description" content={section.seoDescription} />
         )}
-        {/* ✅ FIXED canonical — no longer points to / for collection pages */}
         <link rel="canonical" href={canonical} />
         <meta
           name="robots"
           content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
         />
 
-        {/* Geo signals */}
+        {/* Geo + Language */}
         <meta name="geo.region" content="IN-UT" />
         <meta name="geo.placename" content="Uttarakhand, India" />
         <meta name="language" content="en-IN" />
@@ -300,7 +343,10 @@ const CollectionPage = () => {
         )}
         <meta
           property="og:image"
-          content="https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp"
+          content={
+            section.bannerImage ||
+            "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp"
+          }
         />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
@@ -317,39 +363,82 @@ const CollectionPage = () => {
         )}
         <meta
           name="twitter:image"
-          content="https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp"
+          content={
+            section.bannerImage ||
+            "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp"
+          }
         />
 
-        {/* JSON-LD: CollectionPage + BreadcrumbList */}
-        <script type="application/ld+json">{jsonLd}</script>
+        {/* Preload LCP */}
+        {section.bannerImage && (
+          <link rel="preload" as="image" href={section.bannerImage} />
+        )}
+
+        {/* JSON-LD */}
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
 
       {/* ───────── HERO BANNER ───────── */}
-      <section className="bg-gray-50 border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+      <section className="bg-gradient-to-b from-green-50/60 to-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-16">
           <Breadcrumb
             items={[
               { label: "Home", href: "/" },
               { label: section.title, href: canonical },
             ]}
           />
-          <div className="mt-6 text-center sm:text-left">
-            <h1
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight"
-              style={{ fontFamily: "'Playfair Display', serif" }}>
-              {section.title} from Uttarakhand Himalayas
-            </h1>
-            {section.seoDescription && (
-              <p className="mt-3 text-gray-600 text-sm sm:text-base max-w-2xl">
-                {section.seoDescription}
-              </p>
-            )}
+          <div className="mt-6 sm:mt-8 grid lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-7">
+              <span
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-widest mb-4"
+                style={{ backgroundColor: "#E8F5EE", color: BRAND_GREEN }}>
+                <CheckBadgeIcon className="w-4 h-4" /> From Uttarakhand Farms
+              </span>
+
+              <h1
+                className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight leading-tight"
+                style={{ fontFamily: "'Playfair Display', serif" }}>
+                {section.title} from Uttarakhand Himalayas
+              </h1>
+              {section.seoDescription && (
+                <p className="mt-4 text-gray-600 text-sm sm:text-base max-w-2xl leading-relaxed">
+                  {section.seoDescription}
+                </p>
+              )}
+            </div>
+
+            <div className="lg:col-span-5">
+              <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-6 shadow-sm">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                  Why Choose Us
+                </p>
+                <ul className="space-y-3 text-sm">
+                  {[
+                    "100% natural & chemical-free",
+                    "Directly from Uttarakhand farmers",
+                    "48hr dispatch, 15-day guarantee",
+                    "Free shipping on orders ₹499+",
+                  ].map((text) => (
+                    <li
+                      key={text}
+                      className="flex items-start gap-2.5 text-gray-700">
+                      <span
+                        className="font-bold text-base mt-0.5"
+                        style={{ color: BRAND_GREEN }}>
+                        ✓
+                      </span>
+                      {text}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ───────── CATEGORY TABS ───────── */}
-      <div className="border-b border-gray-200 bg-white sticky top-0 z-30">
+      <div className="border-b border-gray-200 bg-white sticky top-0 z-30 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ProductSectionTabs
             productSections={productSections}
@@ -360,18 +449,19 @@ const CollectionPage = () => {
 
       {/* ───────── PRODUCT GRID ───────── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {/* Toolbar */}
         <div className="flex items-center justify-between gap-4 pb-6 mb-6 border-b border-gray-200">
           <div className="flex items-center gap-4">
+            <h2 className="sr-only">Product List</h2>
             <p className="text-sm text-gray-700">
               <span className="font-semibold text-gray-900">
                 {isLoading ? "..." : productCount}
               </span>{" "}
-              {productCount === 1 ? "product" : "products"}
+              {productCount === 1 ? "product" : "products"} found
             </p>
             <button
               onClick={() => setMobileFiltersOpen(true)}
-              className="lg:hidden flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-gray-900">
+              className="lg:hidden flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-gray-900"
+              aria-label="Open filters">
               <AdjustmentsHorizontalIcon className="w-5 h-5" />
               Filters
             </button>
@@ -383,7 +473,6 @@ const CollectionPage = () => {
           />
         </div>
 
-        {/* States */}
         {isLoading && productCount === 0 ? (
           <GridSkeleton />
         ) : isError ? (
@@ -402,53 +491,25 @@ const CollectionPage = () => {
               <p className="mt-3 text-gray-600">{section.seoDescription}</p>
             )}
             <p className="mt-4 text-sm text-gray-500">
-              We are currently updating our inventory for this category. Explore
-              our range of authentic organic products sourced directly from the
-              Uttarakhand Himalayas. New items will be available soon.
+              We're updating inventory for this category. Explore our range of
+              authentic organic products from the Uttarakhand Himalayas. New
+              items coming soon.
             </p>
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <a href="/collections" className="text-green-600 hover:underline">
+            <div className="mt-6 flex flex-wrap justify-center gap-4 text-sm">
+              <a
+                href="/collections"
+                className="text-green-700 hover:underline font-medium">
                 View All Collections
               </a>
-              <a href="/" className="text-green-600 hover:underline">
+              <a
+                href="/"
+                className="text-green-700 hover:underline font-medium">
                 Go to Homepage
               </a>
             </div>
           </div>
         ) : (
           <>
-            {isAllSection && (
-              <section className="mb-10">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                  Explore Our Organic Collections
-                </h2>
-
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-                  {productSections
-                    .filter((s) => s.key !== "all")
-                    .map((s) => {
-                      const url = toRelativePath(buildCanonical(s.key));
-
-                      return (
-                        <a
-                          key={s.key}
-                          href={url}
-                          className="group p-5 border rounded-xl hover:shadow-md transition bg-white">
-                          <h3 className="font-semibold text-gray-900 group-hover:text-green-600">
-                            {s.title}
-                          </h3>
-
-                          {/* 👇 ADD THIS (very important for SEO) */}
-                          <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                            {s.seoDescription ||
-                              `Shop ${s.title.toLowerCase()} sourced from Uttarakhand Himalayas.`}
-                          </p>
-                        </a>
-                      );
-                    })}
-                </div>
-              </section>
-            )}
             <ProductGrid
               isLoading={false}
               isError={false}
@@ -462,70 +523,72 @@ const CollectionPage = () => {
                 <GridSkeleton />
               </div>
             )}
-
-            <p>
-              Explore our popular categories like{" "}
-              <a href="/organic-honey" className="text-green-600">
-                organic honey
-              </a>
-              ,{" "}
-              <a href="/desi-ghee" className="text-green-600">
-                A2 desi ghee
-              </a>{" "}
-              and traditional{" "}
-              <a href="/pahadi-pickles" className="text-green-600">
-                pahadi pickles
-              </a>
-              .
-            </p>
           </>
         )}
       </div>
 
       {/* ═══════════════════════════════════════════
-          EDITORIAL TEXT BLOCK
-          Crawlable keyword-rich content below the
-          product grid — helps Google understand what
-          this collection page is about
+          EDITORIAL SEO BLOCK - CRITICAL FOR RANKING
       ═══════════════════════════════════════════ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-gray-100">
-        <div className="grid sm:grid-cols-3 gap-8 text-sm text-gray-600">
-          <div>
-            <h2 className="text-base font-semibold text-gray-900 mb-2">
+        <div className="max-w-4xl">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            {isAllSection
+              ? "Pure Organic Products from Uttarakhand Himalayas"
+              : `About Our ${section.title}`}
+          </h2>
+          <div className="prose prose-sm text-gray-600 max-w-none space-y-4">
+            <p>
+              <strong>
+                Ghar Ka Organic{" "}
+                {isAllSection ? "best sellers" : section.title.toLowerCase()}
+              </strong>
               {isAllSection
-                ? "Pure Organic Products from Uttarakhand"
-                : `About Our ${section.title}`}
-            </h2>
-            <p className="leading-relaxed">
-              {section.seoDescription ??
-                "Explore our full range of authentic organic products sourced directly from farms in the Uttarakhand Himalayas — pure, natural, and free from preservatives."}
+                ? " represent products our customers trust most — pure A2 Badri Desi Ghee churned using the traditional bilona method, raw forest honey harvested from Himalayan wildflowers, and pahadi pickles made with age-old Kumaoni recipes."
+                : ` are sourced directly from women-led farmer groups in Uttarakhand. We use no preservatives, chemicals, or artificial additives — only traditional methods passed down generations.`}
             </p>
-          </div>
-          <div>
-            <h3 className="text-base font-semibold text-gray-900 mb-2">
-              Sourced from Uttarakhand Himalayas
-            </h3>
-            <p className="leading-relaxed">
-              Every product comes directly from verified farmers in Uttarakhand
-              — Kumaon and Garhwal regions. No middlemen, no chemicals, just
-              pure mountain goodness delivered to your door.
+            <p>
+              Every product comes from verified farmers across Kumaon and
+              Garhwal regions — Bhimtal, Almora, Pithoragarh, and Nainital. No
+              middlemen, no cold storage. We pack within 48 hours of your order
+              and ship with our <strong>15-day freshness guarantee</strong>.
+              Free shipping across India on orders above ₹499.
             </p>
-          </div>
-          <div>
-            <h3 className="text-base font-semibold text-gray-900 mb-2">
-              Freshness &amp; Quality Guarantee
+            <h3 className="text-lg font-semibold text-gray-900!mb-2!mt-6">
+              Related Categories
             </h3>
-            <p className="leading-relaxed">
-              Each order is dispatched within 48 hours with a 15-day freshness
-              guarantee. Free shipping on orders above ₹499. If you're not
-              satisfied, we'll make it right.
+            <p>
+              Explore our popular collections:{" "}
+              <a
+                href="/organic-honey"
+                className="text-green-700 hover:underline font-medium">
+                raw organic honey
+              </a>
+              ,{" "}
+              <a
+                href="/desi-ghee"
+                className="text-green-700 hover:underline font-medium">
+                A2 desi ghee
+              </a>
+              ,{" "}
+              <a
+                href="/pahadi-pickles"
+                className="text-green-700 hover:underline font-medium">
+                traditional pahadi pickles
+              </a>
+              , and{" "}
+              <a
+                href="/organic-pulses"
+                className="text-green-700 hover:underline font-medium">
+                Himalayan pulses
+              </a>
+              .
             </p>
           </div>
         </div>
       </section>
 
       {/* ───────── TRUST BAR ───────── */}
-      {/* ✅ FIXED — was all 4 items nested inside one grid column */}
       <section
         className="py-8 text-white"
         style={{ backgroundColor: BRAND_GREEN }}>
@@ -534,13 +597,13 @@ const CollectionPage = () => {
             <div>
               <div className="text-2xl font-bold">100%</div>
               <div className="text-xs uppercase tracking-wider text-green-100 mt-1">
-                Organic
+                Organic Certified
               </div>
             </div>
             <div>
               <div className="text-2xl font-bold">48hr</div>
               <div className="text-xs uppercase tracking-wider text-green-100 mt-1">
-                Dispatch
+                Dispatch Time
               </div>
             </div>
             <div>

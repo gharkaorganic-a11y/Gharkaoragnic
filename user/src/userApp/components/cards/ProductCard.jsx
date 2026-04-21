@@ -106,7 +106,7 @@ const ProductCard = ({ product }) => {
         />
       )}
       <article
-        className="group flex flex-col w-full cursor-pointer bg-white  border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:-translate-y-1 active:scale-[0.98]"
+        className="group flex flex-col w-full cursor-pointer bg-white verflow-hidden transition-all duration-300  hover:-translate-y-1 active:scale-[0.98]"
         onClick={handleNavigate}
         role="button"
         tabIndex={0}

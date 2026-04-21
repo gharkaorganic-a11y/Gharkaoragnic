@@ -1,417 +1,393 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import {
+  MagnifyingGlassIcon,
+  ArrowTopRightOnSquareIcon,
+} from "@heroicons/react/24/outline";
 
-/* ─── Brand tokens (consistent with OurStoryPage) ─── */
+/* ─────────────── SEO BRAND CONTEXT ─────────────── */
+const BRAND_NAME = "Ghar Ka Organic";
+const BRAND_DESC =
+  "Himalayan organic food brand from Uttarakhand offering A2 Desi Ghee, raw forest honey, and traditional pahadi pickles made by local women communities.";
+const BASE_URL = "https://gharkaorganic.com";
+const CANONICAL = `${BASE_URL}/sitemap`;
+
+/* ─────────────── COLORS ─────────────── */
 const T = {
   cream: "#F5EFE0",
-  parchment: "#EDE3CC",
   earth: "#7A5C3A",
   terracotta: "#C8563C",
-  terracottaMuted: "rgba(200,86,60,0.12)",
   leaf: "#4A6741",
-  leafMuted: "rgba(74,103,65,0.10)",
   ink: "#1C1209",
   muted: "#7A6A55",
   white: "#FDFAF4",
   border: "rgba(122,92,58,0.13)",
 };
 
+/* ─────────────── SITEMAP DATA (SEO ENRICHED) ─────────────── */
 const sitemapData = [
   {
-    title: "Shop Categories",
+    title: "Shop Himalayan Organic Products",
     icon: "🫙",
     accent: T.terracotta,
+    updated: "2026-04-15",
     links: [
-      { name: "All Products", path: "/collections/all" },
-      { name: "Homemade Pickles", path: "/collection/homemade-pickles" },
-      { name: "Mustard Oil Pickles", path: "/collection/mustard-oil-pickles" },
-      { name: "Spicy Pickles", path: "/collection/spicy-pickles" },
-      { name: "Tangy Pickles", path: "/collection/tangy-pickles" },
-      { name: "Sweet Pickles", path: "/collection/sweet-pickles" },
-      { name: "Mango Pickles", path: "/collection/mango-pickles" },
-      { name: "Oil-Free Pickles", path: "/collection/oil-free" },
-      { name: "Hand-pounded Masala", path: "/collection/masala" },
-      { name: "A2 Desi Ghee", path: "/collection/ghee" },
-      { name: "Healthy Snacks", path: "/collection/snacks" },
+      {
+        name: "A2 Desi Ghee from Uttarakhand",
+        path: "/collection/ghee",
+        desc: "Bilona churned, grass-fed cows",
+      },
+      {
+        name: "Raw Forest Honey (Himalayan)",
+        path: "/collection/honey",
+        desc: "Unheated, multifloral forest honey",
+      },
+      {
+        name: "Pahadi Achar (Traditional Pickles)",
+        path: "/collection/pickles",
+        desc: "Sun-cured, no preservatives",
+      },
+      {
+        name: "Homemade Spices & Masala",
+        path: "/collection/masala",
+        desc: "Stone-ground Himalayan spices",
+      },
+      {
+        name: "Healthy Himalayan Snacks",
+        path: "/collection/snacks",
+        desc: "Millet & amaranth based",
+      },
+      {
+        name: "Best Sellers Collection",
+        path: "/shop/best-sellers",
+        desc: "Most loved by customers",
+      },
     ],
   },
   {
-    title: "About Ghar Ka Organic",
+    title: "Our Himalayan Heritage",
     icon: "🌿",
     accent: T.leaf,
+    updated: "2026-04-10",
     links: [
-      { name: "Our Story", path: "/our-story" },
-      { name: "Our Mission", path: "/mission" },
-      { name: "Meet the Makers", path: "/meet-the-makers" },
-      { name: "Blogs & Recipes", path: "/blog" },
-      { name: "Press & Media", path: "/press" },
-      { name: "Careers", path: "/careers" },
+      {
+        name: "Our Story – Uttarakhand Women Makers",
+        path: "/our-story",
+        desc: "How we started in Bhimtal",
+      },
+      {
+        name: "Mission – Vocal for Local India",
+        path: "/mission",
+        desc: "Supporting rural livelihoods",
+      },
+      {
+        name: "Meet Women Farmers of Himalayas",
+        path: "/meet-the-makers",
+        desc: "The faces behind your food",
+      },
+      {
+        name: "Blog – Organic Food Benefits",
+        path: "/blog",
+        desc: "Recipes & health guides",
+      },
+      {
+        name: "Certifications & Lab Reports",
+        path: "/certifications",
+        desc: "FSSAI, organic certified",
+      },
     ],
   },
   {
-    title: "Customer Service",
+    title: "Customer Support & Policies",
     icon: "📦",
     accent: T.earth,
+    updated: "2026-04-18",
     links: [
-      { name: "Contact Us", path: "/contact" },
-      { name: "Track Your Order", path: "/track-order" },
-      { name: "Shipping & Delivery", path: "/shipping" },
-      { name: "Cancellation & Returns", path: "/cancellation" },
-      { name: "FAQs", path: "/faqs" },
-      { name: "Bulk Orders / Corporate", path: "/bulk-orders" },
-    ],
-  },
-  {
-    title: "Legal & Policies",
-    icon: "📋",
-    accent: T.muted,
-    links: [
-      { name: "Terms and Conditions", path: "/terms" },
-      { name: "Privacy Policy", path: "/privacy" },
-      { name: "Cookie Policy", path: "/cookies" },
-      { name: "Disclaimer", path: "/disclaimer" },
-    ],
-  },
-  {
-    title: "My Account",
-    icon: "👤",
-    accent: T.terracotta,
-    links: [
-      { name: "My Account", path: "/user/profile" },
-      { name: "Order History", path: "/user/orders" },
-      { name: "Shopping Bag", path: "/checkout/cart" },
-      { name: "Login / Register", path: "/auth/login" },
+      {
+        name: "Contact Ghar Ka Organic",
+        path: "/contact",
+        desc: "WhatsApp, email, call",
+      },
+      {
+        name: "Track Your Order",
+        path: "/track-order",
+        desc: "Live shipment status",
+      },
+      {
+        name: "Shipping Information India",
+        path: "/shipping",
+        desc: "3-7 days PAN India",
+      },
+      {
+        name: "Returns & Refund Policy",
+        path: "/returns",
+        desc: "15-day freshness guarantee",
+      },
+      {
+        name: "FAQs – Organic Products",
+        path: "/faqs",
+        desc: "Storage, usage, authenticity",
+      },
+      { name: "Privacy Policy", path: "/privacy", desc: "Data protection" },
+      { name: "Terms & Conditions", path: "/terms", desc: "Usage terms" },
     ],
   },
 ];
 
-/* ─── Tiny intersection reveal hook ─── */
-function useReveal(threshold = 0.1) {
-  const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setVisible(true);
-          obs.unobserve(el);
-        }
-      },
-      { threshold },
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-  return [ref, visible];
-}
+/* ─────────────── POPULAR QUICK LINKS ─────────────── */
+const quickLinks = [
+  { name: "A2 Badri Ghee 500ml", path: "/products/a2-badri-ghee-500ml" },
+  { name: "Raw Forest Honey 1kg", path: "/products/raw-forest-honey-1kg" },
+  { name: "Lal Mirch Bharua Achar", path: "/products/lal-mirch-bharua-achar" },
+  { name: "Pahadi Haldi Powder", path: "/products/pahadi-haldi-powder" },
+];
 
-/* ─── Section card ─── */
-const SectionCard = ({ section, globalIndex }) => {
-  const [ref, visible] = useReveal(0.08);
-  const [hovered, setHovered] = useState(null);
-
-  return (
-    <div
-      ref={ref}
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(28px)",
-        transition: `opacity 0.6s ease ${globalIndex * 60}ms, transform 0.6s ease ${globalIndex * 60}ms`,
-        background: T.white,
-        borderRadius: "3px",
-        border: `1px solid ${T.border}`,
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-      }}>
-      {/* Card header */}
-      <div
-        style={{
-          padding: "1.6rem 1.8rem 1.3rem",
-          borderBottom: `1px solid ${T.border}`,
-          display: "flex",
-          alignItems: "center",
-          gap: "0.85rem",
-          background: T.cream,
-        }}>
-        <span style={{ fontSize: "1.3rem", lineHeight: 1 }}>
-          {section.icon}
-        </span>
-        <h2
-          style={{
-            fontFamily: "'Playfair Display', serif",
-            fontSize: "1.15rem",
-            fontWeight: 700,
-            color: T.ink,
-            margin: 0,
-            lineHeight: 1.2,
-          }}>
-          {section.title}
-        </h2>
-        {/* count pill */}
-        <span
-          style={{
-            marginLeft: "auto",
-            fontSize: "0.68rem",
-            fontWeight: 700,
-            letterSpacing: "0.06em",
-            color: section.accent,
-            background: `${section.accent}14`,
-            padding: "0.22rem 0.6rem",
-            borderRadius: "100px",
-            flexShrink: 0,
-          }}>
-          {section.links.length}
-        </span>
-      </div>
-
-      {/* Links */}
-      <ul style={{ listStyle: "none", margin: 0, padding: "1rem 0", flex: 1 }}>
-        {section.links.map((link, i) => (
-          <li key={i}>
-            <Link
-              to={link.path}
-              onMouseEnter={() => setHovered(i)}
-              onMouseLeave={() => setHovered(null)}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.6rem",
-                padding: "0.55rem 1.8rem",
-                fontSize: "0.88rem",
-                color: hovered === i ? section.accent : T.muted,
-                textDecoration: "none",
-                fontFamily: "'Lato', sans-serif",
-                fontWeight: hovered === i ? 400 : 300,
-                background:
-                  hovered === i ? `${section.accent}08` : "transparent",
-                transition: "all 0.18s ease",
-                borderLeft:
-                  hovered === i
-                    ? `2px solid ${section.accent}`
-                    : "2px solid transparent",
-                letterSpacing: "0.01em",
-              }}>
-              {/* Arrow */}
-              <svg
-                width="10"
-                height="10"
-                viewBox="0 0 10 10"
-                fill="none"
-                style={{
-                  opacity: hovered === i ? 1 : 0,
-                  transform:
-                    hovered === i ? "translateX(0)" : "translateX(-4px)",
-                  transition: "all 0.18s ease",
-                  flexShrink: 0,
-                }}>
-                <path
-                  d="M2 5h6M5 2l3 3-3 3"
-                  stroke={section.accent}
-                  strokeWidth="1.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              {link.name}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
-
-/* ═══════════════════════════════════
-   MAIN PAGE
-═══════════════════════════════════ */
+/* ─────────────── MAIN PAGE ─────────────── */
 const SitemapPage = () => {
-  const [headerRef, headerVisible] = useReveal(0.05);
-  const totalLinks = sitemapData.reduce((s, c) => s + c.links.length, 0);
+  const totalLinks = useMemo(
+    () => sitemapData.reduce((acc, section) => acc + section.links.length, 0),
+    [],
+  );
+
+  /* ─────────────── JSON-LD SEO ─────────────── */
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": CANONICAL,
+        name: `${BRAND_NAME} Sitemap - All Pages`,
+        description: `Complete sitemap of ${BRAND_NAME}. Find A2 Desi Ghee, Raw Forest Honey, Pahadi Pickles and all Himalayan organic products from Uttarakhand.`,
+        url: CANONICAL,
+        inLanguage: "en-IN",
+        isPartOf: {
+          "@type": "WebSite",
+          name: BRAND_NAME,
+          url: BASE_URL,
+        },
+        breadcrumb: {
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: BASE_URL },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Sitemap",
+              item: CANONICAL,
+            },
+          ],
+        },
+      },
+      {
+        "@type": "Organization",
+        "@id": `${BASE_URL}/#organization`,
+        name: BRAND_NAME,
+        url: BASE_URL,
+        description: BRAND_DESC,
+        logo: `${BASE_URL}/logo.png`,
+        areaServed: { "@type": "Country", name: "India" },
+        knowsAbout: [
+          "Organic Food",
+          "A2 Desi Ghee",
+          "Raw Honey",
+          "Himalayan Pickles",
+          "Uttarakhand",
+        ],
+      },
+      {
+        "@type": "SiteNavigationElement",
+        name: "Main Site Navigation",
+        url: BASE_URL,
+        hasPart: sitemapData.flatMap((section) =>
+          section.links.map((link) => ({
+            "@type": "WebPage",
+            name: link.name,
+            url: `${BASE_URL}${link.path}`,
+          })),
+        ),
+      },
+    ],
+  };
 
   return (
-    <main
-      style={{
-        background: T.cream,
-        minHeight: "100vh",
-        fontFamily: "'Lato', sans-serif",
-      }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap');
+    <main className="bg-[#F5EFE0] min-h-screen">
+      <Helmet>
+        <title>Sitemap | All Pages - {BRAND_NAME} Himalayan Organic Food</title>
+        <meta
+          name="description"
+          content={`Complete sitemap of ${BRAND_NAME}. Browse all collections: A2 Desi Ghee, Raw Forest Honey, Pahadi Pickles from Uttarakhand. ${totalLinks}+ pages.`}
+        />
+        <link rel="canonical" href={CANONICAL} />
+        <meta
+          name="robots"
+          content="index, follow, max-snippet:-1, max-image-preview:large"
+        />
 
-        *, *::before, *::after { box-sizing: border-box; }
+        {/* Geo */}
+        <meta name="geo.region" content="IN-UT" />
+        <meta name="geo.placename" content="Uttarakhand, India" />
 
-        a { text-decoration: none; }
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content={BRAND_NAME} />
+        <meta property="og:title" content={`Sitemap | ${BRAND_NAME}`} />
+        <meta property="og:description" content={BRAND_DESC} />
+        <meta property="og:url" content={CANONICAL} />
+        <meta property="og:locale" content="en_IN" />
 
-        .sitemap-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 1.4rem;
-        }
+        {/* JSON-LD */}
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+      </Helmet>
 
-        /* Large card spans 2 cols */
-        .sitemap-grid > :first-child {
-          grid-row: span 1;
-        }
-
-        @media (max-width: 1024px) {
-          .sitemap-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (max-width: 640px) {
-          .sitemap-grid { grid-template-columns: 1fr; }
-        }
-      `}</style>
-
-      <div
-        style={{
-          maxWidth: 1080,
-          margin: "0 auto",
-          padding: "5rem 1.5rem 6rem",
-        }}>
-        {/* ── Header ── */}
-        <div
-          ref={headerRef}
-          style={{
-            textAlign: "center",
-            marginBottom: "4rem",
-            opacity: headerVisible ? 1 : 0,
-            transform: headerVisible ? "translateY(0)" : "translateY(24px)",
-            transition: "opacity 0.7s ease, transform 0.7s ease",
-          }}>
-          {/* breadcrumb */}
-          <div
-            style={{
-              fontSize: "0.7rem",
-              letterSpacing: "0.22em",
-              textTransform: "uppercase",
-              color: T.terracotta,
-              marginBottom: "1.4rem",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "0.6rem",
-            }}>
-            <span
-              style={{
-                width: 24,
-                height: 1,
-                background: T.terracotta,
-                display: "inline-block",
-              }}
-            />
-            Ghar Ka Organic
-            <span
-              style={{
-                width: 24,
-                height: 1,
-                background: T.terracotta,
-                display: "inline-block",
-              }}
-            />
-          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        {/* ───── HERO ───── */}
+        <header className="text-center mb-12 sm:mb-16">
+          <p
+            className="text-xs tracking-[0.25em] uppercase mb-4"
+            style={{ color: T.terracotta }}>
+            {BRAND_NAME}
+          </p>
 
           <h1
-            style={{
-              fontFamily: "'Playfair Display', serif",
-              fontSize: "clamp(2.4rem, 5vw, 4rem)",
-              fontWeight: 700,
-              color: T.ink,
-              lineHeight: 1.1,
-              margin: "0 0 1.2rem",
-            }}>
-            Site Directory
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4"
+            style={{ color: T.ink, fontFamily: "'Playfair Display', serif" }}>
+            Complete Site Navigation
           </h1>
 
           <p
-            style={{
-              fontSize: "1rem",
-              color: T.muted,
-              fontWeight: 300,
-              maxWidth: 440,
-              margin: "0 auto 2rem",
-              lineHeight: 1.75,
-            }}>
-            Everything on our site, in one place. Browse {totalLinks} pages
-            across {sitemapData.length} categories.
+            className="max-w-2xl mx-auto text-sm sm:text-base leading-relaxed"
+            style={{ color: T.muted }}>
+            Explore all {totalLinks}+ pages of {BRAND_NAME} — including A2 Desi
+            Ghee, Raw Forest Honey, and traditional Uttarakhand pahadi pickles
+            made by women communities. Find exactly what you need.
           </p>
 
-          {/* stats strip */}
-          <div
-            style={{
-              display: "inline-flex",
-              gap: 0,
-              border: `1px solid ${T.border}`,
-              borderRadius: 3,
-              overflow: "hidden",
-              background: T.white,
-            }}>
-            {[
-              { label: "Categories", value: sitemapData.length },
-              { label: "Total Pages", value: totalLinks },
-              { label: "Est. Read", value: "< 1 min" },
-            ].map((s, i) => (
-              <div
-                key={i}
+          {/* Search hint */}
+          <div className="mt-6 max-w-md mx-auto">
+            <div className="relative">
+              <MagnifyingGlassIcon
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
+                style={{ color: T.muted }}
+              />
+              <input
+                type="search"
+                placeholder="Search pages or products..."
+                className="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border focus:ring-2 focus:ring-offset-0 outline-none transition"
                 style={{
-                  padding: "0.8rem 1.6rem",
-                  borderRight: i < 2 ? `1px solid ${T.border}` : "none",
-                  textAlign: "center",
+                  backgroundColor: T.white,
+                  borderColor: T.border,
+                  focusRingColor: T.terracotta,
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    window.location.href = `/search?q=${encodeURIComponent(e.currentTarget.value)}`;
+                  }
+                }}
+              />
+            </div>
+          </div>
+        </header>
+
+        {/* ───── QUICK LINKS ───── */}
+        <section className="mb-12">
+          <h2 className="text-lg font-semibold mb-4" style={{ color: T.ink }}>
+            Popular Products
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {quickLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full border transition-colors hover:shadow-sm"
+                style={{
+                  backgroundColor: T.white,
+                  borderColor: T.border,
+                  color: T.earth,
                 }}>
-                <div
-                  style={{
-                    fontFamily: "'Playfair Display', serif",
-                    fontSize: "1.3rem",
-                    fontWeight: 700,
-                    color: T.ink,
-                    lineHeight: 1,
-                    marginBottom: 2,
-                  }}>
-                  {s.value}
-                </div>
-                <div
-                  style={{
-                    fontSize: "0.68rem",
-                    letterSpacing: "0.12em",
-                    color: T.muted,
-                    textTransform: "uppercase",
-                  }}>
-                  {s.label}
-                </div>
-              </div>
+                {link.name}
+                <ArrowTopRightOnSquareIcon className="w-3 h-3" />
+              </Link>
             ))}
           </div>
-        </div>
+        </section>
 
-        {/* ── Grid ── */}
-        <div className="sitemap-grid">
+        {/* ───── MAIN GRID ───── */}
+        <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {sitemapData.map((section, i) => (
-            <SectionCard key={i} section={section} globalIndex={i} />
-          ))}
-        </div>
+            <article
+              key={i}
+              className="rounded-lg p-6 transition-shadow hover:shadow-md"
+              style={{
+                backgroundColor: T.white,
+                border: `1px solid ${T.border}`,
+              }}>
+              <div className="flex items-start justify-between mb-4">
+                <h2
+                  className="text-lg font-semibold flex items-center gap-2"
+                  style={{ color: T.ink }}>
+                  <span className="text-xl">{section.icon}</span>
+                  {section.title}
+                </h2>
+                <span
+                  className="text- px-2 py-0.5 rounded-full"
+                  style={{ backgroundColor: T.cream, color: T.muted }}>
+                  {section.links.length}
+                </span>
+              </div>
 
-        {/* ── Footer note ── */}
-        <p
-          style={{
-            textAlign: "center",
-            marginTop: "3.5rem",
-            fontSize: "0.82rem",
-            color: T.muted,
-            fontWeight: 300,
-            opacity: 0.7,
-          }}>
-          Can't find what you're looking for?{" "}
-          <Link
-            to="/contact"
-            style={{
-              color: T.terracotta,
-              borderBottom: `1px solid ${T.terracotta}44`,
-            }}>
-            Contact us
-          </Link>{" "}
-          and we'll help.
-        </p>
+              <ul className="space-y-3">
+                {section.links.map((link, idx) => (
+                  <li key={idx}>
+                    <Link
+                      to={link.path}
+                      className="group block text-sm transition-colors"
+                      style={{ color: T.muted }}>
+                      <div
+                        className="font-medium group-hover:underline"
+                        style={{ color: T.earth }}>
+                        {link.name}
+                      </div>
+                      {link.desc && (
+                        <div className="text-xs mt-0.5 opacity-80">
+                          {link.desc}
+                        </div>
+                      )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+
+              <div
+                className="mt-4 pt-4 border-t text-"
+                style={{ borderColor: T.border, color: T.muted }}>
+                Updated:{" "}
+                {new Date(section.updated).toLocaleDateString("en-IN", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </div>
+            </article>
+          ))}
+        </section>
+
+        {/* ───── SEO FOOTER ───── */}
+        <footer
+          className="text-center mt-16 pt-8 border-t text-xs"
+          style={{ borderColor: T.border, color: T.muted }}>
+          <p className="mb-2">
+            <strong style={{ color: T.ink }}>{BRAND_NAME}</strong> – Authentic
+            Himalayan Organic Food from Uttarakhand, India.
+          </p>
+          <p>
+            A2 Desi Ghee • Raw Forest Honey • Pahadi Pickles • Himalayan Spices
+            • Organic Pulses
+          </p>
+          <p className="mt-3">
+            Serving India since 2026 | FSSAI Licensed | Vocal for Local
+          </p>
+        </footer>
       </div>
     </main>
   );

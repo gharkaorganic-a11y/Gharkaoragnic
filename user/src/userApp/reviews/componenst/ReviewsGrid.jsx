@@ -1,89 +1,65 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 /* ─────────────────────────────
-   SAMPLE DATA - 10 REVIEWS
+   SAMPLE DATA
 ───────────────────────────── */
 const DEFAULT_REVIEWS = [
   {
     id: 1,
-    productName: "Lal Mirch Bharua Achar",
+    productName: "A2 Desi Ghee (Bilona)",
     productLink: "#",
     rating: 5,
-    date: "15/04/2026",
-    author: "Raj Kumar Sinha",
-    title: "Excellent taste",
-    body: "Exactly ghar jaisa taste. Masala balance is perfect.",
+    date: "12/04/2026",
+    author: "Sample User",
+    title: "Very close to homemade taste",
+    body: "The aroma and texture feel very traditional. Reminds me of village-made ghee.",
     isVerified: true,
-    likes: 2,
-    dislikes: 0,
   },
   {
     id: 2,
-    productName: "Desi Ghee",
+    productName: "Raw Forest Honey",
     productLink: "#",
     rating: 5,
-    date: "14/04/2026",
-    author: "Anonymous",
-    title: "Pure quality",
-    body: "100% pure, natural aroma and taste like home.",
+    date: "10/04/2026",
+    author: "Sample User",
+    title: "Natural and pure",
+    body: "Thick consistency and natural taste. Works well in warm water and tea.",
     isVerified: true,
-    likes: 5,
-    dislikes: 0,
   },
   {
     id: 3,
-    productName: "The Heritage Bihar Pickle Pack",
+    productName: "Pahadi Mixed Pickle",
     productLink: "#",
-    rating: 5,
-    date: "13/04/2026",
-    author: "Priya Sharma",
-    title: "Taste 😋 yummy",
-    body: "Less oil content, good balance of salt & no preservatives, liked the product.",
+    rating: 4,
+    date: "08/04/2026",
+    author: "Sample User",
+    title: "Authentic Himalayan flavour",
+    body: "Taste is strong and traditional. Feels like homemade achar from hills.",
     isVerified: false,
-    likes: 1,
-    dislikes: 0,
   },
   {
     id: 4,
-    productName: "Jackfruit Pickle | Kathal ka Achaar",
+    productName: "Pahadi Haldi Powder",
     productLink: "#",
-    rating: 4,
-    date: "12/04/2026",
-    author: "Amit Verma",
-    title: "Very good",
-    body: "Very tasty. Will order again for sure.",
+    rating: 5,
+    date: "05/04/2026",
+    author: "Sample User",
+    title: "Pure and aromatic",
+    body: "Color and fragrance are very natural compared to store-bought turmeric.",
     isVerified: true,
-    likes: 0,
-    dislikes: 0,
   },
   {
     id: 5,
-    productName: "Lal Mirch ka Bharua Achar | Stuffed Red Chilli Pickle",
-    productLink: "#",
-    rating: 5,
-    date: "11/04/2026",
-    author: "Neha Gupta",
-    title: "",
-    body: "Lal mirch ka ye bhura achar ekdum lajawab hai! Iska masala bahut hi chatpata aur swadisht hai. Bilkul waisa hi swaad hai jaisa ghar pe dadi-nani banati thi.",
-    isVerified: true,
-    likes: 8,
-    dislikes: 0,
-  },
-  {
-    id: 6,
-    productName: "Mango Pickle",
+    productName: "Pahadi Masala Blend",
     productLink: "#",
     rating: 4,
-    date: "10/04/2026",
-    author: "Rohit Singh",
-    title: "Good product",
-    body: "Taste acha hai but thoda aur spicy ho sakta hai.",
+    date: "02/04/2026",
+    author: "Sample User",
+    title: "Good traditional mix",
+    body: "Balanced spice mix, works well in daily cooking.",
     isVerified: true,
-    likes: 0,
-    dislikes: 1,
   },
 ];
-
 /* ─────────────────────────────
    ICONS
 ───────────────────────────── */
@@ -103,22 +79,61 @@ const Avatar = ({ name }) => (
 );
 
 /* ─────────────────────────────
-   MAIN GRID - NO REPLY
+   MAIN COMPONENT
 ───────────────────────────── */
 const ReviewsGrid = ({ reviews = DEFAULT_REVIEWS }) => {
   if (!reviews?.length) {
-    return <div className="text-center  text-gray-500">No reviews yet</div>;
+    return <div className="text-center text-gray-500">No reviews yet</div>;
   }
 
+  /* ✅ structured data (safe in React) */
+  const schemaData = useMemo(() => {
+    return {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: "Ghar Ka Organic Himalayan Products",
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: "4.8",
+        reviewCount: reviews.length,
+      },
+      review: reviews.map((r) => ({
+        "@type": "Review",
+        author: {
+          "@type": "Person",
+          name: r.author,
+        },
+        datePublished: r.date,
+        reviewBody: r.body,
+        name: r.title || "Customer Review",
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: r.rating,
+          bestRating: "5",
+        },
+      })),
+    };
+  }, [reviews]);
+
   return (
-    <section className="w-full bg-white ">
+    <section className="w-full bg-white" aria-label="Customer Reviews Section">
+      {/* SEO HIDDEN HEADING */}
+      <h2 className="sr-only">
+        Customer Reviews for Ghar Ka Organic Himalayan Organic Food Products
+      </h2>
+
+      {/* JSON-LD SEO */}
+      <script type="application/ld+json">{JSON.stringify(schemaData)}</script>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
           {reviews.map((r) => (
             <article
               key={r.id}
-              className="border border-gray-200 rounded-md p-5 hover:shadow-sm transition-shadow bg-white">
+              className="border border-gray-200 rounded-md p-5 bg-white"
+              itemScope
+              itemType="https://schema.org/Review">
               {/* PRODUCT */}
               <p className="text-xs text-gray-600 mb-2">
                 about{" "}
@@ -146,19 +161,28 @@ const ReviewsGrid = ({ reviews = DEFAULT_REVIEWS }) => {
                   {r.author}
                 </span>
                 {r.isVerified && (
-                  <span className="text- bg-teal-600 text-white px-1.5 py-0.5 font-semibold">
+                  <span className="text-xs bg-teal-600 text-white px-2 py-0.5">
                     Verified
                   </span>
                 )}
               </div>
 
               {/* CONTENT */}
-              <div className="text- text-gray-800 leading-relaxed mb-3 whitespace-pre-line">
+              <div className="text-gray-800 leading-relaxed mb-3">
                 {r.title && <p className="font-medium mb-1">{r.title}</p>}
                 <p>{r.body}</p>
               </div>
             </article>
           ))}
+        </div>
+
+        {/* VIEW ALL REVIEWS LINK */}
+        <div className="flex justify-center mt-10">
+          <a
+            href="/reviews"
+            className="text-sm font-medium text-teal-700 hover:underline">
+            View All Customer Reviews →
+          </a>
         </div>
       </div>
     </section>

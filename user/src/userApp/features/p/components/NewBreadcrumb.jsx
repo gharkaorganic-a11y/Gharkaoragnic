@@ -8,7 +8,7 @@ const Breadcrumb = ({ items = [], product }) => {
       ? items
       : [
           { label: "Home", to: "/" },
-          { label: "Products", to: "/collections/all" },
+          { label: "Products", to: "/all-products" },
           { label: product?.name, isLast: true },
         ];
 

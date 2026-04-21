@@ -1,217 +1,147 @@
-import React, { useState, useMemo } from "react";
-import {
-  ChevronDownIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/24/outline";
+import React, { useState } from "react";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 const BRAND_GREEN = "#0B8A52";
 
-export const faqData = [
+const faqData = [
   {
     id: 1,
     category: "Shipping",
-    question: "How long does shipping usually take?",
+    question: "How long does delivery take across India?",
     answer:
-      "Orders are processed within 24 hours. Standard shipping takes 3-5 business days across India. Express shipping arrives in 1-2 business days for metro cities.",
+      "Orders are dispatched within 24 hours. Delivery typically takes 3–5 business days across India and 1–2 days in metro cities.",
   },
   {
     id: 2,
     category: "Quality",
-    question: "Are your products 100% organic & preservative free?",
+    question: "Are your products truly natural and chemical-free?",
     answer:
-      "Yes. All our Pahadi products are sourced directly from farmers and made in small batches. No artificial preservatives, colors, or chemicals added.",
+      "Yes. All products are made in small batches using traditional Himalayan methods with no preservatives, artificial colors, or additives.",
   },
   {
     id: 3,
     category: "Returns",
-    question: "What if I don't like the taste?",
+    question: "What if I am not satisfied with the product?",
     answer:
-      "We offer a 15-day taste guarantee. If you're not satisfied with the quality or taste, contact us and we'll refund or replace it. No questions asked.",
+      "We offer a 7–15 day satisfaction support. If you face any issue, we provide replacement or resolution based on product condition.",
   },
   {
     id: 4,
     category: "Orders",
-    question: "How can I track my order?",
+    question: "How will I track my order?",
     answer:
-      "You’ll get SMS + WhatsApp updates with live tracking link once your order ships. You can also check status in 'My Orders' section.",
+      "Once shipped, you receive WhatsApp and SMS tracking links with real-time delivery updates.",
   },
   {
     id: 5,
     category: "Products",
-    question: "Is your Desi Cow Ghee A2 grade?",
+    question: "Is your A2 Desi Ghee made using traditional methods?",
     answer:
-      "Yes. Our Pure Desi Cow Ghee is made from A2 milk of Pahadi cows using traditional bilona method. Lab tested for purity.",
+      "Yes. Our A2 ghee is prepared using the Bilona method from indigenous cows, ensuring purity and nutrition.",
   },
   {
     id: 6,
-    category: "Payment",
-    question: "Is Cash on Delivery available?",
+    category: "Payments",
+    question: "Do you offer Cash on Delivery (COD)?",
     answer:
-      "COD is available for orders above ₹299 in most pin codes. UPI, Cards, and Net Banking also accepted with secure checkout.",
+      "Yes, COD is available on most pincodes for orders above ₹299. We also support UPI, cards, and net banking.",
   },
 ];
 
-const categories = ["All", ...new Set(faqData.map((f) => f.category))];
-
 const FaqSection = () => {
-  const [activeIndex, setActiveIndex] = useState(null);
-  const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeId, setActiveId] = useState(1);
 
-  const toggleFaq = (index) => {
-    setActiveIndex((prev) => (prev === index ? null : index));
+  const toggle = (id) => {
+    setActiveId((prev) => (prev === id ? null : id));
   };
 
-  const filteredFaqs = useMemo(() => {
-    return faqData.filter((faq) => {
-      const matchesCategory =
-        activeCategory === "All" || faq.category === activeCategory;
-      const matchesSearch =
-        faq.question.toLowerCase().includes(search.toLowerCase()) ||
-        faq.answer.toLowerCase().includes(search.toLowerCase());
-      return matchesCategory && matchesSearch;
-    });
-  }, [search, activeCategory]);
-
   return (
-    <section className="bg-white py-12 sm:py-16 lg:py-20">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-8 sm:mb-10">
-          <div
-            className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-white text- font-semibold tracking-wider uppercase mb-4"
+    <section className="bg-white py-14 sm:py-20">
+      <div className="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8">
+        {/* SEO HEADER */}
+        <header className="text-center mb-12">
+          <span
+            className="inline-block px-4 py-1 text-xs font-semibold uppercase tracking-widest text-white rounded-full mb-4"
             style={{ backgroundColor: BRAND_GREEN }}>
             Support
-          </div>
+          </span>
 
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight mb-3">
-            Questions? We’ve Got Answers
+          <h2 className="text-2xl sm:text-4xl font-semibold text-gray-900">
+            Frequently Asked Questions
           </h2>
 
-          <p className="text-gray-600 text-sm sm:text-base max-w-xl mx-auto">
-            Everything you need to know about our Pahadi products, shipping, and
-            quality promise.
+          <p className="text-gray-600 mt-3 text-sm sm:text-base max-w-2xl mx-auto">
+            Learn about our Himalayan organic products, shipping process,
+            quality standards, and customer support.
           </p>
-        </div>
+        </header>
 
-        {/* Search + Categories */}
-        <div className="mb-6 space-y-3">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-              <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
-            </div>
-            <input
-              type="text"
-              placeholder="Search FAQs..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:ring-2 focus:border-transparent transition-all"
-              style={{ "--tw-ring-color": BRAND_GREEN }}
-            />
-          </div>
+        {/* FAQ LIST */}
+        <div className="rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+          {faqData.map((faq) => {
+            const isOpen = activeId === faq.id;
 
-          <div className="flex flex-wrap gap-2 justify-center">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all border ${
-                  activeCategory === cat
-                    ? "text-white shadow-sm"
-                    : "bg-white text-gray-700 border-gray-300 hover:border-gray-400"
-                }`}
-                style={{
-                  backgroundColor: activeCategory === cat ? BRAND_GREEN : "",
-                  borderColor: activeCategory === cat ? BRAND_GREEN : "",
-                }}>
-                {cat}
-              </button>
-            ))}
-          </div>
-        </div>
+            return (
+              <article
+                key={faq.id}
+                className={`border-b last:border-b-0 transition ${
+                  isOpen ? "bg-green-50/40" : "hover:bg-gray-50"
+                }`}>
+                {/* QUESTION */}
+                <button
+                  onClick={() => toggle(faq.id)}
+                  className="w-full flex justify-between items-start gap-4 px-5 py-5 text-left"
+                  aria-expanded={isOpen}>
+                  <div>
+                    <p
+                      className="text-[11px] font-semibold uppercase tracking-widest mb-1"
+                      style={{ color: BRAND_GREEN }}>
+                      {faq.category}
+                    </p>
 
-        {/* FAQ List */}
-        {filteredFaqs.length > 0 ? (
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
-            {filteredFaqs.map((faq) => {
-              const isOpen = activeIndex === faq.id;
-
-              return (
-                <div
-                  key={faq.id}
-                  className={`border-b border-gray-100 last:border-b-0 transition-colors ${
-                    isOpen ? "bg-green-50/30" : "hover:bg-gray-50/40"
-                  }`}>
-                  <button
-                    onClick={() => toggleFaq(faq.id)}
-                    className="w-full flex items-start justify-between gap-4 px-5 py-4 sm:py-5 text-left group">
-                    <div className="flex-1">
-                      <span
-                        className="text- font-semibold uppercase tracking-wide mb-1 block"
-                        style={{ color: BRAND_GREEN }}>
-                        {faq.category}
-                      </span>
-                      <span className="text- sm:text-base font-semibold leading-snug text-gray-900">
-                        {faq.question}
-                      </span>
-                    </div>
-
-                    <div
-                      className={`shrink-0 w-7 h-7 flex items-center justify-center rounded-full transition-all duration-200 ${
-                        isOpen
-                          ? "text-white rotate-180"
-                          : "bg-gray-100 text-gray-500"
-                      }`}
-                      style={{ backgroundColor: isOpen ? BRAND_GREEN : "" }}>
-                      <ChevronDownIcon className="w-4 h-4" />
-                    </div>
-                  </button>
-
-                  <div
-                    className={`overflow-hidden transition-all duration-300 ease-out ${
-                      isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-                    }`}>
-                    <div className="px-5 pb-5 pt-0 text-gray-700 text- leading-relaxed">
-                      {faq.answer}
-                    </div>
+                    <h3 className="text-base font-semibold text-gray-900 leading-snug">
+                      {faq.question}
+                    </h3>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="text-center py-12 bg-gray-50 border border-gray-200 rounded-2xl">
-            <p className="text-gray-500 font-medium text-sm">No FAQs found</p>
-            <p className="text-xs text-gray-400 mt-1">
-              Try a different search term
-            </p>
-          </div>
-        )}
 
-        {/* Bottom CTA */}
-        <div
-          className="mt-10 text-center rounded-2xl p-6 sm:p-8 text-white"
-          style={{ backgroundColor: BRAND_GREEN }}>
-          <h3 className="text-lg sm:text-xl font-bold mb-2">
-            Still need help?
-          </h3>
-          <p className="text-green-100 text-sm mb-5 max-w-lg mx-auto">
-            Our Pahadi team responds within 2 hours on WhatsApp. Ask us anything
-            about products, orders, or sourcing.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <a
-              href="https://wa.me/91XXXXXXXXXX"
-              className="bg-white text-gray-900 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all hover:bg-gray-50 hover:shadow-md">
-              WhatsApp Us
-            </a>
-            <a
-              href="mailto:support@yourdomain.com"
-              className="bg-green-700/40 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all hover:bg-green-700/60 border border-green-600">
-              Email Support
-            </a>
-          </div>
+                  <ChevronDownIcon
+                    className={`w-5 h-5 text-gray-500 transition-transform ${
+                      isOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {/* ANSWER */}
+                <div
+                  className={`px-5 pb-5 text-sm text-gray-700 leading-relaxed transition-all ${
+                    isOpen ? "block" : "hidden sm:block"
+                  }`}>
+                  {faq.answer}
+                </div>
+              </article>
+            );
+          })}
         </div>
+
+        {/* BRAND TRUST BLOCK (SEO + STORY BOOST) */}
+        <div className="mt-14 text-center text-sm text-gray-600 leading-relaxed max-w-3xl mx-auto">
+          <strong className="text-gray-900">Ghar Ka Organic</strong> works
+          directly with Himalayan women-led communities producing A2 Desi Ghee,
+          Raw Forest Honey, Pahadi Pickles, and traditional spices.
+          <br />
+          <br />
+          Our mission is simple: deliver authentic, chemical-free food to urban
+          families while supporting “Vocal for Local” and sustainable rural
+          livelihoods.
+        </div>
+
+        {/* SEO fallback */}
+        <noscript>
+          <div className="mt-6 text-sm text-gray-700">
+            All FAQs are available on this page including shipping, returns,
+            payments, and product quality information.
+          </div>
+        </noscript>
       </div>
     </section>
   );

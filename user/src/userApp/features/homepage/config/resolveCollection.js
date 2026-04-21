@@ -6,6 +6,8 @@ import { productSections } from "./productCollection";
 const routeAliases = {
   "pahadi-achar-online": "pickle",
   "buy-desi-ghee-online": "ghee",
+    "buy-pahadi-achar-online": "pickle",
+
   "raw-honey-uttarakhand": "honey",
   "organic-food-uttarakhand": "all",
   "pahadi-products-online": "all",

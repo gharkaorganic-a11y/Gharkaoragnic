@@ -14,12 +14,13 @@ import { IMAGES } from "../../assets/images";
 
 import { GridSectionSkeleton } from "../homepage/HomeSkeletons";
 import ScrollToTopButton from "../../shared/components/ScrollToTopButton";
-import CustomerReviewsScore from "../reviews/componenst/CustomerReviewsScore";
+import CustomerReviewsSection from "../reviews/componenst/CustomerReviewsSection";
 import ReviewsGrid from "../reviews/componenst/ReviewsGrid";
 import FAQSection from "../homepage/FAQSection";
 import ProductSectionTabs from "../features/p/components/ProductSectionTabs";
 import HeroSection from "../homepage/HeroSection";
 import ExploreOurPicks from "../homepage/ExploreOurPicks";
+import OurStoryComponent from "../homepage/OurStoryComponent";
 
 const ProductSection = React.lazy(
   () => import("../components/section/ProductSection"),
@@ -122,17 +123,32 @@ const HomePage = () => {
     <main className="min-h-screen bg-white">
       {/* SEO — light, heavy meta already in index.html */}
       <Helmet>
-        <title>Ghar Ka Organic | Organic Achar & Honey</title>
+        <title>
+          Ghar Ka Organic – A2 Ghee, Raw Honey & Pahadi Products from
+          Uttarakhand
+        </title>
+
         <meta
           name="description"
-          content="Buy pahadi organic food online — achar, ghee, honey & more from Uttarakhand. 100% natural, homemade."
+          content="Ghar Ka Organic is a Bhimtal-based brand offering A2 bilona ghee, raw forest honey, and traditional pahadi pickles across India."
         />
-        <link rel="canonical" href="https://gharkaorganic.com/" />{" "}
-      </Helmet>
 
-      <h1 className="sr-only">
-        Ghar Ka Organic - Pure Pahadi Organic Food from Uttarakhand
-      </h1>
+        <link rel="canonical" href="https://gharkaorganic.com/" />
+
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "Ghar Ka Organic",
+            url: "https://gharkaorganic.com",
+            logo: "https://gharkaorganic.com/gharka-logo.png",
+            sameAs: ["https://www.instagram.com/gharkaorganic/"],
+          })}
+        </script>
+        {/* BRAND SIGNALS */}
+        <meta property="og:site_name" content="Ghar Ka Organic" />
+        <meta name="author" content="Ghar Ka Organic" />
+      </Helmet>
       {/* hero */}
       <section className="w-full">
         <div className="w-full aspect-[16/9] sm:aspect-[16/7] md:aspect-[16/6]">
@@ -142,18 +158,18 @@ const HomePage = () => {
           />
         </div>
       </section>
-
       {/* category tabs — full productSections for complete tab list */}
       <section className="w-full mt-6 md:mt-10 max-w-7xl mx-auto px-4">
         <ProductSectionTabs productSections={productSections} />{" "}
       </section>
-
       {/* section 1 — Most Loved / Bestsellers */}
       {renderSection("new")}
-
-      {/* section 2 — Pahadi Pickles */}
+      <h2 className="sr-only">
+        Ghar Ka Organic – Organic A2 Ghee, Honey & Pahadi Products from
+        Uttarakhand
+      </h2>
       {renderSection("pickle")}
-
+      <OurStoryComponent />
       {/* explore banner 1 */}
       <ViewportLoader>
         <ExploreOurPicks
@@ -164,10 +180,8 @@ const HomePage = () => {
           }}
         />
       </ViewportLoader>
-
       {/* section 3 — Honey */}
       {renderSection("honey")}
-
       {/* explore banner 2 */}
       <ViewportLoader>
         <ExploreOurPicks
@@ -178,22 +192,17 @@ const HomePage = () => {
           }}
         />
       </ViewportLoader>
-
       {/* section 4 — Ghee */}
       {renderSection("ghee")}
-
       {/* reviews */}
       <ViewportLoader rootMargin="300px">
-        <CustomerReviewsScore />
+        <CustomerReviewsSection />
       </ViewportLoader>
-
       <ViewportLoader rootMargin="300px">
         <ReviewsGrid />
       </ViewportLoader>
-
       {/* FAQ */}
       <FAQSection />
-
       {/* ─── INTERNAL SEO LINKS ─── */}
       <section className="max-w-7xl mx-auto px-4 py-12 border-t border-gray-200">
         <div className="flex items-center justify-between mb-4">
@@ -252,7 +261,6 @@ const HomePage = () => {
         {/* bottom divider */}
         <div className="my-8 h-px w-full bg-gray-200" />
       </section>
-
       <ScrollToTopButton />
     </main>
   );

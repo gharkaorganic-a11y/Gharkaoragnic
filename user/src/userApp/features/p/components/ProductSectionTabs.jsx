@@ -11,7 +11,7 @@ const ProductSectionTabs = memo(({ productSections = [], currentKey }) => {
   const location = useLocation();
 
   const handleNavigate = (key) => {
-    if (key === "all") navigate("/collections");
+    if (key === "all") navigate("/all-products");
     else navigate(`/${key}`);
   };
 

@@ -18,20 +18,37 @@
     </image:image>
   </url>
 
-  <!-- Product Page -->
-  <url>
-    <loc>https://gharkaorganic.com/raw-honey-uttarakhand</loc>
-    <lastmod>2026-04-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-    <image:image>
-      <image:loc>https://res.cloudinary.com/dwgro3zo7/image/upload/v1776692760/raw-organic-honey_uxbtrx.webp</image:loc>
-      <image:title>Uttarakhand Himalayan Raw Organic Honey – Ghar Ka Organic</image:title>
-      <image:caption>
-        Pure raw honey sourced from Uttarakhand forests, unprocessed and natural.
-      </image:caption>
-    </image:image>
-  </url>
+  <!-- Product Page: Raw Honey -->
+<url>
+  <loc>https://gharkaorganic.com/raw-honey-uttarakhand</loc>
+  <lastmod>2026-04-20</lastmod>
+  <changefreq>weekly</changefreq>
+  <priority>0.9</priority>
+
+  <image:image>
+    <image:loc>https://res.cloudinary.com/dwgro3zo7/image/upload/v1776692760/raw-organic-honey_uxbtrx.webp</image:loc>
+    <image:title>Uttarakhand Himalayan Raw Organic Honey | Ghar Ka Organic</image:title>
+    <image:caption>
+      100% pure raw honey sourced from Himalayan forests of Uttarakhand, unprocessed and chemical-free.
+    </image:caption>
+  </image:image>
+</url>
+
+<!-- Product Page: Pahadi Pickles -->
+<url>
+  <loc>https://gharkaorganic.com/buy-pahadi-achar-online</loc>
+  <lastmod>2026-04-20</lastmod>
+  <changefreq>daily</changefreq>
+  <priority>0.9</priority>
+
+  <image:image>
+    <image:loc>https://res.cloudinary.com/dwgro3zo7/image/upload/v1776693000/pahadi-mango-achar_abc123.webp</image:loc>
+    <image:title>Pahadi Mango Achar (Homemade Pickle) | Ghar Ka Organic</image:title>
+    <image:caption>
+      Traditional Uttarakhand-style homemade pickle made using mustard oil, spices, and sun-curing process.
+    </image:caption>
+  </image:image>
+</url>
 
   <!-- Collections -->
   <url>
@@ -44,7 +61,8 @@
   <image:title>Best Selling Organic Products – Ghar Ka Organic</image:title>
 </image:image>
   </url>
-
+  <url>
+   
   <url>
     <loc>https://gharkaorganic.com/shop/best-sellers</loc>
     <lastmod>2026-04-20</lastmod>
