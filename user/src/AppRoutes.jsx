@@ -12,6 +12,7 @@ import SitemapPage from "./userApp/pages/SitemapPage";
 import ReviewsPage from "./userApp/reviews/pages/CustomerReviewsPage";
 import BlogListPage from "./userApp/pages/blog/BlogListPage";
 import BlogDetailPage from "./userApp/pages/blog/BlogDetailPage";
+import BestSellersPage from "./userApp/features/p/BestSellersPage";
 
 /* ───────── LAZY ───────── */
 const AuthRoutes = lazy(() => import("./userApp/routes/AuthRoutes"));
@@ -129,6 +130,8 @@ const AppRoutes = () => (
             </ErrorBoundary>
           }
         />
+
+        <Route path="/shop/best-sellers" element={<BestSellersPage />} />
 
         {/* PRODUCT DETAIL */}
         <Route

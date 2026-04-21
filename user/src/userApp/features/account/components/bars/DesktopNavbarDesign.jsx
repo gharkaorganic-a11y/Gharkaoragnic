@@ -16,8 +16,8 @@ const DesktopNavbar = ({ cartCount = 0 }) => {
   // ✅ Added more links
   const navItems = [
     { label: "Home", path: "/" },
-    { label: "Shop", path: "/shop", dropdown: true },
-    { label: "Best Sellers", path: "/best-sellers" },
+    { label: "Shop", path: "/all-products", dropdown: true },
+    { label: "Best Sellers", path: "/shop/best-sellers" },
     { label: "Our Story", path: "/pages/our-story" },
     { label: "Contact", path: "/pages/contact" },
     { label: "Blogs", path: "/pages/blogs" },
