@@ -138,7 +138,7 @@ const Footer = () => {
             <div className="flex gap-3">
               <MapPin size={18} className="text-[#DE9F35]" />
               <address className="not-italic text-sm md:text-[15px]">
-                Bhimtal, Nainital <br />
+                ward no.2, Nalni, 263002, Nainital <br />
                 Uttarakhand, India
               </address>
             </div>

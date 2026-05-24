@@ -511,11 +511,20 @@ export const AuthProvider = ({ children }) => {
         if (!uid) throw new Error("User not found");
 
         const saved = await saveAddressService(uid, address);
-        let newAddress = state.address;
 
-        if (saved.isDefault) {
-          newAddress = saved;
-          await updateProfileData(uid, { defaultAddressId: saved.id });
+        // ✅ normalize field names — Firestore stores as line1, AddressPage expects addressLine1
+        const normalizedSaved = {
+          ...saved,
+          addressLine1: saved.addressLine1 || saved.line1 || "",
+          line1: saved.line1 || saved.addressLine1 || "",
+        };
+
+        let newAddress = state.address;
+        if (normalizedSaved.isDefault) {
+          newAddress = normalizedSaved;
+          await updateProfileData(uid, {
+            defaultAddressId: normalizedSaved.id,
+          });
         }
 
         dispatch({
@@ -524,7 +533,7 @@ export const AuthProvider = ({ children }) => {
           address: newAddress,
         });
         writeCache({ user: state.user, address: newAddress });
-        return saved;
+        return normalizedSaved; // ✅ returns normalized shape to AddressPage
       } catch (err) {
         handleError(dispatch, err);
       }

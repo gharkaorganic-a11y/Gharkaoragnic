@@ -11,6 +11,11 @@ import {
 } from "lucide-react";
 import { states } from "../../../config/state";
 
+// Logo colors:
+// Red accent:    #D32F2F
+// Golden yellow: #F5A623
+// Dark text:     #2C2416
+
 const AddressFormPopup = ({ isOpen, form, setForm, onSave, onCancel }) => {
   const [isStateModalOpen, setIsStateModalOpen] = useState(false);
   const [stateSearch, setStateSearch] = useState("");
@@ -33,11 +38,9 @@ const AddressFormPopup = ({ isOpen, form, setForm, onSave, onCancel }) => {
     s.toLowerCase().includes(stateSearch.toLowerCase()),
   );
 
+  // ✅ focus ring → logo red tint instead of pink
   const inputClass =
-    "w-full bg-white border border-gray-200 -lg px-3 py-2.5 pl-9 text-[13.5px] text-gray-900 outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/10 placeholder:text-gray-400 transition-all";
-
-  const labelClass =
-    "block text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1.5";
+    "w-full bg-white border border-gray-200 px-3 py-2.5 pl-9 text-[13.5px] text-gray-900 outline-none focus:border-[#D32F2F] focus:ring-2 focus:ring-[#D32F2F]/10 placeholder:text-gray-400 transition-all";
 
   return (
     <div className="fixed inset-0 z-100 flex items-end md:items-center justify-center font-sans">
@@ -48,25 +51,31 @@ const AddressFormPopup = ({ isOpen, form, setForm, onSave, onCancel }) => {
       />
 
       {/* Sheet */}
-      <div className="relative w-full md:max-w-lg bg-white  shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
+      <div className="relative w-full md:max-w-lg bg-white shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
         {/* Drag handle (mobile) */}
         <div className="md:hidden flex justify-center pt-3 pb-1 shrink-0">
-          <div className="w-9 h-1  bg-gray-200" />
+          <div className="w-9 h-1 bg-gray-200" />
         </div>
 
         {/* Header */}
         <div className="shrink-0 px-5 py-4 border-b border-gray-100 flex items-start justify-between">
           <div>
-            <p className="text-[10.5px] font-semibold text-pink-500 uppercase tracking-widest mb-0.5">
+            {/* ✅ logo red label */}
+            <p
+              className="text-[10.5px] font-semibold uppercase tracking-widest mb-0.5"
+              style={{ color: "#D32F2F" }}>
               Delivery to
             </p>
-            <h2 className="text-[16px] font-semibold text-gray-900">
+            <h2
+              className="text-[16px] font-semibold"
+              style={{ color: "#2C2416" }} // ✅ logo dark text
+            >
               {form?.id ? "Edit address" : "Add new address"}
             </h2>
           </div>
           <button
             onClick={onCancel}
-            className="mt-0.5 p-1.5  bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-800 transition-colors">
+            className="mt-0.5 p-1.5 bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-800 transition-colors">
             <X size={16} />
           </button>
         </div>
@@ -93,7 +102,7 @@ const AddressFormPopup = ({ isOpen, form, setForm, onSave, onCancel }) => {
 
                 <Field label="Mobile number">
                   <div className="flex gap-2">
-                    <div className="flex items-center gap-1.5 px-3 py-2.5 bg-white border border-gray-200  text-[13px] text-gray-600 shrink-0">
+                    <div className="flex items-center gap-1.5 px-3 py-2.5 bg-white border border-gray-200 text-[13px] text-gray-600 shrink-0">
                       <span className="text-base leading-none">🇮🇳</span>
                       <span>+91</span>
                     </div>
@@ -141,7 +150,7 @@ const AddressFormPopup = ({ isOpen, form, setForm, onSave, onCancel }) => {
                     value={form.addressLine1}
                     onChange={handleChange}
                     placeholder="e.g. Flat 4B, Taj Apartments, Linking Road"
-                    className="w-full bg-white border border-gray-200 -lg px-3 py-2.5 text-[13.5px] text-gray-900 outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/10 placeholder:text-gray-400 resize-none transition-all"
+                    className="w-full bg-white border border-gray-200 px-3 py-2.5 text-[13.5px] text-gray-900 outline-none focus:border-[#D32F2F] focus:ring-2 focus:ring-[#D32F2F]/10 placeholder:text-gray-400 resize-none transition-all"
                   />
                 </Field>
 
@@ -154,7 +163,7 @@ const AddressFormPopup = ({ isOpen, form, setForm, onSave, onCancel }) => {
                       value={form.city}
                       onChange={handleChange}
                       placeholder="City"
-                      className="w-full bg-white border border-gray-200 -lg px-3 py-2.5 text-[13.5px] text-gray-900 outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/10 placeholder:text-gray-400 transition-all"
+                      className="w-full bg-white border border-gray-200 px-3 py-2.5 text-[13.5px] text-gray-900 outline-none focus:border-[#D32F2F] focus:ring-2 focus:ring-[#D32F2F]/10 placeholder:text-gray-400 transition-all"
                     />
                   </Field>
 
@@ -162,7 +171,7 @@ const AddressFormPopup = ({ isOpen, form, setForm, onSave, onCancel }) => {
                     <button
                       type="button"
                       onClick={() => setIsStateModalOpen(true)}
-                      className="w-full flex items-center justify-between bg-white border border-gray-200 -lg px-3 py-2.5 text-[13.5px] text-left outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/10 transition-all">
+                      className="w-full flex items-center justify-between bg-white border border-gray-200 px-3 py-2.5 text-[13.5px] text-left outline-none focus:border-[#D32F2F] focus:ring-2 focus:ring-[#D32F2F]/10 transition-all">
                       <span
                         className={
                           form.state ? "text-gray-900" : "text-gray-400"
@@ -207,10 +216,21 @@ const AddressFormPopup = ({ isOpen, form, setForm, onSave, onCancel }) => {
             className="hidden md:block px-5 py-3 text-[13px] font-medium text-gray-500 hover:text-gray-800 transition-colors">
             Cancel
           </button>
+          {/* ✅ logo red save button */}
           <button
             type="submit"
             form="address-form"
-            className="flex-1 md:flex-none md:px-10 py-3 bg-pink-500 hover:bg-pink-600 active:scale-[0.98] text-white -xl text-[14px] font-semibold tracking-wide transition-all shadow-sm shadow-pink-200">
+            className="flex-1 md:flex-none md:px-10 py-3 text-white text-[14px] font-semibold tracking-wide transition-all active:scale-[0.98]"
+            style={{
+              backgroundColor: "#D32F2F",
+              boxShadow: "0 2px 8px rgba(211,47,47,0.25)",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = "#B71C1C")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = "#D32F2F")
+            }>
             Save address
           </button>
         </div>
@@ -219,14 +239,17 @@ const AddressFormPopup = ({ isOpen, form, setForm, onSave, onCancel }) => {
       {/* State modal */}
       {isStateModalOpen && (
         <div className="fixed inset-0 z-[120] flex flex-col justify-end md:items-center md:justify-center bg-black/50">
-          <div className="bg-white w-full md:max-w-sm md:-2xl flex flex-col max-h-[75vh] overflow-hidden shadow-2xl">
+          <div className="bg-white w-full md:max-w-sm flex flex-col max-h-[75vh] overflow-hidden shadow-2xl">
             {/* Modal drag handle */}
             <div className="md:hidden flex justify-center pt-3 pb-1 shrink-0">
-              <div className="w-9 h-1  bg-gray-200" />
+              <div className="w-9 h-1 bg-gray-200" />
             </div>
 
             <div className="shrink-0 px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-              <h3 className="text-[15px] font-semibold text-gray-900">
+              <h3
+                className="text-[15px] font-semibold"
+                style={{ color: "#2C2416" }} // ✅ logo dark text
+              >
                 Select state
               </h3>
               <button
@@ -234,7 +257,7 @@ const AddressFormPopup = ({ isOpen, form, setForm, onSave, onCancel }) => {
                   setIsStateModalOpen(false);
                   setStateSearch("");
                 }}
-                className="p-1.5  bg-gray-100 hover:bg-gray-200 text-gray-500 transition-colors">
+                className="p-1.5 bg-gray-100 hover:bg-gray-200 text-gray-500 transition-colors">
                 <X size={15} />
               </button>
             </div>
@@ -245,12 +268,13 @@ const AddressFormPopup = ({ isOpen, form, setForm, onSave, onCancel }) => {
                   size={14}
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                 />
+                {/* ✅ search focus → logo red */}
                 <input
                   type="text"
                   placeholder="Search state…"
                   value={stateSearch}
                   onChange={(e) => setStateSearch(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 -lg pl-9 pr-3 py-2.5 text-[13.5px] text-gray-900 outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-500/10 placeholder:text-gray-400"
+                  className="w-full bg-gray-50 border border-gray-200 pl-9 pr-3 py-2.5 text-[13.5px] text-gray-900 outline-none focus:border-[#D32F2F] focus:ring-2 focus:ring-[#D32F2F]/10 placeholder:text-gray-400"
                 />
               </div>
             </div>
@@ -270,7 +294,16 @@ const AddressFormPopup = ({ isOpen, form, setForm, onSave, onCancel }) => {
                       setIsStateModalOpen(false);
                       setStateSearch("");
                     }}
-                    className="w-full text-left px-3 py-3 text-[13.5px] text-gray-700 hover:bg-pink-50 hover:text-pink-600 -lg transition-colors">
+                    className="w-full text-left px-3 py-3 text-[13.5px] text-gray-700 transition-colors"
+                    // ✅ hover → logo red tint instead of pink
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "#fff5f5";
+                      e.currentTarget.style.color = "#D32F2F";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "";
+                      e.currentTarget.style.color = "#374151";
+                    }}>
                     {state}
                   </button>
                 ))
@@ -283,10 +316,10 @@ const AddressFormPopup = ({ isOpen, form, setForm, onSave, onCancel }) => {
   );
 };
 
-// ── Small helper components ──────────────────────────────
+// ── Helper components ─────────────────────────────────────
 
 const Section = ({ title, children }) => (
-  <div className="bg-gray-50 border border-gray-100  overflow-hidden">
+  <div className="bg-gray-50 border border-gray-100 overflow-hidden">
     <div className="px-4 py-2.5 border-b border-gray-100">
       <span className="text-[10.5px] font-semibold text-gray-400 uppercase tracking-widest">
         {title}
@@ -318,11 +351,16 @@ const TagButton = ({ active, icon, label, onClick }) => (
   <button
     type="button"
     onClick={onClick}
-    className={`flex items-center gap-2 px-4 py-2  border text-[12.5px] font-medium transition-all ${
+    className="flex items-center gap-2 px-4 py-2 border text-[12.5px] font-medium transition-all"
+    style={
       active
-        ? "border-pink-500 bg-pink-50 text-pink-600"
-        : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"
-    }`}>
+        ? {
+            borderColor: "#D32F2F",
+            backgroundColor: "#fff5f5",
+            color: "#D32F2F",
+          } // ✅ logo red
+        : { borderColor: "#e5e7eb", backgroundColor: "#fff", color: "#6b7280" }
+    }>
     {icon}
     {label}
   </button>

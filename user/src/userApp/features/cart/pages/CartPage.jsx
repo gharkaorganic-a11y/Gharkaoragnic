@@ -13,8 +13,17 @@ import { Link, useNavigate } from "react-router-dom";
 import LoginPopup from "../../../components/pop-up/LoginPoup";
 import { useAuth } from "../../auth/context/UserContext";
 import NewBreadcrumb from "../../p/components/NewBreadcrumb";
+import { Leaf, ShieldCheck, Truck } from "lucide-react"; // Make sure lucide-react is installed
+
+// ─── Organic Theme Colors ──────────────────────
+// Primary Green: #2D6A4F (Trust, freshness, nature)
+// Light Green:   #D8F3DC (Backgrounds, subtle highlights)
+// Harvest Yellow:#E9C46A (Accents, warnings, like raw honey)
+// Dark Text:     #1B4332 (Deep forest green for text readability)
+// ───────────────────────────────────────────────
 
 const round = (num) => Math.round(num * 100) / 100;
+const FREE_SHIPPING_THRESHOLD = 999;
 
 const CartPage = () => {
   const navigate = useNavigate();
@@ -39,12 +48,6 @@ const CartPage = () => {
 
   const prevCartIds = useRef("");
 
-  /**
-   * =========================
-   * FETCH FRESH PRODUCT DATA
-   * =========================
-   * IMPORTANT: avoids stale price issues
-   */
   useEffect(() => {
     if (!cart.length) {
       setProducts([]);
@@ -63,8 +66,6 @@ const CartPage = () => {
 
       try {
         const ids = cart.map((i) => String(i.id));
-
-        // ❗ Force fresh data (no stale cache dependency)
         queryClient.invalidateQueries({ queryKey: ["products"] });
 
         const results = await getProductsByIds(ids, {
@@ -85,47 +86,34 @@ const CartPage = () => {
     };
 
     fetchDetails();
-
     return () => controller.abort();
-  }, [cartIds, cart.length]);
+  }, [cartIds, cart.length, getProductsByIds, queryClient]);
 
-  /**
-   * =========================
-   * PRODUCT MAP
-   * =========================
-   */
   const productMap = useMemo(() => {
     const map = new Map();
     products.forEach((p) => map.set(String(p.id), p));
     return map;
   }, [products]);
 
-  /**
-   * =========================
-   * MERGED CART
-   * =========================
-   */
   const mergedCart = useMemo(() => {
     return cart
       .map((item) => {
         const product = productMap.get(String(item.id));
         if (!product) return null;
 
+        const selectedQuantity = item.selectedQuantity || 1;
+
         return {
           ...product,
           cartKey: item.cartKey,
-          selectedQuantity: item.selectedQuantity || 1,
+          selectedQuantity,
+          quantity: selectedQuantity,
           selectedSize: item.selectedSize || "",
         };
       })
       .filter(Boolean);
   }, [cart, productMap]);
 
-  /**
-   * =========================
-   * SELECTION SYNC
-   * =========================
-   */
   useEffect(() => {
     setSelected((prev) => {
       const keys = mergedCart.map((i) => i.cartKey);
@@ -153,11 +141,6 @@ const CartPage = () => {
     return mergedCart.filter((i) => selected.includes(i.cartKey));
   }, [mergedCart, selected]);
 
-  /**
-   * =========================
-   * PRICING (LIVE CALC)
-   * =========================
-   */
   const pricing = useMemo(() => {
     let subtotal = 0;
     let originalTotalPrice = 0;
@@ -171,24 +154,33 @@ const CartPage = () => {
       originalTotalPrice += mrp * qty;
     });
 
-    const gstRate = 0.18;
+    const gstRate = 0.18; // Note: Organic raw items like honey/produce might have lower GST depending on local laws. Adjust as needed.
     const gstAmount = round(subtotal * gstRate);
-    const platformFee = subtotal > 0 && subtotal < 999 ? 50 : 0;
+
+    // Waive platform fee if subtotal hits the free shipping threshold
+    const platformFee =
+      subtotal > 0 && subtotal < FREE_SHIPPING_THRESHOLD ? 50 : 0;
+    const totalSavings = round(originalTotalPrice - subtotal);
 
     return {
       subtotal: round(subtotal),
       originalTotalPrice: round(originalTotalPrice),
+      totalSavings,
       gstAmount,
       platformFee,
       totalPayable: round(subtotal + gstAmount + platformFee),
     };
   }, [selectedItems]);
 
-  /**
-   * =========================
-   * STOCK VALIDATION
-   * =========================
-   */
+  const amountToFreeShipping = Math.max(
+    0,
+    FREE_SHIPPING_THRESHOLD - pricing.subtotal,
+  );
+  const shippingProgress = Math.min(
+    100,
+    (pricing.subtotal / FREE_SHIPPING_THRESHOLD) * 100,
+  );
+
   const validateCart = useCallback(() => {
     for (const item of selectedItems) {
       if (item.stock !== undefined && item.selectedQuantity > item.stock) {
@@ -198,11 +190,6 @@ const CartPage = () => {
     return null;
   }, [selectedItems]);
 
-  /**
-   * =========================
-   * CHECKOUT (SAFE)
-   * =========================
-   */
   const handleCheckout = async () => {
     if (!selectedItems.length) {
       alert("Select at least one item");
@@ -215,7 +202,6 @@ const CartPage = () => {
       return;
     }
 
-    // 🔥 FORCE FRESH DATA BEFORE PAYMENT
     await queryClient.invalidateQueries({ queryKey: ["products"] });
 
     if (!isLoggedIn) {
@@ -228,27 +214,32 @@ const CartPage = () => {
         items: selectedItems,
         pricing,
         totalAmount: pricing.totalPayable,
+        source: "cart",
       },
     });
   };
 
-  /**
-   * =========================
-   * UI STATES
-   * =========================
-   */
   if (loadingDetails && cart.length > 0) return <CartSkeleton />;
 
-  if (error) return <div className="p-4 text-red-600 font-medium">{error}</div>;
+  if (error)
+    return (
+      <div className="p-4 font-medium text-[#2D6A4F] bg-[#D8F3DC] rounded-md m-4">
+        {error}
+      </div>
+    );
 
   if (!cart.length) return <EmptyCart />;
 
   return (
-    <div className="min-h-screen  ">
-      {/* Breadcrumb */}
-      <NewBreadcrumb items={[{ label: "Home", to: "/" }, { label: "Cart" }]} />
-      <div className="flex flex-col lg:flex-row gap-8 px-4">
-        {/* LEFT SIDE */}
+    <div className="min-h-screen pb-12">
+      <div className="bg-white border-b border-gray-200">
+        <NewBreadcrumb
+          items={[{ label: "Home", to: "/" }, { label: "Cart" }]}
+        />
+      </div>
+
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 px-4 mt-6">
+        {/* LEFT SIDE: Cart Items */}
         <div className="flex-1">
           <CartControlHeader
             cartItems={mergedCart}
@@ -258,35 +249,84 @@ const CartPage = () => {
             totalPrice={pricing.totalPayable}
           />
 
-          {mergedCart.map((item) => (
-            <CartItemCard
-              key={item.cartKey}
-              product={item}
-              selected={selected.includes(item.cartKey)}
-              onSelect={() => handleSelectItem(item.cartKey)}
-              onRemove={() => remove(item.cartKey)}
-              onQtyChange={(qty) => updateQuantity(item.cartKey, qty)}
-              onSizeChange={(size) => updateSize(item.cartKey, size)}
-              className="border-red-200 hover:border-red-500"
-            />
-          ))}
+          <div className="space-y-4 mt-4">
+            {mergedCart.map((item) => (
+              <CartItemCard
+                key={item.cartKey}
+                product={item}
+                selected={selected.includes(item.cartKey)}
+                onSelect={() => handleSelectItem(item.cartKey)}
+                onRemove={() => remove(item.cartKey)}
+                onQtyChange={(qty) => updateQuantity(item.cartKey, qty)}
+                onSizeChange={(size) => updateSize(item.cartKey, size)}
+                className="border-transparent shadow-sm hover:border-[#52B788] transition-colors bg-white rounded-xl"
+              />
+            ))}
+          </div>
         </div>
 
-        {/* RIGHT SIDE */}
-        <div className="w-full lg:w-[400px]">
-          <CartSummary
-            subtotal={pricing.subtotal}
-            originalTotalPrice={pricing.originalTotalPrice}
-            gstAmount={pricing.gstAmount}
-            platformFee={pricing.platformFee}
-            selectedItems={selectedItems}
-            onPlaceOrder={handleCheckout}
-            className="bg-white border border-red-200 shadow-md"
-          />
+        {/* RIGHT SIDE: Summary & Organic Trust Factors */}
+        <div className="w-full lg:w-[400px] space-y-6">
+          {/* Free Shipping Tracker */}
+          <div className="bg-white p-5 rounded-xl shadow-sm border border-[#D8F3DC]">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium text-[#1B4332]">
+                {amountToFreeShipping > 0
+                  ? `Add ₹${amountToFreeShipping} for Free Delivery`
+                  : "🎉 You unlocked Free Delivery!"}
+              </span>
+              <Truck size={20} className="text-[#2D6A4F]" />
+            </div>
+            <div className="w-full bg-gray-100 rounded-full h-2.5">
+              <div
+                className="bg-[#2D6A4F] h-2.5 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${shippingProgress}%` }}></div>
+            </div>
+          </div>
+
+          {/* Cart Summary */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <CartSummary
+              subtotal={pricing.subtotal}
+              originalTotalPrice={pricing.originalTotalPrice}
+              gstAmount={pricing.gstAmount}
+              platformFee={pricing.platformFee}
+              selectedItems={selectedItems}
+              onPlaceOrder={handleCheckout}
+            />
+
+            {/* Savings Callout */}
+            {pricing.totalSavings > 0 && (
+              <div className="bg-[#D8F3DC] px-6 py-3 text-center text-sm font-medium text-[#1B4332]">
+                You are saving ₹{pricing.totalSavings} on this order!
+              </div>
+            )}
+          </div>
+
+          {/* Organic Trust Badges */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow-sm border border-gray-50 text-center">
+              <Leaf className="text-[#2D6A4F] mb-2" size={24} />
+              <span className="text-xs font-semibold text-gray-700">
+                100% Pure & Traditional
+              </span>
+            </div>
+            <div className="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow-sm border border-gray-50 text-center">
+              <ShieldCheck className="text-[#2D6A4F] mb-2" size={24} />
+              <span className="text-xs font-semibold text-gray-700">
+                Secure Checkout
+              </span>
+            </div>
+            <div className="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow-sm border border-gray-50 text-center">
+              <Truck className="text-[#2D6A4F] mb-2" size={24} />
+              <span className="text-xs font-semibold text-gray-700">
+                Direct from Farms
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* LOGIN POPUP */}
       <LoginPopup isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </div>
   );

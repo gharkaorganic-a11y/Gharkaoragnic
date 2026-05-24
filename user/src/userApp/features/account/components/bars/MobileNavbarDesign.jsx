@@ -82,7 +82,7 @@ const MobileNavbar = ({ cartCount = 0 }) => {
               </button>
 
               <NavLink
-                to="/cart"
+                to="/checkout/cart"
                 aria-label={`Cart with ${cartCount} items`}
                 className={({ isActive }) =>
                   `relative p-2.5 rounded-full transition-all duration-150 active:scale-90 ${

@@ -1,15 +1,5 @@
 /**
- * ORDER SERVICE
- *
- * Production architecture for scalable e-commerce using Firebase Firestore.
- *
- * Firestore Structure:
- *   orders/{orderId}
- *     ├── items/{itemId}
- *     ├── payments/{paymentId}
- *     └── timeline/{eventId}
- *
- *   users/{userId}/orders/{orderId}  ← lightweight list + full items array
+ * ORDER SERVICE — FIXED CONSISTENT VERSION
  */
 
 import {
@@ -28,10 +18,9 @@ import {
 
 import { db } from "../../../../config/firebaseDB";
 
-/* ─────────────────────────────────────
+/* ───────────────────────────────
    ORDER ID GENERATOR
-   e.g. ravi-KR4M7D
-───────────────────────────────────── */
+────────────────────────────── */
 export const makeOrderId = (name = "user") => {
   const prefix = name.replace(/\s+/g, "").toLowerCase().slice(0, 4);
   const time = Date.now().toString(36).toUpperCase();
@@ -39,15 +28,9 @@ export const makeOrderId = (name = "user") => {
   return `${prefix}-${time}${rand}`;
 };
 
-/* ─────────────────────────────────────
-   CREATE ORDER
-   - Writes root order doc
-   - Writes items subcollection
-   - Writes payment record
-   - Writes timeline entry
-   - Writes lightweight user/orders doc WITH full items array
-     (so list view never needs a second fetch)
-───────────────────────────────────── */
+/* ───────────────────────────────
+   CREATE ORDER (FIXED SYNC MODEL)
+────────────────────────────── */
 export const createOrder = async ({
   orderId,
   user,
@@ -64,28 +47,7 @@ export const createOrder = async ({
   const batch = writeBatch(db);
   const orderRef = doc(db, "orders", orderId);
 
-  /* ── Root order document ── */
-  batch.set(orderRef, {
-    orderId,
-    userId: user.uid,
-    orderStatus: "placed",
-    paymentStatus: "pending",
-    itemCount: items.length,
-    totalAmount: pricing.totalPayable ?? pricing.totalAmount,
-    pricing,
-    addressSnapshot: {
-      name: selectedAddress.name,
-      phone: selectedAddress.phone,
-      line1: selectedAddress.line1 || selectedAddress.addressLine1 || "",
-      city: selectedAddress.city,
-      state: selectedAddress.state,
-      pincode: selectedAddress.pincode,
-    },
-    createdAt: now,
-    updatedAt: now,
-  });
-
-  /* ── Normalise items for storage ── */
+  /* ───────── NORMALIZED ITEMS ───────── */
   const normalisedItems = items.map((item) => ({
     productId: item.id || item.productId || "",
     name: item.name ?? "",
@@ -98,81 +60,89 @@ export const createOrder = async ({
     shipmentStatus: "pending",
   }));
 
-  /* ── Items subcollection (for order-detail page) ── */
+  const totalAmount =
+    pricing.totalPayable ?? pricing.totalAmount ?? 0;
+
+  /* ───────── SINGLE SOURCE OF TRUTH ───────── */
+  const baseOrderData = {
+    orderId,
+    userId: user.uid,
+
+    orderStatus: "placed",
+    paymentStatus: "pending",
+    paymentMethod,
+
+    itemCount: normalisedItems.length,
+    totalAmount,
+    pricing,
+
+    items: normalisedItems,
+
+    addressSnapshot: {
+      name: selectedAddress.name,
+      phone: selectedAddress.phone,
+      line1:
+        selectedAddress.line1 ||
+        selectedAddress.addressLine1 ||
+        "",
+      city: selectedAddress.city,
+      state: selectedAddress.state,
+      pincode: selectedAddress.pincode,
+    },
+
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  /* ───────── ROOT ORDER (FIXED) ───────── */
+  batch.set(orderRef, baseOrderData);
+
+  /* ───────── ITEMS SUBCOLLECTION ───────── */
   normalisedItems.forEach((item) => {
     const itemRef = doc(collection(orderRef, "items"));
     batch.set(itemRef, { ...item, createdAt: now, updatedAt: now });
   });
 
-  /* ── Payment record ── */
+  /* ───────── PAYMENT ───────── */
   batch.set(doc(collection(orderRef, "payments")), {
     method: paymentMethod,
     status: "pending",
-    amount: pricing.totalPayable ?? pricing.totalAmount,
+    amount: totalAmount,
     createdAt: now,
   });
 
-  /* ── Timeline entry ── */
+  /* ───────── TIMELINE ───────── */
   batch.set(doc(collection(orderRef, "timeline")), {
     status: "placed",
     note: "Order created",
     timestamp: now,
   });
 
-  /*
-   * ── Lightweight user order (list view) ──
-   *
-   * KEY CHANGE: We store the full `items` array here so that
-   * getUserOrders() can return everything OrderCard needs in a
-   * single Firestore read — no extra per-order fetches.
-   *
-   * previewItem is still stored for backward compatibility.
-   */
+  /* ───────── USER MIRROR (LIST VIEW) ───────── */
   const previewItem = normalisedItems[0];
+
   batch.set(doc(db, "users", user.uid, "orders", orderId), {
-    orderId,
-    orderStatus: "placed",
-    paymentStatus: "pending",
-    totalAmount: pricing.totalPayable ?? pricing.totalAmount,
-    itemCount: items.length,
-    // Full items array — powers the OrderCard list view
-    items: normalisedItems,
-    // Legacy preview field — kept for any existing code that reads it
+    ...baseOrderData,
+
     previewItem: {
       name: previewItem?.name ?? "",
       image: previewItem?.image ?? "",
       price: previewItem?.price ?? 0,
       description: previewItem?.description ?? "",
     },
-    addressSnapshot: {
-      name: selectedAddress.name,
-      phone: selectedAddress.phone,
-    },
-    createdAt: now,
   });
 
   await batch.commit();
   return { orderId };
 };
 
-/* ─────────────────────────────────────
-   ORDER SERVICE
-───────────────────────────────────── */
+/* ───────────────────────────────
+   ORDER SERVICE API
+────────────────────────────── */
 export const orderService = {
-
-  /**
-   * getUserOrders
-   *
-   * Fetches the lightweight user/orders subcollection which now contains
-   * the full items array written at order-creation time.
-   *
-   * One Firestore query → complete data for every OrderCard. No N+1 reads.
-   */
+  /* ───────── USER ORDERS ───────── */
   async getUserOrders(userId, maxResults = 20, lastDoc = null) {
-    if (!userId) {
-      console.warn("[orderService] getUserOrders: no userId provided");
-      return { orders: [], lastDoc: null };
-    }
+    if (!userId) return { orders: [], lastDoc: null };
 
     const constraints = [orderBy("createdAt", "desc"), limit(maxResults)];
     if (lastDoc) constraints.push(startAfter(lastDoc));
@@ -185,24 +155,18 @@ export const orderService = {
     try {
       const snap = await getDocs(q);
       const orders = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-      console.log(`[orderService] fetched ${orders.length} orders for user ${userId}`);
+
       return {
         orders,
         lastDoc: snap.docs[snap.docs.length - 1] ?? null,
       };
     } catch (err) {
-      console.error("[orderService] getUserOrders error:", err);
+      console.error(err);
       return { orders: [], lastDoc: null };
     }
   },
 
-  /**
-   * getOrderDetails
-   *
-   * Fetches the full order document + items subcollection.
-   * Use this on the Order Detail page where you need timeline,
-   * payment info, and per-item status history.
-   */
+  /* ───────── ORDER DETAILS ───────── */
   async getOrderDetails(orderId) {
     if (!orderId) return null;
 
@@ -217,40 +181,31 @@ export const orderService = {
       return {
         id: orderSnap.id,
         ...orderSnap.data(),
-        items: itemsSnap.docs.map((d) => ({ id: d.id, ...d.data() })),
+        items: itemsSnap.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+        })),
       };
     } catch (err) {
-      console.error("[orderService] getOrderDetails error:", err);
+      console.error(err);
       return null;
     }
   },
 
-  /**
-   * updateOrderStatusInUserDoc
-   *
-   * Call this from your backend/admin or cloud function whenever an order's
-   * status changes. Keeps the lightweight user doc in sync so the list view
-   * always shows the correct status without a full re-fetch.
-   */
+  /* ───────── STATUS SYNC ───────── */
   async updateOrderStatusInUserDoc(userId, orderId, updates = {}) {
     if (!userId || !orderId) return;
-    try {
-      await updateDoc(
-        doc(db, "users", userId, "orders", orderId),
-        { ...updates, updatedAt: serverTimestamp() }
-      );
-    } catch (err) {
-      console.error("[orderService] updateOrderStatusInUserDoc error:", err);
-    }
+
+    await updateDoc(
+      doc(db, "users", userId, "orders", orderId),
+      {
+        ...updates,
+        updatedAt: serverTimestamp(),
+      }
+    );
   },
 
-  /**
-   * cancelItem
-   *
-   * Cancels a single item inside an order. Also adds a timeline entry.
-   * After calling this, call updateOrderInCache() in the UI to reflect
-   * the change without a refetch.
-   */
+  /* ───────── CANCEL ITEM ───────── */
   async cancelItem(orderId, itemId, reason = "") {
     const now = serverTimestamp();
     const batch = writeBatch(db);
@@ -271,11 +226,7 @@ export const orderService = {
     await batch.commit();
   },
 
-  /**
-   * requestReturn
-   *
-   * Marks an item as return_requested and logs reason.
-   */
+  /* ───────── RETURN REQUEST ───────── */
   async requestReturn(orderId, itemId, reason = "") {
     await updateDoc(doc(db, "orders", orderId, "items", itemId), {
       itemStatus: "return_requested",

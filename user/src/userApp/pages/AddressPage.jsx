@@ -18,6 +18,11 @@ import ConfirmOrderModal from "../components/cards/ConfirmOrderModal";
 
 import { Plus, MapPin, AlertCircle, ShieldCheck } from "lucide-react";
 
+// Logo colors:
+// Red accent:    #D32F2F
+// Golden yellow: #F5A623
+// Dark text:     #2C2416
+
 /* ────────────────────────────────
    Constants
 ──────────────────────────────── */
@@ -43,11 +48,18 @@ const ErrorBanner = ({ message, onDismiss }) => {
   if (!message) return null;
   return (
     <div className="flex items-center gap-3 bg-red-50 border border-red-100 rounded-lg px-4 py-3 mb-6">
-      <AlertCircle size={16} className="text-red-400 shrink-0" />
-      <p className="text-[13px] text-red-600 flex-1">{message}</p>
+      <AlertCircle
+        size={16}
+        className="shrink-0"
+        style={{ color: "#D32F2F" }}
+      />
+      <p className="text-[13px] flex-1" style={{ color: "#D32F2F" }}>
+        {message}
+      </p>
       <button
         onClick={onDismiss}
-        className="text-red-400 text-[11px] font-semibold uppercase tracking-wide">
+        className="text-[11px] font-semibold uppercase tracking-wide"
+        style={{ color: "#D32F2F" }}>
         Dismiss
       </button>
     </div>
@@ -67,45 +79,65 @@ const AddressPage = () => {
   const { source, items } = location.state || {};
 
   // ── Seed saved addresses from context ──
-  const [addresses, setAddresses] = useState(() =>
-    address
-      ? [{ ...address, addressLine1: address.line1 || address.addressLine1 }]
-      : [],
-  );
+  // BEFORE
+  // const [addresses, setAddresses] = useState(() =>
+  //   address
+  //     ? [{ ...address, addressLine1: address.line1 || address.addressLine1 }]
+  //     : [],
+  // );
+
+  // AFTER
+  const [addresses, setAddresses] = useState(() => {
+    if (!address) return [];
+    return [
+      {
+        ...address,
+        addressLine1:
+          address.addressLine1 ||
+          address.line1 ||
+          address.address_line1 ||
+          address.address ||
+          "",
+      },
+    ];
+  });
 
   /*
    * ── Normalize cart items ──
    *
-   * FIX: Include ALL fields that orderService.createOrder() stores and
-   * that OrderCard renders:
-   *   - description  → shown under product name in OrderCard
-   *   - image        → shown as product thumbnail in OrderCard
-   *   - selectedSize → shown as size badge in OrderCard
-   *   - productId    → used for "View product" / "Buy again" navigation
-   *
-   * Source fields vary by where items come from (cart, product page, etc.)
-   * so we check multiple fallback keys for each field.
+   * Carries ALL fields orderService.createOrder() needs:
+   *   - productId    → navigation in OrderCard
+   *   - description  → shown under product name
+   *   - image        → product thumbnail
+   *   - mrp          → discount display in CartSummary   ✅ FIX #3 (was missing)
+   *   - quantity     → selectedQuantity first            ✅ FIX #2 (wrong priority)
+   *   - selectedSize → size badge in OrderCard
    */
   const normalizedItems = useMemo(() => {
     if (!items?.length) return [];
     return items.map((item) => ({
       // ── Identity ──
       id: item.id || item.productId || "",
-      productId: item.id || item.productId || "", // ← needed for navigation in OrderCard
+      productId: item.id || item.productId || "",
 
       // ── Display ──
       name: item.name ?? "",
-      description: item.description ?? item.shortDescription ?? "", // ← FIX: was missing
+      description: item.description ?? item.shortDescription ?? "",
       image:
         item.image || item.banner || item.images?.[0] || item.thumbnail || "",
 
-      // ── Pricing & quantity ──
+      // ── Pricing ──
       price: Number(item.price) || 0,
-      quantity: item.quantity || item.selectedQuantity || 1,
+      mrp: Number(item.mrp || item.originalPrice || item.price) || 0, // ✅ FIX #3: was missing, discount shows ₹0 without this
+
+      // ── Quantity ──
+      // ✅ FIX #2: selectedQuantity first — CartContext stores cart qty as selectedQuantity
+      // item.quantity on a Firestore product doc means stock count, NOT cart qty
+      quantity: item.selectedQuantity || item.quantity || 1,
 
       // ── Variant ──
       size: item.size || item.selectedSize || "",
-      selectedSize: item.size || item.selectedSize || "", // ← FIX: stored as selectedSize in orderService
+      selectedSize: item.size || item.selectedSize || "",
     }));
   }, [items]);
 
@@ -162,12 +194,10 @@ const AddressPage = () => {
       };
 
       if (form.id) {
-        // Editing existing — replace in list
         setAddresses((prev) =>
           prev.map((a) => (a.id === form.id ? normalized : a)),
         );
       } else {
-        // New — append and auto-select it
         setAddresses((prev) => {
           const updated = [...prev, normalized];
           setSelectedAddressIndex(updated.length - 1);
@@ -206,13 +236,13 @@ const AddressPage = () => {
         user,
         selectedAddress,
         paymentMethod,
-        items: normalizedItems, // ← now carries description, productId, selectedSize
+        items: normalizedItems,
         pricing,
       });
 
+      // ✅ source: "cart" sent by CartPage — clears IndexedDB after order
       if (source === "cart") await clear();
 
-      // Invalidate both the specific user orders key and any generic "orders" key
       await queryClient.invalidateQueries({ queryKey: ["orders", user.uid] });
       await queryClient.invalidateQueries({ queryKey: ["orders"] });
 
@@ -251,12 +281,17 @@ const AddressPage = () => {
 
           {/* Section header */}
           <div className="flex justify-between items-center border border-gray-100 px-4 py-3 mb-4">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-700">
+            <h2
+              className="text-sm font-semibold uppercase tracking-wide"
+              style={{ color: "#2C2416" }} // ✅ logo dark text
+            >
               Select Delivery Address
             </h2>
             <button
               onClick={handleAddNew}
-              className="flex items-center gap-1.5 text-[#f43397] text-sm font-medium hover:underline">
+              className="flex items-center gap-1.5 text-sm font-medium hover:underline"
+              style={{ color: "#D32F2F" }} // ✅ logo red
+            >
               <Plus size={15} /> Add New
             </button>
           </div>
@@ -265,18 +300,18 @@ const AddressPage = () => {
           {addresses.length > 0 ? (
             <div className="space-y-3">
               {addresses.map((addr, idx) => {
-                const selected = selectedAddressIndex === idx;
+                const isSelected = selectedAddressIndex === idx;
                 return (
                   <label
                     key={addr.id || idx}
-                    className={`block bg-white border cursor-pointer transition-colors ${
-                      selected
-                        ? "border-[#f43397] bg-[#fff0f5]"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}>
+                    className="block bg-white border cursor-pointer transition-colors"
+                    style={{
+                      borderColor: isSelected ? "#D32F2F" : "#e5e7eb", // ✅ logo red when selected
+                      backgroundColor: isSelected ? "#fff5f5" : "#ffffff", // ✅ soft red tint
+                    }}>
                     <input
                       type="radio"
-                      checked={selected}
+                      checked={isSelected}
                       onChange={() => setSelectedAddressIndex(idx)}
                       className="hidden"
                     />
@@ -290,11 +325,17 @@ const AddressPage = () => {
             </div>
           ) : (
             <div className="text-center py-16 bg-white border rounded-xl">
-              <MapPin size={28} className="mx-auto text-[#f43397]" />
+              <MapPin
+                size={28}
+                className="mx-auto"
+                style={{ color: "#D32F2F" }} // ✅ logo red
+              />
               <p className="mt-4 text-gray-500 text-sm">No saved addresses</p>
               <button
                 onClick={handleAddNew}
-                className="mt-4 bg-[#f43397] text-white px-6 py-3 rounded-lg text-sm font-medium">
+                className="mt-4 text-white px-6 py-3 rounded-lg text-sm font-medium"
+                style={{ backgroundColor: "#D32F2F" }} // ✅ logo red
+              >
                 Add Address
               </button>
             </div>
@@ -321,8 +362,14 @@ const AddressPage = () => {
               disabled={disabled}
               addressPage="true"
             />
-            <div className="flex items-center justify-center gap-2 bg-white border border-gray-100 p-4 rounded-xl">
-              <ShieldCheck size={15} className="text-[#f43397]" />
+            <div
+              className="flex items-center justify-center gap-2 bg-white border p-4 rounded-xl"
+              style={{ borderColor: "#F5A623" }} // ✅ logo golden border
+            >
+              <ShieldCheck
+                size={15}
+                style={{ color: "#D32F2F" }} // ✅ logo red
+              />
               <p className="text-xs font-semibold text-gray-500">
                 100% Secure Payments
               </p>
