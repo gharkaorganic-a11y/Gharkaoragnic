@@ -23,7 +23,7 @@ import {
   useRelatedProducts,
   useProductReviews,
 } from "../features/product/hook/useProducts";
-import { useReviewForm } from "../../../../admin/src/components/productManage/hook/useReviewForm";
+// import { useReviewForm } from "../../../../admin/src/components/productManage/hook/useReviewForm";
 import { useCart } from "../features/cart/context/CartContext";
 import { useAuth } from "../features/auth/context/UserContext";
 
@@ -110,17 +110,17 @@ const ProductDetailsPage = () => {
   } = useProductReviews(product?.id, { pageSize: 5, approvedOnly: true });
 
   /* Review Submission Hook */
-  const {
-    review,
-    loading: reviewSubmitting,
-    error: reviewError,
-    success: reviewSuccess,
-    handleChange: handleReviewChange,
-    handleRatingChange,
-    handleImageChange,
-    handleSubmit: handleReviewSubmit,
-    reset: resetReviewForm,
-  } = useReviewForm(product?.id);
+  // const {
+  //   review,
+  //   loading: reviewSubmitting,
+  //   error: reviewError,
+  //   success: reviewSuccess,
+  //   handleChange: handleReviewChange,
+  //   handleRatingChange,
+  //   handleImageChange,
+  //   handleSubmit: handleReviewSubmit,
+  //   reset: resetReviewForm,
+  // } = useReviewForm(product?.id);
 
   const reviews = useMemo(() => reviewsData?.reviews ?? [], [reviewsData]);
 
@@ -150,13 +150,13 @@ const ProductDetailsPage = () => {
     }
   }, [reviews]);
 
-  useEffect(() => {
-    if (reviewSuccess) {
-      setShowReviewForm(false);
-      notify("success", "Review submitted! It will appear after approval.");
-      resetReviewForm();
-    }
-  }, [reviewSuccess, resetReviewForm]);
+  // useEffect(() => {
+  //   if (reviewSuccess) {
+  //     setShowReviewForm(false);
+  //     notify("success", "Review submitted! It will appear after approval.");
+  //     resetReviewForm();
+  //   }
+  // }, [reviewSuccess, resetReviewForm]);
 
   /* ─────────────────────────────────────────
       HANDLERS
@@ -190,13 +190,13 @@ const ProductDetailsPage = () => {
     }
   };
 
-  const handleWriteReviewClick = () => {
-    if (!isLoggedIn) {
-      setShowLoginModal(true);
-      return;
-    }
-    setShowReviewForm((prev) => !prev);
-  };
+  // const handleWriteReviewClick = () => {
+  //   if (!isLoggedIn) {
+  //     setShowLoginModal(true);
+  //     return;
+  //   }
+  //   setShowReviewForm((prev) => !prev);
+  // };
 
   const scrollToReviews = useCallback(() => {
     const el = document.getElementById("reviews");
@@ -521,119 +521,6 @@ const ProductDetailsPage = () => {
 
           {/* ── REVIEWS DASHBOARD SECTION ── */}
           <CustomerReviewsSectionNew productId={product?.id} />
-          {/* ── SUBMIT FEEDBACK MODAL POPUP WINDOW ── */}
-          {showReviewForm && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-              <div className="bg-white rounded-xl shadow-xl border border-gray-100 max-w-md w-full max-h-[90vh] overflow-y-auto relative animate-in fade-in zoom-in-95 duration-150">
-                {/* Modal Static Sticky Top Bar Header */}
-                <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between z-10">
-                  <h4 className="font-black text-gray-900 text-base">
-                    Write A Product Review
-                  </h4>
-                  <button
-                    onClick={() => setShowReviewForm(false)}
-                    className="p-1 text-gray-400 hover:text-gray-700 font-light transition-colors">
-                    ✕
-                  </button>
-                </div>
-
-                {/* Input Fields Content */}
-                <div className="p-6 space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">
-                      Overall Rating
-                    </label>
-                    <div className="flex gap-1">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <button
-                          key={star}
-                          type="button"
-                          onClick={() => handleRatingChange(star)}
-                          className="transition-transform hover:scale-105">
-                          <Star
-                            size={26}
-                            className={
-                              star <= review.rating
-                                ? "fill-[#f4a222] text-[#f4a222]"
-                                : "text-gray-200"
-                            }
-                          />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">
-                      Your Name
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={review.name || ""}
-                      onChange={handleReviewChange}
-                      placeholder="E.g. John Doe"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-900 transition-all"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">
-                      Review Message
-                    </label>
-                    <textarea
-                      name="comment"
-                      value={review.comment || ""}
-                      onChange={handleReviewChange}
-                      rows="4"
-                      placeholder="Share details of your experience with flavor profiles, notes, or packaging..."
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none resize-none focus:border-gray-900 transition-all"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">
-                      Upload Photos (Optional)
-                    </label>
-                    <div className="flex items-center gap-3">
-                      <label className="cursor-pointer flex items-center justify-center bg-gray-50 border border-dashed border-gray-300 w-12 h-12 rounded-lg hover:bg-gray-100 transition-all">
-                        <ImageIcon size={18} className="text-gray-400" />
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={handleImageChange}
-                        />
-                      </label>
-                      <span className="text-xs text-gray-400 truncate max-w-[240px]">
-                        {review.image ? review.image.name : "No file selected"}
-                      </span>
-                    </div>
-                  </div>
-
-                  {reviewError && (
-                    <p className="text-xs text-red-500 font-semibold bg-red-50 p-2.5 rounded border border-red-100">
-                      {reviewError.message ||
-                        "Failed to accept submission. Please check all metrics."}
-                    </p>
-                  )}
-
-                  <div className="pt-2">
-                    <button
-                      onClick={handleReviewSubmit}
-                      disabled={reviewSubmitting}
-                      className="w-full bg-[#f4a222] hover:bg-[#e09112] text-white font-bold py-2.5 rounded-lg text-sm shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                      {reviewSubmitting ? (
-                        <Loader2 size={16} className="animate-spin" />
-                      ) : (
-                        "Submit Review"
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
 
           <FaqSection />
           <OurStoryComponent />

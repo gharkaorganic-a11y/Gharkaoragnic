@@ -1,6 +1,6 @@
 import React from "react";
 import { Search, Filter, ChevronDown, X } from "lucide-react";
-import { productSections } from "../../../../user/src/userApp/features/homepage/config/productCollection";
+import { productSections } from "../../data/productSections";
 
 const Filters = ({
   collectionFilter,

@@ -2,12 +2,11 @@ import React from "react";
 import Card from "../ui/Card";
 import FieldLabel from "../ui/FieldLabel";
 import Select from "../ui/Select";
-import { productSections } from "../../../../../../user/src/userApp/features/homepage/config/productCollection";
-
+import { productSections } from "../../../../data/productSections";
 const ProductOrganizationCard = ({
   newCollection,
   product,
-  
+
   setProduct,
   setNewCollection,
   FolderTree,
@@ -15,7 +14,6 @@ const ProductOrganizationCard = ({
   return (
     <Card icon={FolderTree} title="Organization">
       <div className="space-y-6">
-     
         {/* Collection Section */}
         <div>
           <FieldLabel>
@@ -69,10 +67,10 @@ const ProductOrganizationCard = ({
               className="w-full border border-[#e0e0e0] text-[#212121] p-2.5 rounded-sm focus:outline-none focus:border-[#2874f0] focus:ring-1 focus:ring-[#2874f0] text-[14px] transition-shadow bg-white">
               <option value="">Select predefined collection...</option>
               {productSections.map((section) => (
-  <option key={section.key} value={section.key}>
-    {section.title}
-  </option>
-))}
+                <option key={section.key} value={section.key}>
+                  {section.title}
+                </option>
+              ))}
             </select>
 
             {/* Custom collection input */}
