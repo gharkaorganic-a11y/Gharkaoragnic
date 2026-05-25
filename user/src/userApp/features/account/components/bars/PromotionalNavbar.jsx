@@ -2,7 +2,7 @@ import React from "react";
 
 const RunningPromotionalBanner = ({ speed = 20 }) => {
   const messages = [
-    "FREE SHIPPING ON ORDERS ABOVE ₹350 • A2 DESI GHEE • RAW HONEY • PHAADI PICKLES",
+    "FREE SHIPPING ON ORDERS ABOVE ₹599 • A2 DESI GHEE • RAW HONEY • PHAADI PICKLES",
     "100% NATURAL • NO PRESERVATIVES • DIRECT FROM FARMERS • GHAR KA ORGANIC",
   ];
 

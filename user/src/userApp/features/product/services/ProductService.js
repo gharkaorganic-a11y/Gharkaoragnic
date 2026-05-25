@@ -1,6 +1,14 @@
 /**
  * productService.js
  * Production-ready Firestore product service with LRU cache, TTL, and request coalescing.
+ *
+ * Architecture Highlights:
+ * - LRU Cache + TTL: 200-entry cap, 5-minute TTL, auto-eviction on access.
+ * - Request Coalescing: Identical in-flight requests share a single Promise.
+ * - Slug ↔ ID Bidirectional Map: Avoids redundant Firestore queries for slug lookups.
+ * - Typed Errors: ProductNotFoundError / ProductServiceError for precise catch handling.
+ * - Chunked Batch Fetching: getProductsByIds respects Firestore's 10-item "in" clause limit.
+ * - reviewsRef helper: Shared sub-collection reference used by getProductReviews.
  */
 
 import {
@@ -21,10 +29,12 @@ import { db } from "../../../../config/firebaseDB";
 ───────────────────────────────────────────────────────────────────────────── */
 
 const COL = "products";
+const REVIEWS_COL = "reviews";
 const DEFAULT_PAGE_SIZE = 20;
+const DEFAULT_REVIEW_PAGE_SIZE = 5;
 const MAX_CACHE_ENTRIES = 200;
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
-const FIRESTORE_IN_LIMIT = 10; // Firestore "in" / "__name__ in" clause max
+const CACHE_TTL_MS = 5 * 60 * 1000;   // 5 minutes
+const FIRESTORE_IN_LIMIT = 10;          // Firestore "in" / "__name__ in" clause max
 
 /* ─────────────────────────────────────────────────────────────────────────────
    TYPED ERRORS
@@ -124,7 +134,7 @@ class LRUCache {
 
 const cache = new LRUCache();
 
-// Bidirectional slug ↔ id lookup (these are identity maps, no TTL needed)
+// Bidirectional slug ↔ id lookup (identity maps, no TTL needed)
 const slugToId = new Map();
 const idToSlug = new Map();
 
@@ -134,6 +144,14 @@ const inFlight = new Map();
 /* ─────────────────────────────────────────────────────────────────────────────
    HELPERS
 ───────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * Sub-collection reference for a product's reviews.
+ * FIX: This was missing from the original user service, causing a ReferenceError
+ * when getProductReviews was called.
+ */
+const reviewsRef = (productId) =>
+  collection(db, COL, productId, REVIEWS_COL);
 
 /**
  * Wrap a single async fetch with in-flight deduplication.
@@ -177,7 +195,24 @@ const normalize = (id, data) => ({
   collectionTypes: Array.isArray(data.collectionTypes) ? data.collectionTypes : [],
   isActive: data.isActive ?? true,
   createdAt: data.createdAt ?? null,
+  totalReviews: Number(data.stock ?? 0),
+
   tags: Array.isArray(data.tags) ? data.tags : [],
+});
+
+/**
+ * Normalize a raw Firestore review document into a clean shape.
+ */
+const normalizeReview = (id, data) => ({
+  id: String(id),
+  name: data.name ?? "Anonymous",
+  rating: Number(data.rating ?? 0),
+  comment: data.comment ?? "",
+  title: data.title ?? "",
+  verified: data.verified ?? false,
+  isApproved: data.isApproved ?? false,
+  date: data.date ?? null,
+  createdAt: data.createdAt ?? null,
 });
 
 /**
@@ -194,53 +229,49 @@ const chunk = (arr, size) => {
 ───────────────────────────────────────────────────────────────────────────── */
 
 export const productService = {
+
   /* ───────────────────────────────────────────────────────────────────────
      getProducts — cursor-paginated list, optionally filtered by collection type.
      Returns { products, lastDoc, hasMore }.
   ─────────────────────────────────────────────────────────────────────── */
-async getProducts({
-  lastDoc = null,
-  collectionType = null,
-  pageSize = DEFAULT_PAGE_SIZE,
-  activeOnly = true,
-} = {}) {
-  try {
-    const constraints = [];
+  async getProducts({
+    lastDoc = null,
+    collectionType = null,
+    pageSize = DEFAULT_PAGE_SIZE,
+    activeOnly = true,
+  } = {}) {
+    try {
+      const constraints = [];
 
-    if (activeOnly) {
-      constraints.push(where("isActive", "==", true));
+      if (activeOnly) {
+        constraints.push(where("isActive", "==", true));
+      }
+
+      if (collectionType) {
+        constraints.push(where("collectionTypes", "array-contains", collectionType));
+      }
+
+      constraints.push(orderBy("createdAt", "desc"));
+      if (lastDoc) constraints.push(startAfter(lastDoc));
+      constraints.push(limit(pageSize));
+
+      const snapshot = await getDocs(query(collection(db, COL), ...constraints));
+
+      const products = snapshot.docs.map((d) => {
+        const p = normalize(d.id, d.data());
+        primeRefs(p);
+        return p;
+      });
+
+      return {
+        products,
+        lastDoc: snapshot.docs.at(-1) ?? null,
+        hasMore: snapshot.docs.length === pageSize,
+      };
+    } catch (err) {
+      throw new ProductServiceError("Failed to fetch products page", err);
     }
-
-    if (collectionType) {
-      console.log("[ProductService] Filtering by collectionType:", collectionType);
-      constraints.push(where("collectionTypes", "array-contains", collectionType));
-    } else {
-      console.log("[ProductService] Fetching ALL products - no collectionTypes filter");
-    }
-
-    constraints.push(orderBy("createdAt", "desc"));
-    if (lastDoc) constraints.push(startAfter(lastDoc));
-    constraints.push(limit(pageSize));
-
-    const snapshot = await getDocs(query(collection(db, COL),...constraints));
-    console.log("[ProductService] Found", snapshot.docs.length, "docs");
-
-    const products = snapshot.docs.map((d) => {
-      const p = normalize(d.id, d.data());
-      primeRefs(p);
-      return p;
-    });
-
-    return {
-      products,
-      lastDoc: snapshot.docs.at(-1)?? null,
-      hasMore: snapshot.docs.length === pageSize,
-    };
-  } catch (err) {
-    console.error("[ProductService] Error:", err);
-    throw new ProductServiceError("Failed to fetch products page", err);
-  }
-},
+  },
 
   /* ───────────────────────────────────────────────────────────────────────
      getAllProducts — cached full list of active products (use sparingly).
@@ -350,7 +381,9 @@ async getProducts({
      getProductsByCollections — fetch active products matching any of the
      given collection type strings (array-contains-any).
   ─────────────────────────────────────────────────────────────────────── */
-  async getProductsByCollections(types = [], maxResults = 8) {
+  async getProductsByCollections(types = [], options = {}) {
+    const maxResults = options.limit || 8;
+
     if (!types.length) return [];
 
     try {
@@ -416,6 +449,59 @@ async getProducts({
         throw new ProductServiceError(`Failed to fetch product by slug: ${slug}`, err);
       }
     });
+  },
+
+  /* ───────────────────────────────────────────────────────────────────────
+     getProductReviews — paginated reviews sub-collection fetch.
+     
+     FIX: Added missing `reviewsRef` helper above (was causing ReferenceError).
+     FIX: Moved `where` before `orderBy` — Firestore requires filter clauses
+          first, then sort, then pagination. Wrong order causes index errors.
+     FIX: Added normalizeReview() for consistent, safe review shape.
+     NOTE: Requires a composite Firestore index on reviews:
+           { isApproved: ASC, createdAt: DESC }
+           Firebase will print a direct creation link in the console on first run.
+
+     Returns { reviews, lastDoc, hasMore }.
+  ─────────────────────────────────────────────────────────────────────── */
+  async getProductReviews(productId, {
+    pageSize = DEFAULT_REVIEW_PAGE_SIZE,
+    lastDoc = null,
+    approvedOnly = true,
+  } = {}) {
+    if (!productId) return { reviews: [], lastDoc: null, hasMore: false };
+
+    try {
+      const constraints = [];
+
+      // WHERE must come before ORDER BY — Firestore index requirement
+      if (approvedOnly) {
+        constraints.push(where("isApproved", "==", true));
+      }
+
+      constraints.push(orderBy("createdAt", "desc"));
+      constraints.push(limit(pageSize));
+
+      // startAfter must be last
+      if (lastDoc) {
+        constraints.push(startAfter(lastDoc));
+      }
+
+      const snap = await getDocs(
+        query(reviewsRef(productId), ...constraints)
+      );
+
+      return {
+        reviews: snap.docs.map((d) => normalizeReview(d.id, d.data())),
+        lastDoc: snap.docs.at(-1) ?? null,
+        hasMore: snap.docs.length === pageSize,
+      };
+    } catch (err) {
+      throw new ProductServiceError(
+        `Failed to fetch reviews for product: ${productId}`,
+        err
+      );
+    }
   },
 
   /* ───────────────────────────────────────────────────────────────────────

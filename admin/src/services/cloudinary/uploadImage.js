@@ -9,6 +9,7 @@ const ALLOWED_TYPES = [
   "image/jpg",   // some browsers send this instead of image/jpeg
   "image/png",
   "image/webp",
+  "image/avif"
 ];
 
 /* ─────────────────────────────────────────────
@@ -73,13 +74,15 @@ const compressImage = (file, maxWidth = 1600, quality = 0.75) => {
 
 /* ─────────────────────────────────────────────
    SINGLE IMAGE UPLOAD
+   Added 'folder' parameter for Review uploads
 ───────────────────────────────────────────── */
-export const uploadImageToCloudinary = async (file, cloudName, uploadPreset) => {
+export const uploadImageToCloudinary = async (
+  file, 
+  cloudName, 
+  uploadPreset, 
+  folder = "gharka-organic/products" // <-- NEW: Defaults to products, can be changed
+) => {
 
-  // Top of uploadImageToCloudinary function, add this:
-// console.log("cloudName:", cloudName);
-// console.log("uploadPreset:", uploadPreset);
-// console.log("file:", file?.name, file?.type, file?.size);
   // --- Config check ---
   if (!cloudName || !uploadPreset) {
     throw new Error("Cloudinary config missing. Check your .env file.");
@@ -90,14 +93,14 @@ export const uploadImageToCloudinary = async (file, cloudName, uploadPreset) => 
     throw new Error("No file provided.");
   }
 
-  // --- Type check (FIX: includes image/jpg for browser compatibility) ---
+  // --- Type check ---
   if (!ALLOWED_TYPES.includes(file.type)) {
     throw new Error(
       `Invalid file type: "${file.type}". Only JPG, PNG, and WEBP are allowed.`
     );
   }
 
-  // --- Size check (FIX: prevents silent timeout on large files) ---
+  // --- Size check ---
   if (file.size > MAX_FILE_SIZE) {
     throw new Error(
       `File "${file.name}" is too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Max allowed size is 10MB.`
@@ -115,7 +118,7 @@ export const uploadImageToCloudinary = async (file, cloudName, uploadPreset) => 
     const formData = new FormData();
     formData.append("file", uploadFile);
     formData.append("upload_preset", uploadPreset);
-    formData.append("folder", "gharka-organic/products"); // organized folder
+    formData.append("folder", folder); // <-- NEW: Uses the dynamic folder variable
 
     // --- Upload ---
     const response = await fetch(
@@ -140,7 +143,6 @@ export const uploadImageToCloudinary = async (file, cloudName, uploadPreset) => 
       publicId: data.public_id,
     };
   } catch (error) {
-    // Re-throw with context so UI can show meaningful message
     console.error(`[uploadImageToCloudinary] Failed for "${file.name}":`, error);
     throw error;
   }
@@ -148,15 +150,18 @@ export const uploadImageToCloudinary = async (file, cloudName, uploadPreset) => 
 
 /* ─────────────────────────────────────────────
    MULTIPLE IMAGES UPLOAD (PARALLEL)
-   - Hard limit: 10 files at once
-   - Partial failure reporting (doesn't silently drop)
 ───────────────────────────────────────────── */
-export const uploadMultipleImages = async (files, cloudName, uploadPreset) => {
+export const uploadMultipleImages = async (
+  files, 
+  cloudName, 
+  uploadPreset, 
+  folder = "gharka-organic/products" // <-- NEW: Pass folder down
+) => {
   if (!files || files.length === 0) {
     throw new Error("No files selected.");
   }
 
-  // --- FIX: Cap parallel uploads to prevent Cloudinary rate limit ---
+  // --- Cap parallel uploads ---
   if (files.length > MAX_GALLERY_FILES) {
     throw new Error(
       `Too many files. Please upload a maximum of ${MAX_GALLERY_FILES} images at once.`
@@ -164,10 +169,9 @@ export const uploadMultipleImages = async (files, cloudName, uploadPreset) => {
   }
 
   // --- Run all uploads in parallel ---
-  // FIX: Use allSettled instead of all so one failure doesn't kill the rest
   const results = await Promise.allSettled(
     [...files].map((file) =>
-      uploadImageToCloudinary(file, cloudName, uploadPreset)
+      uploadImageToCloudinary(file, cloudName, uploadPreset, folder) // <-- Pass folder
     )
   );
 
@@ -191,15 +195,11 @@ export const uploadMultipleImages = async (files, cloudName, uploadPreset) => {
     const failedNames = failed.map((f) => `"${f.fileName}": ${f.reason}`).join("\n");
     console.warn(`[uploadMultipleImages] ${failed.length} file(s) failed:\n${failedNames}`);
 
-    // If ALL failed, throw hard error
     if (succeeded.length === 0) {
       throw new Error(
         `All uploads failed. Check your connection or file types.\n${failedNames}`
       );
     }
-
-    // If SOME failed, warn but return what succeeded
-    // The hook can optionally show a partial warning to user
   }
 
   return succeeded;

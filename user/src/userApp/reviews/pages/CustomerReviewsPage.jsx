@@ -213,7 +213,7 @@ export default function ReviewsPage() {
 
             priceCurrency: "INR",
 
-            price: "499",
+            price: "599",
 
             availability: "https://schema.org/InStock",
 

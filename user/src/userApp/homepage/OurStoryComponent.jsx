@@ -23,7 +23,7 @@ const OurStoryComponent = () => {
           <h2
             className="text-2xl md:text-3xl font-light tracking-widest text-[#333333] mb-6 uppercase"
             itemProp="headline">
-            Our Story – Himalayan Organic Food from Uttarakhand
+            Our Story – Pure Pahadi Taste from the Heart of Uttarakhand
           </h2>
 
           <div className="w-12 h-[1px] bg-gray-300 mb-10" />
@@ -33,37 +33,38 @@ const OurStoryComponent = () => {
             itemProp="text">
             <p>
               <strong className="font-medium text-[#333]">
-                Ghar Ka Organic
+                GHAR KA ORGANIC
               </strong>{" "}
-              is a Himalayan organic food brand based in Bhimtal, Uttarakhand,
-              India, focused on traditional pahadi food culture.
+              started with a simple mission — to bring back the authentic taste
+              of the mountains through pure homemade goodness and zero
+              preservatives.
             </p>
 
             <p>
-              We specialize in <strong>pahadi pickles (achar)</strong>,
-              <strong> raw forest honey</strong>, and
-              <strong> A2 bilona desi ghee</strong>, made using traditional
-              Himalayan methods without chemicals or preservatives.
+              In today’s world filled with artificial flavors and chemicals, we
+              wanted people to experience what real “ghar ka khaana” truly feels
+              like — simple, honest, and comforting.
             </p>
 
             <p>
-              Our products come directly from Uttarakhand villages, supporting
-              local farmers and preserving authentic Kumaoni food traditions.
+              Deeply connected to our pahadi roots, we aim to share the beauty
+              of Himalayan culture across India through traditional flavors,
+              local ingredients, and timeless food wisdom.
             </p>
 
             <p>
-              We deliver pure Himalayan organic food across India with a focus
-              on trust, purity, and sustainability.
+              Every product we create carries the soul of the mountains —
+              natural ingredients, authentic pahadi taste, homemade warmth, and
+              the feeling of home in every bite.
             </p>
-          </div>
 
-          <div className="mt-12">
-            <a
-              href="/all-products"
-              title="Shop Himalayan Organic Food Products"
-              className="inline-block border border-gray-300 text-[#333333] px-8 py-3 text-xs tracking-widest uppercase font-light hover:bg-gray-50 transition-colors duration-300">
-              Explore Himalayan Products
-            </a>
+            <p>
+              GHAR KA ORGANIC is not just a brand. It is an emotion built to
+              preserve culture, support local communities, and share the real
+              taste of the pahad with the world.
+            </p>
+
+            <p>Pure taste. Pahadi roots. Zero preservatives.</p>
           </div>
         </article>
       </div>

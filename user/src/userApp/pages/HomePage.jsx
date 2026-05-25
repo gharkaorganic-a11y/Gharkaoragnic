@@ -123,31 +123,167 @@ const HomePage = () => {
     <main className="min-h-screen bg-white">
       {/* SEO — light, heavy meta already in index.html */}
       <Helmet>
+        {/* PRIMARY SEO */}
         <title>
-          Ghar Ka Organic – A2 Ghee, Raw Honey & Pahadi Products from
-          Uttarakhand
+          Ghar Ka Organic – Himalayan Homemade Pickles, Kumaoni Chutney &
+          Uttarakhand Organic Products
         </title>
 
         <meta
           name="description"
-          content="Ghar Ka Organic is a Bhimtal-based brand offering A2 bilona ghee, raw forest honey, and traditional pahadi pickles across India."
+          content="Buy homemade Himalayan food products from Uttarakhand — pahadi pickles, kumaoni achar, traditional chutneys, natural pahadi honey, bilona desi ghee and organic village food products delivered across India."
         />
+
+        <meta
+          name="keywords"
+          content="Ghar Ka Organic, Himalayan products, homemade pickles, pahadi achar, kumaoni achar, pahadi chutney, Uttarakhand organic food, bilona desi ghee, pahadi honey, Himalayan food products"
+        />
+
+        <meta property="og:site_name" content="Ghar Ka Organic" />
+
+        <meta
+          property="og:title"
+          content="Ghar Ka Organic – Himalayan Organic Products"
+        />
+
+        <meta
+          property="og:description"
+          content="Traditional Uttarakhand homemade pickles, pahadi honey and Himalayan food products."
+        />
+
+        <meta
+          property="og:image"
+          content="https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp"
+        />
+
+        <meta property="og:url" content="https://gharkaorganic.com/" />
+
+        <meta name="twitter:card" content="summary_large_image" />
 
         <link rel="canonical" href="https://gharkaorganic.com/" />
 
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            name: "Ghar Ka Organic",
-            url: "https://gharkaorganic.com",
-            logo: "https://gharkaorganic.com/gharka-logo.png",
-            sameAs: ["https://www.instagram.com/gharkaorganic/"],
-          })}
-        </script>
-        {/* BRAND SIGNALS */}
-        <meta property="og:site_name" content="Ghar Ka Organic" />
         <meta name="author" content="Ghar Ka Organic" />
+
+        {/* ORGANIZATION SCHEMA */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+
+              name: "Ghar Ka Organic",
+
+              url: "https://gharkaorganic.com",
+
+              logo: "https://gharkaorganic.com/gharka-logo.png",
+
+              sameAs: ["https://www.instagram.com/gharkaorganic/"],
+
+              contactPoint: {
+                "@type": "ContactPoint",
+                telephone: "+91 98974 47525",
+                contactType: "customer support",
+                areaServed: "IN",
+              },
+            }),
+          }}
+        />
+
+        {/* LOCAL BUSINESS SCHEMA */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+
+              "@type": ["LocalBusiness", "FoodManufacturer", "OnlineStore"],
+
+              name: "Ghar Ka Organic",
+
+              image:
+                "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp",
+
+              url: "https://gharkaorganic.com",
+
+              telephone: "+91 98974 47525",
+
+              priceRange: "₹₹",
+
+              description:
+                "Traditional Himalayan organic food brand from Uttarakhand offering homemade pickles, chutneys, pahadi honey and bilona desi ghee.",
+
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "Ward No.2",
+                addressLocality: "Nalni",
+                addressRegion: "Uttarakhand",
+                postalCode: "263002",
+                addressCountry: "IN",
+              },
+
+              geo: {
+                "@type": "GeoCoordinates",
+                latitude: 29.3459,
+                longitude: 79.5618,
+              },
+
+              openingHoursSpecification: {
+                "@type": "OpeningHoursSpecification",
+                dayOfWeek: [
+                  "Monday",
+                  "Tuesday",
+                  "Wednesday",
+                  "Thursday",
+                  "Friday",
+                  "Saturday",
+                  "Sunday",
+                ],
+                opens: "00:00",
+                closes: "23:59",
+              },
+            }),
+          }}
+        />
+
+        {/* PRODUCT SCHEMA */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+
+              "@type": "Product",
+
+              name: "Kumaoni Aam Achar",
+
+              image:
+                "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp",
+
+              description:
+                "Traditional homemade Kumaoni mango pickle prepared with Himalayan spices.",
+
+              brand: {
+                "@type": "Brand",
+                name: "Ghar Ka Organic",
+              },
+
+              aggregateRating: {
+                "@type": "AggregateRating",
+                ratingValue: "4.9",
+                reviewCount: "28",
+              },
+
+              offers: {
+                "@type": "Offer",
+                url: "https://gharkaorganic.com/",
+                priceCurrency: "INR",
+                price: "349",
+                availability: "https://schema.org/InStock",
+              },
+            }),
+          }}
+        />
       </Helmet>
       {/* hero */}
       <section className="w-full">

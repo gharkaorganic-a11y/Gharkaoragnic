@@ -10,16 +10,16 @@ export const CONFIG = {
   BRAND_NAME: "Ghar Ka Organic",
 
   // 📞 WhatsApp First Business Model
-  WHATSAPP_NUMBER: "919913419927",
+  WHATSAPP_NUMBER: "919897447525",
 
   contact: {
-    phoneDisplay: "+91 99134 19927",
-    phoneLink: "https://wa.me/919913419927",
+    phoneDisplay: "+91 98974 47525",
+    phoneLink: "https://wa.me/919897447525",
     phoneNote: "(Order on WhatsApp)",
     email: "gharkaorganic@gmail.com",
   },
 
-  // 🛍️ Customer Navigation (Food Based)
+  // 🛍️ Customer Navigation
   quickLinks: [
     { label: "About Us", path: "/about-us" },
     { label: "Our Products", path: "/products" },
@@ -28,7 +28,7 @@ export const CONFIG = {
     { label: "FAQ", path: "/faq" },
   ],
 
-  // 📜 Policies (Trust Building)
+  // 📜 Policies
   policies: [
     { label: "Privacy Policy", path: "/privacy-policy" },
     { label: "Terms of Service", path: "/terms-of-service" },
@@ -38,7 +38,7 @@ export const CONFIG = {
     { label: "Sitemap", path: "/sitemap" },
   ],
 
-  // 🌿 Trust Highlights (NEW - very important for food brand)
+  // 🌿 Trust Highlights
   highlights: [
     "100% Homemade",
     "No Preservatives",
@@ -46,7 +46,7 @@ export const CONFIG = {
     "Direct From Kitchen",
   ],
 
-  // 🧾 Product Categories (NEW - helps navbar + homepage)
+  // 🧾 Product Categories
   categories: [
     { name: "Pickles", path: "/category/pickles" },
     { name: "Masala", path: "/category/masala" },
@@ -55,7 +55,7 @@ export const CONFIG = {
     { name: "Snacks", path: "/category/snacks" },
   ],
 
-  // 🌐 Socials (Keep clean + real links later)
+  // 🌐 Socials
   socials: [
     {
       name: "Facebook",
@@ -71,9 +71,10 @@ export const CONFIG = {
         </svg>
       ),
     },
+
     {
       name: "Instagram",
-      url: "https://www.instagram.com/reel/DUhapDxDzD2/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==",
+      url: "https://www.instagram.com/gharkaorganic/",
       icon: (
         <svg
           viewBox="0 0 24 24"
@@ -87,9 +88,10 @@ export const CONFIG = {
         </svg>
       ),
     },
+
     {
       name: "WhatsApp",
-      url: "https://wa.me/919913419927",
+      url: "https://wa.me/919897447525",
       icon: (
         <svg
           viewBox="0 0 24 24"
@@ -102,19 +104,22 @@ export const CONFIG = {
       ),
     },
   ],
+
   instagramFeed: [
     {
       id: 1,
       image: "/insta.png",
       link: "https://www.instagram.com/reels/DUhapDxDzD2/",
-      type: "reel", // optional
+      type: "reel",
     },
+
     {
       id: 2,
       image: "/insta.png",
       link: "https://www.instagram.com/p/XXXX/",
       type: "post",
     },
+
     {
       id: 3,
       image: "/insta.png",
@@ -122,4 +127,12 @@ export const CONFIG = {
       type: "reel",
     },
   ],
+
+  // 👨‍💻 Developer Credit
+  developer: {
+    name: "Ravi Sharma",
+    phone: "+91 83928 56993",
+    whatsapp:
+      "https://wa.me/918392856993?text=Hi%20Ravi%20Sharma,%20I%20want%20an%20organic%20brand%20website%20like%20Ghar%20Ka%20Organic",
+  },
 };

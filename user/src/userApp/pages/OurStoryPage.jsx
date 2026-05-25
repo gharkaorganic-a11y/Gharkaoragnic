@@ -130,20 +130,43 @@ const OurStoryPage = () => {
         </section>
 
         {/* CONTENT */}
-        <section className="max-w-[52rem] mx-auto px-6 py-10 text-center font-light text-[15px] leading-[2.2] text-[#555555] space-y-16">
+        {/* CONTENT */}
+        <section className="max-w-[52rem] mx-auto px-6 py-10 text-center font-light text-[15px] leading-[2.2] text-[#555555] space-y-10">
           <p>
-            Ghar Ka Organic is a Bhimtal, Uttarakhand based Himalayan organic
-            food brand focused on traditional Indian food heritage.
+            At <b>Ghar Ka Organic</b>, our journey started with a simple mission
+            — to bring back the authentic taste of the mountains with zero
+            preservatives and real homemade goodness.
           </p>
 
           <p>
-            We specialize in handmade pahadi pickles, A2 bilona ghee, and raw
-            forest honey sourced directly from Uttarakhand villages.
+            In today’s world, where most food is filled with chemicals and
+            artificial flavors, we wanted people to experience what “ghar ka
+            khaana” truly means — pure, simple, and honest food made with care.
           </p>
 
           <p>
-            Every product is prepared using traditional methods without
-            preservatives or chemicals, preserving authentic Himalayan taste.
+            Deeply connected to our Pahadi roots, we also wanted to share the
+            beauty of Uttarakhand with India. From traditional flavors and local
+            ingredients to warmth, simplicity, and hospitality —{" "}
+            <b>Ghar Ka Organic represents the soul of the Himalayas</b>.
+          </p>
+
+          <p>
+            Every product we create carries a touch of the mountains: natural
+            ingredients, traditional pahadi flavors, homemade authenticity, and
+            the comforting feeling that reminds you of home.
+          </p>
+
+          <p>
+            <b>Ghar Ka Organic is not just a brand — it is an emotion.</b>
+            <br />
+            It is built to preserve culture, support local roots, and bring the
+            real taste of the pahad to homes across India.
+          </p>
+
+          <p>
+            We believe food should not just fill your stomach — it should remind
+            you of home, tradition, and purity.
           </p>
 
           <p>

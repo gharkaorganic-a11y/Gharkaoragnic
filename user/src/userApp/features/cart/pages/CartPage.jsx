@@ -1,7 +1,12 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useCart } from "../context/CartContext";
-import { useProducts } from "../../product/hook/useProducts";
+import {
+  useProducts,
+  PRODUCT_KEYS,
+  META_OPTS,
+} from "../../product/hook/useProducts";
 import { useQueryClient } from "@tanstack/react-query";
+import { productService } from "../../product/services/ProductService";
 
 import CartItemCard from "../components/cards/CartItemCard";
 import CartControlHeader from "../components/header/CartControlHeader";
@@ -13,14 +18,7 @@ import { Link, useNavigate } from "react-router-dom";
 import LoginPopup from "../../../components/pop-up/LoginPoup";
 import { useAuth } from "../../auth/context/UserContext";
 import NewBreadcrumb from "../../p/components/NewBreadcrumb";
-import { Leaf, ShieldCheck, Truck } from "lucide-react"; // Make sure lucide-react is installed
-
-// ─── Organic Theme Colors ──────────────────────
-// Primary Green: #2D6A4F (Trust, freshness, nature)
-// Light Green:   #D8F3DC (Backgrounds, subtle highlights)
-// Harvest Yellow:#E9C46A (Accents, warnings, like raw honey)
-// Dark Text:     #1B4332 (Deep forest green for text readability)
-// ───────────────────────────────────────────────
+import { Leaf, ShieldCheck, Truck } from "lucide-react";
 
 const round = (num) => Math.round(num * 100) / 100;
 const FREE_SHIPPING_THRESHOLD = 999;
@@ -31,7 +29,7 @@ const CartPage = () => {
 
   const { isLoggedIn } = useAuth();
   const { cart, updateQuantity, updateSize, remove, clear } = useCart();
-  const { getProductsByIds } = useProducts();
+  const { invalidateAll } = useProducts();
 
   const [products, setProducts] = useState([]);
   const [loadingDetails, setLoadingDetails] = useState(true);
@@ -39,6 +37,7 @@ const CartPage = () => {
   const [selected, setSelected] = useState([]);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
+  // Stable string key to detect real cart changes
   const cartIds = useMemo(() => {
     return cart
       .map((i) => String(i.id))
@@ -56,6 +55,7 @@ const CartPage = () => {
       return;
     }
 
+    // Skip fetch if cart composition hasn't changed
     if (cartIds === prevCartIds.current) return;
 
     const controller = new AbortController();
@@ -66,11 +66,13 @@ const CartPage = () => {
 
       try {
         const ids = cart.map((i) => String(i.id));
-        queryClient.invalidateQueries({ queryKey: ["products"] });
 
-        const results = await getProductsByIds(ids, {
-          signal: controller.signal,
-          force: true,
+        // FIX: Use queryClient.fetchQuery directly so signal works correctly
+        // and we get proper React Query caching without the spurious invalidation
+        const results = await queryClient.fetchQuery({
+          queryKey: PRODUCT_KEYS.byIds(ids),
+          queryFn: ({ signal }) => productService.getProductsByIds(ids, signal),
+          ...META_OPTS,
         });
 
         setProducts(results || []);
@@ -78,7 +80,7 @@ const CartPage = () => {
       } catch (err) {
         if (err.name !== "AbortError") {
           console.error("Cart fetch error:", err);
-          setError("Failed to load cart items");
+          setError("Failed to load cart items. Please refresh and try again.");
         }
       } finally {
         setLoadingDetails(false);
@@ -87,7 +89,10 @@ const CartPage = () => {
 
     fetchDetails();
     return () => controller.abort();
-  }, [cartIds, cart.length, getProductsByIds, queryClient]);
+  }, [cartIds, queryClient]);
+  // FIX: Removed `cart.length` and `getProductsByIds` from deps —
+  // cartIds already encodes length changes; getProductsByIds was causing
+  // re-runs on every render because it's a new function reference each time
 
   const productMap = useMemo(() => {
     const map = new Map();
@@ -117,7 +122,8 @@ const CartPage = () => {
   useEffect(() => {
     setSelected((prev) => {
       const keys = mergedCart.map((i) => i.cartKey);
-      return keys.filter((k) => prev.includes(k) || !prev.length);
+      // Keep previously selected keys that still exist; select all if nothing was selected yet
+      return prev.length ? keys.filter((k) => prev.includes(k)) : keys;
     });
   }, [mergedCart]);
 
@@ -154,10 +160,8 @@ const CartPage = () => {
       originalTotalPrice += mrp * qty;
     });
 
-    const gstRate = 0.18; // Note: Organic raw items like honey/produce might have lower GST depending on local laws. Adjust as needed.
+    const gstRate = 0.18;
     const gstAmount = round(subtotal * gstRate);
-
-    // Waive platform fee if subtotal hits the free shipping threshold
     const platformFee =
       subtotal > 0 && subtotal < FREE_SHIPPING_THRESHOLD ? 50 : 0;
     const totalSavings = round(originalTotalPrice - subtotal);
@@ -184,15 +188,15 @@ const CartPage = () => {
   const validateCart = useCallback(() => {
     for (const item of selectedItems) {
       if (item.stock !== undefined && item.selectedQuantity > item.stock) {
-        return `Item ${item.name} is out of stock`;
+        return `"${item.name}" only has ${item.stock} units left in stock`;
       }
     }
     return null;
   }, [selectedItems]);
 
-  const handleCheckout = async () => {
+  const handleCheckout = useCallback(async () => {
     if (!selectedItems.length) {
-      alert("Select at least one item");
+      alert("Please select at least one item to proceed.");
       return;
     }
 
@@ -202,12 +206,14 @@ const CartPage = () => {
       return;
     }
 
-    await queryClient.invalidateQueries({ queryKey: ["products"] });
-
     if (!isLoggedIn) {
       setIsLoginOpen(true);
       return;
     }
+
+    // FIX: Only invalidate at checkout, not on every cart change.
+    // This ensures stock/price are fresh before payment without spamming Firestore.
+    await invalidateAll();
 
     navigate("/checkout/address", {
       state: {
@@ -217,7 +223,14 @@ const CartPage = () => {
         source: "cart",
       },
     });
-  };
+  }, [
+    selectedItems,
+    validateCart,
+    isLoggedIn,
+    invalidateAll,
+    navigate,
+    pricing,
+  ]);
 
   if (loadingDetails && cart.length > 0) return <CartSkeleton />;
 
@@ -265,7 +278,7 @@ const CartPage = () => {
           </div>
         </div>
 
-        {/* RIGHT SIDE: Summary & Organic Trust Factors */}
+        {/* RIGHT SIDE: Summary & Trust Factors */}
         <div className="w-full lg:w-[400px] space-y-6">
           {/* Free Shipping Tracker */}
           <div className="bg-white p-5 rounded-xl shadow-sm border border-[#D8F3DC]">
@@ -280,7 +293,8 @@ const CartPage = () => {
             <div className="w-full bg-gray-100 rounded-full h-2.5">
               <div
                 className="bg-[#2D6A4F] h-2.5 rounded-full transition-all duration-500 ease-out"
-                style={{ width: `${shippingProgress}%` }}></div>
+                style={{ width: `${shippingProgress}%` }}
+              />
             </div>
           </div>
 
@@ -294,8 +308,6 @@ const CartPage = () => {
               selectedItems={selectedItems}
               onPlaceOrder={handleCheckout}
             />
-
-            {/* Savings Callout */}
             {pricing.totalSavings > 0 && (
               <div className="bg-[#D8F3DC] px-6 py-3 text-center text-sm font-medium text-[#1B4332]">
                 You are saving ₹{pricing.totalSavings} on this order!
@@ -305,24 +317,20 @@ const CartPage = () => {
 
           {/* Organic Trust Badges */}
           <div className="grid grid-cols-3 gap-3">
-            <div className="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow-sm border border-gray-50 text-center">
-              <Leaf className="text-[#2D6A4F] mb-2" size={24} />
-              <span className="text-xs font-semibold text-gray-700">
-                100% Pure & Traditional
-              </span>
-            </div>
-            <div className="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow-sm border border-gray-50 text-center">
-              <ShieldCheck className="text-[#2D6A4F] mb-2" size={24} />
-              <span className="text-xs font-semibold text-gray-700">
-                Secure Checkout
-              </span>
-            </div>
-            <div className="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow-sm border border-gray-50 text-center">
-              <Truck className="text-[#2D6A4F] mb-2" size={24} />
-              <span className="text-xs font-semibold text-gray-700">
-                Direct from Farms
-              </span>
-            </div>
+            {[
+              { icon: <Leaf size={24} />, label: "100% Pure & Traditional" },
+              { icon: <ShieldCheck size={24} />, label: "Secure Checkout" },
+              { icon: <Truck size={24} />, label: "Direct from Farms" },
+            ].map(({ icon, label }) => (
+              <div
+                key={label}
+                className="flex flex-col items-center justify-center p-4 bg-white rounded-xl shadow-sm border border-gray-50 text-center">
+                <span className="text-[#2D6A4F] mb-2">{icon}</span>
+                <span className="text-xs font-semibold text-gray-700">
+                  {label}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

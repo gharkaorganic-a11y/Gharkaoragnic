@@ -8,48 +8,103 @@ const CANONICAL = `${BASE_URL}/auth/login`;
 
 const JSONLD = JSON.stringify({
   "@context": "https://schema.org",
+
   "@graph": [
     {
       "@type": "WebPage",
-      "@id": CANONICAL,
+
+      "@id": `${CANONICAL}#webpage`,
+
       url: CANONICAL,
+
       name: "Login | Ghar Ka Organic",
+
       description:
-        "Login to Ghar Ka Organic for premium Uttarakhand organic products including Himalayan pickles, A2 bilona ghee and raw honey.",
+        "Login to Ghar Ka Organic for premium Himalayan organic food products including handmade pickles, raw forest honey and bilona desi ghee.",
+
       inLanguage: "en-IN",
+
       isPartOf: {
         "@id": `${BASE_URL}/#website`,
+      },
+
+      breadcrumb: {
+        "@id": `${CANONICAL}#breadcrumb`,
+      },
+    },
+
+    {
+      "@type": "WebSite",
+
+      "@id": `${BASE_URL}/#website`,
+
+      url: BASE_URL,
+
+      name: "Ghar Ka Organic",
+
+      potentialAction: {
+        "@type": "SearchAction",
+
+        target: `${BASE_URL}/search?q={search_term_string}`,
+
+        "query-input": "required name=search_term_string",
       },
     },
 
     {
       "@type": "Organization",
+
       "@id": `${BASE_URL}/#organization`,
+
       name: "Ghar Ka Organic",
+
       url: BASE_URL,
+
       logo: `${BASE_URL}/gharka-logo.png`,
+
+      image:
+        "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776768403/Local_women_in_Bhimtal_Uttarakhand_preparing_traditional_Himalayan_organic_food_tbpvgk.webp",
+
+      telephone: "+91-7983990550",
+
+      email: "gharkaorganic@gmail.com",
+
       sameAs: ["https://www.instagram.com/gharkaorganic/"],
+
       address: {
         "@type": "PostalAddress",
-        addressLocality: "Bhimtal",
+
         addressRegion: "Uttarakhand",
+
+        postalCode: "263136",
+
         addressCountry: "IN",
       },
     },
 
     {
       "@type": "BreadcrumbList",
+
+      "@id": `${CANONICAL}#breadcrumb`,
+
       itemListElement: [
         {
           "@type": "ListItem",
+
           position: 1,
+
           name: "Home",
+
           item: BASE_URL,
         },
+
         {
           "@type": "ListItem",
+
           position: 2,
+
           name: "Login",
+
           item: CANONICAL,
         },
       ],
@@ -115,32 +170,76 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        {/* SEO */}
         <title>Login | Ghar Ka Organic – Himalayan Organic Food Brand</title>
 
         <meta
           name="description"
-          content="Login to Ghar Ka Organic and explore handmade Himalayan pickles, raw forest honey, A2 bilona ghee and authentic Uttarakhand organic food."
+          content="Login to Ghar Ka Organic and explore handmade Himalayan pickles, raw forest honey, bilona desi ghee and authentic organic food products."
         />
 
-        <meta name="robots" content="index, follow" />
+        <meta
+          name="keywords"
+          content="Ghar Ka Organic login, organic food account, Himalayan pickles, raw forest honey, bilona desi ghee, Uttarakhand organic products"
+        />
+
+        <meta name="robots" content="index, follow, max-image-preview:large" />
+
+        <meta name="googlebot" content="index, follow" />
+
         <meta name="author" content="Ghar Ka Organic" />
-        <meta name="language" content="English" />
+
+        <meta name="language" content="en-IN" />
+
+        <meta name="theme-color" content="#ffffff" />
 
         <link rel="canonical" href={CANONICAL} />
 
-        {/* OG */}
+        {/* Open Graph */}
+
         <meta property="og:type" content="website" />
+
         <meta property="og:title" content="Login | Ghar Ka Organic" />
+
         <meta
           property="og:description"
-          content="Access your Ghar Ka Organic account for premium Uttarakhand organic products."
+          content="Access your Ghar Ka Organic account for premium Himalayan organic food products."
         />
+
         <meta property="og:url" content={CANONICAL} />
+
         <meta property="og:site_name" content="Ghar Ka Organic" />
 
-        {/* JSON LD */}
-        <script type="application/ld+json">{JSONLD}</script>
+        <meta
+          property="og:image"
+          content="https://res.cloudinary.com/dwgro3zo7/image/upload/v1776768403/Local_women_in_Bhimtal_Uttarakhand_preparing_traditional_Himalayan_organic_food_tbpvgk.webp"
+        />
+
+        <meta property="og:locale" content="en_IN" />
+
+        {/* Twitter */}
+
+        <meta name="twitter:card" content="summary_large_image" />
+
+        <meta name="twitter:title" content="Login | Ghar Ka Organic" />
+
+        <meta
+          name="twitter:description"
+          content="Login to Ghar Ka Organic for premium organic Himalayan food products."
+        />
+
+        <meta
+          name="twitter:image"
+          content="https://res.cloudinary.com/dwgro3zo7/image/upload/v1776768403/Local_women_in_Bhimtal_Uttarakhand_preparing_traditional_Himalayan_organic_food_tbpvgk.webp"
+        />
+
+        {/* Structured Data */}
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSONLD,
+          }}
+        />
       </Helmet>
 
       <div className="bg-white min-h-screen text-[#4a4a4a] font-sans">
@@ -156,7 +255,7 @@ export default function LoginPage() {
 
             <p className="text-[15px] leading-[2] text-[#666] font-light">
               Continue your journey with authentic Himalayan organic food
-              crafted traditionally in Bhimtal, Uttarakhand.
+              crafted traditionally in Nainital, Uttarakhand.
             </p>
           </div>
 

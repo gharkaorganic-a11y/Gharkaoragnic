@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { db } from "../../config/firebaseDB";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+
 import {
   ArrowRight,
   Loader2,
@@ -13,86 +14,169 @@ import {
   Check,
 } from "lucide-react";
 
-/* ─── Constants ─── */
+/* ─────────────────────────────────────────────
+   CONSTANTS
+───────────────────────────────────────────── */
 const BASE_URL = "https://gharkaorganic.com";
+
 const CANONICAL = `${BASE_URL}/pages/contact`;
+
 const OG_IMAGE =
   "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1776770687/Organic_Himalayan_food_from_Bhimtal_Uttarakhand_by_Ghar_Ka_Organic_wbolwx.webp";
-const ACCENT = "#F59E0B";
 
-/* ─── JSON-LD ─── */
 const JSONLD = JSON.stringify({
   "@context": "https://schema.org",
+
   "@graph": [
     {
       "@type": "ContactPage",
-      "@id": CANONICAL,
+
+      "@id": `${CANONICAL}#contactpage`,
+
       url: CANONICAL,
+
       name: "Contact Ghar Ka Organic",
+
       description:
-        "Customer support for organic Himalayan food products including A2 ghee, honey, and pickles from Uttarakhand.",
+        "Contact Ghar Ka Organic for Himalayan homemade pickles, raw forest honey, bilona desi ghee, chutneys and organic food support across India.",
+
       inLanguage: "en-IN",
+
       isPartOf: {
         "@type": "WebSite",
+
         name: "Ghar Ka Organic",
+
         url: BASE_URL,
       },
-      breadcrumb: {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: BASE_URL },
-          {
-            "@type": "ListItem",
-            position: 2,
-            name: "Contact",
-            item: CANONICAL,
-          },
-        ],
+
+      primaryImageOfPage: {
+        "@type": "ImageObject",
+        url: OG_IMAGE,
       },
-      mainEntity: { "@id": `${BASE_URL}/#business` },
+
+      mainEntity: {
+        "@id": `${BASE_URL}/#business`,
+      },
     },
+
     {
       "@id": `${BASE_URL}/#business`,
-      "@type": ["LocalBusiness", "OnlineStore"],
+
+      "@type": ["LocalBusiness", "OnlineStore", "FoodManufacturer"],
+
       name: "Ghar Ka Organic",
-      url: `${BASE_URL}/`,
+
+      image: [OG_IMAGE],
+
+      logo: `${BASE_URL}/gharka-logo.png`,
+
+      url: BASE_URL,
+
       telephone: "+91-7983990550",
+
       email: "gharkaorganic@gmail.com",
-      image: OG_IMAGE,
+
+      priceRange: "₹₹",
+
+      description:
+        "Traditional Himalayan organic food brand from Uttarakhand offering homemade pickles, chutneys, raw forest honey and bilona desi ghee.",
+
       address: {
         "@type": "PostalAddress",
-        addressLocality: "Bhimtal",
+
+        streetAddress: "Ward No. 2, Nalni",
+
+        addressLocality: "Nainital",
+
         addressRegion: "Uttarakhand",
-        postalCode: "263136",
+
+        postalCode: "263002",
+
         addressCountry: "IN",
       },
+
       geo: {
         "@type": "GeoCoordinates",
+
         latitude: 29.3459,
+
         longitude: 79.5618,
       },
-      openingHoursSpecification: {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-        ],
-        opens: "10:00",
-        closes: "19:00",
-      },
-      areaServed: { "@type": "Country", name: "India" },
-      knowsAbout: [
-        "Uttarakhand Himalayan Organic Food",
-        "Pahadi Pickles (Achar)",
-        "Raw Forest Honey",
-        "A2 Desi Ghee",
-        "Traditional Kumaoni Food",
+
+      openingHoursSpecification: [
+        {
+          "@type": "OpeningHoursSpecification",
+
+          dayOfWeek: [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+          ],
+
+          opens: "10:00",
+
+          closes: "19:00",
+        },
       ],
+
+      areaServed: {
+        "@type": "Country",
+
+        name: "India",
+      },
+
       sameAs: ["https://www.instagram.com/gharkaorganic/"],
+
+      contactPoint: {
+        "@type": "ContactPoint",
+
+        telephone: "+91-7983990550",
+
+        contactType: "customer support",
+
+        areaServed: "IN",
+
+        availableLanguage: ["English", "Hindi"],
+      },
+
+      knowsAbout: [
+        "Pahadi Pickles",
+        "Kumaoni Chutney",
+        "Raw Forest Honey",
+        "Bilona Desi Ghee",
+        "Himalayan Organic Products",
+        "Traditional Uttarakhand Food",
+      ],
+    },
+
+    {
+      "@type": "BreadcrumbList",
+
+      itemListElement: [
+        {
+          "@type": "ListItem",
+
+          position: 1,
+
+          name: "Home",
+
+          item: BASE_URL,
+        },
+
+        {
+          "@type": "ListItem",
+
+          position: 2,
+
+          name: "Contact",
+
+          item: CANONICAL,
+        },
+      ],
     },
   ],
 });
@@ -100,6 +184,7 @@ const JSONLD = JSON.stringify({
 /* ═══════════════════════════════════════════════
    COMPONENT
 ═══════════════════════════════════════════════ */
+
 const ContactUsPage = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -109,21 +194,41 @@ const ContactUsPage = () => {
     subject: "General Inquiry",
     message: "",
   });
+
   const [status, setStatus] = useState("idle");
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  /* ─────────────────────────────────────────────
+     HANDLE INPUT
+  ───────────────────────────────────────────── */
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  /* ─────────────────────────────────────────────
+     HANDLE SUBMIT
+  ───────────────────────────────────────────── */
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setStatus("loading");
+
     try {
       await addDoc(collection(db, "inquiries"), {
         ...formData,
+
         brand: "Ghar Ka Organic",
+
         createdAt: serverTimestamp(),
       });
+
       setStatus("success");
+
       setFormData({
         name: "",
         email: "",
@@ -132,156 +237,182 @@ const ContactUsPage = () => {
         subject: "General Inquiry",
         message: "",
       });
-      setTimeout(() => setStatus("idle"), 6000);
-    } catch (err) {
+
+      setTimeout(() => {
+        setStatus("idle");
+      }, 5000);
+    } catch (error) {
+      console.error(error);
+
       setStatus("error");
-      setTimeout(() => setStatus("idle"), 4000);
+
+      setTimeout(() => {
+        setStatus("idle");
+      }, 5000);
     }
   };
 
   return (
     <div className="min-h-screen bg-white pb-20">
-      {/* ═══════════════════════════════════════════
-          SEO — full indexing signals
-      ═══════════════════════════════════════════ */}
+      {/* ───────────────── SEO ───────────────── */}
+
       <Helmet>
-        {/* Core */}
-        <title>Contact Us | Ghar Ka Organic — Organic Food Support India</title>
+        <title>
+          Contact Ghar Ka Organic | Himalayan Pickles, Honey & Organic Products
+        </title>
+
         <meta
           name="description"
-          content="Contact Ghar Ka Organic for A2 desi ghee, raw pahadi honey, Himalayan pickles, order support or bulk inquiries. We respond within 24 hours. Based in Bhimtal, Uttarakhand."
+          content="Contact Ghar Ka Organic for homemade Himalayan pickles, raw forest honey, bilona desi ghee, organic chutneys and Uttarakhand food products delivered across India."
         />
-        <meta property="og:image" content="YOUR_BANNER_IMAGE" />
-        <meta name="twitter:image" content="YOUR_BANNER_IMAGE" />
-        {/* ✅ Canonical — explicitly declared so Google doesn't have to guess */}
-        <link rel="canonical" href={CANONICAL} />
+
+        <meta
+          name="keywords"
+          content="contact Ghar Ka Organic, Himalayan organic products, pahadi pickles, raw honey Uttarakhand, bilona ghee India, organic food support"
+        />
+
         <meta
           name="robots"
-          content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+          content="index, follow, max-image-preview:large, max-snippet:-1"
         />
 
-        {/* Geo signals */}
+        <link rel="canonical" href={CANONICAL} />
+
+        <meta name="author" content="Ghar Ka Organic" />
+
         <meta name="geo.region" content="IN-UT" />
-        <meta name="geo.placename" content="Bhimtal, Uttarakhand, India" />
-        <meta name="language" content="en-IN" />
 
-        {/* Open Graph */}
+        <meta name="geo.placename" content="Bhimtal, Uttarakhand, India" />
+
+        <meta name="theme-color" content="#ffffff" />
+
+        {/* OPEN GRAPH */}
+
         <meta property="og:type" content="website" />
+
         <meta property="og:site_name" content="Ghar Ka Organic" />
-        <meta
-          property="og:title"
-          content="Contact Us | Ghar Ka Organic — Organic Food Support India"
-        />
+
+        <meta property="og:title" content="Contact Ghar Ka Organic" />
+
         <meta
           property="og:description"
-          content="Contact Ghar Ka Organic for A2 desi ghee, raw honey, pahadi pickles, order support or bulk inquiries. Based in Bhimtal, Uttarakhand."
+          content="Get support for Himalayan homemade pickles, raw honey, bilona desi ghee and organic food products from Uttarakhand."
         />
+
         <meta property="og:url" content={CANONICAL} />
+
         <meta property="og:image" content={OG_IMAGE} />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta
-          property="og:image:alt"
-          content="Ghar Ka Organic — homemade organic products from Uttarakhand"
-        />
+
         <meta property="og:locale" content="en_IN" />
 
-        {/* Twitter Card */}
+        {/* TWITTER */}
+
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Contact Us | Ghar Ka Organic" />
+
+        <meta name="twitter:title" content="Contact Ghar Ka Organic" />
+
         <meta
           name="twitter:description"
-          content="Questions about A2 ghee, raw honey, or your order? Contact Ghar Ka Organic — we respond within 24 hours."
+          content="Questions about your order or products? Contact Ghar Ka Organic."
         />
+
         <meta name="twitter:image" content={OG_IMAGE} />
 
-        {/* JSON-LD: ContactPage + BreadcrumbList + LocalBusiness */}
-        <script type="application/ld+json">{JSONLD}</script>
+        {/* JSON-LD */}
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSONLD,
+          }}
+        />
       </Helmet>
-      {/* ── HERO BANNER ── */}
-      <section className="w-full relative h-[45vh] md:h-[60vh] overflow-hidden">
+
+      {/* ───────────────── HERO ───────────────── */}
+
+      <section className="relative w-full h-[40vh] md:h-[55vh] overflow-hidden">
         <img
-          src="https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1776770687/Organic_Himalayan_food_from_Bhimtal_Uttarakhand_by_Ghar_Ka_Organic_wbolwx.webp"
-          alt="Organic Himalayan food from Bhimtal Uttarakhand by Ghar Ka Organic"
+          src={OG_IMAGE}
+          alt="Ghar Ka Organic Himalayan Products"
           className="w-full h-full object-cover"
           loading="eager"
           fetchPriority="high"
         />
 
-        {/* dark overlay for text readability */}
-        <div className="absolute inset-0 bg-black/30"></div>
+        <div className="absolute inset-0 bg-black/40" />
 
-        {/* optional SEO text layer (hidden from clutter but indexable) */}
         <div className="absolute inset-0 flex items-center justify-center px-4">
           <div className="text-center max-w-3xl">
-            <h1 className="text-white text-2xl md:text-4xl font-light tracking-wide">
+            <h1 className="text-white text-3xl md:text-5xl font-light">
               Contact Ghar Ka Organic
             </h1>
-            <p className="text-white/80 text-sm md:text-base mt-3">
-              A2 Desi Ghee • Raw Honey • Pahadi Pickles from Uttarakhand
+
+            <p className="text-white/80 mt-4 text-sm md:text-base">
+              Himalayan Pickles • Raw Honey • Bilona Desi Ghee • Organic Food
             </p>
           </div>
         </div>
       </section>
-      {/* ── HEADER ── */}
-      <header className="w-full pt-24 pb-16 px-6 text-center">
+
+      {/* ───────────────── HEADER ───────────────── */}
+
+      <header className="text-center px-6 pt-16 pb-10">
         <div className="max-w-3xl mx-auto">
-          <span className="text-amber-600 text-sm font-bold uppercase tracking-[0.3em] mb-4 block">
-            Customer Care
+          <span className="uppercase tracking-[0.3em] text-xs text-amber-600 font-bold">
+            Customer Support
           </span>
 
-          <h1
-            className="text-4xl md:text-5xl lg:text-6xl text-gray-900 font-light mb-4"
-            style={{ fontFamily: "'Playfair Display', serif" }}>
-            Contact Ghar Ka Organic
-          </h1>
+          <h2 className="text-3xl md:text-5xl text-gray-900 mt-4 font-light">
+            We’d Love to Hear From You
+          </h2>
 
-          <p className="text-gray-500 text-sm md:text-base font-light leading-relaxed max-w-lg mx-auto">
-            Questions about A2 ghee, raw honey, or your recent order? Our team
-            responds within 24 hours. Real people, no bots.
-          </p>
-
-          <p className="text-gray-500 text-sm md:text-base max-w-2xl mx-auto mt-4">
-            Ghar Ka Organic offers authentic Himalayan products like A2 desi
-            ghee, raw forest honey, and traditional pahadi pickles sourced from
-            Uttarakhand. Contact us for order support, bulk inquiries, or
-            product questions across India.
+          <p className="mt-5 text-gray-600 leading-relaxed">
+            Contact us for product support, bulk orders, partnerships, Himalayan
+            homemade pickles, organic chutneys, raw forest honey, bilona desi
+            ghee and Uttarakhand organic food products.
           </p>
         </div>
       </header>
 
-      {/* ── MAIN ── */}
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
-        <div className="grid lg:grid-cols-2 gap-10">
-          {/* ───────── CONTACT FORM ───────── */}
-          <section className="bg-white">
-            <h2 className="text-2xl text-gray-900 mb-6">
-              Send us a <span className="italic text-gray-600">Message</span>
+      {/* ───────────────── MAIN ───────────────── */}
+
+      <main className="max-w-6xl mx-auto px-4 md:px-6 py-10">
+        <div className="grid lg:grid-cols-2 gap-12">
+          {/* ───────── FORM ───────── */}
+
+          <section>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+              Send a Message
             </h2>
 
-            {/* Status Messages */}
+            {/* SUCCESS */}
+
             {status === "success" && (
-              <div className="mb-6 p-4 bg-green-50 text-green-800 text-sm rounded">
-                <Check className="inline mr-2" size={16} />
-                Thanks! We'll reply within 24 hours.
+              <div className="mb-5 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+                <Check size={16} />
+                Message sent successfully.
               </div>
             )}
 
+            {/* ERROR */}
+
             {status === "error" && (
-              <div className="mb-6 p-4 bg-red-50 text-red-700 text-sm rounded">
+              <div className="mb-5 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
                 Something went wrong. Please try again.
               </div>
             )}
 
             {/* FORM */}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <input
+                type="text"
                 name="name"
                 required
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="Name"
-                className="w-full border border-gray-200 rounded px-3 py-2 focus:border-amber-500 outline-none"
+                placeholder="Full Name"
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 outline-none focus:border-amber-500"
               />
 
               <input
@@ -290,45 +421,48 @@ const ContactUsPage = () => {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="Email"
-                className="w-full border border-gray-200 rounded px-3 py-2 focus:border-amber-500 outline-none"
+                placeholder="Email Address"
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 outline-none focus:border-amber-500"
               />
 
               <input
+                type="text"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                placeholder="Phone (optional)"
-                className="w-full border border-gray-200 rounded px-3 py-2 focus:border-amber-500 outline-none"
+                placeholder="Phone Number"
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 outline-none focus:border-amber-500"
               />
 
               <input
+                type="text"
                 name="orderId"
                 value={formData.orderId}
                 onChange={handleChange}
-                placeholder="Order ID (if applicable)"
-                className="w-full border border-gray-200 rounded px-3 py-2 focus:border-amber-500 outline-none"
+                placeholder="Order ID (Optional)"
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 outline-none focus:border-amber-500"
               />
 
               <textarea
+                rows={5}
                 name="message"
                 required
-                rows={4}
                 value={formData.message}
                 onChange={handleChange}
-                placeholder="Message"
-                className="w-full border border-gray-200 rounded px-3 py-2 focus:border-amber-500 outline-none resize-none"
+                placeholder="Write your message..."
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 outline-none resize-none focus:border-amber-500"
               />
 
               <button
                 type="submit"
                 disabled={status === "loading"}
-                className="bg-gray-900 text-white px-6 py-3 rounded flex items-center gap-2 hover:bg-gray-800 transition">
+                className="bg-black text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-gray-800 transition">
                 {status === "loading" ? (
-                  <Loader2 size={16} className="animate-spin" />
+                  <Loader2 className="animate-spin" size={18} />
                 ) : (
                   <>
-                    Send Message <ArrowRight size={16} />
+                    Send Message
+                    <ArrowRight size={18} />
                   </>
                 )}
               </button>
@@ -336,79 +470,156 @@ const ContactUsPage = () => {
           </section>
 
           {/* ───────── CONTACT INFO ───────── */}
-          <aside className="bg-gray-50 p-6 rounded-lg space-y-6">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Get in Touch
-            </h2>
 
-            {/* Location */}
+          <aside className="bg-gray-50 rounded-2xl p-8 space-y-8 border border-gray-100">
             <div>
-              <p className="text-xs text-gray-500 uppercase mb-1">Location</p>
-              <p className="text-sm text-gray-700">
-                Bhimtal, Uttarakhand, India
+              <h2 className="text-2xl font-semibold text-gray-900">
+                Contact Information
+              </h2>
+
+              <p className="text-gray-600 mt-2 text-sm">
+                Reach out for product inquiries, support, or wholesale orders.
               </p>
             </div>
 
-            {/* Phone */}
-            <div>
-              <p className="text-xs text-gray-500 uppercase mb-1">Phone</p>
-              <a
-                href="tel:+917983990550"
-                className="text-sm text-gray-700 hover:text-amber-600">
-                +91 7983990550
-              </a>
+            {/* ADDRESS */}
+
+            <div className="flex items-start gap-4">
+              <MapPin className="text-amber-600 mt-1" size={20} />
+
+              <div>
+                <p className="text-xs uppercase text-gray-500 mb-1">Address</p>
+
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  Ward No. 2, Nalni
+                  <br />
+                  Nainital, Uttarakhand – 263136
+                  <br />
+                  India
+                </p>
+              </div>
             </div>
 
-            {/* Email */}
-            <div>
-              <p className="text-xs text-gray-500 uppercase mb-1">Email</p>
-              <a
-                href="mailto:gharkaorganic@gmail.com"
-                className="text-sm text-gray-700 hover:text-amber-600">
-                gharkaorganic@gmail.com
-              </a>
+            {/* PHONE */}
+
+            <div className="flex items-start gap-4">
+              <Phone className="text-amber-600 mt-1" size={20} />
+
+              <div>
+                <p className="text-xs uppercase text-gray-500 mb-1">Phone</p>
+
+                <a
+                  href="tel:+919897447525"
+                  className="text-sm text-gray-700 hover:text-amber-600">
+                  +91 98974 47525
+                </a>
+              </div>
             </div>
 
-            {/* Hours */}
-            <div>
-              <p className="text-xs text-gray-500 uppercase mb-1">Hours</p>
-              <p className="text-sm text-gray-700">Mon – Sat, 10AM – 7PM</p>
+            {/* EMAIL */}
+
+            <div className="flex items-start gap-4">
+              <Mail className="text-amber-600 mt-1" size={20} />
+
+              <div>
+                <p className="text-xs uppercase text-gray-500 mb-1">Email</p>
+
+                <a
+                  href="mailto:gharkaorganic@gmail.com"
+                  className="text-sm text-gray-700 hover:text-amber-600">
+                  gharkaorganic@gmail.com
+                </a>
+              </div>
             </div>
 
-            {/* Instagram */}
-            <div>
-              <p className="text-xs text-gray-500 uppercase mb-1">Instagram</p>
-              <a
-                href="https://instagram.com/gharkaorganic"
-                target="_blank"
-                rel="noreferrer"
-                className="text-sm text-gray-700 hover:text-amber-600">
-                @gharkaorganic
-              </a>
+            {/* HOURS */}
+
+            <div className="flex items-start gap-4">
+              <Clock className="text-amber-600 mt-1" size={20} />
+
+              <div>
+                <p className="text-xs uppercase text-gray-500 mb-1">
+                  Working Hours
+                </p>
+
+                <p className="text-sm text-gray-700">
+                  Monday – Saturday
+                  <br />
+                  10:00 AM – 7:00 PM
+                </p>
+              </div>
+            </div>
+
+            {/* INSTAGRAM */}
+
+            <div className="flex items-start gap-4">
+              <Instagram className="text-amber-600 mt-1" size={20} />
+
+              <div>
+                <p className="text-xs uppercase text-gray-500 mb-1">
+                  Instagram
+                </p>
+
+                <a
+                  href="https://instagram.com/gharkaorganic"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm text-gray-700 hover:text-amber-600">
+                  @gharkaorganic
+                </a>
+              </div>
+            </div>
+
+            {/* SEO TEXT */}
+
+            <div className="pt-6 border-t border-gray-200">
+              <p className="text-sm text-gray-600 leading-relaxed">
+                Ghar Ka Organic is an Uttarakhand-based Himalayan organic food
+                brand offering homemade pickles, Kumaoni chutneys, raw forest
+                honey, bilona desi ghee and traditional village food products
+                across India.
+              </p>
             </div>
           </aside>
         </div>
 
-        {/* ───────── INTERNAL LINKS ───────── */}
-        <div className="mt-12 text-sm text-center text-gray-600">
-          Explore our{" "}
-          <a href="/collections" className="text-amber-600 underline">
-            organic Himalayan products
-          </a>{" "}
-          including{" "}
-          <a href="/desi-ghee" className="text-amber-600 underline">
-            A2 desi ghee
-          </a>
-          ,{" "}
-          <a href="/organic-honey" className="text-amber-600 underline">
-            raw honey
-          </a>
-          , and{" "}
-          <a href="/collections" className="text-amber-600 underline">
-            pahadi pickles
-          </a>
-          .
-        </div>
+        {/* ───────────────── INTERNAL LINKS ───────────────── */}
+
+        <section className="mt-16 pt-10 border-t border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-900 mb-5">
+            Explore Products
+          </h3>
+
+          <div className="flex flex-wrap gap-4 text-sm">
+            <a
+              href="/collections/all"
+              className="text-amber-700 hover:underline">
+              Himalayan Organic Products
+            </a>
+
+            <a
+              href="/buy-mango-pickle-online"
+              className="text-amber-700 hover:underline">
+              Homemade Mango Pickle
+            </a>
+
+            <a href="/organic-honey" className="text-amber-700 hover:underline">
+              Raw Forest Honey
+            </a>
+
+            <a
+              href="/buy-desi-ghee-online"
+              className="text-amber-700 hover:underline">
+              Bilona Desi Ghee
+            </a>
+
+            <a
+              href="/pahadi-achar-online"
+              className="text-amber-700 hover:underline">
+              Pahadi Pickles
+            </a>
+          </div>
+        </section>
       </main>
     </div>
   );
