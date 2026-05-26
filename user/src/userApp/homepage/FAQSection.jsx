@@ -5,48 +5,42 @@ import SectionBanner from "../features/userProfile/components/SectionBanner";
 const BRAND_GREEN = "#4c908a";
 const BRAND_YELLOW = "#f4a51c";
 
+// Must match JSON-LD in index.html exactly
 const faqData = [
   {
     id: 1,
-    category: "Shipping",
-    question: "How long does delivery take across India?",
+    category: "Quality",
+    question: "Are Ghar Ka Organic products 100% natural?",
     answer:
-      "Orders are dispatched within 24 hours. Delivery typically takes 3–5 business days across India and 1–2 days in metro cities.",
+      "Yes. All our products are made with natural Himalayan ingredients, free from artificial preservatives, colors or additives.",
   },
   {
     id: 2,
-    category: "Quality",
-    question: "Are your products truly natural and chemical-free?",
+    category: "Shipping",
+    question: "Do you deliver across India?",
     answer:
-      "Yes. All products are made in small batches using traditional Himalayan methods with no preservatives, artificial colors, or additives.",
+      "Yes, we deliver our Pahadi products across all major cities and states in India.",
   },
   {
     id: 3,
-    category: "Returns",
-    question: "What if I am not satisfied with the product?",
+    category: "Products",
+    question: "What is Bilona Desi Ghee?",
     answer:
-      "We offer a 7–15 day satisfaction support. If you face any issue, we provide replacement or resolution based on product condition.",
+      "Bilona Desi Ghee is made using the traditional bilona method where curd from A2 cow milk is hand-churned to extract butter, which is then slow-cooked into ghee. It is purer and more nutritious than commercially produced ghee.",
   },
   {
     id: 4,
-    category: "Orders",
-    question: "How will I track my order?",
+    category: "Products",
+    question: "What makes Pahadi Honey different from regular honey?",
     answer:
-      "Once shipped, you receive WhatsApp and SMS tracking links with real-time delivery updates.",
+      "Pahadi honey is collected from wild Himalayan forest bees. It is raw, unfiltered and free from any processing or added sugar, giving it a richer flavor and more natural nutrients than store-bought honey.",
   },
   {
     id: 5,
-    category: "Products",
-    question: "Is your A2 Desi Ghee made using traditional methods?",
+    category: "Storage",
+    question: "How long do your pickles last?",
     answer:
-      "Yes. Our A2 ghee is prepared using the Bilona method from indigenous cows, ensuring purity and nutrition.",
-  },
-  {
-    id: 6,
-    category: "Payments",
-    question: "Do you offer Cash on Delivery (COD)?",
-    answer:
-      "Yes, COD is available on most pincodes for orders above ₹299. We also support UPI, cards, and net banking.",
+      "Our homemade pahadi pickles have a shelf life of 12 months when stored in a cool, dry place away from direct sunlight. Always use a clean, dry spoon.",
   },
 ];
 
@@ -54,11 +48,11 @@ const FaqSection = () => {
   const [activeId, setActiveId] = useState(1);
 
   return (
-    <section className="relative py-20 bg-[#f7ecd7] overflow-hidden">
+    <section className="relative py-20 bg-[#f7ecd7] overflow-hidden" id="faq">
       {/* Decorative Background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-0 w-[400px] h-[400px] rounded-full bg-[#f7d26a]/30 blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-[300px] h-[300px] rounded-full bg-[#4c908a]/10 blur-3xl" />
+        <div className="absolute top-0 left-0 w- h- rounded-full bg-[#f7d26a]/30 blur-3xl" />
+        <div className="absolute bottom-0 right-0 w- h- rounded-full bg-[#4c908a]/10 blur-3xl" />
       </div>
 
       <div className="relative max-w-4xl mx-auto px-5 sm:px-6 lg:px-8">
@@ -87,16 +81,18 @@ const FaqSection = () => {
                 }`}>
                 <button
                   onClick={() => setActiveId(isOpen ? null : faq.id)}
-                  className="w-full flex justify-between items-center gap-5 px-6 py-6 text-left">
+                  className="w-full flex justify-between items-center gap-5 px-6 py-6 text-left"
+                  aria-expanded={isOpen}
+                  aria-controls={`faq-answer-${faq.id}`}>
                   <div>
                     <span
-                      className="text-[11px] font-bold uppercase tracking-[0.2em] mb-3 block"
+                      className="text- font-bold uppercase tracking-[0.2em] mb-3 block"
                       style={{ color: BRAND_GREEN }}>
                       {faq.category}
                     </span>
 
                     <h3
-                      className={`text-[16px] md:text-lg font-semibold transition-colors leading-7 ${
+                      className={`text- md:text-lg font-semibold transition-colors leading-7 ${
                         isOpen ? "text-[#3b2412]" : "text-[#4f3422]"
                       }`}>
                       {faq.question}
@@ -113,7 +109,9 @@ const FaqSection = () => {
                 </button>
 
                 {isOpen && (
-                  <div className="px-6 pb-6 text-[15px] text-[#6a4a2f] leading-8 animate-in slide-in-from-top-2 duration-300">
+                  <div
+                    id={`faq-answer-${faq.id}`}
+                    className="px-6 pb-6 text- text-[#6a4a2f] leading-8 animate-in slide-in-from-top-2 duration-300">
                     {faq.answer}
                   </div>
                 )}
@@ -123,7 +121,7 @@ const FaqSection = () => {
         </div>
 
         {/* Bottom Brand Block */}
-        <div className="mt-20 p-10 rounded-[32px] bg-white border border-[#ecd39b] shadow-xl text-center">
+        <div className="mt-20 p-10 rounded- bg-white border border-[#ecd39b] shadow-xl text-center">
           <p className="text-sm text-[#9c6200] uppercase tracking-[0.3em] font-semibold mb-5">
             Pure Taste • Pahadi Roots • Zero Preservatives
           </p>
@@ -132,7 +130,7 @@ const FaqSection = () => {
             Crafted with the Soul of the Mountains
           </h3>
 
-          <p className="text-[#5c3a1f] leading-8 max-w-3xl mx-auto text-[15px] md:text-base">
+          <p className="text-[#5c3a1f] leading-8 max-w-3xl mx-auto text- md:text-base">
             <strong>GHAR KA ORGANIC</strong> brings authentic Himalayan flavors
             directly from Uttarakhand to your home. Every product reflects
             traditional pahadi food wisdom, natural ingredients, homemade

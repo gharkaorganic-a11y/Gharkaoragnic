@@ -7,6 +7,8 @@ const routeAliases = {
   "pahadi-achar-online": "pickle",
   "buy-desi-ghee-online": "ghee",
     "buy-pahadi-achar-online": "pickle",
+        "nimbu-achar-online": "pickle",
+
 
   "raw-honey-uttarakhand": "honey",
   "organic-food-uttarakhand": "all",

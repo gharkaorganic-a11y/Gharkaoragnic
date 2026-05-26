@@ -66,6 +66,9 @@ const ProductCard = ({ product }) => {
           id: product.id,
           selectedSize: "",
           selectedQuantity: 1,
+          name: product.name ?? "",
+          price: product.price ?? null,
+          image: product.banner ?? product.images?.[0] ?? "",
         });
 
         setIsAdded(true);
@@ -75,10 +78,7 @@ const ProductCard = ({ product }) => {
           type: "success",
         });
 
-        setTimeout(() => {
-          setCartOpen(true);
-        }, 400);
-
+        setTimeout(() => setCartOpen(true), 400);
         timerRef.current = setTimeout(() => setIsAdded(false), 2000);
       } catch {
         setNotification({
@@ -88,7 +88,17 @@ const ProductCard = ({ product }) => {
         });
       }
     },
-    [isAdded, cartSyncing, addToCart, product.id, setCartOpen],
+    [
+      isAdded,
+      cartSyncing,
+      addToCart,
+      product.id,
+      product.name,
+      product.price,
+      product.banner,
+      product.images,
+      setCartOpen,
+    ],
   );
 
   const closeNotification = useCallback(

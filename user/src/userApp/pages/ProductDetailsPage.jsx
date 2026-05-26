@@ -177,6 +177,9 @@ const ProductDetailsPage = () => {
         id: product.id,
         selectedSize,
         selectedQuantity: quantity,
+        name: product.name ?? "",
+        price: product.price ?? null,
+        image: product.banner ?? product.images?.[0] ?? "",
       });
       if (redirect) {
         navigate("/checkout/cart");

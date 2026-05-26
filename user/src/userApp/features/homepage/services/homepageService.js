@@ -179,6 +179,25 @@ export const homepageService = {
     return promise;
   },
 
+
+  /* ───────── GET CACHED PRODUCTS FOR BOT (ZERO API CALLS) ───────── */
+  getCachedProductsForBot() {
+    const persistent = loadPersistentCache();
+    let allProducts = [];
+
+    // Loop through all keys currently in the persistent cache
+    Object.keys(persistent).forEach((key) => {
+      // Only extract items that were cached under "products-"
+      if (key.startsWith("products-") && Array.isArray(persistent[key].data)) {
+        allProducts.push(...persistent[key].data);
+      }
+    });
+
+    // Remove duplicates by ID (or name if ID is missing)
+    return Array.from(
+      new Map(allProducts.map((p) => [p.id || p._id || p.name, p])).values()
+    );
+  },
   /* ───────── COLLECTIONS ───────── */
   async getCollections(size = 8) {
     const key = `collections-${size}`;
@@ -216,6 +235,7 @@ export const homepageService = {
     promiseCache.set(key, promise);
     return promise;
   },
+  
 
   /* ───────── CLEAR CACHE ───────── */
   clearCache() {

@@ -77,7 +77,7 @@ export const productSections = [
     seoDescription:
       "Buy homemade pahadi pickles from Uttarakhand. Traditional taste, no preservatives and fully natural ingredients.",
     seoKeywords:
-      "buy pahadi achar online, homemade pickle india, uttarakhand mango pickle",
+      "buy pahadi achar online, homemade pickle india, uttarakhand mango pickle, nimbu-achar-online",
     badge: "No Preservatives",
     bannerDesktop: "/banners/pickle-1500x500.webp",
     bannerMobile: "/banners/pickle-mobile.webp",

@@ -15,11 +15,9 @@ export const CartProvider = ({ children }) => {
   const [syncing, setSyncing] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
 
-  /*
-  ─────────────────────────────────────────
-  Load cart from IndexedDB
-  ─────────────────────────────────────────
-  */
+  /* ─────────────────────────────────────────
+     Load cart from IndexedDB
+  ───────────────────────────────────────── */
   useEffect(() => {
     const loadCart = async () => {
       try {
@@ -32,17 +30,26 @@ export const CartProvider = ({ children }) => {
         setLoading(false);
       }
     };
-
     loadCart();
   }, []);
 
-  /*
-  ─────────────────────────────────────────
-  Add to cart
-  ─────────────────────────────────────────
-  */
+  /* ─────────────────────────────────────────
+     Add to cart
+     FIX: persist display fields (name, price, image)
+          so bot & anywhere else can read them without
+          a Firestore lookup.
+  ───────────────────────────────────────── */
   const addToCart = async (productData) => {
-    const { id, selectedSize, selectedQuantity = 1 } = productData;
+    const {
+      id,
+      selectedSize,
+      selectedQuantity = 1,
+      /* display fields — optional but stored when provided */
+      name = "",
+      price = null,
+      image = "",
+    } = productData;
+
     const cartKey = `${id}_${selectedSize}`;
 
     setCart((prev) => {
@@ -55,14 +62,25 @@ export const CartProvider = ({ children }) => {
           ...updatedCart[index],
           selectedQuantity:
             updatedCart[index].selectedQuantity + selectedQuantity,
+          // refresh display fields in case they changed
+          name: name || updatedCart[index].name,
+          price: price ?? updatedCart[index].price,
+          image: image || updatedCart[index].image,
         };
 
-        // FIX: Pass the FULL updated object to the DB
         updateCartDB(cartKey, updatedCart[index]).catch((err) =>
           console.error("Cart sync failed:", err),
         );
       } else {
-        const newItem = { cartKey, id, selectedSize, selectedQuantity };
+        const newItem = {
+          cartKey,
+          id,
+          selectedSize,
+          selectedQuantity,
+          name,
+          price,
+          image,
+        };
         updatedCart = [...prev, newItem];
 
         addCartDB(newItem).catch((err) =>
@@ -75,11 +93,9 @@ export const CartProvider = ({ children }) => {
     setCartOpen(true);
   };
 
-  /*
-  ─────────────────────────────────────────
-  Update quantity
-  ─────────────────────────────────────────
-  */
+  /* ─────────────────────────────────────────
+     Update quantity
+  ───────────────────────────────────────── */
   const updateQuantity = async (cartKey, selectedQuantity) => {
     if (selectedQuantity < 1) return;
 
@@ -90,7 +106,6 @@ export const CartProvider = ({ children }) => {
       const updatedCart = [...prev];
       updatedCart[index] = { ...updatedCart[index], selectedQuantity };
 
-      // FIX: Pass the FULL updated object to prevent overwriting the ID
       updateCartDB(cartKey, updatedCart[index]).catch((err) =>
         console.error("Cart quantity sync failed:", err),
       );
@@ -99,11 +114,9 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  /*
-  ─────────────────────────────────────────
-  Update size
-  ─────────────────────────────────────────
-  */
+  /* ─────────────────────────────────────────
+     Update size
+  ───────────────────────────────────────── */
   const updateSize = async (cartKey, newSize) => {
     setCart((prev) => {
       const itemIndex = prev.findIndex((i) => i.cartKey === cartKey);
@@ -119,7 +132,6 @@ export const CartProvider = ({ children }) => {
       if (existingVariant) {
         existingVariant.selectedQuantity += item.selectedQuantity;
         finalItemToSave = existingVariant;
-
         updateCartDB(newCartKey, existingVariant).catch(() => {});
       } else {
         finalItemToSave = {
@@ -128,21 +140,17 @@ export const CartProvider = ({ children }) => {
           selectedSize: newSize,
         };
         updated.push(finalItemToSave);
-
         addCartDB(finalItemToSave).catch(() => {});
       }
 
       removeCartDB(cartKey).catch(() => {});
-
       return [...updated];
     });
   };
 
-  /*
-  ─────────────────────────────────────────
-  Remove item
-  ─────────────────────────────────────────
-  */
+  /* ─────────────────────────────────────────
+     Remove item
+  ───────────────────────────────────────── */
   const remove = async (cartKey) => {
     setCart((prev) => prev.filter((item) => item.cartKey !== cartKey));
     removeCartDB(cartKey).catch((err) =>
@@ -150,11 +158,9 @@ export const CartProvider = ({ children }) => {
     );
   };
 
-  /*
-  ─────────────────────────────────────────
-  Clear cart
-  ─────────────────────────────────────────
-  */
+  /* ─────────────────────────────────────────
+     Clear cart
+  ───────────────────────────────────────── */
   const clear = async () => {
     setCart([]);
     clearCartDB().catch((err) => console.error("Cart clear failed:", err));
