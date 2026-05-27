@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
-import { useDark } from "./context/DarkCtx";
-import StarRating from "./whtshappbot/StarRating";
+import { useDark } from "../../context/DarkCtx";
+import StarRating from "./StarRating";
 
 const BotProductCard = React.memo(({ item, onOrder }) => {
   const { dark } = useDark();
@@ -34,7 +34,7 @@ const BotProductCard = React.memo(({ item, onOrder }) => {
 
   return (
     <div
-      className={`group relative w-full rounded-2xl overflow-hidden transition-all duration-300 shadow-sm
+      className={`group relative flex-shrink-0 w-[260px] sm:w-[280px] snap-start rounded-2xl overflow-hidden transition-all duration-300 shadow-sm
       ${
         // WhatsApp incoming message bubble colors
         dark
@@ -53,7 +53,9 @@ const BotProductCard = React.memo(({ item, onOrder }) => {
           />
         ) : (
           <div
-            className={`w-full h-full flex items-center justify-center text-5xl ${dark ? "bg-[#111b21]" : "bg-[#f0f2f5]"}`}>
+            className={`w-full h-full flex items-center justify-center text-5xl ${
+              dark ? "bg-[#111b21]" : "bg-[#f0f2f5]"
+            }`}>
             🌿
           </div>
         )}
@@ -68,7 +70,11 @@ const BotProductCard = React.memo(({ item, onOrder }) => {
         {/* ORGANIC TAG */}
         <span
           className={`absolute top-2 right-2 text-[10px] font-semibold px-2 py-1 rounded-md shadow-sm
-          ${dark ? "bg-[#111b21]/80 text-[#25D366] backdrop-blur" : "bg-white/90 text-green-700 backdrop-blur"}`}>
+          ${
+            dark
+              ? "bg-[#111b21]/80 text-[#25D366] backdrop-blur"
+              : "bg-white/90 text-green-700 backdrop-blur"
+          }`}>
           🌿 Organic
         </span>
       </div>
@@ -86,12 +92,16 @@ const BotProductCard = React.memo(({ item, onOrder }) => {
         {/* PRICE */}
         <div className="flex items-center gap-2 mt-1.5">
           <span
-            className={`text-[15px] sm:text-[16px] font-bold ${dark ? "text-[#e9edef]" : "text-[#111b21]"}`}>
+            className={`text-[15px] sm:text-[16px] font-bold ${
+              dark ? "text-[#e9edef]" : "text-[#111b21]"
+            }`}>
             {formatPrice(price)}
           </span>
           {hasDiscount && (
             <span
-              className={`text-[12px] line-through ${dark ? "text-[#8696a0]" : "text-gray-400"}`}>
+              className={`text-[12px] line-through ${
+                dark ? "text-[#8696a0]" : "text-gray-400"
+              }`}>
               {formatPrice(originalPrice)}
             </span>
           )}
@@ -105,7 +115,9 @@ const BotProductCard = React.memo(({ item, onOrder }) => {
         {/* DESCRIPTION */}
         {item.description && (
           <p
-            className={`text-[13px] mt-1.5 line-clamp-2 leading-relaxed ${dark ? "text-[#8696a0]" : "text-[#667781]"}`}>
+            className={`text-[13px] mt-1.5 line-clamp-2 leading-relaxed ${
+              dark ? "text-[#8696a0]" : "text-[#667781]"
+            }`}>
             {item.description}
           </p>
         )}
@@ -128,7 +140,9 @@ const BotProductCard = React.memo(({ item, onOrder }) => {
                 View full details
               </a>
               <div
-                className={`h-[1px] w-full ${dark ? "bg-[#2a3942]" : "bg-gray-200"}`}></div>
+                className={`h-[1px] w-full ${
+                  dark ? "bg-[#2a3942]" : "bg-gray-200"
+                }`}></div>
             </>
           )}
 
@@ -136,7 +150,11 @@ const BotProductCard = React.memo(({ item, onOrder }) => {
           <button
             onClick={() => onOrder?.(message)}
             className={`w-full flex items-center justify-center gap-2 py-3 text-[14px] font-medium transition-all active:scale-[0.98]
-              ${dark ? "text-[#00a884] hover:bg-[#2a3942]/50" : "text-[#008069] hover:bg-gray-50"}
+              ${
+                dark
+                  ? "text-[#00a884] hover:bg-[#2a3942]/50"
+                  : "text-[#008069] hover:bg-gray-50"
+              }
             `}>
             {/* Native WhatsApp SVG Icon */}
             <svg

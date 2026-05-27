@@ -1,5 +1,5 @@
 import React from "react";
-import { useDark } from "../context/DarkCtx";
+import { useDark } from "../../context/DarkCtx";
 
 const QuickReplies = ({ chips, onSelect }) => {
   const dark = useDark();

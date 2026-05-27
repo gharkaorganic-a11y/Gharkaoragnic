@@ -336,7 +336,7 @@ const ContactUsPage = () => {
           alt="Ghar Ka Organic Himalayan Products"
           className="w-full h-full object-cover"
           loading="eager"
-          fetchPriority="high"
+          fetchpriority="high"
         />
 
         <div className="absolute inset-0 bg-black/40" />

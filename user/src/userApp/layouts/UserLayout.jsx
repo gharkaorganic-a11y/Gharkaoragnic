@@ -10,8 +10,8 @@ import Footer from "../components/footer/Footer";
 // Popups & Floating Elements
 import UnverifiedEmailPopup from "../features/auth/pages/UnverifiedEmailPopup";
 import SalesNotificationPopup from "../components/pop-up/SalesNotificationPopup";
-import WhatsAppButton from "../../shared/components/WhatsAppButton";
 import WhatsAppFooterBar from "../../shared/components/WhatsAppFooterBar";
+import WhatsAppGuidedBot from "../../shared/components/whtshappbot/WhatsAppGuidedBot";
 
 const UserLayout = () => {
   const location = useLocation();
@@ -54,7 +54,7 @@ const UserLayout = () => {
 
       {/* 💬 FLOATING ACTIONS */}
       {/* Assuming these components manage their own fixed positioning internally */}
-      <WhatsAppButton />
+      <WhatsAppGuidedBot />
       <WhatsAppFooterBar />
     </div>
   );

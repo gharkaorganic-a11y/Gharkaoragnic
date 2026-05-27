@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom"; // Added Link for SPA routing
+import { Link } from "react-router-dom";
 import {
   XMarkIcon,
   CheckBadgeIcon,
   ShoppingBagIcon,
-  FireIcon,
+  SparklesIcon,
 } from "@heroicons/react/24/solid";
 
 /* ─────────────────────────────────────────────
-   PRODUCTS & DATA (Keep outside component to avoid recreation)
+   PRODUCTS & DATA
 ───────────────────────────────────────────── */
-
 const PRODUCTS = [
   {
     name: "A2 Bilona Desi Ghee, 500ml",
@@ -60,6 +59,7 @@ const NAMES = [
   "Aman",
   "Kavita",
 ];
+
 const STATES = [
   "Uttar Pradesh",
   "Delhi",
@@ -72,6 +72,7 @@ const STATES = [
   "Uttarakhand",
   "West Bengal",
 ];
+
 const STORAGE_KEY = "gko_popup_hidden";
 
 /* ───────────────────────────────────────────── */
@@ -100,8 +101,8 @@ const SalesNotificationPopup = () => {
 
   const formatTime = (minutes) => {
     return minutes < 60
-      ? `${minutes} minutes ago`
-      : `${Math.floor(minutes / 60)} hour ago`;
+      ? `${minutes} mins ago`
+      : `${Math.floor(minutes / 60)} hr ago`;
   };
 
   const checkHidden = () => {
@@ -148,99 +149,98 @@ const SalesNotificationPopup = () => {
       role="status"
       aria-live="polite"
       className={`
-        fixed z-[99999] transition-all duration-500 ease-out
-        /* ADJUSTED: Raised bottom values to clear Mobile Nav and WhatsApp Footer */
-        bottom-24 md:bottom-8 left-4 md:left-6
+        fixed z-[99999] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
+        /* MOBILE FIRST: Centered safely above bottom navs */
+        bottom-20 left-4 right-4 
+        /* DESKTOP: Anchored to bottom left with fixed width */
+        md:bottom-8 md:left-8 md:right-auto md:w-[400px]
         ${
           visible
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-10 pointer-events-none"
+            ? "opacity-100 translate-y-0 scale-100"
+            : "opacity-0 translate-y-8 scale-95 pointer-events-none"
         }
       `}>
-      <div className="relative overflow-hidden w-[94vw] sm:w-[410px] rounded-2xl bg-white border border-[#f1f1f1] shadow-[0_10px_40px_rgba(0,0,0,0.12)]">
-        {/* GLOW */}
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-50/40 via-transparent to-orange-50/30 pointer-events-none" />
-
-        {/* TOP STRIP */}
-        <div className="h-[4px] bg-gradient-to-r from-[#f59e0b] via-[#facc15] to-[#fb923c]" />
+      <div className="relative overflow-hidden w-full rounded-2xl bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+        {/* SUBTLE TOP ACCENT LINE */}
+        <div className="h-1 w-full bg-gradient-to-r from-emerald-400 to-teal-500" />
 
         {/* CONTENT */}
-        <div className="relative p-4">
+        <div className="relative p-4 sm:p-5">
           <div className="flex gap-4">
-            {/* IMAGE (Changed to Link) */}
+            {/* IMAGE */}
             <Link
               to={notification.link}
-              className="relative shrink-0 w-[82px] h-[82px] rounded-2xl overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 border border-[#f3e6c8] shadow-sm group focus:outline-none focus:ring-2 focus:ring-amber-500">
+              className="relative shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm group focus:outline-none focus:ring-2 focus:ring-emerald-500">
               <img
                 src={notification.image}
                 alt={notification.product}
                 loading="lazy"
-                className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
               />
-              <div className="absolute bottom-1 right-1 bg-white rounded-full p-[2px] shadow-md">
-                <CheckBadgeIcon className="w-4 h-4 text-green-600" />
+              <div className="absolute -bottom-1 -right-1 bg-white rounded-tl-xl p-1.5 shadow-sm">
+                <CheckBadgeIcon className="w-5 h-5 text-emerald-500" />
               </div>
             </Link>
 
-            {/* TEXT */}
-            <div className="flex-1 min-w-0">
+            {/* TEXT CONTAINER */}
+            <div className="flex-1 min-w-0 py-0.5">
+              {/* HEADER ROW: Customer & Close Button */}
               <div className="flex justify-between items-start gap-2">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="flex items-center gap-1 bg-red-50 text-red-600 px-2 py-[3px] rounded-full text-[11px] font-semibold">
-                      <FireIcon className="w-3 h-3" />
-                      LIVE ORDER
-                    </div>
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <SparklesIcon className="w-3.5 h-3.5 text-amber-500" />
+                    <span className="text-[11px] font-bold tracking-wide text-amber-600 uppercase">
+                      New Order
+                    </span>
                   </div>
-                  <p className="text-[15px] font-semibold text-gray-900 leading-tight">
+                  <p className="text-[14px] sm:text-[15px] font-semibold text-gray-900 leading-tight truncate">
                     {notification.customer}
                   </p>
-                  <div className="flex items-center gap-1 mt-1">
-                    <ShoppingBagIcon className="w-4 h-4 text-amber-600" />
-                    <p className="text-[13px] text-gray-500">
-                      purchased recently
-                    </p>
-                  </div>
                 </div>
 
-                {/* CLOSE */}
                 <button
                   onClick={closePopup}
-                  className="text-gray-400 hover:text-black transition p-1 rounded-full focus:outline-none focus:bg-gray-100"
+                  className="text-gray-400 hover:text-gray-700 transition-colors p-1.5 -mt-1 -mr-1 rounded-full focus:outline-none focus:bg-gray-100"
                   aria-label="Close notification">
                   <XMarkIcon className="w-5 h-5" />
                 </button>
               </div>
 
-              {/* PRODUCT (Changed to Link) */}
+              {/* PRODUCT LINK */}
               <Link
                 to={notification.link}
-                className="mt-2 block text-[16px] font-bold text-[#1f2937] leading-snug hover:text-[#b45309] transition-colors line-clamp-2 focus:outline-none focus:underline">
+                className="mt-1.5 block text-[15px] sm:text-[16px] font-bold text-gray-800 leading-snug hover:text-emerald-600 transition-colors line-clamp-2 focus:outline-none focus:underline">
                 {notification.product}
               </Link>
 
               {/* FOOTER */}
-              <div className="flex items-center justify-between mt-3">
-                <div className="flex items-center gap-2">
-                  <span className="relative flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
-                  </span>
-                  <span className="text-xs text-gray-500 font-medium">
+              <div className="flex items-center gap-3 mt-2.5">
+                <div className="flex items-center gap-1.5">
+                  <ShoppingBagIcon className="w-4 h-4 text-gray-400" />
+                  <span className="text-[12px] text-gray-500 font-medium">
                     {formatTime(notification.minutesAgo)}
                   </span>
                 </div>
-                <div className="text-[11px] font-semibold text-green-700 bg-green-50 px-2 py-1 rounded-full">
-                  Verified Buyer
+
+                <div className="w-1 h-1 rounded-full bg-gray-300"></div>
+
+                <div className="flex items-center gap-1.5 text-emerald-600">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider">
+                    Verified
+                  </span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* BOTTOM PROGRESS */}
+        {/* BOTTOM PROGRESS BAR */}
         <div className="absolute bottom-0 left-0 w-full h-[3px] bg-gray-100">
-          <div className="h-full bg-gradient-to-r from-amber-500 to-orange-500 gko-animate-progress" />
+          <div className="h-full bg-emerald-500/80 gko-animate-progress" />
         </div>
       </div>
 

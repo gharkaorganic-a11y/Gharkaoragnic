@@ -1,6 +1,6 @@
 import { ChevronRightIcon, SparklesIcon } from "@heroicons/react/24/solid";
 import React from "react";
-import { useDark } from "../context/DarkCtx";
+import { useDark } from "../../context/DarkCtx";
 
 const RedirectCard = ({ suggestions }) => {
   const dark = useDark();
