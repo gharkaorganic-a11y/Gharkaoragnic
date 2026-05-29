@@ -1,21 +1,181 @@
-User-agent: *
+# ════════════════════════════════════════════════════════════════════════════════
+# GHAR KA ORGANIC - robots.txt
+# Purpose: Allow all search engines and AI bots to crawl for GEO optimization
+# Last Updated: 2026-05-29
+# ════════════════════════════════════════════════════════════════════════════════
 
+# ────────────────────────────────────────────────────────────────────────────────
+# DEFAULT POLICY FOR ALL BOTS
+# ────────────────────────────────────────────────────────────────────────────────
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /checkout/
+Disallow: /cart/
+Disallow: /*?sort_by=*
+Disallow: /api/
+Disallow: /private/
+
+# ────────────────────────────────────────────────────────────────────────────────
+# AI SEARCH BOTS (GENERIC & MAJOR LLM COMPANIES)
+# ────────────────────────────────────────────────────────────────────────────────
+User-agent: GPTBot
 Allow: /
 
-Disallow: /cart
-Disallow: /checkout
-Disallow: /orders
-Disallow: /account
-Disallow: /login
-Disallow: /password
+User-agent: OAI-SearchBot
+Allow: /
 
-Disallow: /search
-Disallow: /*?sort_by=
-Disallow: /*?filter=
-Disallow: /*?view=
-Disallow: /*?variant=
-Disallow: /*?utm_=
-Disallow: /*?ref=
-Disallow: /*?session=
+User-agent: Google-Extended
+Allow: /
 
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Cohenere-bot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: Langbot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+# ────────────────────────────────────────────────────────────────────────────────
+# GOOGLE BOTS
+# ────────────────────────────────────────────────────────────────────────────────
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Googlebot-News
+Allow: /
+
+User-agent: Googlebot-Video
+Allow: /
+
+User-agent: AdsBot-Google
+Allow: /
+
+# ────────────────────────────────────────────────────────────────────────────────
+# MICROSOFT / BING BOTS
+# ────────────────────────────────────────────────────────────────────────────────
+User-agent: Bingbot
+Allow: /
+
+User-agent: BingPreview
+Allow: /
+
+User-agent: MSNBot
+Allow: /
+
+# ────────────────────────────────────────────────────────────────────────────────
+# META / FACEBOOK BOTS
+# ────────────────────────────────────────────────────────────────────────────────
+User-agent: FacebookBot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Meta-ExternalAgent-Preview
+Allow: /
+
+# ────────────────────────────────────────────────────────────────────────────────
+# YAHOO BOTS
+# ────────────────────────────────────────────────────────────────────────────────
+User-agent: Slurp
+Allow: /
+
+# ────────────────────────────────────────────────────────────────────────────────
+# DUCKDUCKGO BOTS
+# ────────────────────────────────────────────────────────────────────────────────
+User-agent: DuckDuckBot
+Allow: /
+
+# ────────────────────────────────────────────────────────────────────────────────
+# BAI DU (CHINESE SEARCH)
+# ────────────────────────────────────────────────────────────────────────────────
+User-agent: Baiduspider
+Allow: /
+
+# ────────────────────────────────────────────────────────────────────────────────
+# YANDEX (RUSSIAN SEARCH)
+# ────────────────────────────────────────────────────────────────────────────────
+User-agent: YandexBot
+Allow: /
+
+# ────────────────────────────────────────────────────────────────────────────────
+# SOCIAL MEDIA & PREVIEW BOTS
+# ────────────────────────────────────────────────────────────────────────────────
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Pinterest
+Allow: /
+
+User-agent: Slackbot
+Allow: /
+
+User-agent: Discordbot
+Allow: /
+
+User-agent: WhatsAppBot
+Allow: /
+
+# ────────────────────────────────────────────────────────────────────────────────
+# ECOMMERCE & PRICE COMPARISON BOTS
+# ────────────────────────────────────────────────────────────────────────────────
+User-agent: ShopBackBot
+Allow: /
+
+User-agent: PriceModeBot
+Allow: /
+
+# ────────────────────────────────────────────────────────────────────────────────
+# SECURITY & MONITORING BOTS
+# ────────────────────────────────────────────────────────────────────────────────
+User-agent: Mixed.ai
+Allow: /
+
+User-agent: SemrushBot
+Allow: /
+
+User-agent: AhrefsBot
+Allow: /
+
+User-agent: MJ12bot
+Allow: /
+
+User-agent: DotBot
+Allow: /
+
+User-agent: PetalBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+# ─────────────────────────────────────────═══════════════════════════════════════
+# SITEMAP
+# ────────────────────────────────────────────────────────────────────────────────
 Sitemap: https://gharkaorganic.com/sitemap.xml
