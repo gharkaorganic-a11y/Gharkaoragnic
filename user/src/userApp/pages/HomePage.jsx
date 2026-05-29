@@ -521,9 +521,7 @@ const HomePage = () => {
         {/* ┌───────────────────────────────────────────────────────┐ */}
         {/* │ CRITICAL SEO TAGS - TITLE, DESCRIPTION, CANONICAL    │ */}
         {/* └───────────────────────────────────────────────────────┘ */}
-        <title>
-          Ghar Ka Organic – Himalayan Homemade Pickles, Pahadi Honey & Desi Ghee
-        </title>
+        <title>Ghar Ka Organic</title>
         <meta
           name="description"
           content="Buy authentic Himalayan organic food from Uttarakhand. Ghar Ka Organic offers homemade pahadi pickles, kumaoni achar, raw forest honey, bilona desi ghee & traditional chutneys. Free shipping across India."
@@ -588,9 +586,7 @@ const HomePage = () => {
       {/* │ HERO SECTION                                                 │ */}
       {/* └─────────────────────────────────────────────────────────────┘ */}
       <section className="w-full">
-        <h1 className="sr-only">
-          Ghar Ka Organic - Authentic Uttarakhand Himalayan Food Products
-        </h1>
+        <h1 className="sr-only">Ghar Ka Organic</h1>
         <div className="w-full aspect-[16/9] sm:aspect-[16/7] md:aspect-[16/6]">
           <HeroSection
             desktopSlides={desktopSlides}
