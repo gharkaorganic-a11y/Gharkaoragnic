@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
+  <channel>
+    <title>Ghar Ka Organic</title>
+    <link>https://gharkaorganic.com</link>
+    <description>Authentic Himalayan organic products — bilona desi ghee, pahadi honey, Kumaoni pickles and more.</description>
+
+    <!-- ═══════════════════════════════════════════════════════
+         PRODUCT 1 — Bilona Desi Ghee (Homepage Featured)
+    ═══════════════════════════════════════════════════════ -->
+    <item>
+      <g:id>GKO-GHEE-001</g:id>
+      <g:title>Bilona Desi Ghee from Uttarakhand – A2 Cow Milk Ghee</g:title>
+      <g:description>Traditional Bilona Desi Ghee made using the ancient hand-churning method from A2 cow milk in Uttarakhand. Pure, chemical-free, rich in natural nutrients, and full of authentic aroma. No preservatives, no additives — just 100% natural desi ghee sourced from free-grazing pahadi cows.</g:description>
+      <g:link>https://gharkaorganic.com/buy-desi-ghee-online</g:link>
+      <g:image_link>https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779804926/uttarakhand-desi-ghee_mhth1n_kwdmv9.webp</g:image_link>
+      <g:price>1299 INR</g:price>
+      <g:availability>in stock</g:availability>
+      <g:condition>new</g:condition>
+      <g:brand>Ghar Ka Organic</g:brand>
+      <g:google_product_category>Food, Beverages &amp; Tobacco > Food Items > Dairy Products</g:google_product_category>
+      <g:product_type>Dairy &amp; Ghee > Desi Ghee > Bilona Ghee</g:product_type>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:price>0 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <!-- ═══════════════════════════════════════════════════════
+         PRODUCT 2 — Raw Pahadi Honey (Homepage Featured)
+    ═══════════════════════════════════════════════════════ -->
+    <item>
+      <g:id>GKO-HONEY-001</g:id>
+      <g:title>Raw Pahadi Honey from Uttarakhand – Pure Forest Honey</g:title>
+      <g:description>Natural Himalayan Pahadi Honey collected from wild forest bees in Uttarakhand mountains. 100% raw, unfiltered, unprocessed and free from any additives or refined sugar. Rich in antioxidants, enzymes and natural minerals. Not heated or filtered — retains all natural goodness.</g:description>
+      <g:link>https://gharkaorganic.com/raw-honey-uttarakhand</g:link>
+      <g:image_link>https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779805346/6b28f8bd-630a-4ad8-99c2-38a0fb306d15.png</g:image_link>
+      <g:price>699 INR</g:price>
+      <g:availability>in stock</g:availability>
+      <g:condition>new</g:condition>
+      <g:brand>Ghar Ka Organic</g:brand>
+      <g:google_product_category>Food, Beverages &amp; Tobacco > Food Items > Honey</g:google_product_category>
+      <g:product_type>Honey &amp; Natural Sweeteners > Raw Honey > Pahadi Honey</g:product_type>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:price>0 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <!-- ═══════════════════════════════════════════════════════
+         PRODUCT 3 — Kumaoni Aam Ka Achar (Homepage Featured)
+    ═══════════════════════════════════════════════════════ -->
+    <item>
+      <g:id>GKO-PICKLE-AAM-001</g:id>
+      <g:title>Kumaoni Aam Achar – Traditional Mango Pickle</g:title>
+      <g:description>Traditional Kumaoni mango pickle prepared with pahadi raw mangoes, Himalayan spices and homemade mountain mustard oil. Authentic taste of Uttarakhand. Handcrafted in small batches using traditional recipes from the Kumaon hills. Free from artificial preservatives and colours.</g:description>
+      <g:link>https://gharkaorganic.com/pahadi-achar-online</g:link>
+      <g:image_link>https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779805758/a332c4ef-1765-4f47-b4d4-4012140de26e.png</g:image_link>
+      <g:price>349 INR</g:price>
+      <g:availability>in stock</g:availability>
+      <g:condition>new</g:condition>
+      <g:brand>Ghar Ka Organic</g:brand>
+      <g:google_product_category>Food, Beverages &amp; Tobacco > Food Items > Condiments &amp; Sauces > Pickles &amp; Relishes</g:google_product_category>
+      <g:product_type>Pickles &amp; Achars > Mango Pickle > Kumaoni Achar</g:product_type>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:price>0 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <!-- ═══════════════════════════════════════════════════════
+         PRODUCT 4 — Kumaoni Nimbu Ka Achar (Homepage Featured)
+    ═══════════════════════════════════════════════════════ -->
+    <item>
+      <g:id>GKO-PICKLE-NIMBU-001</g:id>
+      <g:title>Nimbu Achar – Lemon Pickle</g:title>
+      <g:description>Traditional Kumaoni lemon pickle with fresh pahadi lemons, Himalayan spices, and pure mustard oil. Tangy, spicy, and aromatic with authentic mountain flavor. Handcrafted in small batches using traditional recipes from the Kumaon hills. Free from artificial preservatives and colours.</g:description>
+      <g:link>https://gharkaorganic.com/nimbu-achar-online</g:link>
+      <g:image_link>https://res.cloudinary.com/dwgro3zo7/image/upload/w_1200,h_1200,c_fill,q_auto,f_auto/v1779806656/c2153e88-16ac-498e-a526-1976f375a691_un6xul.png</g:image_link>
+      <g:price>299 INR</g:price>
+      <g:availability>in stock</g:availability>
+      <g:condition>new</g:condition>
+      <g:brand>Ghar Ka Organic</g:brand>
+      <g:google_product_category>Food, Beverages &amp; Tobacco > Food Items > Condiments &amp; Sauces > Pickles &amp; Relishes</g:google_product_category>
+      <g:product_type>Pickles &amp; Achars > Lemon Pickle > Kumaoni Achar</g:product_type>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:price>0 INR</g:price>
+      </g:shipping>
+    </item>
+
+    <!-- ═══════════════════════════════════════════════════════
+         PRODUCT 5 — Bhang Chutney (Homepage Featured)
+    ═══════════════════════════════════════════════════════ -->
+    <item>
+      <g:id>GKO-CHUTNEY-BHANG-001</g:id>
+      <g:title>Bhang Chutney – Traditional Kumaoni Recipe</g:title>
+      <g:description>Authentic Kumaoni Bhang Chutney made with hemp seeds and Himalayan spices. A unique traditional recipe from Uttarakhand with authentic mountain flavors. Handcrafted using traditional methods. Free from artificial preservatives and colours.</g:description>
+      <g:link>https://gharkaorganic.com/pahadi-products-online</g:link>
+      <g:image_link>https://res.cloudinary.com/dwgro3zo7/image/upload/w_1200,h_1200,c_fill,q_auto,f_auto/v1779806954/5fbff796-8d70-4624-931e-f7d36a5ec9a9_leazcc.png</g:image_link>
+      <g:price>249 INR</g:price>
+      <g:availability>in stock</g:availability>
+      <g:condition>new</g:condition>
+      <g:brand>Ghar Ka Organic</g:brand>
+      <g:google_product_category>Food, Beverages &amp; Tobacco > Food Items > Condiments &amp; Sauces</g:google_product_category>
+      <g:product_type>Chutneys > Traditional Chutney</g:product_type>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:price>0 INR</g:price>
+      </g:shipping>
+    </item>
+
+  </channel>
+</rss>
