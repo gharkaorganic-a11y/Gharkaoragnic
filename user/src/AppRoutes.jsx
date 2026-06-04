@@ -14,6 +14,7 @@ import BlogListPage from "./userApp/pages/blog/BlogListPage";
 import BlogDetailPage from "./userApp/pages/blog/BlogDetailPage";
 import BestSellersPage from "./userApp/features/p/BestSellersPage";
 import ShippingPage from "./userApp/pages/ShippingPolicyPage";
+import PrivacyPolicyPage from "./userApp/pages/PrivacyPolicyPage";
 
 /* ───────── LAZY ───────── */
 const AuthRoutes = lazy(() => import("./userApp/routes/AuthRoutes"));
@@ -159,6 +160,7 @@ const AppRoutes = () => (
         {/* BLOGS */}
         <Route path="/blogs" element={<BlogListPage />} />
         <Route path="/pages/shipping" element={<ShippingPage />} />
+        <Route path="pages/privacy-policy" element={<PrivacyPolicyPage />} />
 
         <Route path="/blogs/:slug" element={<BlogDetailPage />} />
 

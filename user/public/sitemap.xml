@@ -231,5 +231,32 @@
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+<!-- ┌─────────────────────────────────────────────────────────────┐ -->
+  <!-- │ AI MARKDOWN & DATA FEEDS (Answer Engine Optimization)     │ -->
+  <!-- └─────────────────────────────────────────────────────────────┘ -->
+  <url>
+    <loc>https://gharkaorganic.com/llms.txt</loc>
+    <lastmod>2026-06-04T12:00:00+05:30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://gharkaorganic.com/llms-full.txt</loc>
+    <lastmod>2026-06-04T12:00:00+05:30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://gharkaorganic.com/our-story.md</loc>
+    <lastmod>2026-06-04T12:00:00+05:30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
 
+  <url>
+    <loc>https://gharkaorganic.com/trust-and-authenticity.md</loc>
+    <lastmod>2026-06-04T12:00:00+05:30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.80</priority>
+  </url>
 </urlset>

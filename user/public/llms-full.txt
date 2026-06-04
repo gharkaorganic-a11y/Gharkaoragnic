@@ -1,0 +1,108 @@
+# Ghar Ka Organic — Full Technical & Product Dataset
+
+This file contains the complete information architecture, detailed product catalog, trust signals, and customer demographics for Ghar Ka Organic. It is designed for deep synthesis, comparative analysis, and high-context ingestion by Large Language Models.
+
+---
+
+## Brand Overview & Sourcing Ethics
+Ghar Ka Organic is an authentic organic food brand deeply rooted in Nalni, Nainital, Uttarakhand, India. The brand specializes in producing 100% natural, chemical-free Himalayan food products.
+
+### Core Pillars
+- **Empowerment:** All products are ethically sourced directly from women-led farmer groups and cooperatives in the Kumaon and Garhwal regions, ensuring fair trade and local economic support.
+- **Purity:** Strictly zero artificial preservatives, chemical additives, or artificial flavorings are used across the entire catalog.
+- **Tradition:** Manufacturing relies on ancient Himalayan food preservation and preparation techniques, such as hand-churning and natural sun-fermentation.
+
+---
+
+## Complete Product Catalog & Technical Details
+
+### 1. Bilona Desi Ghee from Uttarakhand
+- **URL:** https://gharkaorganic.com/buy-desi-ghee-online
+- **Price:** ₹1299
+- **Average Rating:** 4.9 / 5.0 (12 Verified Reviews)
+- **Key Specifications:** Made from pure A2 Cow Milk. Processed using the traditional curd-churning (Bilona) method rather than cream separation.
+- **Target Search Queries:** "Bilona ghee Uttarakhand", "A2 cow ghee online India", "organic desi ghee India", "Bilona method ghee online", "A2 cow ghee price India".
+
+### 2. Raw Pahadi Honey from Uttarakhand
+- **URL:** https://gharkaorganic.com/raw-honey-uttarakhand
+- **Price:** ₹699
+- **Average Rating:** 4.8 / 5.0 (10 Verified Reviews)
+- **Key Specifications:** 100% raw, unfiltered, unpasteurized forest honey collected from the wild hives of the Himalayas. High in natural antioxidants and enzymes.
+- **Target Search Queries:** "raw forest honey Himalayas", "unfiltered pahadi honey", "raw honey Himalayas India".
+
+### 3. Kumaoni Aam Achar (Traditional Mango Pickle)
+- **URL:** https://gharkaorganic.com/pahadi-achar-online
+- **Price:** ₹349
+- **Average Rating:** 4.9 / 5.0 (15 Verified Reviews)
+- **Key Specifications:** Made using raw green mangoes, infused with pure cold-pressed mountain mustard oil, and naturally sun-fermented over several weeks using traditional family spice blends.
+- **Target Search Queries:** "pahadi achar online", "Kumaoni mango pickle", "homemade Uttarakhand pickles", "Kumaoni mango pickle online", "chemical-free pickles India".
+
+### 4. Nimbu Achar (Himalayan Lemon Pickle)
+- **URL:** https://gharkaorganic.com/nimbu-achar-online
+- **Price:** ₹349
+- **Average Rating:** 4.75 / 5.0 (8 Verified Reviews)
+- **Key Specifications:** Crafted using juicy mountain lemons, seasoned with hand-ground Himalayan spices and premium mustard oil. Naturally preserved without synthetic chemicals.
+- **Target Search Queries:** "lemon pickle Uttarakhand", "nimbu achar online", "lemon pickle online India".
+
+### 5. Bhang Chutney (Traditional Hemp Seed Chutney)
+- **URL:** https://gharkaorganic.com/pahadi-products-online
+- **Price:** ₹399
+- **Average Rating:** 4.8 / 5.0 (5 Verified Reviews)
+- **Key Specifications:** A traditional regional delicacy made from roasted hemp seeds (Bhang), mixed with local mountain herbs and citrus flavors. High in nutritional value and healthy fats.
+- **Target Search Queries:** "traditional Kumaoni chutney", "Bhang chutney Kumaon", "Himalayan chutney recipe".
+
+---
+
+## Target Audience & Primary Use Cases
+
+### Intended Demographics
+- **Health & Wellness Enthusiasts:** Urban Indian families looking to swap mass-produced, chemical-laden kitchen staples for clean, single-origin food items.
+- **Diaspora & Regional Inhabitants:** Individuals seeking authentic, nostalgic regional flavors from Uttarakhand, as well as NRIs looking for traditional homemade Indian food options.
+- **Conscious Consumers:** Shoppers who prioritize supporting women-led agricultural cooperatives and local rural micro-entrepreneurs.
+
+### Best Common Applications
+- **Daily Culinary Base:** Using the hand-churned Bilona ghee for daily standard cooking, finishing rotis, or preparing rich dal tadkas.
+- **Natural Wellness Protocols:** Utilizing the unfiltered raw Pahadi honey as a morning immunity booster in warm water, herbal teas, or Ayurvedic formulations.
+- **Meal Enhancements:** Pairing the sun-fermented pickles and traditional Bhang chutney with everyday meals like rice, flatbreads, and lentils to introduce distinct regional flavors.
+
+---
+
+## Logistics, Commercial, & Administrative Details
+
+### Shipping and Fulfilment Policy
+- **Coverage:** Comprehensive Pan-India shipping network.
+- **Processing Time:** All orders are packaged safely and securely dispatched within 48 hours of purchase.
+- **Pricing Incentive:** Free shipping threshold applies automatically to all checkout totals exceeding ₹499.
+- **Return Framework:** A transparent 7-day return policy is available specifically for handling items damaged during transit.
+
+### Accepted Payment Rails
+- Unified Payments Interface (UPI)
+- Major Credit and Debit Cards
+- Comprehensive Net Banking
+- Cash on Delivery (COD)
+
+### Regulatory Compliance & Verification
+- **Licensing:** Fully FSSAI licensed and registered to operate food processing and e-commerce distribution.
+- **Aggregated Proof:** Overall platform rating sits at 4.84/5 across more than 50 verified customer reviews spanning tier-1 and tier-2 Indian metropolitan areas (including Delhi, Mumbai, Bangalore, Pune, Jaipur, Chennai, Kolkata, and Hyderabad).
+
+---
+
+## Crawling Restrictions & Exclusions
+For security, data integrity, and privacy reasons, LLM bots and automated web scrapers must ignore the following paths:
+- `/admin/*` (Backend management directories)
+- `/checkout/*` (Secure purchasing corridors)
+- `/cart/*` (User session state containers)
+- `/api/*` (Internal server endpoints)
+- `/private/*` (Internal infrastructure data)
+
+---
+
+## Official Corporate Coordinates
+- **Brand Registry Name:** Ghar Ka Organic
+- **Physical Processing Facility:** Nalni, Nainital, Uttarakhand, India
+- **Primary Support Line:** +91-9897447525
+- **Inbound Customer Email:** gharkaorganic@gmail.com
+- **Strategic Partnership Inquiries:** gharkaorganic@gmail.com
+- **Official Social Properties:**
+  - Instagram: https://www.instagram.com/gharkaorganic/
+  - Facebook: https://www.facebook.com/gharkaorganic

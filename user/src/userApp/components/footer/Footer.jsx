@@ -34,7 +34,7 @@ const Footer = () => {
         { name: "Blog & Stories", url: "/blogs" },
         { name: "Contact Us", url: "/contact" },
         { name: "Shipping Policy", url: "/pages/shipping" },
-        { name: "Privacy Policy", url: "/pages/privacy" },
+        { name: "Privacy Policy", url: "/pages/privacy-policy" },
         { name: "Terms & Conditions", url: "/pages/terms" },
       ],
     },
@@ -283,7 +283,7 @@ const Footer = () => {
             </Link>
             <span className="text-[#F8F5EE]/20">•</span>
             <Link
-              to="/pages/privacy"
+              to="/pages/privacy-policy"
               className="hover:text-[#DE9F35] transition">
               Privacy
             </Link>

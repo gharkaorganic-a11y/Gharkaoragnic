@@ -1,7 +1,7 @@
 # ════════════════════════════════════════════════════════════════════════════════
 # GHAR KA ORGANIC - robots.txt
 # Purpose: Allow all search engines and AI bots to crawl for GEO optimization
-# Last Updated: 2026-05-29
+# Last Updated: 2026-06-04
 # ════════════════════════════════════════════════════════════════════════════════
 
 # ────────────────────────────────────────────────────────────────────────────────
@@ -17,7 +17,7 @@ Disallow: /api/
 Disallow: /private/
 
 # ────────────────────────────────────────────────────────────────────────────────
-# AI SEARCH BOTS (GENERIC & MAJOR LLM COMPANIES)
+# EXPLICITLY WELCOMED AI SEARCH BOTS & LLMS
 # ────────────────────────────────────────────────────────────────────────────────
 User-agent: GPTBot
 Allow: /
@@ -49,102 +49,24 @@ Allow: /
 User-agent: Langbot
 Allow: /
 
-User-agent: CCBot
-Allow: /
-
 # ────────────────────────────────────────────────────────────────────────────────
-# GOOGLE BOTS
+# EXPLICITLY WELCOMED SEARCH & ECOMMERCE BOTS
 # ────────────────────────────────────────────────────────────────────────────────
 User-agent: Googlebot
 Allow: /
 
-User-agent: Googlebot-Image
-Allow: /
-
-User-agent: Googlebot-News
-Allow: /
-
-User-agent: Googlebot-Video
-Allow: /
-
-User-agent: AdsBot-Google
-Allow: /
-
-# ────────────────────────────────────────────────────────────────────────────────
-# MICROSOFT / BING BOTS
-# ────────────────────────────────────────────────────────────────────────────────
 User-agent: Bingbot
 Allow: /
 
-User-agent: BingPreview
-Allow: /
-
-User-agent: MSNBot
-Allow: /
-
-# ────────────────────────────────────────────────────────────────────────────────
-# META / FACEBOOK BOTS
-# ────────────────────────────────────────────────────────────────────────────────
-User-agent: FacebookBot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
-User-agent: Meta-ExternalAgent
-Allow: /
-
-User-agent: Meta-ExternalAgent-Preview
-Allow: /
-
-# ────────────────────────────────────────────────────────────────────────────────
-# YAHOO BOTS
-# ────────────────────────────────────────────────────────────────────────────────
-User-agent: Slurp
-Allow: /
-
-# ────────────────────────────────────────────────────────────────────────────────
-# DUCKDUCKGO BOTS
-# ────────────────────────────────────────────────────────────────────────────────
 User-agent: DuckDuckBot
 Allow: /
 
-# ────────────────────────────────────────────────────────────────────────────────
-# BAI DU (CHINESE SEARCH)
-# ────────────────────────────────────────────────────────────────────────────────
 User-agent: Baiduspider
 Allow: /
 
-# ────────────────────────────────────────────────────────────────────────────────
-# YANDEX (RUSSIAN SEARCH)
-# ────────────────────────────────────────────────────────────────────────────────
 User-agent: YandexBot
 Allow: /
 
-# ────────────────────────────────────────────────────────────────────────────────
-# SOCIAL MEDIA & PREVIEW BOTS
-# ────────────────────────────────────────────────────────────────────────────────
-User-agent: Twitterbot
-Allow: /
-
-User-agent: LinkedInBot
-Allow: /
-
-User-agent: Pinterest
-Allow: /
-
-User-agent: Slackbot
-Allow: /
-
-User-agent: Discordbot
-Allow: /
-
-User-agent: WhatsAppBot
-Allow: /
-
-# ────────────────────────────────────────────────────────────────────────────────
-# ECOMMERCE & PRICE COMPARISON BOTS
-# ────────────────────────────────────────────────────────────────────────────────
 User-agent: ShopBackBot
 Allow: /
 
@@ -152,30 +74,8 @@ User-agent: PriceModeBot
 Allow: /
 
 # ────────────────────────────────────────────────────────────────────────────────
-# SECURITY & MONITORING BOTS
-# ────────────────────────────────────────────────────────────────────────────────
-User-agent: Mixed.ai
-Allow: /
-
-User-agent: SemrushBot
-Allow: /
-
-User-agent: AhrefsBot
-Allow: /
-
-User-agent: MJ12bot
-Allow: /
-
-User-agent: DotBot
-Allow: /
-
-User-agent: PetalBot
-Allow: /
-
-User-agent: Bytespider
-Allow: /
-
-# ─────────────────────────────────────────═══════════════════════════════════════
-# SITEMAP
+# DATA MAPS & AI DIRECTORIES
 # ────────────────────────────────────────────────────────────────────────────────
 Sitemap: https://gharkaorganic.com/sitemap.xml
+Sitemap: https://gharkaorganic.com/llms.txt
+Sitemap: https://gharkaorganic.com/llms-full.txt
