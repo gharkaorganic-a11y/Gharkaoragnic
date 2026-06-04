@@ -376,7 +376,7 @@ const OrganicFarmingPage = () => {
                   </svg>
                 </Link>
                 <Link
-                  to="/pages/our-story"
+                  to="/our-story"
                   className="inline-flex items-center gap-2 border border-stone-500 hover:border-stone-300 text-stone-300 hover:text-white px-6 py-3 rounded-full transition-colors text-sm">
                   Our story
                 </Link>
@@ -624,7 +624,7 @@ const OrganicFarmingPage = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               {
-                to: "/pages/our-story",
+                to: "/our-story",
                 label: "Our story",
                 desc: "Meet the farming family behind GharKaOrganic",
               },
@@ -639,7 +639,7 @@ const OrganicFarmingPage = () => {
                 desc: "Make traditional mango pickle at home",
               },
               {
-                to: "/pages/faq",
+                to: "/faq",
                 label: "FAQs",
                 desc: "Common questions about our products & delivery",
               },

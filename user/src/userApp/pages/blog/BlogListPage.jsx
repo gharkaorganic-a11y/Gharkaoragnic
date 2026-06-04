@@ -104,7 +104,7 @@ const BlogListPage = () => {
     name: "Organic Food Blogs & Recipes | Ghar Ka Organic",
     description:
       "100+ organic food blogs, pahadi recipes, desi ghee benefits, health tips, and sustainable farming insights.",
-    url: `${SITE_URL}/pages/blogs`,
+    url: `${SITE_URL}/blogs`,
     publisher: {
       "@type": "Organization",
       name: "Ghar Ka Organic",
@@ -119,7 +119,7 @@ const BlogListPage = () => {
       itemListElement: filteredBlogs.slice(0, 10).map((post, index) => ({
         "@type": "ListItem",
         position: index + 1,
-        url: `${SITE_URL}/pages/blogs/${post.slug}`,
+        url: `${SITE_URL}/blogs/${post.slug}`,
         name: post.title,
         description: post.excerpt,
       })),
@@ -140,7 +140,7 @@ const BlogListPage = () => {
         "@type": "ListItem",
         position: 2,
         name: "Blog",
-        item: `${SITE_URL}/pages/blogs`,
+        item: `${SITE_URL}/blogs`,
       },
     ],
   };
@@ -154,7 +154,7 @@ const BlogListPage = () => {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: `${SITE_URL}/pages/blogs?search={search_term_string}`,
+        urlTemplate: `${SITE_URL}/blogs?search={search_term_string}`,
       },
       "query-input": "required name=search_term_string",
     },
@@ -183,7 +183,7 @@ const BlogListPage = () => {
                 : "100+ organic food blogs: pahadi recipes, A2 ghee benefits, desi cow farming, sustainable agriculture, and health tips from rural entrepreneurs."
           }
         />
-        <link rel="canonical" href={`${SITE_URL}/pages/blogs`} />
+        <link rel="canonical" href={`${SITE_URL}/blogs`} />
         <meta
           name="robots"
           content={`index, follow, max-image-preview:large${showNoResults ? ", noindex" : ""}`}
@@ -207,7 +207,7 @@ const BlogListPage = () => {
               : "100+ articles on organic food, recipes, health, farming, and sustainability."
           }
         />
-        <meta property="og:url" content={`${SITE_URL}/pages/blogs`} />
+        <meta property="og:url" content={`${SITE_URL}/blogs`} />
         <meta property="og:site_name" content="Ghar Ka Organic" />
         <meta
           property="og:image"
@@ -330,7 +330,7 @@ const BlogListPage = () => {
                         Featured
                       </span>
                     </div>
-                    <Link to={`/pages/blogs/${featuredPost.slug}`}>
+                    <Link to={`/blogs/${featuredPost.slug}`}>
                       <picture>
                         <source
                           srcSet={featuredPost.image.replace(
@@ -360,7 +360,7 @@ const BlogListPage = () => {
 
                     <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
                       <Link
-                        to={`/pages/blogs/${featuredPost.slug}`}
+                        to={`/blogs/${featuredPost.slug}`}
                         className="hover:text-amber-600 transition">
                         {featuredPost.title}
                       </Link>
@@ -380,7 +380,7 @@ const BlogListPage = () => {
                     </div>
 
                     <Link
-                      to={`/pages/blogs/${featuredPost.slug}`}
+                      to={`/blogs/${featuredPost.slug}`}
                       className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-5 py-2.5 rounded-lg transition">
                       Read Full Article <ArrowRight size={16} />
                     </Link>
@@ -405,7 +405,7 @@ const BlogListPage = () => {
                       <article
                         key={post.slug}
                         className="group bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow">
-                        <Link to={`/pages/blogs/${post.slug}`}>
+                        <Link to={`/blogs/${post.slug}`}>
                           <picture>
                             <source
                               srcSet={post.image.replace(
@@ -431,7 +431,7 @@ const BlogListPage = () => {
                           </span>
                           <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
                             <Link
-                              to={`/pages/blogs/${post.slug}`}
+                              to={`/blogs/${post.slug}`}
                               className="hover:text-amber-600 transition">
                               {post.title}
                             </Link>
@@ -575,7 +575,7 @@ const BlogListPage = () => {
                     {filteredBlogs.slice(0, 5).map((post) => (
                       <Link
                         key={post.slug}
-                        to={`/pages/blogs/${post.slug}`}
+                        to={`/blogs/${post.slug}`}
                         className="group block">
                         <h4 className="font-semibold text-gray-800 group-hover:text-amber-600 transition line-clamp-2 text-sm">
                           {post.title}
@@ -608,7 +608,7 @@ const BlogListPage = () => {
                     living.
                   </p>
                   <Link
-                    to="/pages/our-story"
+                    to="/our-story"
                     className="text-amber-600 text-sm font-semibold hover:underline inline-flex items-center gap-1">
                     Read our story →
                   </Link>

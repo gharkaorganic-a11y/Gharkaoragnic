@@ -667,7 +667,7 @@ const Star = ({ filled }) => (
 );
 
 /* ─────────────────────────────
-   JSON-LD SCHEMA GENERATION
+   JSON-LD SCHEMA GENERATION - FIXED FOR GOOGLE VALIDATION
 ───────────────────────────── */
 function JsonLd({ data }) {
   useEffect(() => {
@@ -715,7 +715,7 @@ export default function ReviewsPage() {
   const filtered = useMemo(() => {
     let data = [...REVIEWS_DATA];
     if (ratingFilter !== "all")
-      data = data.filter((r) => r.rating === Number(ratingFilter));
+      data = data.filter((r) => r.rating >= Number(ratingFilter));
     if (productFilter !== "all")
       data = data.filter((r) => r.product.link === productFilter);
     return data;
@@ -733,10 +733,12 @@ export default function ReviewsPage() {
     );
   }, []);
 
+  // ✅ FIXED SCHEMA: Products with nested reviews and aggregateRating
   const schemaData = useMemo(() => {
     return {
       "@context": "https://schema.org",
       "@graph": [
+        // Organization
         {
           "@type": "Organization",
           "@id": `${BASE_URL}/#organization`,
@@ -752,14 +754,38 @@ export default function ReviewsPage() {
             addressCountry: "IN",
           },
         },
+        // Website
+        {
+          "@type": "WebSite",
+          "@id": `${BASE_URL}/#website`,
+          name: "Ghar Ka Organic",
+          url: BASE_URL,
+          publisher: { "@id": `${BASE_URL}/#organization` },
+        },
+        // WebPage
         {
           "@type": "WebPage",
           "@id": CANONICAL,
           url: CANONICAL,
           name: `Customer Reviews – Ghar Ka Organic`,
           description: `Read ${REVIEWS_DATA.length} verified customer reviews from real buyers.`,
-          mainEntity: { "@id": CANONICAL + "#aggregate-rating" },
+          isPartOf: { "@id": `${BASE_URL}/#website` },
         },
+
+        {
+          "@type": "BreadcrumbList",
+          "@id": `${CANONICAL}#breadcrumb`,
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: BASE_URL },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Customer Reviews",
+              item: CANONICAL,
+            },
+          ],
+        },
+        // Overall Aggregate Rating
         {
           "@type": "AggregateRating",
           "@id": CANONICAL + "#aggregate-rating",
@@ -767,32 +793,52 @@ export default function ReviewsPage() {
           reviewCount: REVIEWS_DATA.length,
           bestRating: 5,
           worstRating: 1,
-          ratingExplanation: `Based on ${REVIEWS_DATA.length} verified customer reviews across all products`,
         },
-        ...REVIEWS_DATA.map((r) => ({
-          "@type": "Review",
-          "@id": `${CANONICAL}#review-${r.id}`,
-          name: r.title,
-          reviewBody: r.body,
-          datePublished: r.date,
-          author: { "@type": "Person", name: r.author },
-          reviewRating: {
-            "@type": "Rating",
-            ratingValue: r.rating,
-            bestRating: 5,
-            worstRating: 1,
-          },
-          itemReviewed: {
+        // ✅ Products with nested reviews - This fixes Google validation
+        ...uniqueProducts.map((product) => {
+          const productReviews = REVIEWS_DATA.filter(
+            (r) => r.product.link === product.link,
+          );
+          const productAvgRating = Number(
+            (
+              productReviews.reduce((a, b) => a + b.rating, 0) /
+              productReviews.length
+            ).toFixed(2),
+          );
+          return {
             "@type": "Product",
-            name: r.product.name,
-            sku: r.product.sku,
-            url: `${BASE_URL}${r.product.link}`,
+            "@id": `${BASE_URL}${product.link}/#product`,
+            name: product.name,
+            sku: product.sku,
+            url: `${BASE_URL}${product.link}`,
             brand: { "@type": "Brand", name: "Ghar Ka Organic" },
-          },
-        })),
+            // ✅ Product-level aggregateRating
+            aggregateRating: {
+              "@type": "AggregateRating",
+              ratingValue: productAvgRating,
+              reviewCount: productReviews.length,
+              bestRating: 5,
+              worstRating: 1,
+            },
+            // ✅ Nested reviews array - This is key for validation
+            review: productReviews.map((r) => ({
+              "@type": "Review",
+              headline: r.title,
+              reviewBody: r.body,
+              datePublished: r.date,
+              author: { "@type": "Person", name: r.author },
+              reviewRating: {
+                "@type": "Rating",
+                ratingValue: r.rating,
+                bestRating: 5,
+                worstRating: 1,
+              },
+            })),
+          };
+        }),
       ],
     };
-  }, [avgRating]);
+  }, [avgRating, uniqueProducts]);
 
   const pageTitle = `Customer Reviews (${REVIEWS_DATA.length} Verified) | Ghar Ka Organic`;
   const pageDescription = `Read ${REVIEWS_DATA.length} verified customer reviews. Average rating ${avgRating}⭐ from families across India. Authentic feedback on pahadi pickles, honey, desi ghee & chutneys.`;
@@ -803,6 +849,10 @@ export default function ReviewsPage() {
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
         <link rel="canonical" href={CANONICAL} />
+        <meta
+          property="og:image"
+          content="https://gharkaorganic.com/logo/gharka-logo.png"
+        />
         <meta
           property="og:title"
           content="Customer Reviews | Ghar Ka Organic"

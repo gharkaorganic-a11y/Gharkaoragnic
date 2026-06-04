@@ -505,8 +505,8 @@ export const OrderTracker = ({ dark, currentStep = 1 }) => {
 // ── PAGES POPUP ──────────────────────────────
 const INFO_PAGES_LOCAL = [
   { id: "about", label: "About us", url: "/pages/about", icon: "info" },
-  { id: "faq", label: "FAQ", url: "/pages/faq", icon: "help" },
-  { id: "contact", label: "Contact", url: "/pages/contact", icon: "phone" },
+  { id: "faq", label: "FAQ", url: "/faq", icon: "help" },
+  { id: "contact", label: "Contact", url: "/contact", icon: "phone" },
   { id: "blog", label: "Blog", url: "/blog", icon: "article" },
   { id: "returns", label: "Returns", url: "/pages/returns", icon: "return" },
   { id: "shipping", label: "Shipping", url: "/pages/shipping", icon: "truck" },

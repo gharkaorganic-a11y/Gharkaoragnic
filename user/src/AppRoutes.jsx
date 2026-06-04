@@ -13,6 +13,7 @@ import ReviewsPage from "./userApp/reviews/pages/CustomerReviewsPage";
 import BlogListPage from "./userApp/pages/blog/BlogListPage";
 import BlogDetailPage from "./userApp/pages/blog/BlogDetailPage";
 import BestSellersPage from "./userApp/features/p/BestSellersPage";
+import ShippingPage from "./userApp/pages/ShippingPolicyPage";
 
 /* ───────── LAZY ───────── */
 const AuthRoutes = lazy(() => import("./userApp/routes/AuthRoutes"));
@@ -157,27 +158,29 @@ const AppRoutes = () => (
 
         {/* BLOGS */}
         <Route path="/blogs" element={<BlogListPage />} />
+        <Route path="/pages/shipping" element={<ShippingPage />} />
+
         <Route path="/blogs/:slug" element={<BlogDetailPage />} />
 
-        <Route path="/pages/blogs" element={<BlogListPage />} />
-        <Route path="/pages/blogs/:slug" element={<BlogDetailPage />} />
+        <Route path="/blogs" element={<BlogListPage />} />
+        <Route path="/blogs/:slug" element={<BlogDetailPage />} />
 
         {/* STATIC PAGES */}
-        <Route path="/pages/our-story" element={<OurStoryPage />} />
+        <Route path="/our-story" element={<OurStoryPage />} />
         <Route path="/reviews" element={<ReviewsPage />} />
-        <Route path="/pages/faq" element={<FaqPage />} />
-        <Route path="/pages/contact" element={<ContactUsPage />} />
+        <Route path="/faq" element={<FaqPage />} />
+        <Route path="/contact" element={<ContactUsPage />} />
 
         {/* CLEAN REDIRECTS */}
         <Route
           path="/about-us"
-          element={<Navigate to="/pages/our-story" replace />}
+          element={<Navigate to="/our-story" replace />}
         />
         <Route
           path="/contact-us"
-          element={<Navigate to="/pages/contact" replace />}
+          element={<Navigate to="/contact" replace />}
         />
-        <Route path="/faq" element={<Navigate to="/pages/faq" replace />} />
+        <Route path="/faq" element={<Navigate to="/faq" replace />} />
 
         {/* ─────────────────────────────────────────
            🚀 SINGLE SEO COLLECTION ROUTE (FIXED)

@@ -45,7 +45,7 @@ export const PAGE_INDEX = [
     id: "story",
     title: "Our Story",
     keywords: ["story", "about", "brand"],
-    url: "/pages/our-story",
+    url: "/our-story",
     suggestion: "Learn about Ghar Ka Organic ❤️",
   },
 
@@ -53,7 +53,7 @@ export const PAGE_INDEX = [
     id: "contact",
     title: "Contact",
     keywords: ["contact", "help", "support"],
-    url: "/pages/contact",
+    url: "/contact",
     suggestion: "Contact our support team 📞",
   },
 ];

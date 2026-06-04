@@ -764,7 +764,7 @@ const WhatsAppGuidedBot = () => {
         return showMainMenu(userName);
       }
       if (lower.includes("faq")) {
-        return (window.location.href = "/pages/faq");
+        return (window.location.href = "/faq");
       }
       if (lower.includes("about")) {
         return (window.location.href = "/pages/about");

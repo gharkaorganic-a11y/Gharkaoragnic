@@ -86,8 +86,8 @@ export const MAIN_MENU = [
 
 export const INFO_PAGES = [
   { id: "about",    label: "About us",   url: "/pages/about",   icon: "info" },
-  { id: "faq",      label: "FAQ",        url: "/pages/faq",     icon: "help" },
-  { id: "contact",  label: "Contact",    url: "/pages/contact", icon: "phone" },
+  { id: "faq",      label: "FAQ",        url: "/faq",     icon: "help" },
+  { id: "contact",  label: "Contact",    url: "/contact", icon: "phone" },
   { id: "blog",     label: "Blog",       url: "/blog",          icon: "article" },
   { id: "returns",  label: "Returns",    url: "/pages/returns", icon: "return" },
   { id: "shipping", label: "Shipping",   url: "/pages/shipping",icon: "truck" },
@@ -112,8 +112,8 @@ export const SITE_PAGES = [
   { label: "Spices", url: "/spices", hint: "Natural spices", icon: "flame" },
   { label: "Pickle", url: "/pickle", hint: "Homemade pickles", icon: "jar" },
   { label: "About Us", url: "/pages/about", hint: "Our story", icon: "info" },
-  { label: "Contact", url: "/pages/contact", hint: "Get in touch", icon: "phone" },
-  { label: "FAQ", url: "/pages/faq", hint: "Common questions", icon: "help" },
+  { label: "Contact", url: "/contact", hint: "Get in touch", icon: "phone" },
+  { label: "FAQ", url: "/faq", hint: "Common questions", icon: "help" },
   { label: "Track Order", url: "/track-order", hint: "Track your delivery", icon: "truck" },
   { label: "Login", url: "/auth/login", hint: "Sign in to account", icon: "lock" },
 ];
@@ -129,15 +129,15 @@ export const SUGGESTION_MAP = {
   ],
   cart: [
     { label: "🛍️ Continue Shopping", url: "/all-products" },
-    { label: "📞 Need Help?", url: "/pages/contact" },
+    { label: "📞 Need Help?", url: "/contact" },
   ],
   track: [
     { label: "📦 Track Order Page", url: "/track-order" },
-    { label: "📞 Contact Support", url: "/pages/contact" },
+    { label: "📞 Contact Support", url: "/contact" },
   ],
   support: [
-    { label: "❓ FAQ", url: "/pages/faq" },
-    { label: "📞 Contact Us", url: "/pages/contact" },
+    { label: "❓ FAQ", url: "/faq" },
+    { label: "📞 Contact Us", url: "contact" },
   ],
   product: [
     { label: "🛍️ All Products", url: "/all-products" },
@@ -147,7 +147,7 @@ export const SUGGESTION_MAP = {
   default: [
     { label: "🛍️ Shop Now", url: "/all-products" },
     { label: "🍯 Try Our Honey", url: "/honey" },
-    { label: "📞 Contact Us", url: "/pages/contact" },
+    { label: "📞 Contact Us", url: "/contact" },
   ],
 };
 

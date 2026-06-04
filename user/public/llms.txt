@@ -206,8 +206,8 @@ Bot-Policy-Cohere: Allow (Citation required)
 # ────────────────────────────────────────────────────────────────────────────────
 Contact-Email: gharkaorganic@gmail.com
 Contact-Phone: +91-9897447525
-Contact-URL: https://gharkaorganic.com/pages/contact
-Permission-Request-URL: https://gharkaorganic.com/pages/contact
+Contact-URL: https://gharkaorganic.com/contact
+Permission-Request-URL: https://gharkaorganic.com/contact
 
 Partnership-Email: partnerships@gharkaorganic.com
 Open-To-Partnerships: Yes

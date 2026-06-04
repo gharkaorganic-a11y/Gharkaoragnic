@@ -18,43 +18,35 @@ import {
    CONSTANTS
 ───────────────────────────────────────────── */
 const BASE_URL = "https://gharkaorganic.com";
-
 const CANONICAL = `${BASE_URL}/pages/contact`;
 
 const OG_IMAGE =
   "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1776770687/Organic_Himalayan_food_from_Bhimtal_Uttarakhand_by_Ghar_Ka_Organic_wbolwx.webp";
 
+// Unified contact details
+const CONTACT_PHONE = "+919897447525";
+const CONTACT_EMAIL = "gharkaorganic@gmail.com";
+
 const JSONLD = JSON.stringify({
   "@context": "https://schema.org",
-
   "@graph": [
     {
       "@type": "ContactPage",
-
       "@id": `${CANONICAL}#contactpage`,
-
       url: CANONICAL,
-
       name: "Contact Ghar Ka Organic",
-
       description:
         "Contact Ghar Ka Organic for Himalayan homemade pickles, raw forest honey, bilona desi ghee, chutneys and organic food support across India.",
-
       inLanguage: "en-IN",
-
       isPartOf: {
         "@type": "WebSite",
-
         name: "Ghar Ka Organic",
-
         url: BASE_URL,
       },
-
       primaryImageOfPage: {
         "@type": "ImageObject",
         url: OG_IMAGE,
       },
-
       mainEntity: {
         "@id": `${BASE_URL}/#business`,
       },
@@ -62,52 +54,32 @@ const JSONLD = JSON.stringify({
 
     {
       "@id": `${BASE_URL}/#business`,
-
       "@type": ["LocalBusiness", "OnlineStore", "FoodManufacturer"],
-
       name: "Ghar Ka Organic",
-
       image: [OG_IMAGE],
-
       logo: `${BASE_URL}/gharka-logo.png`,
-
       url: BASE_URL,
-
-      telephone: "+91-7983990550",
-
-      email: "gharkaorganic@gmail.com",
-
+      telephone: CONTACT_PHONE,
+      email: CONTACT_EMAIL,
       priceRange: "₹₹",
-
       description:
         "Traditional Himalayan organic food brand from Uttarakhand offering homemade pickles, chutneys, raw forest honey and bilona desi ghee.",
-
       address: {
         "@type": "PostalAddress",
-
         streetAddress: "Ward No. 2, Nalni",
-
         addressLocality: "Nainital",
-
         addressRegion: "Uttarakhand",
-
-        postalCode: "263002",
-
+        postalCode: "263136",
         addressCountry: "IN",
       },
-
       geo: {
         "@type": "GeoCoordinates",
-
         latitude: 29.3459,
-
         longitude: 79.5618,
       },
-
       openingHoursSpecification: [
         {
           "@type": "OpeningHoursSpecification",
-
           dayOfWeek: [
             "Monday",
             "Tuesday",
@@ -116,33 +88,22 @@ const JSONLD = JSON.stringify({
             "Friday",
             "Saturday",
           ],
-
           opens: "10:00",
-
           closes: "19:00",
         },
       ],
-
       areaServed: {
         "@type": "Country",
-
         name: "India",
       },
-
       sameAs: ["https://www.instagram.com/gharkaorganic/"],
-
       contactPoint: {
         "@type": "ContactPoint",
-
-        telephone: "+91-7983990550",
-
+        telephone: CONTACT_PHONE,
         contactType: "customer support",
-
         areaServed: "IN",
-
         availableLanguage: ["English", "Hindi"],
       },
-
       knowsAbout: [
         "Pahadi Pickles",
         "Kumaoni Chutney",
@@ -155,26 +116,48 @@ const JSONLD = JSON.stringify({
 
     {
       "@type": "BreadcrumbList",
-
       itemListElement: [
         {
           "@type": "ListItem",
-
           position: 1,
-
           name: "Home",
-
           item: BASE_URL,
         },
-
         {
           "@type": "ListItem",
-
           position: 2,
-
           name: "Contact",
-
           item: CANONICAL,
+        },
+      ],
+    },
+
+    {
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "How can I contact Ghar Ka Organic?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "You can reach us at +919897447525 (WhatsApp available) or email gharkaorganic@gmail.com. Our customer support team responds within 24 hours.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "What are your working hours?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "We are open Monday to Saturday, 10:00 AM to 7:00 PM IST.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Do you offer bulk orders or wholesale?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Yes, we offer bulk orders and wholesale prices. Contact us for bulk inquiry details and customized packages.",
+          },
         },
       ],
     },
@@ -197,38 +180,25 @@ const ContactUsPage = () => {
 
   const [status, setStatus] = useState("idle");
 
-  /* ─────────────────────────────────────────────
-     HANDLE INPUT
-  ───────────────────────────────────────────── */
-
   const handleChange = (e) => {
     setFormData({
       ...formData,
-
       [e.target.name]: e.target.value,
     });
   };
 
-  /* ─────────────────────────────────────────────
-     HANDLE SUBMIT
-  ───────────────────────────────────────────── */
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setStatus("loading");
 
     try {
       await addDoc(collection(db, "inquiries"), {
         ...formData,
-
         brand: "Ghar Ka Organic",
-
         createdAt: serverTimestamp(),
       });
 
       setStatus("success");
-
       setFormData({
         name: "",
         email: "",
@@ -243,9 +213,7 @@ const ContactUsPage = () => {
       }, 5000);
     } catch (error) {
       console.error(error);
-
       setStatus("error");
-
       setTimeout(() => {
         setStatus("idle");
       }, 5000);
@@ -255,7 +223,6 @@ const ContactUsPage = () => {
   return (
     <div className="min-h-screen bg-white pb-20">
       {/* ───────────────── SEO ───────────────── */}
-
       <Helmet>
         <title>
           Contact Ghar Ka Organic | Himalayan Pickles, Honey & Organic Products
@@ -268,7 +235,7 @@ const ContactUsPage = () => {
 
         <meta
           name="keywords"
-          content="contact Ghar Ka Organic, Himalayan organic products, pahadi pickles, raw honey Uttarakhand, bilona ghee India, organic food support"
+          content="contact Ghar Ka Organic, Himalayan organic products, pahadi pickles, raw honey Uttarakhand, bilona ghee India, organic food support, customer service"
         />
 
         <meta
@@ -277,49 +244,33 @@ const ContactUsPage = () => {
         />
 
         <link rel="canonical" href={CANONICAL} />
-
         <meta name="author" content="Ghar Ka Organic" />
-
         <meta name="geo.region" content="IN-UT" />
-
-        <meta name="geo.placename" content="Bhimtal, Uttarakhand, India" />
-
+        <meta name="geo.placename" content="Nainital, Uttarakhand, India" />
         <meta name="theme-color" content="#ffffff" />
 
         {/* OPEN GRAPH */}
-
         <meta property="og:type" content="website" />
-
         <meta property="og:site_name" content="Ghar Ka Organic" />
-
         <meta property="og:title" content="Contact Ghar Ka Organic" />
-
         <meta
           property="og:description"
           content="Get support for Himalayan homemade pickles, raw honey, bilona desi ghee and organic food products from Uttarakhand."
         />
-
         <meta property="og:url" content={CANONICAL} />
-
         <meta property="og:image" content={OG_IMAGE} />
-
         <meta property="og:locale" content="en_IN" />
 
         {/* TWITTER */}
-
         <meta name="twitter:card" content="summary_large_image" />
-
         <meta name="twitter:title" content="Contact Ghar Ka Organic" />
-
         <meta
           name="twitter:description"
           content="Questions about your order or products? Contact Ghar Ka Organic."
         />
-
         <meta name="twitter:image" content={OG_IMAGE} />
 
         {/* JSON-LD */}
-
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -329,7 +280,6 @@ const ContactUsPage = () => {
       </Helmet>
 
       {/* ───────────────── HERO ───────────────── */}
-
       <section className="relative w-full h-[40vh] md:h-[55vh] overflow-hidden">
         <img
           src={OG_IMAGE}
@@ -355,7 +305,6 @@ const ContactUsPage = () => {
       </section>
 
       {/* ───────────────── HEADER ───────────────── */}
-
       <header className="text-center px-6 pt-16 pb-10">
         <div className="max-w-3xl mx-auto">
           <span className="uppercase tracking-[0.3em] text-xs text-amber-600 font-bold">
@@ -363,7 +312,7 @@ const ContactUsPage = () => {
           </span>
 
           <h2 className="text-3xl md:text-5xl text-gray-900 mt-4 font-light">
-            We’d Love to Hear From You
+            We'd Love to Hear From You
           </h2>
 
           <p className="mt-5 text-gray-600 leading-relaxed">
@@ -375,35 +324,34 @@ const ContactUsPage = () => {
       </header>
 
       {/* ───────────────── MAIN ───────────────── */}
-
       <main className="max-w-6xl mx-auto px-4 md:px-6 py-10">
         <div className="grid lg:grid-cols-2 gap-12">
-          {/* ───────── FORM ───────── */}
-
-          <section>
+          {/* ───────── CONTACT FORM SECTION ───────── */}
+          <section aria-label="Contact form">
             <h2 className="text-2xl font-semibold text-gray-900 mb-6">
               Send a Message
             </h2>
 
-            {/* SUCCESS */}
-
+            {/* SUCCESS MESSAGE */}
             {status === "success" && (
-              <div className="mb-5 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+              <div
+                className="mb-5 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2"
+                role="alert">
                 <Check size={16} />
                 Message sent successfully.
               </div>
             )}
 
-            {/* ERROR */}
-
+            {/* ERROR MESSAGE */}
             {status === "error" && (
-              <div className="mb-5 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              <div
+                className="mb-5 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"
+                role="alert">
                 Something went wrong. Please try again.
               </div>
             )}
 
             {/* FORM */}
-
             <form onSubmit={handleSubmit} className="space-y-4">
               <input
                 type="text"
@@ -413,6 +361,7 @@ const ContactUsPage = () => {
                 onChange={handleChange}
                 placeholder="Full Name"
                 className="w-full border border-gray-200 rounded-lg px-4 py-3 outline-none focus:border-amber-500"
+                aria-label="Full Name"
               />
 
               <input
@@ -423,15 +372,17 @@ const ContactUsPage = () => {
                 onChange={handleChange}
                 placeholder="Email Address"
                 className="w-full border border-gray-200 rounded-lg px-4 py-3 outline-none focus:border-amber-500"
+                aria-label="Email Address"
               />
 
               <input
-                type="text"
+                type="tel"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="Phone Number"
                 className="w-full border border-gray-200 rounded-lg px-4 py-3 outline-none focus:border-amber-500"
+                aria-label="Phone Number"
               />
 
               <input
@@ -441,7 +392,23 @@ const ContactUsPage = () => {
                 onChange={handleChange}
                 placeholder="Order ID (Optional)"
                 className="w-full border border-gray-200 rounded-lg px-4 py-3 outline-none focus:border-amber-500"
+                aria-label="Order ID"
               />
+
+              {/* PROPER SELECT DROPDOWN */}
+              <select
+                name="subject"
+                value={formData.subject}
+                onChange={handleChange}
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 outline-none focus:border-amber-500 bg-white"
+                aria-label="Subject">
+                <option value="General Inquiry">General Inquiry</option>
+                <option value="Product Support">Product Support</option>
+                <option value="Bulk Order">Bulk Order</option>
+                <option value="Partnership">Partnership Inquiry</option>
+                <option value="Order Issue">Order Issue</option>
+                <option value="Quality Feedback">Quality Feedback</option>
+              </select>
 
               <textarea
                 rows={5}
@@ -451,12 +418,13 @@ const ContactUsPage = () => {
                 onChange={handleChange}
                 placeholder="Write your message..."
                 className="w-full border border-gray-200 rounded-lg px-4 py-3 outline-none resize-none focus:border-amber-500"
+                aria-label="Message"
               />
 
               <button
                 type="submit"
                 disabled={status === "loading"}
-                className="bg-black text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-gray-800 transition">
+                className="bg-black text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-gray-800 transition disabled:opacity-50">
                 {status === "loading" ? (
                   <Loader2 className="animate-spin" size={18} />
                 ) : (
@@ -469,9 +437,10 @@ const ContactUsPage = () => {
             </form>
           </section>
 
-          {/* ───────── CONTACT INFO ───────── */}
-
-          <aside className="bg-gray-50 rounded-2xl p-8 space-y-8 border border-gray-100">
+          {/* ───────── CONTACT INFO SECTION ───────── */}
+          <section
+            className="bg-gray-50 rounded-2xl p-8 space-y-8 border border-gray-100"
+            aria-label="Contact information">
             <div>
               <h2 className="text-2xl font-semibold text-gray-900">
                 Contact Information
@@ -483,11 +452,10 @@ const ContactUsPage = () => {
             </div>
 
             {/* ADDRESS */}
-
             <div className="flex items-start gap-4">
-              <MapPin className="text-amber-600 mt-1" size={20} />
+              <MapPin className="text-amber-600 mt-1 flex-shrink-0" size={20} />
 
-              <div>
+              <address className="not-italic">
                 <p className="text-xs uppercase text-gray-500 mb-1">Address</p>
 
                 <p className="text-sm text-gray-700 leading-relaxed">
@@ -497,45 +465,43 @@ const ContactUsPage = () => {
                   <br />
                   India
                 </p>
-              </div>
+              </address>
             </div>
 
             {/* PHONE */}
-
             <div className="flex items-start gap-4">
-              <Phone className="text-amber-600 mt-1" size={20} />
+              <Phone className="text-amber-600 mt-1 flex-shrink-0" size={20} />
 
               <div>
                 <p className="text-xs uppercase text-gray-500 mb-1">Phone</p>
 
                 <a
-                  href="tel:+919897447525"
-                  className="text-sm text-gray-700 hover:text-amber-600">
-                  +91 98974 47525
+                  href={`tel:${CONTACT_PHONE}`}
+                  className="text-sm text-gray-700 hover:text-amber-600 transition">
+                  {CONTACT_PHONE}
                 </a>
+                <p className="text-xs text-gray-500 mt-1">WhatsApp available</p>
               </div>
             </div>
 
             {/* EMAIL */}
-
             <div className="flex items-start gap-4">
-              <Mail className="text-amber-600 mt-1" size={20} />
+              <Mail className="text-amber-600 mt-1 flex-shrink-0" size={20} />
 
               <div>
                 <p className="text-xs uppercase text-gray-500 mb-1">Email</p>
 
                 <a
-                  href="mailto:gharkaorganic@gmail.com"
-                  className="text-sm text-gray-700 hover:text-amber-600">
-                  gharkaorganic@gmail.com
+                  href={`mailto:${CONTACT_EMAIL}`}
+                  className="text-sm text-gray-700 hover:text-amber-600 transition">
+                  {CONTACT_EMAIL}
                 </a>
               </div>
             </div>
 
             {/* HOURS */}
-
             <div className="flex items-start gap-4">
-              <Clock className="text-amber-600 mt-1" size={20} />
+              <Clock className="text-amber-600 mt-1 flex-shrink-0" size={20} />
 
               <div>
                 <p className="text-xs uppercase text-gray-500 mb-1">
@@ -545,15 +511,17 @@ const ContactUsPage = () => {
                 <p className="text-sm text-gray-700">
                   Monday – Saturday
                   <br />
-                  10:00 AM – 7:00 PM
+                  10:00 AM – 7:00 PM IST
                 </p>
               </div>
             </div>
 
             {/* INSTAGRAM */}
-
             <div className="flex items-start gap-4">
-              <Instagram className="text-amber-600 mt-1" size={20} />
+              <Instagram
+                className="text-amber-600 mt-1 flex-shrink-0"
+                size={20}
+              />
 
               <div>
                 <p className="text-xs uppercase text-gray-500 mb-1">
@@ -563,15 +531,14 @@ const ContactUsPage = () => {
                 <a
                   href="https://instagram.com/gharkaorganic"
                   target="_blank"
-                  rel="noreferrer"
-                  className="text-sm text-gray-700 hover:text-amber-600">
+                  rel="noopener noreferrer"
+                  className="text-sm text-gray-700 hover:text-amber-600 transition">
                   @gharkaorganic
                 </a>
               </div>
             </div>
 
             {/* SEO TEXT */}
-
             <div className="pt-6 border-t border-gray-200">
               <p className="text-sm text-gray-600 leading-relaxed">
                 Ghar Ka Organic is an Uttarakhand-based Himalayan organic food
@@ -580,45 +547,60 @@ const ContactUsPage = () => {
                 across India.
               </p>
             </div>
-          </aside>
+          </section>
         </div>
 
-        {/* ───────────────── INTERNAL LINKS ───────────────── */}
-
-        <section className="mt-16 pt-10 border-t border-gray-200">
+        {/* ───────────────── INTERNAL LINKS SECTION ───────────────── */}
+        <section
+          className="mt-16 pt-10 border-t border-gray-200"
+          aria-label="Related products">
           <h3 className="text-lg font-semibold text-gray-900 mb-5">
-            Explore Products
+            Explore Our Products
           </h3>
 
-          <div className="flex flex-wrap gap-4 text-sm">
+          <nav className="flex flex-wrap gap-4 text-sm">
             <a
-              href="/collections/all"
-              className="text-amber-700 hover:underline">
+              href="/all-products"
+              className="text-amber-700 hover:underline"
+              title="View all Himalayan organic products">
               Himalayan Organic Products
             </a>
 
             <a
+              href="/shop/best-sellers"
+              className="text-amber-700 hover:underline"
+              title="Shop best-selling pickles and organic items">
+              Best Sellers
+            </a>
+
+            <a
               href="/buy-mango-pickle-online"
-              className="text-amber-700 hover:underline">
+              className="text-amber-700 hover:underline"
+              title="Buy homemade mango pickle online">
               Homemade Mango Pickle
             </a>
 
-            <a href="/organic-honey" className="text-amber-700 hover:underline">
+            <a
+              href="/organic-honey"
+              className="text-amber-700 hover:underline"
+              title="Buy raw forest honey from Uttarakhand">
               Raw Forest Honey
             </a>
 
             <a
               href="/buy-desi-ghee-online"
-              className="text-amber-700 hover:underline">
+              className="text-amber-700 hover:underline"
+              title="Order bilona desi ghee online">
               Bilona Desi Ghee
             </a>
 
             <a
               href="/pahadi-achar-online"
-              className="text-amber-700 hover:underline">
+              className="text-amber-700 hover:underline"
+              title="Buy authentic pahadi pickles">
               Pahadi Pickles
             </a>
-          </div>
+          </nav>
         </section>
       </main>
     </div>

@@ -25,11 +25,11 @@ const sitemapLinks = [
   },
   {
     name: "Our Story",
-    url: "https://gharkaorganic.com/pages/our-story",
+    url: "https://gharkaorganic.com/our-story",
   },
   {
     name: "Contact",
-    url: "https://gharkaorganic.com/pages/contact",
+    url: "https://gharkaorganic.com/contact",
   },
 ];
 

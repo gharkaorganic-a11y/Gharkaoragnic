@@ -18,7 +18,8 @@ const ACCENT = "#F59E0B";
 const YELLOW_BANNER = "#FDE047";
 const SITE_URL = "https://gharkaorganic.com";
 const LOGO_URL = "https://gharkaorganic.com/logo/gharka-logo.png";
-const ABOUT_URL = "https://gharkaorganic.com/pages/our-story";
+const ABOUT_URL = "https://gharkaorganic.com/our-story";
+const AUTHOR_PAGE = "https://gharkaorganic.com/pages/authors";
 
 const formatDate = (dateStr) =>
   new Date(dateStr).toLocaleDateString("en-US", {
@@ -27,7 +28,6 @@ const formatDate = (dateStr) =>
     year: "numeric",
   });
 
-// Helper for reading time schema
 const getReadTimeSchema = (readTimeStr) => {
   const minutes = parseInt(readTimeStr?.match(/\d+/)?.[0]) || 5;
   return `PT${minutes}M`;
@@ -39,9 +39,9 @@ const BlogDetailPage = () => {
   const blog = getBlogBySlug(slug);
   const recentArticles = getRecentBlogs(slug, 4);
 
-  // Memoize schemas for performance
+  // Memoize schemas with proper @graph structure
   const schemas = useMemo(() => {
-    if (!blog) return [];
+    if (!blog) return null;
 
     const canonicalUrl = `${SITE_URL}/blogs/${slug}`;
     const featuredImage = blog.image.startsWith("http")
@@ -51,88 +51,141 @@ const BlogDetailPage = () => {
     const keywords = blog.tags?.join(", ");
     const readTimeDuration = getReadTimeSchema(blog.read_time);
 
-    const articleSchema = {
+    return {
       "@context": "https://schema.org",
-      "@type": "BlogPosting",
-      mainEntityOfPage: {
-        "@type": "WebPage",
-        "@id": canonicalUrl,
-      },
-      headline: blog.title,
-      description: seoDescription,
-      image: {
-        "@type": "ImageObject",
-        url: featuredImage,
-        width: 1200,
-        height: 630,
-      },
-      datePublished: blog.date,
-      dateModified: blog.updated_at || blog.date,
-      author: {
-        "@type": "Person",
-        name: blog.author,
-        url: ABOUT_URL,
-      },
-      publisher: {
-        "@type": "Organization",
-        name: "Ghar Ka Organic",
-        logo: {
-          "@type": "ImageObject",
-          url: LOGO_URL,
+      "@graph": [
+        {
+          "@type": "BlogPosting",
+          "@id": `${canonicalUrl}#article`,
+          mainEntityOfPage: {
+            "@type": "WebPage",
+            "@id": canonicalUrl,
+          },
+          headline: blog.title,
+          description: seoDescription,
+          image: {
+            "@type": "ImageObject",
+            url: featuredImage,
+            width: 1200,
+            height: 630,
+            caption: blog.image_alt || blog.title,
+          },
+          datePublished: blog.date,
+          dateModified: blog.updated_at || blog.date,
+          author: {
+            "@type": "Person",
+            name: blog.author || "Ghar Ka Organic Team",
+            url: `${AUTHOR_PAGE}/${blog.author?.toLowerCase().replace(/\s+/g, "-")}`,
+          },
+          publisher: {
+            "@type": "Organization",
+            name: "Ghar Ka Organic",
+            logo: {
+              "@type": "ImageObject",
+              url: LOGO_URL,
+              width: 600,
+              height: 240,
+            },
+            url: SITE_URL,
+          },
+          articleSection: blog.category || "Organic Lifestyle",
+          keywords: keywords,
+          wordCount: blog.word_count || 1200,
+          timeRequired: readTimeDuration,
+          inLanguage: "en-IN",
+          isAccessibleForFree: true,
+          speakable: {
+            "@type": "SpeakableSpecification",
+            cssSelector: ["h1", ".blog-content p:first-of-type"],
+          },
+          hasPart: {
+            "@type": "WebPageElement",
+            isAccessibleForFree: true,
+          },
         },
-        url: SITE_URL,
-      },
-      articleSection: blog.category,
-      keywords: keywords,
-      wordCount: blog.word_count || 1200,
-      timeRequired: readTimeDuration,
-      inLanguage: "en",
-      isAccessibleForFree: true,
-      speakable: {
-        "@type": "SpeakableSpecification",
-        cssSelector: ["h1", ".blog-content p:first-of-type"],
-      },
-    };
 
-    const breadcrumbSchema = {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
         {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: SITE_URL,
+          "@type": "NewsArticle",
+          "@id": `${canonicalUrl}#news`,
+          headline: blog.title,
+          description: seoDescription,
+          image: featuredImage,
+          datePublished: blog.date,
+          dateModified: blog.updated_at || blog.date,
+          author: {
+            "@type": "Organization",
+            name: "Ghar Ka Organic",
+            url: SITE_URL,
+          },
+          bylineauthor: blog.author || "Ghar Ka Organic",
         },
+
         {
-          "@type": "ListItem",
-          position: 2,
-          name: "Blogs",
-          item: `${SITE_URL}/blogs`,
+          "@type": "BreadcrumbList",
+          "@id": `${canonicalUrl}#breadcrumb`,
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: SITE_URL,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Blogs",
+              item: `${SITE_URL}/blogs`,
+            },
+            {
+              "@type": "ListItem",
+              position: 3,
+              name: blog.category || "Article",
+              item: `${SITE_URL}/blogs?category=${encodeURIComponent(blog.category || "")}`,
+            },
+            {
+              "@type": "ListItem",
+              position: 4,
+              name: blog.title,
+              item: canonicalUrl,
+            },
+          ],
         },
+
         {
-          "@type": "ListItem",
-          position: 3,
-          name: blog.title,
-          item: canonicalUrl,
+          "@type": "Organization",
+          "@id": `${SITE_URL}/#organization`,
+          name: "Ghar Ka Organic",
+          url: SITE_URL,
+          logo: LOGO_URL,
+          description:
+            "Pure, natural, and organic products from Uttarakhand delivered across India.",
+          sameAs: [
+            "https://facebook.com/gharkaorganic",
+            "https://instagram.com/gharkaorganic",
+            "https://twitter.com/gharkaorganic",
+          ],
+          contactPoint: {
+            "@type": "ContactPoint",
+            contactType: "Customer Support",
+            telephone: "+91-9897447525",
+            email: "gharkaorganic@gmail.com",
+          },
+        },
+
+        {
+          "@type": "CollectionPage",
+          "@id": `${SITE_URL}/blogs#collection`,
+          name: "Ghar Ka Organic Blog",
+          description:
+            "Read latest articles about organic living, Himalayan products, and traditional food wisdom.",
+          mainEntity: {
+            "@type": "Blog",
+            name: "Ghar Ka Organic Blog",
+            url: `${SITE_URL}/blogs`,
+          },
         },
       ],
     };
-
-    const organizationSchema = {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      name: "Ghar Ka Organic",
-      url: SITE_URL,
-      logo: LOGO_URL,
-      sameAs: [
-        // Add your social profiles here
-        "https://facebook.com/gharkaorganic",
-        "https://instagram.com/gharkaorganic",
-      ],
-    };
-
-    return [articleSchema, breadcrumbSchema, organizationSchema];
   }, [blog, slug]);
 
   // Not found handling
@@ -158,13 +211,19 @@ const BlogDetailPage = () => {
   }
 
   const canonicalUrl = `${SITE_URL}/blogs/${slug}`;
-  const seoTitle = blog.meta_title || `${blog.title} | Ghar Ka Organic`;
+  const seoTitle = blog.meta_title || `${blog.title} | Ghar Ka Organic Blog`;
   const seoDescription = blog.seo_description || blog.excerpt;
   const keywords = blog.tags?.join(", ");
   const featuredImage = blog.image.startsWith("http")
     ? blog.image
     : `${SITE_URL}${blog.image}`;
   const blogImageAlt = blog.image_alt || blog.title;
+
+  // Get WebP image safely
+  const getWebPImage = (imgUrl) => {
+    if (!imgUrl) return null;
+    return imgUrl.replace(/\.(jpg|jpeg|png)$/i, ".webp");
+  };
 
   // Share URLs
   const shareUrl = encodeURIComponent(canonicalUrl);
@@ -177,12 +236,19 @@ const BlogDetailPage = () => {
         <title>{seoTitle}</title>
         <meta name="description" content={seoDescription} />
         <meta name="keywords" content={keywords} />
-        <meta name="robots" content="index, follow, max-image-preview:large" />
+        <meta
+          name="robots"
+          content="index, follow, max-image-preview:large, max-snippet:-1"
+        />
         <link rel="canonical" href={canonicalUrl} />
+        <meta name="author" content={blog.author || "Ghar Ka Organic"} />
+        <meta name="language" content="English" />
+        <meta name="revisit-after" content="7 days" />
 
         {/* Performance hints */}
         <link rel="preload" as="image" href={featuredImage} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
 
         {/* Open Graph */}
         <meta property="og:type" content="article" />
@@ -194,7 +260,7 @@ const BlogDetailPage = () => {
         <meta property="og:image:alt" content={blogImageAlt} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:site_name" content="Ghar Ka Organic" />
-        <meta property="og:locale" content="en_US" />
+        <meta property="og:locale" content="en_IN" />
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
@@ -202,6 +268,7 @@ const BlogDetailPage = () => {
         <meta name="twitter:description" content={seoDescription} />
         <meta name="twitter:image" content={featuredImage} />
         <meta name="twitter:image:alt" content={blogImageAlt} />
+        <meta name="twitter:site" content="@gharkaorganic" />
 
         {/* Article meta */}
         <meta property="article:published_time" content={blog.date} />
@@ -215,8 +282,10 @@ const BlogDetailPage = () => {
           <meta key={tag} property="article:tag" content={tag} />
         ))}
 
-        {/* JSON-LD */}
-        <script type="application/ld+json">{JSON.stringify(schemas)}</script>
+        {/* JSON-LD with proper @graph structure */}
+        {schemas && (
+          <script type="application/ld+json">{JSON.stringify(schemas)}</script>
+        )}
       </Helmet>
 
       {/* Skip to content link for accessibility */}
@@ -243,6 +312,14 @@ const BlogDetailPage = () => {
                 </Link>
               </li>
               <li>/</li>
+              <li>
+                <Link
+                  to={`/blogs?category=${encodeURIComponent(blog.category || "")}`}
+                  className="hover:text-black transition">
+                  {blog.category}
+                </Link>
+              </li>
+              <li>/</li>
               <li className="text-gray-900 truncate" aria-current="page">
                 {blog.title}
               </li>
@@ -266,7 +343,7 @@ const BlogDetailPage = () => {
                 {blog.title}
               </h1>
 
-              {/* Meta info with author link */}
+              {/* Meta info */}
               <div className="flex flex-wrap items-center gap-5 text-sm text-gray-500 border-b border-gray-200 pb-6 mb-8">
                 <span className="flex items-center gap-2">
                   <CalendarDays size={16} />
@@ -275,6 +352,14 @@ const BlogDetailPage = () => {
                 <span className="flex items-center gap-2">
                   <Clock3 size={16} />
                   <span>{blog.read_time}</span>
+                </span>
+                <span className="text-gray-600">
+                  By{" "}
+                  <a
+                    href={`${AUTHOR_PAGE}/${blog.author?.toLowerCase().replace(/\s+/g, "-")}`}
+                    className="font-semibold hover:text-amber-600 transition">
+                    {blog.author || "Ghar Ka Organic"}
+                  </a>
                 </span>
               </div>
 
@@ -289,13 +374,15 @@ const BlogDetailPage = () => {
                 </div>
               )}
 
-              {/* Feature Image with WebP support to prevent CLS */}
+              {/* Feature Image with WebP support */}
               <div className="overflow-hidden rounded-2xl shadow-sm">
                 <picture>
-                  <source
-                    srcSet={featuredImage.replace(/\.(jpg|png)$/, ".webp")}
-                    type="image/webp"
-                  />
+                  {getWebPImage(featuredImage) && (
+                    <source
+                      srcSet={getWebPImage(featuredImage)}
+                      type="image/webp"
+                    />
+                  )}
                   <img
                     src={featuredImage}
                     alt={blogImageAlt}
@@ -345,11 +432,14 @@ const BlogDetailPage = () => {
                 <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
                   <Share2 size={18} /> Share this article
                 </h3>
-                <div className="flex gap-3">
+                <div
+                  className="flex gap-3"
+                  itemScope
+                  itemType="https://schema.org/ShareAction">
                   <a
                     href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener noreferrer nofollow"
                     className="p-2 bg-gray-100 rounded-full hover:bg-blue-100 transition"
                     aria-label="Share on Facebook">
                     <Facebook size={20} />
@@ -357,7 +447,7 @@ const BlogDetailPage = () => {
                   <a
                     href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareText}`}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener noreferrer nofollow"
                     className="p-2 bg-gray-100 rounded-full hover:bg-sky-100 transition"
                     aria-label="Share on Twitter">
                     <Twitter size={20} />
@@ -365,7 +455,7 @@ const BlogDetailPage = () => {
                   <a
                     href={`https://www.linkedin.com/shareArticle?mini=true&url=${shareUrl}`}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener noreferrer nofollow"
                     className="p-2 bg-gray-100 rounded-full hover:bg-blue-100 transition"
                     aria-label="Share on LinkedIn">
                     <Linkedin size={20} />
