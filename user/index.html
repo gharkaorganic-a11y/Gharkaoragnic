@@ -493,5 +493,21 @@
     <!-- └─────────────────────────────────────────────────────────────┘ -->
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- ✅ Google Customer Reviews Badge -->
+    <script>
+      function initMerchantWidget() {
+        if (window.merchantwidget) {
+          window.merchantwidget.start({
+            merchant_id: 5804288024,
+            position: "BOTTOM_LEFT",
+            region: "IN",
+          });
+        }
+      }
+    </script>
+    <script
+      src="https://www.gstatic.com/shopping/merchant/merchantwidget.js"
+      onload="initMerchantWidget()"></script>
   </body>
 </html>
