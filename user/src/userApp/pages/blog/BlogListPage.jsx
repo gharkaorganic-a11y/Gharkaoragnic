@@ -12,7 +12,8 @@ import {
 const ACCENT = "#F59E0B";
 const SITE_URL = "https://gharkaorganic.com";
 const LOGO_URL = "https://gharkaorganic.com/logo/gharka-logo.png";
-
+const DEFAULT_BLOG_IMAGE =
+  "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776768403/Local_women_in_Bhimtal_Uttarakhand_preparing_traditional_Himalayan_organic_food_tbpvgk.webp";
 const formatDate = (dateStr) =>
   new Date(dateStr).toLocaleDateString("en-IN", {
     month: "long",
@@ -273,28 +274,31 @@ const BlogListPage = () => {
       <main id="main-content" className="bg-white min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
           {/* Page Header */}
-          <div className="mb-8 text-center lg:text-left">
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
-              {selectedCategory
-                ? `${selectedCategory} Articles`
-                : debouncedSearch
-                  ? `Search: "${debouncedSearch}"`
-                  : "Organic Food Blogs & Recipes"}
-            </h1>
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-1 h-8 rounded-full bg-amber-500"></div>
+
+              <div>
+                <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-amber-600">
+                  Organic Knowledge Hub
+                </span>
+
+                <h1 className="font-heading text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
+                  {selectedCategory
+                    ? `${selectedCategory} Articles`
+                    : debouncedSearch
+                      ? "Search Results"
+                      : "Ghar Ka Organic Blogs"}
+                </h1>
+              </div>
+            </div>
+
             {!selectedCategory && !debouncedSearch && (
-              <p className="text-gray-600 max-w-2xl lg:mx-0 mx-auto">
-                100+ authentic articles on pahadi recipes, A2 ghee benefits,
-                sustainable farming, and healthy living from the hills of
-                Uttarakhand.
+              <p className="max-w-2xl text-sm md:text-base text-gray-600 leading-relaxed">
+                Discover authentic Himalayan ingredients, traditional
+                Uttarakhand foods, organic farming wisdom, health benefits,
+                recipes, and stories from the mountains.
               </p>
-            )}
-            {isFiltered && (
-              <button
-                onClick={clearFilters}
-                className="inline-flex items-center gap-2 mt-3 text-sm text-amber-600 hover:text-amber-700"
-                aria-label="Clear all filters">
-                <X size={14} /> Clear filters
-              </button>
             )}
           </div>
 
@@ -323,69 +327,139 @@ const BlogListPage = () => {
             <div className="lg:col-span-8">
               {/* Featured Post - Only show when no filters */}
               {!isFiltered && featuredPost && (
-                <article className="mb-12 bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
-                  <div className="relative">
-                    <div className="absolute top-4 left-4 z-10">
-                      <span className="inline-flex px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-amber-500 text-white">
-                        Featured
+                <section className="mb-10">
+                  {/* Section Header */}
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="w-1 h-6 rounded-full bg-amber-500"></div>
+
+                    <div>
+                      <span className="block text-[10px] uppercase tracking-[0.18em] font-semibold text-amber-600">
+                        Editor's Picks
                       </span>
+
+                      <h2 className="text-lg md:text-xl font-bold text-gray-900">
+                        Featured Articles
+                      </h2>
                     </div>
-                    <Link to={`/blogs/${featuredPost.slug}`}>
-                      <picture>
-                        <source
-                          srcSet={featuredPost.image.replace(
-                            /\.(jpg|png)$/,
-                            ".webp",
-                          )}
-                          type="image/webp"
-                        />
-                        <img
-                          src={featuredPost.image}
-                          alt={featuredPost.title}
-                          loading="eager"
-                          fetchpriority="high"
-                          width="800"
-                          height="400"
-                          className="w-full h-64 sm:h-80 object-cover"
-                          style={{ aspectRatio: "800/400" }}
-                        />
-                      </picture>
-                    </Link>
                   </div>
 
-                  <div className="p-6 sm:p-8">
-                    <span className="inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 mb-4">
-                      {featuredPost.category}
-                    </span>
+                  {/* Featured Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {allBlogs
+                      .filter((blog) => blog.featured)
+                      .slice(0, 2)
+                      .map((post) => (
+                        <article
+                          key={post.slug}
+                          className="
+                group
+                bg-white
+                rounded-2xl
+                overflow-hidden
+                border border-amber-100
+                hover:border-amber-300
+                hover:shadow-xl
+                hover:-translate-y-1
+                transition-all duration-300
+              ">
+                          {/* Image */}
+                          <Link
+                            to={`/blogs/${post.slug}`}
+                            className="relative block overflow-hidden">
+                            <img
+                              src={post.image || DEFAULT_BLOG_IMAGE}
+                              alt={post.title}
+                              onError={(e) => {
+                                e.currentTarget.onerror = null;
+                                e.currentTarget.src = DEFAULT_BLOG_IMAGE;
+                              }}
+                              className="
+    w-full
+    h-48
+    sm:h-56
+    md:h-auto
+    md:aspect-[16/10]
+    object-cover
+    group-hover:scale-105
+    transition-transform duration-700
+  "
+                            />
 
-                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
-                      <Link
-                        to={`/blogs/${featuredPost.slug}`}
-                        className="hover:text-amber-600 transition">
-                        {featuredPost.title}
-                      </Link>
-                    </h2>
+                            <span
+                              className="
+                  absolute top-3 left-3
+                  bg-white/90 backdrop-blur-sm
+                  px-2.5 py-1
+                  rounded-full
+                  text-[10px]
+                  font-bold
+                  text-amber-700
+                  shadow-sm
+                ">
+                              Featured
+                            </span>
+                          </Link>
 
-                    <p className="text-gray-600 leading-relaxed mb-4">
-                      {featuredPost.excerpt}
-                    </p>
+                          {/* Content */}
+                          <div className="p-4 md:p-5 flex flex-col h-full">
+                            {" "}
+                            <span
+                              className="
+                    inline-flex
+                    px-2.5 py-1
+                    rounded-full
+                    text-[11px]
+                    font-semibold
+                    bg-gradient-to-r
+                    from-amber-100
+                    to-orange-100
+                    text-amber-800
+                    mb-2
+                  ">
+                              {post.category}
+                            </span>
+                            <h3
+                              className="
+    text-sm
+    sm:text-base
+    md:text-lg
+    font-bold
+    text-gray-900
+    leading-6
+    line-clamp-2
+    break-words
+    mb-2
+  ">
+                              <Link
+                                to={`/blogs/${post.slug}`}
+                                className="hover:text-amber-600 transition-colors">
+                                {post.title}
+                              </Link>
+                            </h3>
+                            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed line-clamp-2 mb-4">
+                              {post.excerpt}
+                            </p>
+                            <div className="flex items-center justify-between text-xs border-t border-gray-100 pt-3">
+                              <time className="text-gray-400">
+                                {formatDate(post.date)}
+                              </time>
 
-                    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-5">
-                      <span className="flex items-center gap-1.5">
-                        <Calendar size={14} />
-                        <time dateTime={featuredPost.date}>
-                          {formatDate(featuredPost.date)}
-                        </time>
-                      </span>
-                    </div>
-
-                    <Link
-                      to={`/blogs/${featuredPost.slug}`}
-                      className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-5 py-2.5 rounded-lg transition">
-                      Read Full Article <ArrowRight size={16} />
-                    </Link>
+                              <Link
+                                to={`/blogs/${post.slug}`}
+                                className="
+                      font-semibold
+                      text-amber-600
+                      hover:text-amber-700
+                      transition-colors
+                    ">
+                                Read →
+                              </Link>
+                            </div>
+                          </div>
+                        </article>
+                      ))}
                   </div>
-                </article>
+                </section>
               )}
 
               {/* Blog Grid Header */}
@@ -404,7 +478,19 @@ const BlogListPage = () => {
                     {paginatedBlogs.map((post) => (
                       <article
                         key={post.slug}
-                        className="group bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow">
+                        className="
+    group
+    flex flex-col
+    h-full
+    bg-white
+    rounded-2xl
+    overflow-hidden
+    border border-amber-100
+    hover:border-amber-300
+    hover:shadow-xl
+    hover:-translate-y-1
+    transition-all duration-300
+  ">
                         <Link to={`/blogs/${post.slug}`}>
                           <picture>
                             <source
@@ -415,12 +501,23 @@ const BlogListPage = () => {
                               type="image/webp"
                             />
                             <img
-                              src={post.image}
+                              src={post.image || DEFAULT_BLOG_IMAGE}
                               alt={post.title}
                               loading="lazy"
                               width="400"
                               height="240"
-                              className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                              onError={(e) => {
+                                e.currentTarget.onerror = null;
+                                e.currentTarget.src = DEFAULT_BLOG_IMAGE;
+                              }}
+                              className="
+    w-full
+    h-48
+    object-cover
+    group-hover:scale-105
+    transition-transform
+    duration-300
+  "
                               style={{ aspectRatio: "400/240" }}
                             />
                           </picture>
@@ -527,62 +624,24 @@ const BlogListPage = () => {
 
             {/* Sidebar */}
             <aside className="lg:col-span-4">
-              <div className="sticky top-24 space-y-6">
-                {/* Categories Widget */}
-                <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-amber-200 inline-block">
-                    Categories
-                  </h3>
-                  <nav aria-label="Blog categories" className="space-y-1">
-                    <button
-                      onClick={() => setSelectedCategory(null)}
-                      className={`w-full text-left px-3 py-2 rounded-lg flex justify-between items-center transition ${
-                        selectedCategory === null
-                          ? "bg-amber-50 text-amber-600 font-semibold"
-                          : "text-gray-700 hover:bg-gray-50"
-                      }`}
-                      aria-label="Show all articles">
-                      <span>All Articles</span>
-                      <span className="text-xs text-gray-400">
-                        {allBlogs.length}
-                      </span>
-                    </button>
-                    {categories.map((cat) => (
-                      <button
-                        key={cat}
-                        onClick={() => setSelectedCategory(cat)}
-                        className={`w-full text-left px-3 py-2 rounded-lg flex justify-between items-center transition ${
-                          selectedCategory === cat
-                            ? "bg-amber-50 text-amber-600 font-semibold"
-                            : "text-gray-700 hover:bg-gray-50"
-                        }`}
-                        aria-label={`Filter by ${cat}`}>
-                        <span>{cat}</span>
-                        <span className="text-xs text-gray-400">
-                          {getBlogsByCategory(cat).length}
-                        </span>
-                      </button>
-                    ))}
-                  </nav>
-                </div>
-
-                {/* Recent Posts Widget */}
-                <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-amber-200 inline-block">
+              <div className="sticky top-24 space-y-8">
+                {/* Recent Posts */}
+                <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+                  <h3 className="font-heading text-xl font-bold text-gray-900 mb-5">
                     Recent Posts
                   </h3>
-                  <div className="space-y-4">
+
+                  <div className="space-y-3">
                     {filteredBlogs.slice(0, 5).map((post) => (
                       <Link
                         key={post.slug}
                         to={`/blogs/${post.slug}`}
-                        className="group block">
-                        <h4 className="font-semibold text-gray-800 group-hover:text-amber-600 transition line-clamp-2 text-sm">
+                        className="block p-3 rounded-xl hover:bg-amber-50 transition">
+                        <h4 className="font-semibold text-sm text-gray-800 line-clamp-2">
                           {post.title}
                         </h4>
-                        <time
-                          dateTime={post.date}
-                          className="text-xs text-gray-400 mt-1 block">
+
+                        <time className="text-xs text-gray-400 mt-2 block">
                           {formatDate(post.date)}
                         </time>
                       </Link>
@@ -590,27 +649,50 @@ const BlogListPage = () => {
                   </div>
                 </div>
 
-                {/* About Widget */}
-                <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-5 border border-amber-100">
+                {/* Popular Articles */}
+                <div className="bg-gradient-to-br from-white to-amber-50 rounded-2xl border border-amber-100 p-6">
+                  <h3 className="font-heading text-xl font-bold text-gray-900 mb-5">
+                    Popular Articles
+                  </h3>
+
+                  <ul className="space-y-4">
+                    {allBlogs.slice(0, 4).map((blog, i) => (
+                      <li key={blog.slug} className="flex gap-3">
+                        <span className="text-amber-500 font-bold">
+                          0{i + 1}
+                        </span>
+
+                        <Link
+                          to={`/blogs/${blog.slug}`}
+                          className="text-sm font-medium text-gray-700 hover:text-amber-600">
+                          {blog.title}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* About */}
+                <div className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 rounded-2xl p-7 border border-amber-100">
                   <img
                     src={LOGO_URL}
-                    alt="Ghar Ka Organic Logo"
-                    width="120"
-                    height="48"
-                    className="mb-3"
+                    alt="Ghar Ka Organic"
+                    className="w-32 mb-5"
                   />
-                  <h3 className="font-bold text-gray-900 mb-2">
+
+                  <h3 className="font-heading text-xl font-bold text-gray-900 mb-3">
                     About Ghar Ka Organic
                   </h3>
-                  <p className="text-sm text-gray-600 leading-relaxed mb-3">
+
+                  <p className="text-sm text-gray-600 leading-relaxed mb-5">
                     Pure, natural, and organic products sourced directly from
-                    Himalayan farms. Rooted in tradition, made for modern
-                    living.
+                    Himalayan farms.
                   </p>
+
                   <Link
                     to="/our-story"
-                    className="text-amber-600 text-sm font-semibold hover:underline inline-flex items-center gap-1">
-                    Read our story →
+                    className="inline-flex items-center px-5 py-3 bg-amber-500 text-white rounded-xl font-semibold hover:bg-amber-600 transition">
+                    Read Our Story
                   </Link>
                 </div>
               </div>

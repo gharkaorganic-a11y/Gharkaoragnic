@@ -494,20 +494,45 @@
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
 
-    <!-- ✅ Google Customer Reviews Badge -->
-    <script>
-      function initMerchantWidget() {
-        if (window.merchantwidget) {
-          window.merchantwidget.start({
-            merchant_id: 5804288024,
-            position: "BOTTOM_LEFT",
-            region: "IN",
-          });
-        }
-      }
-    </script>
     <script
+      id="merchantWidgetScript"
       src="https://www.gstatic.com/shopping/merchant/merchantwidget.js"
-      onload="initMerchantWidget()"></script>
+      defer></script>
+
+    <script>
+      merchantWidgetScript.addEventListener("load", function () {
+        merchantwidget.start({
+          // REQUIRED FIELDS
+          merchant_id: 5803870981,
+
+          // OPTIONAL FIELDS
+          position: "BOTTOM_LEFT", // ✅ Actual value
+          region: "IN",
+        });
+      });
+    </script>
+
+    <script
+      src="https://apis.google.com/js/platform.js?onload=renderOptIn"
+      async
+      defer></script>
+
+    <script>
+      window.renderOptIn = function () {
+        window.gapi.load("surveyoptin", function () {
+          window.gapi.surveyoptin.render({
+            // REQUIRED FIELDS
+            merchant_id: 5803870981,
+            order_id: "ORDER_ID",
+            email: "CUSTOMER_EMAIL",
+            delivery_country: "COUNTRY_CODE",
+            estimated_delivery_date: "YYYY-MM-DD",
+
+            // OPTIONAL FIELDS
+            products: [{ gtin: "GTIN1" }, { gtin: "GTIN2" }],
+          });
+        });
+      };
+    </script>
   </body>
 </html>
