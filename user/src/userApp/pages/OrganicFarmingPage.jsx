@@ -303,7 +303,7 @@ const SCHEMA = {
 
 const Breadcrumb = () => (
   <nav aria-label="Breadcrumb" className="mb-8">
-    <ol className="flex items-center gap-2 text-sm text-stone-500 font-['Lato',sans-serif]">
+    <ol className="flex items-center gap-2 text-sm text-stone-500 font-sans">
       <li>
         <Link to="/" className="hover:text-amber-700 transition-colors">
           Home
@@ -318,7 +318,7 @@ const Breadcrumb = () => (
 );
 
 const SectionLabel = ({ children }) => (
-  <span className="inline-block text-xs tracking-[0.2em] uppercase text-amber-700 font-semibold font-['Lato',sans-serif] mb-3">
+  <span className="inline-block text-xs tracking-[0.2em] uppercase text-amber-700 font-semibold font-sans mb-3">
     {children}
   </span>
 );
@@ -334,7 +334,7 @@ const OrganicFarmingPage = () => {
         schema={SCHEMA}
       />
 
-      <main className="bg-[#faf8f4] text-stone-800 font-['Lato',sans-serif]">
+      <main className="bg-[#faf8f4] text-stone-800 font-sans">
         {/* ── Hero ──────────────────────────────────────────────────────── */}
         <section className="relative overflow-hidden bg-[#1c1a16] text-white">
           {/* Decorative grain overlay */}
@@ -350,7 +350,7 @@ const OrganicFarmingPage = () => {
           <div className="relative max-w-6xl mx-auto px-6 py-24 md:py-36 grid md:grid-cols-2 gap-12 items-center">
             <div>
               <SectionLabel>Uttarakhand · Kumaon Hills · 1800m+</SectionLabel>
-              <h1 className="font-['Playfair_Display',serif] text-4xl md:text-6xl font-bold leading-[1.1] mb-6 text-white">
+              <h1 className="font-sans text-4xl md:text-6xl font-bold leading-[1.1] mb-6 text-white">
                 Grown where the
                 <br />
                 <span className="text-amber-400">Himalayas breathe.</span>
@@ -394,7 +394,7 @@ const OrganicFarmingPage = () => {
                 <div
                   key={s.label}
                   className="border border-stone-700 rounded-2xl p-5 bg-stone-900/50">
-                  <div className="font-['Playfair_Display',serif] text-3xl font-bold text-amber-400 mb-1">
+                  <div className="font-sans text-3xl font-bold text-amber-400 mb-1">
                     {s.num}
                   </div>
                   <div className="text-stone-400 text-sm leading-snug">
@@ -411,7 +411,7 @@ const OrganicFarmingPage = () => {
           <Breadcrumb />
           <div className="max-w-2xl">
             <SectionLabel>Why it matters</SectionLabel>
-            <h2 className="font-['Playfair_Display',serif] text-3xl md:text-4xl font-bold text-stone-900 leading-tight mb-5">
+            <h2 className="font-sans text-3xl md:text-4xl font-bold text-stone-900 leading-tight mb-5">
               Organic farming in Uttarakhand isn't a trend.
               <br />
               It's how we've always farmed.
@@ -433,7 +433,7 @@ const OrganicFarmingPage = () => {
           <SectionLabel>Our farming practices</SectionLabel>
           <h2
             id="practices-heading"
-            className="font-['Playfair_Display',serif] text-3xl font-bold text-stone-900 mb-10">
+            className="font-sans text-3xl font-bold text-stone-900 mb-10">
             Six things we never compromise on
           </h2>
 
@@ -443,7 +443,7 @@ const OrganicFarmingPage = () => {
                 key={p.title}
                 className="bg-white border border-stone-100 rounded-2xl p-6 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
                 <div className="text-amber-600 mb-4">{p.icon}</div>
-                <h3 className="font-['Playfair_Display',serif] text-lg font-bold text-stone-900 mb-2 capitalize">
+                <h3 className="font-sans text-lg font-bold text-stone-900 mb-2 capitalize">
                   {p.title}
                 </h3>
                 <p className="text-stone-500 text-sm leading-relaxed">
@@ -459,7 +459,7 @@ const OrganicFarmingPage = () => {
           <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
             <div>
               <SectionLabel>Where we are</SectionLabel>
-              <h2 className="font-['Playfair_Display',serif] text-3xl md:text-4xl font-bold text-stone-900 mb-5 leading-tight">
+              <h2 className="font-sans text-3xl md:text-4xl font-bold text-stone-900 mb-5 leading-tight">
                 Almora district,
                 <br />
                 Kumaon, Uttarakhand
@@ -524,7 +524,7 @@ const OrganicFarmingPage = () => {
                   />
                   <circle cx="40" cy="34" r="3" fill="currentColor" />
                 </svg>
-                <p className="font-['Playfair_Display',serif] text-2xl font-bold text-stone-800 mb-1">
+                <p className="font-sans text-2xl font-bold text-stone-800 mb-1">
                   Almora
                 </p>
                 <p className="text-stone-500 text-sm">Kumaon, Uttarakhand</p>
@@ -535,7 +535,7 @@ const OrganicFarmingPage = () => {
               {/* Floating badge */}
               <div className="absolute -top-3 -right-3 bg-white border border-amber-200 rounded-xl px-4 py-2 shadow-sm">
                 <p className="text-xs text-stone-500">Established</p>
-                <p className="font-['Playfair_Display',serif] text-xl font-bold text-stone-800">
+                <p className="font-sans text-xl font-bold text-stone-800">
                   1962
                 </p>
               </div>
@@ -551,7 +551,7 @@ const OrganicFarmingPage = () => {
             <SectionLabel>Our journey</SectionLabel>
             <h2
               id="timeline-heading"
-              className="font-['Playfair_Display',serif] text-3xl md:text-4xl font-bold text-stone-900">
+              className="font-sans text-3xl md:text-4xl font-bold text-stone-900">
               Six decades of growing clean food
             </h2>
           </div>
@@ -564,7 +564,7 @@ const OrganicFarmingPage = () => {
                 </span>
                 <div className="bg-white border border-stone-100 rounded-2xl p-5">
                   <div className="flex items-center gap-3 mb-2">
-                    <span className="font-['Playfair_Display',serif] text-xl font-bold text-amber-600">
+                    <span className="font-sans text-xl font-bold text-amber-600">
                       {t.year}
                     </span>
                     <span className="text-xs font-semibold uppercase tracking-wider text-stone-400">
@@ -585,7 +585,7 @@ const OrganicFarmingPage = () => {
           <div className="absolute top-0 left-0 w-80 h-80 rounded-full bg-amber-600 opacity-10 blur-3xl pointer-events-none" />
           <div className="relative max-w-4xl mx-auto px-6 text-center">
             <SectionLabel>Shop our farm</SectionLabel>
-            <h2 className="font-['Playfair_Display',serif] text-3xl md:text-5xl font-bold text-white mb-5 leading-tight">
+            <h2 className="font-sans text-3xl md:text-5xl font-bold text-white mb-5 leading-tight">
               Taste the difference
               <br />
               <span className="text-amber-400">Uttarakhand makes.</span>
@@ -618,7 +618,7 @@ const OrganicFarmingPage = () => {
         {/* ── Internal link cluster (SEO) ──────────────────────────────── */}
         <section className="max-w-6xl mx-auto px-6 py-14">
           <SectionLabel>Explore more</SectionLabel>
-          <h2 className="font-['Playfair_Display',serif] text-2xl font-bold text-stone-900 mb-8">
+          <h2 className="font-sans text-2xl font-bold text-stone-900 mb-8">
             Related pages
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -44,7 +44,7 @@ const AnimatedCheck = () => (
     <div className="absolute inset-0 rounded-full bg-red-50 opacity-40 scale-150" />
     <div className="relative w-20 h-20 bg-white shadow-2xl shadow-red-100 rounded-full flex items-center justify-center z-10 border border-slate-50">
       <svg
-        className="w-8 h-8 text-[#ff356c]"
+        className="w-8 h-8 text-[#315c3c]"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -124,7 +124,7 @@ const StepSuccess = ({
         )}
         {resendStatus === "sending" && (
           <>
-            <div className="w-3 h-3 rounded-full border-2 border-[#ff356c] border-t-transparent animate-spin" />
+            <div className="w-3 h-3 rounded-full border-2 border-[#315c3c] border-t-transparent animate-spin" />
             <span className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">
               Sending...
             </span>
@@ -158,7 +158,7 @@ const StepSuccess = ({
         {/* Headline */}
         <h2 className="text-4xl md:text-6xl font-light tracking-tighter text-slate-900 mb-6">
           {config.headline}{" "}
-          <span className="italic font-serif text-[#ff356c]">
+          <span className="italic font-sans text-[#315c3c]">
             {config.accent}
           </span>
         </h2>
@@ -186,7 +186,7 @@ const StepSuccess = ({
         <div className="flex flex-col items-center gap-8">
           <Link
             to="/"
-            className="px-14 py-5 bg-slate-950 text-white text-[10px] uppercase tracking-[0.5em] font-black hover:bg-[#ff356c] transition-all shadow-xl shadow-slate-200">
+            className="px-14 py-5 bg-slate-950 text-white text-[10px] uppercase tracking-[0.5em] font-black hover:bg-[#315c3c] transition-all shadow-xl shadow-slate-200">
             {config.cta}
           </Link>
 

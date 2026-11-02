@@ -1,26 +1,26 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { ChevronRight, CreditCard, MapPin, Package } from "lucide-react";
+import { CheckCircle2, CreditCard, MapPin, Package } from "lucide-react";
 import { orderService } from "../../features/orders/services/orderService";
 
-const WHATSAPP_NUMBER = "8392856993";
-const STATUS_STEPS = ["placed", "confirmed", "packed", "shipped", "delivered"];
+const STATUS_STEPS = [
+  "placed",
+  "confirmed",
+  "packaging",
+  "shipping",
+  "delivered",
+];
 const STATUS_LABELS = {
   placed: "Placed",
   confirmed: "Confirmed",
-  packed: "Packed",
-  shipped: "Shipped",
+  packaging: "Packing",
+  shipping: "On the way",
   delivered: "Delivered",
   cancelled: "Cancelled",
 };
 
-// FIX 4: Keys are now lowercase to match what orderService stores (paymentMethod: "cod")
 const PAYMENT_METHOD_LABELS = {
   cod: "Cash on Delivery",
-  whatsapp: "WhatsApp Payment",
-  razorpay: "Online Payment",
-  upi: "UPI Payment",
-  online: "Online Payment",
 };
 
 const PAYMENT_STATUS_STYLE = {
@@ -87,6 +87,13 @@ const OrderConfirmationPage = () => {
   const items = orderData.items ?? [];
   const displayOrderId =
     orderData.orderId ?? orderId?.slice(0, 10).toUpperCase();
+  const progressStatus =
+    {
+      packed: "packaging",
+      processing: "packaging",
+      shipped: "shipping",
+    }[orderStatus] || orderStatus;
+  const progressIndex = STATUS_STEPS.indexOf(progressStatus);
 
   // FIX 3: Match service key priority — service writes pricing.totalPayable first,
   // then falls back to pricing.totalAmount, then root totalAmount.
@@ -97,26 +104,25 @@ const OrderConfirmationPage = () => {
   // FIX 5: Strip any existing country prefix before prepending +91
   const cleanPhone = address.phone?.replace(/^(\+91|91|0)/, "") ?? "";
 
-  const handleConfirmOnWhatsApp = () => {
-    const message = encodeURIComponent(
-      `Hello, I placed an order.\n\nOrder ID: ${displayOrderId}\nAmount: ₹${totalAmount}\n\nPlease confirm my order.`,
-    );
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, "_blank");
-  };
-
-  const displayedItems = items.slice(0, 2);
-  const moreItems = items.length - 2;
+  const displayedItems = items;
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center font-sans py-4">
-      <div className="w-full max-w-[480px] bg-white rounded-lg overflow-hidden shadow-sm">
+    <div className="min-h-screen bg-[#f7f8f6] flex flex-col items-center font-sans px-4 py-8 sm:py-12">
+      <div className="w-full max-w-[680px] bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
         {/* Header */}
-        <div className="bg-[#e6f8f3] p-4 flex items-center gap-3 border-b border-[#c2eee2]">
-          <div className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm">
-            <img src="/confirm.svg" alt="Success" className="w-6 h-6" />
+        <div className="bg-[#edf5ee] p-5 sm:p-7 flex items-center gap-4 border-b border-[#d6e8d8]">
+          <Link to="/" aria-label="Ghar Ka Organic home" className="shrink-0">
+            <img
+              src="https://gharkaorganic.com/logo/gharka-logo.png"
+              alt="Ghar Ka Organic"
+              className="h-12 w-auto max-w-[120px] object-contain"
+            />
+          </Link>
+          <div className="w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-sm text-[#315c3c]">
+            <CheckCircle2 size={26} aria-hidden="true" />
           </div>
           <div className="flex flex-col">
-            <h1 className="text-base font-bold text-[#027a61] uppercase">
+            <h1 className="text-lg font-bold text-[#315c3c]">
               Order Successful
             </h1>
             <p className="text-xs text-[#027a61]">
@@ -137,16 +143,12 @@ const OrderConfirmationPage = () => {
               <div
                 className="absolute top-[5px] left-0 h-[2px] bg-[#03a685] z-0 transition-all duration-500"
                 style={{
-                  width: `${
-                    (STATUS_STEPS.indexOf(orderStatus) /
-                      (STATUS_STEPS.length - 1)) *
-                    100
-                  }%`,
+                  width: `${(Math.max(0, progressIndex) / (STATUS_STEPS.length - 1)) * 100}%`,
                 }}
               />
 
               {STATUS_STEPS.map((s, i) => {
-                const done = i <= STATUS_STEPS.indexOf(orderStatus);
+                const done = i <= Math.max(0, progressIndex);
                 return (
                   <div
                     key={s}
@@ -178,7 +180,7 @@ const OrderConfirmationPage = () => {
         <div className="p-3 bg-white">
           {displayedItems.map((item, idx) => (
             <div
-              key={idx}
+              key={item.id || `${item.productId}-${idx}`}
               className="flex gap-2 p-2 border border-gray-100 rounded-sm bg-gray-50 mb-2">
               <div className="w-16 h-20 bg-gray-100 rounded-sm flex-shrink-0 overflow-hidden">
                 {item.image ? (
@@ -217,24 +219,21 @@ const OrderConfirmationPage = () => {
                   )}
                 </p>
                 <p className="text-[12px] font-semibold text-gray-800 mt-1">
-                  ₹{item.price?.toLocaleString("en-IN") ?? "0"}
+                  ₹
+                  {(
+                    Number(item.price || 0) *
+                    Number(item.quantity ?? item.selectedQuantity ?? 1)
+                  ).toLocaleString("en-IN")}
                 </p>
               </div>
             </div>
           ))}
-          {moreItems > 0 && (
-            <p className="text-[12px] text-[#f43397] font-semibold">
-              +{moreItems} more item(s)
-            </p>
-          )}
         </div>
 
         <SectionDivider />
 
         {/* Address */}
-        <div
-          className="p-3 bg-white flex items-start justify-between cursor-pointer active:bg-gray-50"
-          onClick={() => navigate("/user/orders")}>
+        <div className="flex items-start justify-between bg-white p-3">
           <div className="flex gap-2 pr-2">
             <MapPin size={18} className="text-gray-600 shrink-0" />
             <div>
@@ -245,7 +244,12 @@ const OrderConfirmationPage = () => {
                 {address.name}
               </p>
               <p className="text-[12px] text-gray-600 mt-0.5">
-                {[address.line1, address.city, address.state]
+                {[
+                  address.line1,
+                  address.line2,
+                  address.city,
+                  address.state,
+                ]
                   .filter(Boolean)
                   .join(", ")}{" "}
                 {address.pincode && (
@@ -310,31 +314,6 @@ const OrderConfirmationPage = () => {
               </div>
             )}
 
-            {/* Delivery fee */}
-            {(() => {
-              const fee =
-                pricing.deliveryCharge ??
-                pricing.deliveryFee ??
-                pricing.shippingFee;
-              if (fee == null) return null;
-              return (
-                <div className="flex justify-between items-center">
-                  <span className="text-[12px] text-gray-500">
-                    Delivery Fee
-                  </span>
-                  {Number(fee) === 0 ? (
-                    <span className="text-[12px] font-semibold text-green-600">
-                      FREE
-                    </span>
-                  ) : (
-                    <span className="text-[12px] text-gray-700">
-                      ₹{Number(fee).toLocaleString("en-IN")}
-                    </span>
-                  )}
-                </div>
-              );
-            })()}
-
             {/* Discount */}
             {pricing.discount > 0 && (
               <div className="flex justify-between items-center">
@@ -353,7 +332,7 @@ const OrderConfirmationPage = () => {
                     Coupon Discount
                   </span>
                   {pricing.couponCode && (
-                    <span className="text-[10px] font-bold text-[#f43397] bg-pink-50 px-1.5 py-0.5 rounded">
+                    <span className="rounded bg-[#edf5ee] px-1.5 py-0.5 text-[10px] font-bold text-[#315c3c]">
                       {pricing.couponCode}
                     </span>
                   )}
@@ -392,7 +371,7 @@ const OrderConfirmationPage = () => {
               <span className="text-[13px] font-bold text-gray-900">
                 Total Amount
               </span>
-              <span className="text-[14px] font-extrabold text-[#f43397]">
+              <span className="text-[14px] font-extrabold text-[#315c3c]">
                 ₹{totalAmount}
               </span>
             </div>
@@ -415,15 +394,10 @@ const OrderConfirmationPage = () => {
         </div>
 
         {/* Buttons */}
-        <div className="sticky bottom-0 left-0 w-full bg-white p-3 border-t border-gray-200 flex flex-col gap-2">
-          <button
-            onClick={handleConfirmOnWhatsApp}
-            className="w-full bg-[#f43397] text-white py-2.5 font-bold uppercase text-[13px] rounded-md">
-            Confirm on WhatsApp
-          </button>
+        <div className="sticky bottom-0 left-0 w-full bg-white p-4 border-t border-gray-200 flex flex-col sm:flex-row gap-3">
           <button
             onClick={() => navigate("/")}
-            className="w-full border border-gray-300 text-gray-600 py-2 font-bold uppercase text-[13px] rounded-md">
+            className="w-full rounded-lg bg-[#315c3c] py-3 text-sm font-semibold text-white transition hover:bg-[#244b2e] flex items-center justify-center gap-2">
             Continue Shopping
           </button>
         </div>

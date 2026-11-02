@@ -8,7 +8,7 @@ const LoadingScreen = ({ text = "Please wait..." }) => {
       <div className="w-12 h-12 md:w-14 md:h-14 mb-5 animate-pulse">
         <img
           src={IMAGES.brand.logo}
-          alt="Mnmukt Logo"
+          alt="Ghar Ka Organic"
           className="w-full h-full object-contain"
         />
       </div>

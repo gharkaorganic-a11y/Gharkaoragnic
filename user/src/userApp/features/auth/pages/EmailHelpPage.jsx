@@ -7,14 +7,20 @@ const EmailVerificationHelp = () => {
       <div className="w-full max-w-3xl   p-6 sm:p-8">
         {/* Header */}
         <div className="text-center">
+          <Link to="/" className="mb-6 inline-flex justify-center">
+            <img
+              src="https://gharkaorganic.com/logo/gharka-logo.png"
+              alt="Ghar Ka Organic"
+              className="h-16 w-auto max-w-[220px] object-contain"
+            />
+          </Link>
           <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
             Email Verification Help
           </h1>
 
           <p className="text-sm text-gray-500 mt-2 max-w-md mx-auto">
-            If you signed up on{" "}
-            <span className="font-medium text-gray-800">MNMUKT</span>
-            but cannot find the verification email, follow these steps.
+            If you signed up on Ghar Ka Organic but cannot find the
+            verification email, follow these steps.
           </p>
         </div>
 
@@ -63,7 +69,7 @@ const EmailVerificationHelp = () => {
           </p>
 
           <div className="mt-3 bg-gray-100 p-3 rounded-md text-sm text-gray-700 text-center">
-            verify email • verification link • MNMUKT
+            verify email • verification link • Ghar Ka Organic
           </div>
         </div>
 
@@ -96,8 +102,8 @@ const EmailVerificationHelp = () => {
 
         {/* Footer */}
         <div className="mt-10 border-t pt-5 text-sm text-gray-500 text-center">
-          If the problem continues, please contact MNMUKT support or try signing
-          up with a different email provider.
+          If the problem continues, please contact Ghar Ka Organic support or
+          try signing up with a different email provider.
         </div>
       </div>
     </div>

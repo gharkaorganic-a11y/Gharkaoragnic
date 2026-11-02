@@ -2,12 +2,12 @@ import React from "react";
 
 const AuthRedirect = ({ navigate }) => (
   <div className="min-h-screen flex flex-col items-center justify-center p-10 text-center bg-[#fcfcfc]">
-    <span className="text-[#da127d] text-[10px] uppercase tracking-[0.4em] font-semibold mb-4 block">
+    <span className="text-[#315c3c] text-[10px] uppercase tracking-[0.4em] font-semibold mb-4 block">
       Account Required
     </span>
     <h2
       className="text-3xl sm:text-4xl font-light text-gray-900 mb-8 leading-tight"
-      style={{ fontFamily: "'Playfair Display', serif" }}>
+      style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
       Please Sign In to <br />
       <span className="italic text-gray-400">View Your Orders</span>
     </h2>

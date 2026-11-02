@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import SectionBanner from "../features/userProfile/components/SectionBanner";
 
-const BRAND_GREEN = "#4c908a";
-const BRAND_YELLOW = "#f4a51c";
+const BRAND_GREEN = "#315c3c";
 
 // Must match JSON-LD in index.html exactly
 const faqData = [
@@ -48,19 +47,13 @@ const FaqSection = () => {
   const [activeId, setActiveId] = useState(1);
 
   return (
-    <section className="relative py-20 bg-[#f7ecd7] overflow-hidden" id="faq">
-      {/* Decorative Background */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-0 w- h- rounded-full bg-[#f7d26a]/30 blur-3xl" />
-        <div className="absolute bottom-0 right-0 w- h- rounded-full bg-[#4c908a]/10 blur-3xl" />
-      </div>
-
-      <div className="relative max-w-4xl mx-auto px-5 sm:px-6 lg:px-8">
+    <section className="relative overflow-hidden bg-white py-14 sm:py-16" id="faq">
+      <div className="relative mx-auto max-w-4xl px-5 sm:px-6 lg:px-8">
         {/* Header */}
-        <header className="text-center mb-16">
+        <header className="mb-10 text-center sm:mb-12">
           <SectionBanner title="Frequently Asked Questions" />
 
-          <p className="text-[#5c3a1f] mt-5 text-base max-w-2xl mx-auto leading-8">
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[#687267] sm:text-base sm:leading-8">
             Everything you need to know about our Himalayan organic journey,
             traditional pahadi products, and homemade goodness.
           </p>
@@ -74,26 +67,26 @@ const FaqSection = () => {
             return (
               <article
                 key={faq.id}
-                className={`group rounded-3xl border transition-all duration-300 overflow-hidden ${
+                className={`group overflow-hidden rounded-2xl border transition-all duration-300 ${
                   isOpen
-                    ? "bg-white shadow-xl border-[#e7c36d]"
-                    : "bg-[#fff7e7] border-[#f0dfb2] hover:border-[#d8a032] hover:bg-white"
+                    ? "border-[#b8cdb8] bg-white shadow-sm"
+                    : "border-[#e7e5dc] bg-white hover:border-[#b8cdb8]"
                 }`}>
                 <button
                   onClick={() => setActiveId(isOpen ? null : faq.id)}
-                  className="w-full flex justify-between items-center gap-5 px-6 py-6 text-left"
+                  className="flex w-full items-center justify-between gap-5 px-5 py-5 text-left sm:px-6"
                   aria-expanded={isOpen}
                   aria-controls={`faq-answer-${faq.id}`}>
                   <div>
                     <span
-                      className="text- font-bold uppercase tracking-[0.2em] mb-3 block"
+                      className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.18em] text-[#47724d] sm:text-xs"
                       style={{ color: BRAND_GREEN }}>
                       {faq.category}
                     </span>
 
                     <h3
-                      className={`text- md:text-lg font-semibold transition-colors leading-7 ${
-                        isOpen ? "text-[#3b2412]" : "text-[#4f3422]"
+                      className={`text-sm font-semibold leading-6 transition-colors sm:text-base sm:leading-7 ${
+                        isOpen ? "text-[#263329]" : "text-[#445047]"
                       }`}>
                       {faq.question}
                     </h3>
@@ -102,8 +95,8 @@ const FaqSection = () => {
                   <ChevronDownIcon
                     className={`w-5 h-5 transition-transform duration-500 flex-shrink-0 ${
                       isOpen
-                        ? "rotate-180 text-[#4c908a]"
-                        : "text-[#b07a1c] group-hover:text-[#4c908a]"
+                        ? "rotate-180 text-[#315c3c]"
+                        : "text-[#8b7651] group-hover:text-[#315c3c]"
                     }`}
                   />
                 </button>
@@ -111,7 +104,7 @@ const FaqSection = () => {
                 {isOpen && (
                   <div
                     id={`faq-answer-${faq.id}`}
-                    className="px-6 pb-6 text- text-[#6a4a2f] leading-8 animate-in slide-in-from-top-2 duration-300">
+                    className="animate-in px-5 pb-5 text-sm leading-7 text-[#687267] duration-300 slide-in-from-top-2 sm:px-6 sm:pb-6 sm:text-base sm:leading-8">
                     {faq.answer}
                   </div>
                 )}
@@ -121,16 +114,16 @@ const FaqSection = () => {
         </div>
 
         {/* Bottom Brand Block */}
-        <div className="mt-20 p-10 rounded- bg-white border border-[#ecd39b] shadow-xl text-center">
-          <p className="text-sm text-[#9c6200] uppercase tracking-[0.3em] font-semibold mb-5">
+        <div className="mt-12 rounded-2xl border border-[#e7e5dc] bg-white p-6 text-center shadow-sm sm:mt-16 sm:p-10">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-[#8b7651] sm:text-sm">
             Pure Taste • Pahadi Roots • Zero Preservatives
           </p>
 
-          <h3 className="text-2xl md:text-3xl font-semibold text-[#3b2412] mb-6">
+          <h3 className="mb-5 font-sans text-2xl font-semibold text-[#263329] md:text-3xl">
             Crafted with the Soul of the Mountains
           </h3>
 
-          <p className="text-[#5c3a1f] leading-8 max-w-3xl mx-auto text- md:text-base">
+          <p className="mx-auto max-w-3xl text-sm leading-7 text-[#687267] sm:text-base sm:leading-8">
             <strong>GHAR KA ORGANIC</strong> brings authentic Himalayan flavors
             directly from Uttarakhand to your home. Every product reflects
             traditional pahadi food wisdom, natural ingredients, homemade
@@ -138,15 +131,15 @@ const FaqSection = () => {
           </p>
 
           <div className="flex flex-wrap justify-center gap-4 mt-8">
-            <span className="px-5 py-2 rounded-full bg-[#fff7e7] border border-[#efd9a2] text-[#6a4a2f] text-sm font-medium">
+            <span className="rounded-full border border-[#e7e5dc] bg-white px-5 py-2 text-sm font-medium text-[#52644d]">
               Homemade Goodness
             </span>
 
-            <span className="px-5 py-2 rounded-full bg-[#fff7e7] border border-[#efd9a2] text-[#6a4a2f] text-sm font-medium">
+            <span className="rounded-full border border-[#e7e5dc] bg-white px-5 py-2 text-sm font-medium text-[#52644d]">
               Traditional Pahadi Taste
             </span>
 
-            <span className="px-5 py-2 rounded-full bg-[#fff7e7] border border-[#efd9a2] text-[#6a4a2f] text-sm font-medium">
+            <span className="rounded-full border border-[#e7e5dc] bg-white px-5 py-2 text-sm font-medium text-[#52644d]">
               Chemical Free
             </span>
           </div>

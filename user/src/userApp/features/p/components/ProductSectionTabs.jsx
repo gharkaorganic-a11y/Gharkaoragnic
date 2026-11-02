@@ -1,101 +1,86 @@
 import React, { memo } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { productSections as defaultSections } from "../../homepage/config/productCollection";
+import { preferredSlug } from "../utils/SECTIONKEY";
 
-/* ─────────────────────────────
-   PRODUCT SECTION TABS
-   SEO + UX optimized category nav
-───────────────────────────── */
+/**
+ * ProductSectionTabs.jsx
+ * Unified Category Section matching width everywhere:
+ * Exactly max-w-7xl px-4 sm:px-6 lg:px-8 aligning with header, hero, and product cards.
+ */
+const ProductSectionTabs = memo(
+  ({ productSections = defaultSections, currentKey, onSelect }) => {
+    return (
+      <section
+        aria-label="Shop by category"
+        className="w-full border-y border-[#ece9df] bg-white py-3.5 sm:py-4.5">
+        {/* Exactly matching storefront content width (max-w-7xl px-4 sm:px-6 lg:px-8) */}
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex snap-x snap-mandatory items-start gap-3.5 sm:gap-4 lg:gap-0 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden justify-start lg:justify-between">
+            {productSections.map((category) => {
+              const isActive = currentKey && category.key === currentKey;
+              const targetUrl =
+                category.key === "all"
+                  ? "/collections"
+                  : `/${preferredSlug[category.key] ?? category.key}`;
 
-const ProductSectionTabs = memo(({ productSections = [], currentKey }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const handleNavigate = (key) => {
-    if (key === "all") navigate("/all-products");
-    else navigate(`/${key}`);
-  };
-
-  return (
-    <nav aria-label="Product categories" className="mb-8">
-      <div className="relative">
-        {/* Gradient fade edges (UX polish) */}
-        <div className="pointer-events-none absolute left-0 top-0 h-full w-6  z-10" />
-        <div className="pointer-events-none absolute right-0 top-0 h-full w-6  z-10" />
-
-        {/* Scroll container */}
-        <div
-          className="
-            flex gap-5 md:gap-8
-            overflow-x-auto
-            pb-2 px-1
-            scrollbar-hide
-            scroll-smooth
-            snap-x snap-mandatory
-          ">
-          {productSections.map((s) => {
-            const isActive = s.key === currentKey;
-
-            return (
-              <button
-                key={s.key}
-                onClick={() => handleNavigate(s.key)}
-                className="
-                  flex-shrink-0
-                  flex flex-col items-center gap-2
-                  w-20 md:w-24
-                  text-center
-                  group
-                  snap-start
-                  focus:outline-none
-                "
-                aria-current={isActive ? "page" : undefined}>
-                {/* ICON CIRCLE */}
-                <div
-                  className={`
-                    relative
-                    w-14 h-14 md:w-16 md:h-16
-                    rounded-full
-                    overflow-hidden
-                    flex items-center justify-center
-                     transition-all duration-300
-                    ${isActive ? " scale-105 shadow-md" : "border-gray-200 "}
-                  `}>
-                  {/* Active glow ring */}
-                  {isActive && (
-                    <div className="absolute inset-0 rounded-full ring-2 ring-black/10" />
-                  )}
-
-                  <img
-                    src={s.chipImage}
-                    alt={s.title}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-
-                {/* LABEL */}
-                <span
-                  className={`
-                    text-xs md:text-sm
-                    leading-tight
-                    font-medium
-                    transition-colors
-                    ${
+              return (
+                <Link
+                  key={category.key}
+                  to={targetUrl}
+                  onClick={
+                    onSelect
+                      ? (e) => {
+                          e.preventDefault();
+                          onSelect(category.key);
+                        }
+                      : undefined
+                  }
+                  className={`group flex w-[76px] sm:w-[86px] lg:w-[96px] shrink-0 snap-start flex-col items-center text-center transition-all ${
+                    isActive ? "opacity-100" : "opacity-95 hover:opacity-100"
+                  }`}>
+                  {/* Outer circle with brand background */}
+                  <span
+                    className={`flex h-[54px] w-[54px] sm:h-[62px] sm:w-[62px] lg:h-[68px] lg:w-[68px] items-center justify-center rounded-full p-1 transition-transform group-hover:scale-105 ${
                       isActive
-                        ? "text-black font-semibold"
-                        : "text-gray-600 group-hover:text-black"
-                    }
-                  `}>
-                  {s.title}
-                </span>
-              </button>
-            );
-          })}
+                        ? "ring-2 ring-offset-2 ring-[#009f68] scale-105 shadow-sm"
+                        : ""
+                    }`}
+                    style={{
+                      backgroundColor:
+                        "var(--storefront-category-color, #009f68)",
+                    }}>
+                    <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-white">
+                      <img
+                        src={category.chipImage}
+                        alt=""
+                        loading="lazy"
+                        className="h-full w-full rounded-full object-contain"
+                      />
+                    </span>
+                  </span>
+
+                  {/* Centered clean label */}
+                  <span
+                    className={`mt-1.5 sm:mt-2 max-w-[76px] sm:max-w-[88px] lg:max-w-[96px] text-[11px] sm:text-xs font-medium leading-tight line-clamp-2 transition-colors ${
+                      isActive ? "font-bold" : ""
+                    }`}
+                    style={{
+                      color: isActive
+                        ? "var(--storefront-category-color, #009f68)"
+                        : "var(--storefront-text-color, #253448)",
+                    }}>
+                    {category.title}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
         </div>
-      </div>
-    </nav>
-  );
-});
+      </section>
+    );
+  },
+);
 
 ProductSectionTabs.displayName = "ProductSectionTabs";
 

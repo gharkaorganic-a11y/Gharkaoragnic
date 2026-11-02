@@ -1,7 +1,5 @@
 import { Suspense, lazy, useEffect } from "react";
-import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
-
-import { useAuth } from "./userApp/features/auth/context/UserContext";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 /* ───────── EAGER ───────── */
 import UserLayout from "./userApp/layouts/UserLayout";
@@ -17,7 +15,6 @@ import ShippingPage from "./userApp/pages/ShippingPolicyPage";
 import PrivacyPolicyPage from "./userApp/pages/PrivacyPolicyPage";
 
 /* ───────── LAZY ───────── */
-const AuthRoutes = lazy(() => import("./userApp/routes/AuthRoutes"));
 const HomePage = lazy(() => import("./userApp/pages/HomePage"));
 const CollectionPage = lazy(
   () => import("./userApp/features/p/CollectionPage"),
@@ -32,8 +29,11 @@ const ProductDetailsPage = lazy(
 const ContactUsPage = lazy(() => import("./userApp/pages/ContactUsPage"));
 const OurStoryPage = lazy(() => import("./userApp/pages/OurStoryPage"));
 const FaqPage = lazy(() => import("./userApp/pages/FaqPage"));
-const AccountRoutes = lazy(() => import("./userApp/routes/AccountRoutes"));
+const SearchPage = lazy(() => import("./userApp/pages/SearchPage"));
 const CheckoutRoutes = lazy(() => import("./userApp/routes/CheckoutRoutes"));
+const OrderConfirmationPage = lazy(
+  () => import("./userApp/components/pop-up/OrderConfirmationPage"),
+);
 
 /* ───────── LOADERS ───────── */
 const FullScreenLoader = () => (
@@ -51,22 +51,10 @@ const InlineLoader = () => (
 /* ───────── SCROLL RESTORE ───────── */
 const ScrollToTop = () => {
   const { pathname } = useLocation();
-  useEffect(() => window.scrollTo(0, 0), [pathname]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
   return null;
-};
-
-/* ───────── AUTH GUARD ───────── */
-const ProtectedRoute = () => {
-  const { isLoggedIn, user, authLoading } = useAuth();
-  const location = useLocation();
-
-  if (authLoading) return <FullScreenLoader />;
-
-  if (!isLoggedIn || !user) {
-    return <Navigate to="/auth/login" state={{ from: location }} replace />;
-  }
-
-  return <Outlet />;
 };
 
 /* ───────── SAFE WRAPPER ───────── */
@@ -94,15 +82,12 @@ const AppRoutes = () => (
     <ScrollToTop />
 
     <Routes>
-      {/* ───────── AUTH ───────── */}
-      <Route
-        path="/auth/*"
-        element={
-          <Suspense fallback={<FullScreenLoader />}>
-            <AuthRoutes />
-          </Suspense>
-        }
-      />
+      {/* ───────── REDIRECT LEGACY AUTH & ACCOUNT ROUTES TO HOME ───────── */}
+      <Route path="/auth/*" element={<Navigate to="/" replace />} />
+      <Route path="/login" element={<Navigate to="/" replace />} />
+      <Route path="/signup" element={<Navigate to="/" replace />} />
+      <Route path="/account/*" element={<Navigate to="/" replace />} />
+      <Route path="/user/*" element={<Navigate to="/" replace />} />
 
       {/* ───────── SITEMAP ───────── */}
       <Route
@@ -155,12 +140,22 @@ const AppRoutes = () => (
 
         {/* COLLECTION LISTING */}
         <Route path="/collections" element={<CollectionPage />} />
-        <Route path="/shop" element={<Navigate to="/collections" replace />} />
+        <Route path="/all-products" element={<CollectionPage />} />
+        <Route path="/shop" element={<CollectionPage />} />
 
         {/* BLOGS */}
         <Route path="/blogs" element={<BlogListPage />} />
+        {/* POLICIES & PAGES */}
         <Route path="/pages/shipping" element={<ShippingPage />} />
-        <Route path="pages/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="/pages/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route
+          path="/privacy-policy"
+          element={<Navigate to="/pages/privacy-policy" replace />}
+        />
+        <Route
+          path="/privacy"
+          element={<Navigate to="/pages/privacy-policy" replace />}
+        />
 
         <Route path="/blogs/:slug" element={<BlogDetailPage />} />
 
@@ -172,6 +167,9 @@ const AppRoutes = () => (
         <Route path="/reviews" element={<ReviewsPage />} />
         <Route path="/faq" element={<FaqPage />} />
         <Route path="/contact" element={<ContactUsPage />} />
+
+        {/* SEARCH PAGE WITH URL ROUTING */}
+        <Route path="/search" element={<SearchPage />} />
 
         {/* CLEAN REDIRECTS */}
         <Route
@@ -197,11 +195,18 @@ const AppRoutes = () => (
         <Route path="*" element={<NotFoundPage />} />
       </Route>
 
-      {/* ───────── PROTECTED ───────── */}
-      <Route element={<ProtectedRoute />}>
-        <Route path="/user/*" element={<AccountRoutes />} />
-        <Route path="/checkout/*" element={<CheckoutRoutes />} />
-      </Route>
+      {/* ───────── CHECKOUT ───────── */}
+      <Route path="/checkout/*" element={<CheckoutRoutes />} />
+
+      {/* ───────── ORDER CONFIRMATION (PUBLIC GUEST CONFIRMATION) ───────── */}
+      <Route
+        path="/order-success/:orderId"
+        element={
+          <Suspense fallback={<FullScreenLoader />}>
+            <OrderConfirmationPage />
+          </Suspense>
+        }
+      />
     </Routes>
   </>
 );

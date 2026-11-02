@@ -64,7 +64,12 @@ const TestimonialModal = ({
   isEdit,
 }) => {
   if (!isOpen) return null;
-  const isValid = formData.name.trim() && formData.message.trim();
+  const isValid =
+    formData.name.trim() &&
+    formData.message.trim() &&
+    Number.isInteger(Number(formData.rating)) &&
+    Number(formData.rating) >= 1 &&
+    Number(formData.rating) <= 5;
 
   return (
     <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center sm:p-6 animate-in fade-in duration-200">
@@ -89,6 +94,10 @@ const TestimonialModal = ({
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          <p className="rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-900">
+            Publish only feedback shared by a real customer and approved for
+            display.
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Name */}
             <div>
@@ -99,6 +108,8 @@ const TestimonialModal = ({
                 type="text"
                 value={formData.name}
                 onChange={(e) => onChange("name", e.target.value)}
+                maxLength={100}
+                required
                 placeholder="Customer Name"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:border-[#2874F0] focus:ring-2 focus:ring-blue-100 outline-none transition-all"
               />
@@ -142,6 +153,7 @@ const TestimonialModal = ({
                   type="url"
                   value={formData.img}
                   onChange={(e) => onChange("img", e.target.value)}
+                  pattern="https://.*"
                   placeholder="Paste image URL (https://...)"
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-base focus:border-[#2874F0] focus:ring-2 focus:ring-blue-100 outline-none transition-all bg-white"
                 />
@@ -158,6 +170,8 @@ const TestimonialModal = ({
               rows={4}
               value={formData.message}
               onChange={(e) => onChange("message", e.target.value)}
+              maxLength={2000}
+              required
               placeholder="Customer review message"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:border-[#2874F0] focus:ring-2 focus:ring-blue-100 outline-none transition-all resize-y"
             />
@@ -168,7 +182,7 @@ const TestimonialModal = ({
         <div className="p-6 border-t border-gray-100 bg-white shrink-0 flex flex-col-reverse sm:flex-row items-center gap-3 justify-end">
           {!isValid && (
             <span className="text-sm text-red-500 font-medium sm:mr-auto">
-              Name and message required.
+              Enter a name, review, and rating from 1 to 5.
             </span>
           )}
           <button

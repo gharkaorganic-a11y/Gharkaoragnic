@@ -185,7 +185,7 @@ const SitemapPage = () => {
         name: BRAND_NAME,
         url: BASE_URL,
         description: BRAND_DESC,
-        logo: `${BASE_URL}/logo.png`,
+        logo: `${BASE_URL}/logo/gharka-logo.png`,
         areaServed: { "@type": "Country", name: "India" },
         knowsAbout: [
           "Organic Food",
@@ -243,6 +243,13 @@ const SitemapPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         {/* ───── HERO ───── */}
         <header className="text-center mb-12 sm:mb-16">
+          <Link to="/" className="mb-8 inline-flex justify-center">
+            <img
+              src={`${BASE_URL}/logo/gharka-logo.png`}
+              alt="Ghar Ka Organic"
+              className="h-16 w-auto max-w-[240px] object-contain"
+            />
+          </Link>
           <p
             className="text-xs tracking-[0.25em] uppercase mb-4"
             style={{ color: T.terracotta }}>
@@ -251,7 +258,7 @@ const SitemapPage = () => {
 
           <h1
             className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4"
-            style={{ color: T.ink, fontFamily: "'Playfair Display', serif" }}>
+            style={{ color: T.ink, fontFamily: "Arial, Helvetica, sans-serif" }}>
             Complete Site Navigation
           </h1>
 

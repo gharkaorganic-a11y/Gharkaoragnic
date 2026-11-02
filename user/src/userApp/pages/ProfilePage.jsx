@@ -10,7 +10,7 @@ import { useAuth } from "../features/auth/context/UserContext";
 import { useCart } from "../features/cart/context/CartContext";
 
 /* ─── The Brand Accent Color ─── */
-const BRAND_HEX = "#da127d";
+const BRAND_HEX = "#315c3c";
 
 /* ─── Zara-Style + Accent Components ───────────────── */
 
@@ -26,10 +26,10 @@ const Info = ({ label, value }) => (
 const Row = ({ label, sub, onClick }) => (
   <button
     onClick={onClick}
-    className="w-full flex items-center justify-between py-5 border-b border-gray-200 last:border-0 hover:bg-pink-50/30 transition-colors px-2 group">
+    className="w-full flex items-center justify-between py-5 border-b border-gray-200 last:border-0 hover:bg-green-50/30 transition-colors px-2 group">
     <div className="text-left">
       {/* Text highlights pink on hover */}
-      <div className="text-[13px] uppercase tracking-widest text-black group-hover:text-[#da127d] transition-colors">
+      <div className="text-[13px] uppercase tracking-widest text-black group-hover:text-[#315c3c] transition-colors">
         {label}
       </div>
       {sub && (
@@ -39,26 +39,26 @@ const Row = ({ label, sub, onClick }) => (
       )}
     </div>
     {/* Chevron highlights pink on hover */}
-    <ChevronRightIcon className="w-4 h-4 text-gray-300 group-hover:text-[#da127d] transition-colors stroke-1" />
+    <ChevronRightIcon className="w-4 h-4 text-gray-300 group-hover:text-[#315c3c] transition-colors stroke-1" />
   </button>
 );
 
 const Tile = ({ icon: Icon, label, count, onClick }) => (
   <button
     onClick={onClick}
-    className="flex-1 flex flex-col items-center justify-center py-8 border border-gray-200 hover:border-[#da127d] transition-colors group bg-white relative overflow-hidden">
+    className="flex-1 flex flex-col items-center justify-center py-8 border border-gray-200 hover:border-[#315c3c] transition-colors group bg-white relative overflow-hidden">
     {/* Subtle pink glow at the bottom of the tile on hover */}
-    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-[#da127d] translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-[#315c3c] translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
 
-    <div className="relative mb-4 text-black group-hover:text-[#da127d] group-hover:scale-110 transition-all duration-500">
+    <div className="relative mb-4 text-black group-hover:text-[#315c3c] group-hover:scale-110 transition-all duration-500">
       <Icon className="w-6 h-6 stroke-1" />
       {count > 0 && (
-        <span className="absolute -top-2 -right-2 text-[9px] bg-[#da127d] text-white w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
+        <span className="absolute -top-2 -right-2 text-[9px] bg-[#315c3c] text-white w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
           {count}
         </span>
       )}
     </div>
-    <span className="text-[10px] tracking-[0.2em] uppercase text-black group-hover:text-[#da127d] transition-colors">
+    <span className="text-[10px] tracking-[0.2em] uppercase text-black group-hover:text-[#315c3c] transition-colors">
       {label}
     </span>
   </button>
@@ -102,7 +102,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans selection:bg-[#da127d] selection:text-white">
+    <div className="min-h-screen bg-white text-black font-sans selection:bg-[#315c3c] selection:text-white">
       {/* ── HEADER ── */}
       <div className="border-b border-gray-200 px-6 py-6 text-center bg-white/95 backdrop-blur-sm sticky top-0 z-10">
         <h1 className="text-[12px] tracking-[0.25em] text-black">MY ACCOUNT</h1>
@@ -131,7 +131,7 @@ const ProfilePage = () => {
 
             <button
               onClick={() => navigate("/user/edit")}
-              className="text-[10px] tracking-[0.2em] border-b border-[#da127d] text-[#da127d] pb-0.5 hover:text-[#b90f6a] hover:border-[#b90f6a] transition-colors uppercase">
+              className="text-[10px] tracking-[0.2em] border-b border-[#315c3c] text-[#315c3c] pb-0.5 hover:text-[#b90f6a] hover:border-[#b90f6a] transition-colors uppercase">
               Edit Profile
             </button>
           </div>
@@ -198,7 +198,7 @@ const ProfilePage = () => {
           <div className="pt-8">
             <button
               onClick={handleLogout}
-              className="text-[11px] tracking-[0.2em] uppercase text-gray-400 hover:text-[#da127d] transition-colors">
+              className="text-[11px] tracking-[0.2em] uppercase text-gray-400 hover:text-[#315c3c] transition-colors">
               Sign Out
             </button>
           </div>
@@ -214,7 +214,7 @@ const ProfilePage = () => {
             onClick={(e) => e.stopPropagation()}
             className="bg-white w-full max-w-md p-10 shadow-2xl relative overflow-hidden">
             {/* Subtle top brand line */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-[#da127d]" />
+            <div className="absolute top-0 left-0 w-full h-1 bg-[#315c3c]" />
 
             <h3 className="text-[13px] tracking-[0.2em] mb-8 border-b border-gray-200 pb-4 text-center">
               DELIVERY ADDRESS
@@ -238,7 +238,7 @@ const ProfilePage = () => {
                 setShowAddress(false);
                 navigate("/user/edit");
               }}
-              className="w-full bg-[#da127d] text-white text-[11px] tracking-[0.2em] py-4 hover:bg-[#b90f6a] transition-colors uppercase shadow-md shadow-pink-500/20">
+              className="w-full bg-[#315c3c] text-white text-[11px] tracking-[0.2em] py-4 hover:bg-[#b90f6a] transition-colors uppercase shadow-md shadow-green-500/20">
               {address ? "Edit Address" : "Add Address"}
             </button>
 

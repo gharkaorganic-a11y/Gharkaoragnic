@@ -8,10 +8,10 @@ const StatCard = ({
   trend,
   trendValue,
   icon: Icon,
-  color = "onyx", // Focus on 'onyx' or 'pink'
+  color = "onyx",
   loading = false,
 }) => {
-  // Mnmukt Luxury Color Palette
+  // Brand color palette
   const colorClasses = {
     onyx: {
       bg: "bg-slate-50",
@@ -20,10 +20,10 @@ const StatCard = ({
       accent: "bg-slate-950",
     },
     pink: {
-      bg: "bg-pink-50/50",
-      text: "text-[#ff356c]",
-      border: "border-pink-100/50",
-      accent: "bg-[#ff356c]",
+      bg: "bg-blue-50",
+      text: "text-[#2874F0]",
+      border: "border-blue-100",
+      accent: "bg-[#2874F0]",
     },
   };
 

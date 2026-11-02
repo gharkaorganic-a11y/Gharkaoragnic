@@ -48,8 +48,8 @@ const ProductImageGallery = ({ images = [], productName = "Product" }) => {
                 onClick={() => setActiveIndex(i)}
                 className={`relative aspect-square w-full rounded-sm overflow-hidden border-2 transition-all ${
                   activeIndex === i
-                    ? "border-orange-500 shadow-md"
-                    : "border-gray-100 hover:border-gray-300"
+                    ? "border-[#315c3c] shadow-xs"
+                    : "border-gray-200 hover:border-gray-400"
                 }`}>
                 <img
                   src={img}

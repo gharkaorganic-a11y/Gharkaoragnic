@@ -51,9 +51,8 @@ export const homepageService = {
   /* ───────── PRODUCTS BY COLLECTION ───────── */
   // Requires products in Firestore to have:
   //   collectionTypes: ["new", "pickle", "honey", ...]
-  //   isActive: true
   async getProductsByCollection(type, size = 8) {
-    const key = `products-${type}-${size}`;
+    const key = `products-v4-${type}-${size}`;
     const now = Date.now();
 
     if (isMemoryFresh(key, now)) return memoryCache.get(key).data;
@@ -72,15 +71,21 @@ export const homepageService = {
         const cleanType = type.toLowerCase().trim();
 
         const qRef = query(
-          collection(db, "products"),
-          where("isActive", "==", true),
+          collection(db, "storeProducts"),
           where("collectionTypes", "array-contains", cleanType),
-          orderBy("createdAt", "desc"),
-          limit(size),
         );
 
         const snap = await getDocs(qRef);
-        const products = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        const products = snap.docs
+          .map((d) => ({ id: d.id, ...d.data() }))
+          .filter((product) => product.isDeleted !== true && product.isActive !== false)
+          .sort((a, b) => {
+            const time = (value) =>
+              value?.toMillis?.() ??
+              (typeof value?.seconds === "number" ? value.seconds * 1000 : 0);
+            return time(b.createdAt) - time(a.createdAt);
+          })
+          .slice(0, size);
 
         memoryCache.set(key, { data: products, timestamp: now });
         savePersistentCache(key, products);
@@ -88,8 +93,10 @@ export const homepageService = {
         return products;
       } catch (err) {
         console.error(`[homepageService] getProductsByCollection(${type}):`, err.message);
-        // serve stale memory cache on error rather than crashing
-        return memoryCache.get(key)?.data ?? [];
+        const staleProducts =
+          memoryCache.get(key)?.data ?? persistent[key]?.data;
+        if (Array.isArray(staleProducts)) return staleProducts;
+        throw err;
       } finally {
         promiseCache.delete(key);
       }
@@ -179,25 +186,6 @@ export const homepageService = {
     return promise;
   },
 
-
-  /* ───────── GET CACHED PRODUCTS FOR BOT (ZERO API CALLS) ───────── */
-  getCachedProductsForBot() {
-    const persistent = loadPersistentCache();
-    let allProducts = [];
-
-    // Loop through all keys currently in the persistent cache
-    Object.keys(persistent).forEach((key) => {
-      // Only extract items that were cached under "products-"
-      if (key.startsWith("products-") && Array.isArray(persistent[key].data)) {
-        allProducts.push(...persistent[key].data);
-      }
-    });
-
-    // Remove duplicates by ID (or name if ID is missing)
-    return Array.from(
-      new Map(allProducts.map((p) => [p.id || p._id || p.name, p])).values()
-    );
-  },
   /* ───────── COLLECTIONS ───────── */
   async getCollections(size = 8) {
     const key = `collections-${size}`;

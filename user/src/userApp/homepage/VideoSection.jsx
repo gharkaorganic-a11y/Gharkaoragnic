@@ -36,7 +36,7 @@ const VideoSection = ({
       <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-10">
         {/* ── CLEAN HEADER (only one) ── */}
         <div className="flex flex-col items-center text-center mb-8 md:mb-12">
-          <span className="text-[#da127d] uppercase tracking-[0.2em] text-[11px] font-medium mb-2">
+          <span className="text-[#315c3c] uppercase tracking-[0.2em] text-[11px] font-medium mb-2">
             Watch & Discover
           </span>
 
@@ -58,7 +58,7 @@ const VideoSection = ({
               isScrolling === "left" ? "scale-90" : "hover:scale-110"
             }`}>
             <span className="absolute inset-0 bg-white border border-[#e5e5e5]" />
-            <span className="absolute inset-0 bg-[#da127d] scale-0 group-hover:scale-100 transition-transform" />
+            <span className="absolute inset-0 bg-[#315c3c] scale-0 group-hover:scale-100 transition-transform" />
             <ChevronLeftIcon className="relative w-4 h-4 text-gray-600 group-hover:text-white" />
           </button>
 
@@ -69,7 +69,7 @@ const VideoSection = ({
               isScrolling === "right" ? "scale-90" : "hover:scale-110"
             }`}>
             <span className="absolute inset-0 bg-white border border-[#e5e5e5]" />
-            <span className="absolute inset-0 bg-[#da127d] scale-0 group-hover:scale-100 transition-transform" />
+            <span className="absolute inset-0 bg-[#315c3c] scale-0 group-hover:scale-100 transition-transform" />
             <ChevronRightIcon className="relative w-4 h-4 text-gray-600 group-hover:text-white" />
           </button>
 

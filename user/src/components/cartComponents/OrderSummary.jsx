@@ -1,6 +1,6 @@
 import React from "react";
 
-const OrderSummary = ({ subtotal, deliveryFee, total, itemCount }) => {
+const OrderSummary = ({ subtotal, total, itemCount }) => {
   return (
     <div className="bg-white p-6 rounded-xl shadow-md">
       <h2 className="text-xl font-semibold mb-6">Order Summary</h2>
@@ -8,11 +8,6 @@ const OrderSummary = ({ subtotal, deliveryFee, total, itemCount }) => {
       <div className="flex justify-between text-sm mb-3">
         <span>Subtotal ({itemCount} items)</span>
         <span>₹ {subtotal}</span>
-      </div>
-
-      <div className="flex justify-between text-sm mb-3">
-        <span>Delivery Fee</span>
-        <span>{deliveryFee === 0 ? "Free" : `₹ ${deliveryFee}`}</span>
       </div>
 
       <hr className="my-4" />

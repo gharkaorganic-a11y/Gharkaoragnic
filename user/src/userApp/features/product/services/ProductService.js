@@ -21,14 +21,17 @@ import {
   orderBy,
   limit,
   startAfter,
+  runTransaction,
+  serverTimestamp,
+  increment,
 } from "firebase/firestore";
-import { db } from "../../../../config/firebaseDB";
+import { auth, db } from "../../../../config/firebaseDB";
 
 /* ─────────────────────────────────────────────────────────────────────────────
    CONSTANTS
 ───────────────────────────────────────────────────────────────────────────── */
 
-const COL = "products";
+const COL = "storeProducts";
 const REVIEWS_COL = "reviews";
 const DEFAULT_PAGE_SIZE = 20;
 const DEFAULT_REVIEW_PAGE_SIZE = 5;
@@ -193,9 +196,14 @@ const normalize = (id, data) => ({
   stock: Number(data.stock ?? 0),
   sizes: Array.isArray(data.sizes) ? data.sizes : [],
   collectionTypes: Array.isArray(data.collectionTypes) ? data.collectionTypes : [],
-  isActive: data.isActive ?? true,
+  isActive: data.isDeleted !== true && (data.isActive ?? true),
   createdAt: data.createdAt ?? null,
-  totalReviews: Number(data.stock ?? 0),
+  totalReviews: Number(data.totalReviews ?? 0),
+  ratingSum: Number(data.ratingSum ?? 0),
+  rating:
+    Number(data.totalReviews ?? 0) > 0
+      ? Number(data.ratingSum ?? 0) / Number(data.totalReviews)
+      : 0,
 
   tags: Array.isArray(data.tags) ? data.tags : [],
 });
@@ -243,25 +251,25 @@ export const productService = {
     try {
       const constraints = [];
 
-      if (activeOnly) {
-        constraints.push(where("isActive", "==", true));
-      }
-
       if (collectionType) {
         constraints.push(where("collectionTypes", "array-contains", collectionType));
       }
 
-      constraints.push(orderBy("createdAt", "desc"));
       if (lastDoc) constraints.push(startAfter(lastDoc));
       constraints.push(limit(pageSize));
 
       const snapshot = await getDocs(query(collection(db, COL), ...constraints));
 
-      const products = snapshot.docs.map((d) => {
-        const p = normalize(d.id, d.data());
-        primeRefs(p);
-        return p;
-      });
+      const products = snapshot.docs
+        .map((d) => normalize(d.id, d.data()))
+        .filter((product) => !activeOnly || product.isActive)
+        .sort((a, b) => {
+          const toMillis = (value) =>
+            value?.toMillis?.() ??
+            (typeof value?.seconds === "number" ? value.seconds * 1000 : 0);
+          return toMillis(b.createdAt) - toMillis(a.createdAt);
+        });
+      products.forEach(primeRefs);
 
       return {
         products,
@@ -283,18 +291,19 @@ export const productService = {
     return dedupe(cacheKey, async () => {
       try {
         const snapshot = await getDocs(
-          query(
-            collection(db, COL),
-            where("isActive", "==", true),
-            orderBy("createdAt", "desc")
-          )
+          collection(db, COL)
         );
 
-        const products = snapshot.docs.map((d) => {
-          const p = normalize(d.id, d.data());
-          primeRefs(p);
-          return p;
-        });
+        const products = snapshot.docs
+          .map((d) => normalize(d.id, d.data()))
+          .filter((product) => product.isActive)
+          .sort((a, b) => {
+            const toMillis = (value) =>
+              value?.toMillis?.() ??
+              (typeof value?.seconds === "number" ? value.seconds * 1000 : 0);
+            return toMillis(b.createdAt) - toMillis(a.createdAt);
+          });
+        products.forEach(primeRefs);
 
         cache.set(cacheKey, products);
         return products;
@@ -321,6 +330,7 @@ export const productService = {
         if (!snapshot.exists()) return null;
 
         const product = normalize(snapshot.id, snapshot.data());
+        if (!product.isActive) return null;
         primeRefs(product);
         return product;
       } catch (err) {
@@ -360,6 +370,7 @@ export const productService = {
         for (const snap of snapshots) {
           for (const d of snap.docs) {
             const p = normalize(d.id, d.data());
+            if (!p.isActive) continue;
             primeRefs(p);
             byId.set(p.id, p);
           }
@@ -369,7 +380,7 @@ export const productService = {
       // Return in original input order, skipping not-found IDs
       return ids.map(String).reduce((acc, id) => {
         const p = byId.get(id);
-        if (p) acc.push(p);
+        if (p?.isActive) acc.push(p);
         return acc;
       }, []);
     } catch (err) {
@@ -396,18 +407,21 @@ export const productService = {
         const snapshot = await getDocs(
           query(
             collection(db, COL),
-            where("isActive", "==", true),
             where("collectionTypes", "array-contains-any", normalizedTypes.slice(0, FIRESTORE_IN_LIMIT)),
-            orderBy("createdAt", "desc"),
-            limit(maxResults)
           )
         );
 
-        const products = snapshot.docs.map((d) => {
-          const p = normalize(d.id, d.data());
-          primeRefs(p);
-          return p;
-        });
+        const products = snapshot.docs
+          .map((d) => normalize(d.id, d.data()))
+          .filter((product) => product.isActive)
+          .sort((a, b) => {
+            const toMillis = (value) =>
+              value?.toMillis?.() ??
+              (typeof value?.seconds === "number" ? value.seconds * 1000 : 0);
+            return toMillis(b.createdAt) - toMillis(a.createdAt);
+          })
+          .slice(0, maxResults);
+        products.forEach(primeRefs);
 
         cache.set(cacheKey, products);
         return products;
@@ -437,12 +451,17 @@ export const productService = {
     return dedupe(slugCacheKey, async () => {
       try {
         const snap = await getDocs(
-          query(collection(db, COL), where("slug", "==", slug), limit(1))
+          query(
+            collection(db, COL),
+            where("slug", "==", slug),
+            limit(1),
+          )
         );
 
         if (snap.empty) return null;
 
         const product = normalize(snap.docs[0].id, snap.docs[0].data());
+        if (!product.isActive) return null;
         primeRefs(product);
         return product;
       } catch (err) {
@@ -496,9 +515,87 @@ export const productService = {
         lastDoc: snap.docs.at(-1) ?? null,
         hasMore: snap.docs.length === pageSize,
       };
+    } catch {
+      // Fallback query if composite index is pending
+      try {
+        const fallbackSnap = await getDocs(
+          query(reviewsRef(productId), limit(pageSize))
+        );
+        const docs = fallbackSnap.docs
+          .map((d) => normalizeReview(d.id, d.data()))
+          .filter((r) => !approvedOnly || r.isApproved !== false);
+        return {
+          reviews: docs,
+          lastDoc: fallbackSnap.docs.at(-1) ?? null,
+          hasMore: false,
+        };
+      } catch {
+        return { reviews: [], lastDoc: null, hasMore: false };
+      }
+    }
+  },
+
+  /* ───────────────────────────────────────────────────────────────────────
+     addReview — post a genuine customer review to storeProducts/{id}/reviews.
+  ─────────────────────────────────────────────────────────────────────── */
+  async addReview(productId, review) {
+    if (!productId) throw new Error("Product ID is required");
+    let user = auth.currentUser;
+    if (!user) {
+      try {
+        const { signInAnonymously } = await import("firebase/auth");
+        const cred = await signInAnonymously(auth);
+        user = cred.user;
+      } catch (e) {
+        // Continue with guest fallback identifier
+      }
+    }
+    const userId = user?.uid || `guest-${Date.now()}`;
+
+    const cleanRating = Math.min(5, Math.max(1, Number(review.rating) || 5));
+    const newReview = {
+      userId,
+      name: (review.name || "Happy Customer").trim(),
+      rating: cleanRating,
+      title: (review.title || "").trim(),
+      comment: (review.comment || "").trim(),
+      verified: false,
+      isApproved: true,
+      createdAt: serverTimestamp(),
+      date: new Date().toLocaleDateString("en-IN", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      }),
+    };
+
+    try {
+      const productRef = doc(db, COL, productId);
+      const reviewRef = doc(reviewsRef(productId));
+
+      await runTransaction(db, async (transaction) => {
+        const productSnapshot = await transaction.get(productRef);
+        if (!productSnapshot.exists()) {
+          throw new ProductNotFoundError(productId);
+        }
+
+        transaction.set(reviewRef, newReview);
+        transaction.update(productRef, {
+          totalReviews: increment(1),
+          ratingSum: increment(cleanRating),
+          lastReviewId: reviewRef.id,
+          updatedAt: serverTimestamp(),
+        });
+      });
+
+      cache.clear();
+      slugToId.clear();
+      idToSlug.clear();
+      return { id: reviewRef.id, ...newReview };
     } catch (err) {
+      console.error("[productService] addReview error:", err);
       throw new ProductServiceError(
-        `Failed to fetch reviews for product: ${productId}`,
+        `Failed to add review for product: ${productId}`,
         err
       );
     }

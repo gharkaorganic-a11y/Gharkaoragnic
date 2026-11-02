@@ -68,7 +68,7 @@ const CollectionToolbar = ({ title, gridCols, setGridCols, sort, setSort }) => {
         className="hidden px-6 border-l border-gray-200 h-full relative md:flex items-center">
         <button
           onClick={() => setOpen((v) => !v)}
-          className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest hover:text-[#da127d]">
+          className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest hover:text-[#315c3c]">
           {sortLabel}
           <ChevronDownIcon
             className={`w-3.5 h-3.5 transition-transform ${

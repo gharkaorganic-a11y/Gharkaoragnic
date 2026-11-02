@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import axios from "axios";
 import { Helmet } from "react-helmet-async";
+import ProductCard from "../../../components/cards/ProductCard";
 
 const CategoryDetails = () => {
   const { slug } = useParams();
@@ -117,39 +118,18 @@ const CategoryDetails = () => {
       </div>
 
       {/* ✅ PRODUCT GRID */}
-      <div className="max-w-6xl mx-auto px-6 py-10">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {products.map((product) => (
-            <Link
-              to={`/product/${product.slug}`}
-              key={product._id}
-              className="group block">
-              {/* Image */}
-              <div className="w-full aspect-[3/4] rounded-xl overflow-hidden bg-gray-100 shadow-sm">
-                <img
-                  src={product.thumbnail}
-                  alt={product.name}
-                  className="w-full h-full object-cover transition duration-300 group-hover:scale-105"
-                />
-              </div>
-
-              {/* Title */}
-              <h3 className="mt-4 font-medium text-gray-800 group-hover:text-black transition">
-                {product.name}
-              </h3>
-
-              {/* Price */}
-              <p className="text-gray-600 mt-1 text-sm font-medium">
-                ₹{product.price.toLocaleString()}
-              </p>
-
-              {/* Optional Tag */}
-              {product?.tag && (
-                <span className="text-xs px-2 py-1 bg-gray-100 mt-2 inline-block rounded-lg text-gray-600">
-                  {product.tag}
-                </span>
-              )}
-            </Link>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:gap-x-8 sm:gap-y-12 md:grid-cols-3 md:gap-x-10 lg:grid-cols-4 lg:gap-x-12 xl:gap-x-14 lg:gap-y-14">
+          {products.map((product, idx) => (
+            <ProductCard
+              key={product._id || product.id || idx}
+              product={{
+                ...product,
+                id: product._id || product.id,
+                banner: product.thumbnail || product.banner,
+              }}
+              index={idx}
+            />
           ))}
         </div>
       </div>

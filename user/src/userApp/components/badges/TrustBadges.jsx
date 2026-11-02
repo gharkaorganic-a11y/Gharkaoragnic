@@ -1,12 +1,12 @@
-import { RotateCcw, Shield, Truck } from "lucide-react";
+import { MessageCircle, RotateCcw, Shield } from "lucide-react";
 
 export const TrustBadges = () => (
   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-gray-200">
     <div className="flex items-center gap-3 text-sm text-gray-600">
-      <Truck className="w-5 h-5 text-green-600" />
+      <MessageCircle className="w-5 h-5 text-green-600" />
       <div>
-        <p className="font-medium">Free Shipping</p>
-        <p className="text-xs">Above ₹1999</p>
+        <p className="font-medium">Delivery confirmation</p>
+        <p className="text-xs">Via WhatsApp</p>
       </div>
     </div>
     <div className="flex items-center gap-3 text-sm text-gray-600">

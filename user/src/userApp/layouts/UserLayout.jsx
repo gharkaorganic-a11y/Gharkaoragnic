@@ -8,10 +8,11 @@ import BottomNavbar from "../features/account/components/bars/BottomHomeNavbar";
 import Footer from "../components/footer/Footer";
 
 // Popups & Floating Elements
-import UnverifiedEmailPopup from "../features/auth/pages/UnverifiedEmailPopup";
-import SalesNotificationPopup from "../components/pop-up/SalesNotificationPopup";
 import WhatsAppFooterBar from "../../shared/components/WhatsAppFooterBar";
-import WhatsAppGuidedBot from "../../shared/components/whtshappbot/WhatsAppGuidedBot";
+import WhatsAppButton from "../../shared/components/WhatsAppButton";
+import CartDrawer from "../features/cart/components/CartDrawer";
+import RecentPurchasePopup from "../components/notifications/RecentPurchasePopup";
+import { StorefrontDesignProvider } from "../features/storefront/StorefrontDesignProvider";
 
 const UserLayout = () => {
   const location = useLocation();
@@ -22,41 +23,33 @@ const UserLayout = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-white font-sans antialiased selection:bg-black selection:text-white relative">
-      {/* 🔷 HEADER WITH PROMO BAR */}
-      <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 shadow-sm">
-        <PromotionalNavbar />
-        <div className="bg-white/95 backdrop-blur-md">
-          <UserNavbar />
+    <StorefrontDesignProvider>
+      <div className="relative flex min-h-screen flex-col bg-[#fbfaf5] font-sans antialiased selection:bg-[#315c3c] selection:text-white">
+        <header className="sticky top-0 z-50 w-full bg-white border-b border-[#eeeeea] shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+          <PromotionalNavbar />
+          <div className="bg-white">
+            <UserNavbar />
+          </div>
+        </header>
+
+        <main className="flex w-full flex-1 flex-col pb-[70px] md:pb-0">
+          <div
+            key={location.pathname}
+            className="w-full flex-1 animate-in fade-in duration-300">
+            <Outlet />
+          </div>
+        </main>
+
+        <div className="relative z-10">
+          <Footer />
         </div>
-      </header>
 
-      {/* 🔻 MAIN CONTENT */}
-      {/* pb-[70px] accounts for the BottomNavbar on mobile */}
-      <main className="flex-1 w-full flex flex-col pb-[70px] md:pb-0">
-        <div
-          key={location.pathname}
-          className="flex-1 w-full animate-in fade-in duration-300">
-          <Outlet />
-        </div>
-      </main>
-
-      {/* 🔶 FOOTER */}
-      <div className="relative z-10">
-        <Footer />
+        <WhatsAppButton />
+        <WhatsAppFooterBar />
+        <RecentPurchasePopup />
+        <CartDrawer />
       </div>
-
-      {/* 🔔 POPUPS (Fixed: Raised z-index to overlay z-50 header) */}
-      <div className="relative z-[60]">
-        <UnverifiedEmailPopup />
-        <SalesNotificationPopup />
-      </div>
-
-      {/* 💬 FLOATING ACTIONS */}
-      {/* Assuming these components manage their own fixed positioning internally */}
-      <WhatsAppGuidedBot />
-      <WhatsAppFooterBar />
-    </div>
+    </StorefrontDesignProvider>
   );
 };
 

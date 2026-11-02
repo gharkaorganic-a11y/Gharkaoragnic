@@ -17,8 +17,9 @@ const ProductGrid = memo(
     sentinelRef,
     clearFilters,
   }) => {
-    // Simple responsive grid: 2 cols mobile, 3 tablet, 4 desktop
-    const defaultGridClass = "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4";
+    // Generous responsive grid matching RelatedProducts spacing
+    const defaultGridClass =
+      "grid-cols-2 gap-x-6 gap-y-10 sm:gap-x-8 sm:gap-y-12 md:grid-cols-3 md:gap-x-10 lg:grid-cols-4 lg:gap-x-12 xl:gap-x-14 lg:gap-y-14";
     const finalGridClass = gridClass || defaultGridClass;
 
     if (isError) return <ErrorState retry={() => window.location.reload()} />;
@@ -29,13 +30,17 @@ const ProductGrid = memo(
     return (
       <>
         <div className={`grid ${finalGridClass}`}>
-          {displayProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {displayProducts.map((product, idx) => (
+            <ProductCard
+              key={product.id || idx}
+              product={product}
+              index={idx}
+            />
           ))}
         </div>
 
         {isFetchingNextPage && (
-          <div className={`grid ${finalGridClass} mt-6`}>
+          <div className={`grid ${finalGridClass} mt-10`}>
             {Array.from({ length: 4 }).map((_, i) => (
               <SkeletonCard key={`skeleton-${i}`} />
             ))}

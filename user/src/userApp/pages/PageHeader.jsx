@@ -1,5 +1,5 @@
 /**
- * PageHeader.jsx — MNMUKT Common Header
+ * Shared header for customer account pages.
  *
  * Usage:
  *   <PageHeader title="Order History" navigate={navigate} tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -8,8 +8,8 @@
 import React, { useEffect, useState } from "react";
 import { ChevronLeft } from "lucide-react";
 
-const PINK = "#FF3F6C";
-const PINK_D = "#da127d";
+const BRAND_GREEN = "#315c3c";
+const BRAND_DARK = "#244b2e";
 
 const PageHeader = ({
   title,
@@ -33,19 +33,17 @@ const PageHeader = ({
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;700;800;900&display=swap');
         .ph-tab-pill { transition: background 0.18s, color 0.18s; }
         .ph-no-scrollbar::-webkit-scrollbar { display: none; }
         .ph-no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
 
       <header
-        style={{ fontFamily: "'DM Sans', sans-serif" }}
-        className={`bg-white sticky top-0 z-40 transition-all duration-200
+        className={`sticky top-0 z-40 bg-[#fffdf8] transition-all duration-200
           ${
             elevated
-              ? "shadow-[0_2px_18px_rgba(0,0,0,0.09)]"
-              : "border-b border-gray-100"
+              ? "shadow-[0_2px_18px_rgba(49,92,60,0.12)]"
+              : "border-b border-[#e7e5dc]"
           }`}>
         {/* ── Title Row ── */}
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -54,12 +52,12 @@ const PageHeader = ({
             <button
               onClick={() => navigate(-1)}
               className="group flex items-center justify-center w-9 h-9 -ml-1.5 rounded-full
-                hover:bg-gray-100 active:bg-gray-200 transition-colors flex-shrink-0
-                focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#FF3F6C]"
+                flex-shrink-0 transition-colors hover:bg-[#edf5ee] active:bg-[#dce9dc]
+                focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#315c3c]"
               aria-label="Go back">
               <ChevronLeft
                 size={22}
-                className="text-gray-600 group-hover:text-[#282C3F] transition-colors"
+                className="text-[#52644d] transition-colors group-hover:text-[#244b2e]"
               />
             </button>
 
@@ -67,7 +65,7 @@ const PageHeader = ({
             <div className="flex-1 min-w-0 ml-1">
               <h1
                 className="text-[16px] sm:text-[18px] font-black uppercase tracking-[0.07em]
-                  text-[#282C3F] leading-none truncate">
+                  text-[#263329] leading-none truncate">
                 {title}
               </h1>
               {subtitle && (
@@ -86,11 +84,11 @@ const PageHeader = ({
           </div>
         </div>
 
-        {/* ── Pink accent line (always present) ── */}
+        {/* ── Brand accent line ── */}
         <div
           className="h-[2.5px] w-full"
           style={{
-            background: `linear-gradient(90deg, ${PINK} 0%, ${PINK_D} 100%)`,
+            background: `linear-gradient(90deg, ${BRAND_GREEN} 0%, ${BRAND_DARK} 100%)`,
           }}
         />
 
@@ -109,8 +107,8 @@ const PageHeader = ({
                       focus:outline-none transition-all
                       ${
                         isActive
-                          ? "text-[#FF3F6C] bg-[#fff0f3]"
-                          : "text-gray-500 hover:text-[#282C3F] hover:bg-gray-100"
+                          ? "bg-[#edf5ee] text-[#315c3c]"
+                          : "text-gray-500 hover:bg-gray-100 hover:text-[#244b2e]"
                       }`}>
                     {tab.label}
 
@@ -120,7 +118,7 @@ const PageHeader = ({
                         className={`text-[10px] font-black px-1.5 py-0.5 rounded-full leading-none
                           ${
                             isActive
-                              ? "bg-[#FF3F6C] text-white"
+                              ? "bg-[#315c3c] text-white"
                               : "bg-gray-200 text-gray-500"
                           }`}>
                         {tab.count}

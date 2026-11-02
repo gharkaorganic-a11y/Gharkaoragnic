@@ -8,18 +8,11 @@ const InstagramFeed = () => {
 
   return (
     <section
-      style={{ fontFamily: "'DM Sans', sans-serif" }}
       className="w-full py-16 sm:py-20 lg:py-24 bg-[#FAF9F6]">
-      {/* Ensure fonts are loaded (can be removed if already in index.html) */}
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap');
-      `}</style>
-
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* ───────── Header (Matching Brand Design) ───────── */}
         <div className="text-center mb-12 flex flex-col items-center">
           <h2
-            style={{ fontFamily: "'Cormorant Garamond', serif" }}
             className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
             Shop Our Instagram
           </h2>

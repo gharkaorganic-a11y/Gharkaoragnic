@@ -40,6 +40,13 @@ const ForgotPasswordPage = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-start pt-12 sm:pt-20 px-6 font-sans">
       <div className="w-full max-w-[360px] flex flex-col items-center">
+        <Link to="/" className="mb-8 inline-flex justify-center">
+          <img
+            src="https://gharkaorganic.com/logo/gharka-logo.png"
+            alt="Ghar Ka Organic"
+            className="h-16 w-auto max-w-[220px] object-contain"
+          />
+        </Link>
         {!isSent ? (
           <div className="w-full flex flex-col items-center animate-fade-in">
             {/* ── Illustration with Orange Base Line ── */}
@@ -66,13 +73,13 @@ const ForgotPasswordPage = () => {
                   height="70"
                   rx="4"
                   fill="#ffffff"
-                  stroke="#df0059"
+                  stroke="#315c3c"
                   strokeWidth="3"
                 />
                 <path
                   d="M45 70 L100 110 L155 70"
                   fill="none"
-                  stroke="#df0059"
+                  stroke="#315c3c"
                   strokeWidth="3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -85,14 +92,14 @@ const ForgotPasswordPage = () => {
                   width="40"
                   height="30"
                   rx="6"
-                  fill="#df0059"
+                  fill="#315c3c"
                 />
 
                 {/* Lock Shackle */}
                 <path
                   d="M90 55 v-10 a10 10 0 0120 0 v10"
                   fill="none"
-                  stroke="#df0059"
+                  stroke="#315c3c"
                   strokeWidth="4"
                   strokeLinecap="round"
                 />
@@ -146,13 +153,13 @@ const ForgotPasswordPage = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter email"
-                  className="w-full h-[52px] bg-white border border-gray-300 rounded-[4px] px-12 text-[14px] text-gray-800 outline-none focus:border-[#df0059] focus:ring-1 focus:ring-[#df0059] transition-all text-center placeholder:text-gray-400"
+                  className="w-full h-[52px] bg-white border border-gray-300 rounded-[4px] px-12 text-[14px] text-gray-800 outline-none focus:border-[#315c3c] focus:ring-1 focus:ring-[#315c3c] transition-all text-center placeholder:text-gray-400"
                 />
               </div>
 
               {/* Error Message */}
               {error && (
-                <div className="text-[#df0059] text-[13px] text-center font-medium bg-[#df0059]/5 py-2 rounded">
+                <div className="text-[#315c3c] text-[13px] text-center font-medium bg-[#315c3c]/5 py-2 rounded">
                   {error}
                 </div>
               )}
@@ -161,7 +168,7 @@ const ForgotPasswordPage = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full h-[52px] bg-[#df0059] hover:bg-[#c2004d] active:scale-[0.98] text-white text-[13px] font-medium tracking-wider uppercase rounded-[4px] transition-all disabled:opacity-70 flex items-center justify-center shadow-sm">
+                className="w-full h-[52px] bg-[#315c3c] hover:bg-[#c2004d] active:scale-[0.98] text-white text-[13px] font-medium tracking-wider uppercase rounded-[4px] transition-all disabled:opacity-70 flex items-center justify-center shadow-sm">
                 {loading ? (
                   <svg
                     className="animate-spin h-5 w-5 text-white"
@@ -192,7 +199,7 @@ const ForgotPasswordPage = () => {
             <div className="mt-8 text-center">
               <Link
                 to="/auth/login"
-                className="text-[13px] text-gray-500 hover:text-[#df0059] transition-colors font-medium">
+                className="text-[13px] text-gray-500 hover:text-[#315c3c] transition-colors font-medium">
                 &larr; Back to Sign In
               </Link>
             </div>
@@ -200,9 +207,9 @@ const ForgotPasswordPage = () => {
         ) : (
           /* ── Success State ── */
           <div className="w-full flex flex-col items-center animate-fade-in text-center mt-10">
-            <div className="w-20 h-20 bg-[#df0059]/10 rounded-full flex items-center justify-center mb-6">
+            <div className="w-20 h-20 bg-[#315c3c]/10 rounded-full flex items-center justify-center mb-6">
               <svg
-                className="w-10 h-10 text-[#df0059]"
+                className="w-10 h-10 text-[#315c3c]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -225,14 +232,14 @@ const ForgotPasswordPage = () => {
 
             <button
               onClick={() => setIsSent(false)}
-              className="w-full h-[52px] border border-[#df0059] text-[#df0059] hover:bg-[#df0059]/5 active:scale-[0.98] text-[13px] font-medium tracking-wider uppercase rounded-[4px] transition-all flex items-center justify-center">
+              className="w-full h-[52px] border border-[#315c3c] text-[#315c3c] hover:bg-[#315c3c]/5 active:scale-[0.98] text-[13px] font-medium tracking-wider uppercase rounded-[4px] transition-all flex items-center justify-center">
               Try a different email
             </button>
 
             <div className="mt-6">
               <Link
                 to="/auth/login"
-                className="text-[13px] text-gray-500 hover:text-[#df0059] transition-colors font-medium">
+                className="text-[13px] text-gray-500 hover:text-[#315c3c] transition-colors font-medium">
                 Return to Login
               </Link>
             </div>

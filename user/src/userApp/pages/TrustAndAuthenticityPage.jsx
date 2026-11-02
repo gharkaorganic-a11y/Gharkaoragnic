@@ -43,7 +43,7 @@ const TrustAndAuthenticityPage = () => {
       {/* ┌─────────────────────────────────────────────────────────────┐
           │ HEADER SECTION (Centered, Mobile-First)                       │
           └─────────────────────────────────────────────────────────────┘ */}
-      <header className="bg-pink-50/50 pt-16 pb-12 px-6 border-b border-pink-100 text-center flex flex-col items-center">
+      <header className="bg-green-50/50 pt-16 pb-12 px-6 border-b border-green-100 text-center flex flex-col items-center">
         <div className="w-16 h-16 bg-[#990000] rounded-full flex items-center justify-center mb-6 shadow-sm">
           {/* Checkmark Icon */}
           <svg
@@ -138,7 +138,7 @@ const TrustAndAuthenticityPage = () => {
         {/* ┌─────────────────────────────────────────────────────────────┐
             │ CALL TO ACTION                                                │
             └─────────────────────────────────────────────────────────────┘ */}
-        <section className="bg-pink-50/30 p-8 rounded-lg border border-pink-100 mt-12 flex flex-col items-center">
+        <section className="bg-green-50/30 p-8 rounded-lg border border-green-100 mt-12 flex flex-col items-center">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             Still have questions?
           </h3>
@@ -149,7 +149,7 @@ const TrustAndAuthenticityPage = () => {
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <Link
               to="/contact"
-              className="w-full sm:w-auto px-8 py-3 text-sm font-medium rounded text-[#990000] bg-pink-100/50 hover:bg-pink-100 transition-colors border border-pink-200">
+              className="w-full sm:w-auto px-8 py-3 text-sm font-medium rounded text-[#990000] bg-green-100/50 hover:bg-green-100 transition-colors border border-green-200">
               Contact Support
             </Link>
             <Link

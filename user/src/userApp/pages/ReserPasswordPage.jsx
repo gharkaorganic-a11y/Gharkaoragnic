@@ -58,7 +58,7 @@ const ResetPasswordPage = () => {
       )}
 
       <div className="w-full max-w-md bg-white p-8 md:rounded-2xl md:shadow-lg">
-        <h2 className="text-3xl font-[lora] text-[#ff356c] text-center mb-4">
+        <h2 className="text-3xl font-sans text-[#315c3c] text-center mb-4">
           Reset Your Password
         </h2>
 
@@ -91,7 +91,7 @@ const ResetPasswordPage = () => {
 
           <button
             disabled={loading}
-            className="w-full py-3 bg-[#ff356c] rounded-lg text-white font-semibold transition">
+            className="w-full py-3 bg-[#315c3c] rounded-lg text-white font-semibold transition">
             {loading ? "Updating..." : "Reset Password"}
           </button>
         </form>

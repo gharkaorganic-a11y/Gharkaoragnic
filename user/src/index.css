@@ -1,14 +1,76 @@
 @import "tailwindcss";
 
-/* ────────────── Fonts ────────────── */
-@layer base {
-  body {
-    font-family: "Poppins", sans-serif;
-  }
+@theme {
+  --font-sans: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --color-brand-forest: #315c3c;
+  --color-brand-leaf: #47724d;
+  --color-brand-dark: #244b2e;
+  --color-brand-cream: #f7f8f6;
+  --color-brand-mist: #edf5ee;
 }
 
-@utility font-playfair {
-  font-family: "Playfair Display", serif;
+.storefront-root {
+  color: var(--storefront-text-color, #202124);
+  font-family: var(--storefront-body-font, "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-size: var(--storefront-base-font-size, 16px);
+}
+
+.storefront-root :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--storefront-heading-color, #263329);
+  font-family: var(--storefront-heading-font, "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+}
+
+.storefront-root footer :is(h1, h2, h3, h4, h5, h6),
+footer :is(h1, h2, h3, h4, h5, h6) {
+  color: inherit;
+}
+
+/* ────────────── Fonts ────────────── */
+@layer base {
+  :root {
+    color-scheme: light;
+    background: #ffffff;
+    color: #202124;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    font-family: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  html {
+    min-width: 320px;
+    scroll-behavior: smooth;
+    font-family: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+    background: #ffffff;
+    color: #263329;
+    font-family: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    font-family: inherit;
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid #47724d;
+    outline-offset: 2px;
+  }
 }
 
 /* ────────────── Slide-in Animation ────────────── */

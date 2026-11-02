@@ -113,7 +113,7 @@ const reducer = (state, action) => {
         ...state,
         user: action.user,
         address: action.address ?? state.address,
-        isLoggedIn: true,
+        isLoggedIn: !action.user?.isAnonymous,
         authLoading: false,
         actionLoading: false,
         error: null,
@@ -152,6 +152,7 @@ const buildUserObj = (firebaseUser, firestoreData = {}) => ({
   defaultAddressId: firestoreData.defaultAddressId ?? null,
   notificationsEnabled: firestoreData.notificationsEnabled ?? true,
   marketingEmails: firestoreData.marketingEmails ?? false,
+  isAnonymous: firebaseUser.isAnonymous ?? false,
   createdAt:
     firestoreData.createdAt?.toDate?.()?.toISOString?.() ??
     firestoreData.createdAt ??
@@ -163,6 +164,8 @@ const buildUserObj = (firebaseUser, firestoreData = {}) => ({
 });
 
 const detectProvider = (firebaseUser) => {
+  if (firebaseUser.isAnonymous) return "anonymous";
+
   const raw = firebaseUser.providerData?.[0]?.providerId ?? "password";
   if (raw.includes("google")) return "google";
   if (raw.includes("facebook")) return "facebook";
@@ -252,7 +255,7 @@ export const AuthProvider = ({ children }) => {
     ...INITIAL_STATE,
     user: cached?.user ?? null,
     address: cached?.address ?? null,
-    isLoggedIn: !!cached?.user,
+    isLoggedIn: !!cached?.user && !cached.user.isAnonymous,
     authLoading: !cached,
   });
 
@@ -288,7 +291,9 @@ export const AuthProvider = ({ children }) => {
           justSignedUp.current = false;
           firestoreData = {};
         } else {
-          firestoreData = await ensureUserDoc(firebaseUser, providerId);
+          firestoreData = firebaseUser.isAnonymous
+            ? {}
+            : await ensureUserDoc(firebaseUser, providerId);
         }
 
         const userObj = buildUserObj(firebaseUser, firestoreData);
@@ -296,8 +301,9 @@ export const AuthProvider = ({ children }) => {
         // FIX 2: Use cached address if available — avoids a Firestore
         //        read on every Firebase token refresh (fires every hour).
         const localCache = readCache();
-        const address =
-          localCache?.address != null
+        const address = firebaseUser.isAnonymous
+          ? null
+          : localCache?.address != null
             ? localCache.address
             : await getDefaultAddress(firebaseUser.uid);
 

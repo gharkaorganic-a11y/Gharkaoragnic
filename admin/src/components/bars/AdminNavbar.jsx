@@ -6,11 +6,9 @@ import {
   FaSignOutAlt,
   FaBell,
   FaChevronDown,
-  FaStore,
   FaUserShield,
   FaCircle,
   FaExternalLinkAlt,
-  FaLeaf,
 } from "react-icons/fa";
 import { useAdminAuth } from "../../context/AdminAuthContext"; // <-- Use your context
 
@@ -20,16 +18,14 @@ export default function AdminNavbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { logout, admin } = useAdminAuth(); // ✅ Get logout function and admin info
+  const { logout, admin } = useAdminAuth();
 
   const navLinks = useMemo(
     () => [
       { title: "Dashboard", path: "/" },
       { title: "Inventory", path: "/products" },
-      { title: "Categories", path: "/categories" },
-      { title: "Collection", path: "/collection/list" },
-      { title: "Shipments", path: "/orders" },
-      { title: "Users", path: "/customers" },
+      { title: "Orders", path: "/orders" },
+      { title: "Inquiries", path: "/inquiries" },
       { title: "Testimonials", path: "/testimonials" },
     ],
     [],
@@ -37,8 +33,8 @@ export default function AdminNavbar() {
 
   const handleLogout = async () => {
     try {
-      await logout(); // ✅ Use context logout
-      navigate("/auth"); // redirect to login
+      await logout();
+      navigate("/auth");
     } catch (err) {
       console.error("Logout failed:", err);
     }
@@ -49,7 +45,7 @@ export default function AdminNavbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-100 flex flex-col font-sans">
       {/* PRIMARY HUD */}
-      <div className="bg-[#2874F0] text-white shadow-md z-[105]">
+      <div className="z-[105] bg-[#2874F0] text-white shadow-md">
         <div className="max-w-[1800px] mx-auto px-4 h-14 flex items-center justify-between gap-6">
           {/* Brand Section */}
           <div className="flex items-center gap-4 shrink-0">
@@ -60,15 +56,14 @@ export default function AdminNavbar() {
             </button>
 
             <Link to="/" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 bg-white rounded-sm flex items-center justify-center shadow-sm">
-                <FaLeaf className="text-[#2874F0] text-lg" />
-              </div>
+              <img
+                src="https://gharkaorganic.com/logo/gharka-logo.png"
+                alt="Ghar Ka Organic"
+                className="h-10 w-auto max-w-[150px] rounded bg-white object-contain p-1 sm:max-w-[180px]"
+              />
               <div className="hidden sm:flex flex-col">
-                <span className="text-lg font-bold italic tracking-tight leading-none">
-                  Taruveda
-                </span>
-                <span className="text-[10px] text-[#FFE500] font-bold uppercase tracking-widest mt-0.5">
-                  Seller Hub
+                <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-widest text-blue-100">
+                  Store admin
                 </span>
               </div>
             </Link>
@@ -78,27 +73,33 @@ export default function AdminNavbar() {
           <div className="hidden md:flex items-center gap-8 px-8 h-full border-x border-white/20">
             <div className="flex items-center gap-2">
               <FaCircle className="text-[#FFE500] text-[8px] animate-pulse" />
-              <span className="text-[10px] font-bold text-blue-100 uppercase tracking-wider">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-blue-100">
                 System: Active
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold text-blue-100 uppercase tracking-wider">
-                Region: Agra, IN
+              <span className="text-[10px] font-bold uppercase tracking-wider text-blue-100">
+                Uttarakhand, India
               </span>
             </div>
             <button
-              onClick={() => window.open("/", "_blank")}
-              className="flex items-center gap-2 text-[10px] font-bold text-white uppercase tracking-wider hover:text-[#FFE500] transition-colors active:scale-95">
+              onClick={() =>
+                window.open(
+                  "https://gharkaorganic.com/",
+                  "_blank",
+                  "noopener,noreferrer",
+                )
+              }
+              className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-white transition-colors hover:text-blue-100 active:scale-95">
               Visit Store <FaExternalLinkAlt size={10} />
             </button>
           </div>
 
           {/* Profile HUD */}
           <div className="flex items-center gap-2 md:gap-4 shrink-0 relative">
-            <button className="relative p-2 text-blue-100 hover:text-white transition-colors active:scale-90">
+            <button className="relative p-2 text-[#e2eee3] transition-colors hover:text-white active:scale-90">
               <FaBell size={18} />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#ff356c] rounded-full border-2 border-[#2874F0]" />
+              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full border-2 border-[#2874F0] bg-[#FFE500]" />
             </button>
 
             <div className="h-6 w-[1px] bg-white/20 hidden sm:block mx-1"></div>
@@ -108,38 +109,32 @@ export default function AdminNavbar() {
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                 className="flex items-center gap-3 p-1 rounded transition-colors hover:bg-white/10">
                 <div className="hidden sm:block text-right">
-                  <p className="text-[10px] text-blue-200 font-bold uppercase leading-none">
+                  <p className="text-[10px] font-bold uppercase leading-none text-blue-100">
                     {admin?.email ?? "Admin"}
                   </p>
                   <p className="text-xs font-bold text-white flex items-center gap-1 mt-1">
                     Manage Account{" "}
                     <FaChevronDown
                       size={10}
-                      className="text-blue-200 opacity-80"
+                      className="text-blue-100 opacity-80"
                     />
                   </p>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-white text-[#2874F0] flex items-center justify-center shadow-sm">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#2874F0] shadow-sm">
                   <FaUserShield size={14} />
                 </div>
               </button>
 
               {isProfileOpen && (
-                <div className="absolute right-0 top-12 mt-2 w-56 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200 rounded-sm py-2 z-[110] animate-in fade-in slide-in-from-top-2 text-gray-800">
+                <div className="absolute right-0 top-12 z-[110] mt-2 w-56 animate-in rounded-xl border border-gray-200 bg-white py-2 text-gray-800 shadow-[0_8px_30px_rgb(0,0,0,0.12)] fade-in slide-in-from-top-2">
                   <div className="px-4 py-3 border-b border-gray-100 mb-1">
                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                       Authorized Session
                     </p>
                     <p className="text-sm font-bold text-gray-900 truncate mt-0.5">
-                      {admin?.email ?? "admin@taruveda.com"}
+                      {admin?.email ?? "admin"}
                     </p>
                   </div>
-                  <Link
-                    to="/settings"
-                    onClick={() => setIsProfileOpen(false)}
-                    className="flex items-center px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-blue-50 hover:text-[#2874F0] transition-colors">
-                    <FaStore className="mr-3 text-lg" /> Registry Settings
-                  </Link>
                   <button
                     onClick={handleLogout}
                     className="w-full flex items-center px-4 py-2.5 text-xs font-bold text-red-600 hover:bg-red-50 border-t border-gray-100 mt-1 transition-colors">
@@ -166,7 +161,7 @@ export default function AdminNavbar() {
               }`}>
               {link.title}
               {isActive(link.path) && (
-                <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#2874F0] rounded-t-sm" />
+                <div className="absolute bottom-0 left-0 right-0 h-[3px] rounded-t-sm bg-[#2874F0]" />
               )}
             </Link>
           ))}
@@ -176,10 +171,10 @@ export default function AdminNavbar() {
       {/* Mobile Drawer */}
       {isMenuOpen && (
         <div className="lg:hidden fixed inset-0 z-[120] bg-black/60 backdrop-blur-sm">
-          <div className="w-72 h-full bg-[#f1f3f6] animate-in slide-in-from-left duration-300 shadow-2xl flex flex-col">
-            <div className="h-14 bg-[#2874F0] flex items-center px-6 justify-between text-white shrink-0 shadow-md z-10">
+          <div className="flex h-full w-72 animate-in flex-col bg-[#F1F3F6] shadow-2xl slide-in-from-left duration-300">
+            <div className="z-10 flex h-14 shrink-0 items-center justify-between bg-[#2874F0] px-6 text-white shadow-md">
               <span className="font-bold uppercase tracking-wider text-sm flex items-center gap-2">
-                <FaLeaf className="text-[#FFE500]" /> Main Menu
+                Main Menu
               </span>
               <button
                 onClick={() => setIsMenuOpen(false)}
@@ -196,7 +191,7 @@ export default function AdminNavbar() {
                   onClick={() => setIsMenuOpen(false)}
                   className={`block px-6 py-4 text-xs font-bold uppercase tracking-wider transition-all border-b border-gray-50 ${
                     isActive(link.path)
-                      ? "bg-blue-50/50 text-[#2874F0] border-l-4 border-l-[#2874F0]"
+                      ? "border-l-4 border-l-[#2874F0] bg-blue-50 text-[#2874F0]"
                       : "text-gray-600 hover:bg-gray-50 border-l-4 border-l-transparent"
                   }`}>
                   {link.title}

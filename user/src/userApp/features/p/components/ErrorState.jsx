@@ -12,7 +12,7 @@ const ErrorState = ({ retry }) => {
       <button
         onClick={retry}
         className="mt-4 px-8 py-3.5 text-[11px] font-bold uppercase tracking-widest text-white hover:bg-black transition-colors shadow-lg"
-        style={{ background: "#da127d" }}>
+        style={{ background: "#315c3c" }}>
         Retry
       </button>
     </div>

@@ -11,14 +11,14 @@ import {
 
 /* ── Tag icon mapping ── */
 const TAG_ICONS = {
-  home: <Home size={16} color="#df0059" strokeWidth={2} />,
-  work: <Briefcase size={16} color="#df0059" strokeWidth={2} />,
-  other: <Star size={16} color="#df0059" strokeWidth={2} />,
+  home: <Home size={16} color="#315c3c" strokeWidth={2} />,
+  work: <Briefcase size={16} color="#315c3c" strokeWidth={2} />,
+  other: <Star size={16} color="#315c3c" strokeWidth={2} />,
 };
 
 const tagIcon = (tag) =>
   TAG_ICONS[tag?.toLowerCase()] ?? (
-    <MapPin size={16} color="#df0059" strokeWidth={2} />
+    <MapPin size={16} color="#315c3c" strokeWidth={2} />
   );
 
 /* ── AddressCard Component ── */
@@ -39,7 +39,7 @@ const AddressCard = ({ address, userName, userPhone, onEdit, onAdd }) => {
         <div>
           <p
             className="text-lg text-zinc-800"
-            style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}>
+            style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
             No address saved
           </p>
           <p className="text-sm text-zinc-400 max-w-[220px] leading-snug mt-1">
@@ -49,7 +49,7 @@ const AddressCard = ({ address, userName, userPhone, onEdit, onAdd }) => {
         {onAdd && (
           <button
             onClick={onAdd}
-            className="mt-2 flex items-center gap-1.5 px-5 py-2.5 bg-[#df0059] hover:bg-[#c4004e] text-white text-[13px] font-semibold rounded-lg transition-all shadow-[0_4px_12px_rgba(223,0,89,0.25)] hover:shadow-[0_6px_16px_rgba(223,0,89,0.35)] hover:-translate-y-0.5 active:translate-y-0">
+            className="mt-2 flex items-center gap-1.5 px-5 py-2.5 bg-[#315c3c] hover:bg-[#c4004e] text-white text-[13px] font-semibold rounded-lg transition-all shadow-[0_4px_12px_rgba(49,92,60,0.25)] hover:shadow-[0_6px_16px_rgba(49,92,60,0.35)] hover:-translate-y-0.5 active:translate-y-0">
             <Plus size={15} strokeWidth={2.5} /> Add Address
           </button>
         )}
@@ -73,13 +73,13 @@ const AddressCard = ({ address, userName, userPhone, onEdit, onAdd }) => {
       <div className="flex items-start justify-between gap-4 px-5 py-4 border-b border-dashed border-zinc-200 bg-white">
         <div className="flex items-center gap-3 min-w-0">
           {/* Tag icon */}
-          <div className="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center shrink-0">
             {tagIcon(tag)}
           </div>
           <div className="min-w-0">
             <p
               className="text-[22px] leading-tight text-zinc-900 truncate"
-              style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}>
+              style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
               {name || "Address Details"}
             </p>
             {tag && (
@@ -95,7 +95,7 @@ const AddressCard = ({ address, userName, userPhone, onEdit, onAdd }) => {
           <button
             onClick={onEdit}
             aria-label={`Edit address${name ? " for " + name : ""}`}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-zinc-200 bg-transparent text-zinc-400 text-xs font-semibold shrink-0 transition-all hover:bg-pink-50 hover:border-pink-200 hover:text-[#df0059] active:translate-y-px">
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-zinc-200 bg-transparent text-zinc-400 text-xs font-semibold shrink-0 transition-all hover:bg-green-50 hover:border-green-200 hover:text-[#315c3c] active:translate-y-px">
             <Pencil size={13} strokeWidth={2} /> Edit
           </button>
         )}

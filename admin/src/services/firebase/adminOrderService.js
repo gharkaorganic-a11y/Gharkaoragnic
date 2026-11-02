@@ -15,12 +15,47 @@ import {
   startAfter,
   getDocs,
   getDoc,
-  updateDoc,
+  onSnapshot,
 } from "firebase/firestore";
 
 import { db } from "../../config/firebase";
 
+const normalizeOrder = (orderDoc) => {
+  const data = orderDoc.data();
+  const status = data.orderStatus || data.status || "placed";
+
+  return {
+    id: orderDoc.id,
+    ...data,
+    status,
+    orderStatus: status,
+    customerName: data.addressSnapshot?.name || "Guest",
+    phone: data.addressSnapshot?.phone || "",
+    totalAmount: Number(data.totalAmount || 0),
+    itemCount: Number(data.itemCount || 0),
+    items: data.items || [],
+  };
+};
+
 export const adminOrderService = {
+  subscribeToLatestOrders(onOrders, onError, maxResults = 20) {
+    const ordersQuery = query(
+      collection(db, "orders"),
+      orderBy("createdAt", "desc"),
+      limit(maxResults),
+    );
+
+    return onSnapshot(
+      ordersQuery,
+      (snap) =>
+        onOrders(
+          snap.docs.map(normalizeOrder),
+          snap.docs[snap.docs.length - 1] ?? null,
+          snap.docs.length === maxResults,
+        ),
+      onError,
+    );
+  },
 
   /* ───────────────────────────────
      GET ORDERS (ADMIN LIST)
@@ -37,29 +72,7 @@ export const adminOrderService = {
 
     try {
       const snap = await getDocs(q);
-
-      const orders = snap.docs.map((d) => {
-        const data = d.data();
-
-        const status = data.orderStatus || data.status || "placed";
-
-        return {
-          id: d.id,
-          ...data,
-
-          // 🔥 NORMALIZED FIELDS (CRITICAL FIX)
-          status,
-          orderStatus: status,
-
-          customerName: data.addressSnapshot?.name || "Guest",
-          phone: data.addressSnapshot?.phone || "",
-
-          totalAmount: Number(data.totalAmount || 0),
-          itemCount: Number(data.itemCount || 0),
-
-          items: data.items || [],
-        };
-      });
+      const orders = snap.docs.map(normalizeOrder);
 
       return {
         orders,
@@ -125,6 +138,7 @@ export const adminOrderService = {
   async updateOrderStatus({
     orderId,
     userId,
+    userOrderMirror = true,
     newStatus,
     paymentStatus,
     adminName = "admin",
@@ -136,16 +150,12 @@ export const adminOrderService = {
       const batch = writeBatch(db);
 
       /* ───────────────────────────────
-         FIXED PAYMENT LOGIC (COD + ONLINE)
+         PAYMENT STATUS
       ─────────────────────────────── */
       let finalPaymentStatus =
         paymentStatus || "pending";
 
       if (!paymentStatus) {
-        if (newStatus === "confirmed") {
-          finalPaymentStatus = "confirmed";
-        }
-
         if (newStatus === "delivered") {
           finalPaymentStatus = "paid";
         }
@@ -170,7 +180,7 @@ export const adminOrderService = {
       /* ───────────────────────────────
          USER MIRROR UPDATE
       ─────────────────────────────── */
-      if (userId) {
+      if (userId && userOrderMirror) {
         batch.update(
           doc(db, "users", userId, "orders", orderId),
           {
@@ -269,7 +279,9 @@ export const adminOrderService = {
         const status =
           order.orderStatus || order.status || "placed";
 
-        acc.totalRevenue += Number(order.totalAmount) || 0;
+        if (order.paymentStatus === "paid" && status !== "cancelled") {
+          acc.totalRevenue += Number(order.totalAmount) || 0;
+        }
 
         if (["placed", "pending"].includes(status)) {
           acc.pendingOrders++;

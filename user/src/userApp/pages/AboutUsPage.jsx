@@ -157,6 +157,11 @@ export default function Example() {
                     <StarIcon
                       key={rating}
                       aria-hidden="true"
+                      style={
+                        reviews.average > rating
+                          ? { color: "var(--storefront-star-color, #f5a623)" }
+                          : undefined
+                      }
                       className={classNames(
                         reviews.average > rating
                           ? "text-gray-900"

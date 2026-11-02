@@ -3,6 +3,11 @@ import React, { useMemo } from "react";
 const Star = ({ filled = true }) => (
   <svg
     className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${filled ? "text-gray-900" : "text-gray-300"}`}
+    style={
+      filled
+        ? { color: "var(--storefront-star-color, #f5a623)" }
+        : undefined
+    }
     fill="currentColor"
     viewBox="0 20 20"
     aria-hidden="true">

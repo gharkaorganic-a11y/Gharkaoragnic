@@ -53,7 +53,7 @@ const JSONLD = JSON.stringify({
       "@id": `${BASE_URL}/#organization`,
       name: "Ghar Ka Organic",
       url: BASE_URL,
-      logo: `${BASE_URL}/gharka-logo.png`,
+      logo: `${BASE_URL}/logo/gharka-logo.png`,
       description:
         "Ghar Ka Organic is an Uttarakhand-based brand bringing authentic Himalayan organic food – handmade pickles, A2 bilona ghee, and raw forest honey – to homes across India.",
       foundingDate: "2020",
@@ -237,192 +237,273 @@ const OurStoryPage = () => {
       {/* Skip to content */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-amber-500 text-white px-4 py-2 rounded-md z-50">
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-[#315c3c] text-white px-4 py-2 rounded-sm z-50 shadow-md">
         Skip to main content
       </a>
 
-      <div className="bg-white text-[#4a4a4a] font-sans pb-20">
-        {/* BREADCRUMB */}
-        <nav aria-label="Breadcrumb" className="max-w-6xl mx-auto px-6 pt-6">
-          <ol className="flex items-center gap-2 text-sm text-gray-500">
+      <div className="bg-white text-[#222222] font-sans selection:bg-[#ebe7df] selection:text-[#121212] min-h-screen">
+        {/* SUBTLE BREADCRUMB */}
+        <nav
+          aria-label="Breadcrumb"
+          className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-xs tracking-wider text-neutral-400">
+          <ol className="flex items-center gap-2">
             <li>
-              <a href="/" className="hover:text-black transition">
+              <Link
+                to="/"
+                className="hover:text-neutral-900 transition-colors uppercase font-medium">
                 Home
-              </a>
+              </Link>
             </li>
-            <li>/</li>
-            <li className="text-gray-900" aria-current="page">
+            <li className="text-neutral-300">/</li>
+            <li
+              className="text-neutral-800 font-medium uppercase"
+              aria-current="page">
               Our Story
             </li>
           </ol>
         </nav>
 
-        {/* HERO */}
-        <section className="w-full h-[50vh] md:h-[65vh] relative overflow-hidden">
-          <picture>
-            <source
-              srcSet={heroImage.replace(/\.(jpg|png)$/i, ".webp")}
-              type="image/webp"
+        {/* MAIN OUR STORY SECTION - 2-COLUMN UNIFIED SIGNATURE DESIGN */}
+        <main id="main-content" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 lg:gap-20 items-center">
+            {/* ILLUSTRATION (LEFT COLUMN) */}
+            <figure className="w-full m-0 order-1 md:order-1">
+              <picture>
+                <source
+                  srcSet={heroImage.replace(/\.(jpg|png)$/i, ".webp")}
+                  type="image/webp"
+                />
+                <img
+                  src={heroImage}
+                  alt="Traditional Himalayan organic food preparation in Bhimtal Uttarakhand by local women for Ghar Ka Organic"
+                  loading="eager"
+                  fetchPriority="high"
+                  width="800"
+                  height="1000"
+                  decoding="async"
+                  className="w-full h-auto object-cover aspect-[4/5] bg-white rounded-xl shadow-md border border-[#eee]"
+                />
+              </picture>
+            </figure>
+
+            {/* STORY NARRATIVE (RIGHT COLUMN) */}
+            <article
+              className="text-left flex flex-col justify-center order-2 md:order-2"
+              itemScope
+              itemType="https://schema.org/Organization">
+              <meta itemProp="name" content="Ghar Ka Organic" />
+              <meta itemProp="location" content="Bhimtal, Uttarakhand, India" />
+
+              <h1
+                className="text-2xl sm:text-3xl md:text-4xl font-light tracking-widest text-[#2a2a2a] mb-6 uppercase leading-snug font-sans"
+                itemProp="slogan">
+                Our Story – Pure Pahadi Taste from the Heart of Uttarakhand
+              </h1>
+
+              <div className="w-12 h-[1.5px] bg-gray-300 mb-8" aria-hidden="true" />
+
+              <div
+                className="font-light text-[15px] md:text-[15.5px] leading-[2.2] text-[#4f4f4f] space-y-6 md:space-y-7 antialiased"
+                itemProp="description">
+                <p>
+                  <strong className="font-medium text-[#1a1a1a]">
+                    GHAR KA ORGANIC
+                  </strong>{" "}
+                  started with a simple mission in the hills of Bhimtal, Nainital —
+                  to bring back the authentic taste of the Himalayas through pure,
+                  homemade goodness and zero artificial preservatives.
+                </p>
+
+                <p>
+                  In today’s world filled with synthetic flavors and chemicals, we
+                  wanted people across India to experience what real “ghar ka
+                  khaana” truly feels like. We achieve this through our traditional
+                  Kumaoni pickles, raw forest honey, and hand-churned A2 Bilona Desi
+                  Ghee.
+                </p>
+
+                <p>
+                  Deeply connected to our pahadi roots in the Kumaon and Garhwal
+                  regions, we aim to share the beauty of Himalayan culture using
+                  locally harvested ingredients and timeless, multi-generational
+                  food wisdom.
+                </p>
+
+                <p>
+                  Every product we create, from our authentic Hemp Seed (Bhang)
+                  Chutney to our sun-fermented Mango Achar, carries the soul of the
+                  mountains — natural ingredients, authentic pahadi taste, and the
+                  warmth of home in every bite.
+                </p>
+
+                <p>
+                  GHAR KA ORGANIC is not just a brand. It is a movement built to
+                  preserve Kumaoni culture, empower women-led farmer groups in
+                  Uttarakhand, and share the real taste of the pahad with the world.
+                </p>
+
+                <p className="font-medium text-[#1a1a1a] pt-1">
+                  Pure taste. Pahadi roots. Zero preservatives.
+                </p>
+              </div>
+            </article>
+          </div>
+        </main>
+
+        {/* INTERNAL NAVIGATION - MINIMALIST LUXURY CATALOG LINKS */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 md:pt-20 pb-16 border-t border-[#e8e8e8]">
+          <div className="text-center mb-10 md:mb-12">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-light tracking-[0.18em] text-[#121212] uppercase">
+              Explore Our Products
+            </h2>
+            <div
+              className="w-8 h-[1px] bg-[#121212]/20 mx-auto mt-3"
+              aria-hidden="true"
             />
-            <img
-              src={heroImage}
-              alt="Local women preparing traditional Himalayan organic food in Bhimtal, Uttarakhand"
-              className="w-full h-full object-cover object-center"
-              loading="eager"
-              fetchpriority="high"
-              decoding="async"
-              width="1200"
-              height="630"
-            />
-          </picture>
-          <div
-            className="absolute inset-0 bg-black/10"
-            aria-hidden="true"></div>
-        </section>
+          </div>
 
-        {/* TITLE */}
-        <section className="text-center pt-20 pb-10 px-6">
-          <h1 className="text-3xl md:text-4xl font-light tracking-wide text-[#333333] mb-4">
-            OUR STORY
-          </h1>
-          <div
-            className="w-12 h-[1px] bg-gray-300 mx-auto"
-            aria-hidden="true"></div>
-        </section>
+          <nav
+            aria-label="Product categories"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+            <Link
+              to="/all-products"
+              className="group p-6 md:p-7 border border-[#e5e5e5] hover:border-[#121212] bg-white transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-medium text-[16px] text-[#121212] group-hover:text-black tracking-wide">
+                    All Products
+                  </h3>
+                  <span
+                    className="text-[#999999] group-hover:text-[#121212] group-hover:translate-x-1 transition-all duration-200"
+                    aria-hidden="true">
+                    →
+                  </span>
+                </div>
+                <p className="text-sm text-[#666666] mt-2 font-light leading-relaxed">
+                  Explore our complete range of organic Himalayan products
+                </p>
+              </div>
+            </Link>
 
-        {/* MAIN CONTENT */}
-        <section
-          id="main-content"
-          className="max-w-[52rem] mx-auto px-6 py-10 text-center font-light text-[15px] leading-[2.2] text-[#555555] space-y-10">
-          <p>
-            At <b>Ghar Ka Organic</b>, our journey started with a simple mission
-            — to bring back the authentic taste of the mountains with zero
-            preservatives and real homemade goodness.
-          </p>
+            <Link
+              to="/shop/best-sellers"
+              className="group p-6 md:p-7 border border-[#e5e5e5] hover:border-[#121212] bg-white transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-medium text-[16px] text-[#121212] group-hover:text-black tracking-wide">
+                    Best Sellers
+                  </h3>
+                  <span
+                    className="text-[#999999] group-hover:text-[#121212] group-hover:translate-x-1 transition-all duration-200"
+                    aria-hidden="true">
+                    →
+                  </span>
+                </div>
+                <p className="text-sm text-[#666666] mt-2 font-light leading-relaxed">
+                  Discover our most loved products
+                </p>
+              </div>
+            </Link>
 
-          <p>
-            In today's world, where most food is filled with chemicals and
-            artificial flavors, we wanted people to experience what "ghar ka
-            khaana" truly means — pure, simple, and honest food made with care.
-          </p>
+            <Link
+              to="/contact"
+              className="group p-6 md:p-7 border border-[#e5e5e5] hover:border-[#121212] bg-white transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-medium text-[16px] text-[#121212] group-hover:text-black tracking-wide">
+                    Get in Touch
+                  </h3>
+                  <span
+                    className="text-[#999999] group-hover:text-[#121212] group-hover:translate-x-1 transition-all duration-200"
+                    aria-hidden="true">
+                    →
+                  </span>
+                </div>
+                <p className="text-sm text-[#666666] mt-2 font-light leading-relaxed">
+                  Contact us for bulk orders or inquiries
+                </p>
+              </div>
+            </Link>
 
-          <p>
-            Deeply connected to our Pahadi roots, we also wanted to share the
-            beauty of Uttarakhand with India. From traditional flavors and local
-            ingredients to warmth, simplicity, and hospitality —{" "}
-            <b>Ghar Ka Organic represents the soul of the Himalayas</b>.
-          </p>
+            <Link
+              to="/blogs"
+              className="group p-6 md:p-7 border border-[#e5e5e5] hover:border-[#121212] bg-white transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-medium text-[16px] text-[#121212] group-hover:text-black tracking-wide">
+                    Blog & Stories
+                  </h3>
+                  <span
+                    className="text-[#999999] group-hover:text-[#121212] group-hover:translate-x-1 transition-all duration-200"
+                    aria-hidden="true">
+                    →
+                  </span>
+                </div>
+                <p className="text-sm text-[#666666] mt-2 font-light leading-relaxed">
+                  Learn about organic living and food culture
+                </p>
+              </div>
+            </Link>
 
-          <p>
-            Every product we create carries a touch of the mountains: natural
-            ingredients, traditional pahadi flavors, homemade authenticity, and
-            the comforting feeling that reminds you of home.
-          </p>
+            <Link
+              to="/reviews"
+              className="group p-6 md:p-7 border border-[#e5e5e5] hover:border-[#121212] bg-white transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-medium text-[16px] text-[#121212] group-hover:text-black tracking-wide">
+                    Reviews
+                  </h3>
+                  <span
+                    className="text-[#999999] group-hover:text-[#121212] group-hover:translate-x-1 transition-all duration-200"
+                    aria-hidden="true">
+                    →
+                  </span>
+                </div>
+                <p className="text-sm text-[#666666] mt-2 font-light leading-relaxed">
+                  See what our customers say
+                </p>
+              </div>
+            </Link>
 
-          <p>
-            <b>Ghar Ka Organic is not just a brand — it is an emotion.</b>
-            <br />
-            It is built to preserve culture, support local roots, and bring the
-            real taste of the pahad to homes across India.
-          </p>
-
-          <p>
-            We believe food should not just fill your stomach — it should remind
-            you of home, tradition, and purity.
-          </p>
-
-          <p>
-            Our mission is to bring pure Uttarakhand organic food to homes
-            across India with trust and transparency.
-          </p>
-        </section>
-
-        {/* INTERNAL NAVIGATION LINKS */}
-        <section className="max-w-6xl mx-auto px-6 py-16 border-t border-gray-200">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-8 text-center">
-            Explore Our Products
-          </h2>
-
-          <nav className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <a
-              href="/all-products"
-              className="group p-6 border border-gray-200 rounded-lg hover:border-amber-500 hover:bg-amber-50 transition">
-              <h3 className="font-semibold text-gray-900 group-hover:text-amber-600 mb-2">
-                All Products
-              </h3>
-              <p className="text-sm text-gray-600">
-                Explore our complete range of organic Himalayan products
-              </p>
-            </a>
-
-            <a
-              href="/shop/best-sellers"
-              className="group p-6 border border-gray-200 rounded-lg hover:border-amber-500 hover:bg-amber-50 transition">
-              <h3 className="font-semibold text-gray-900 group-hover:text-amber-600 mb-2">
-                Best Sellers
-              </h3>
-              <p className="text-sm text-gray-600">
-                Discover our most loved products
-              </p>
-            </a>
-
-            <a
-              href="/contact"
-              className="group p-6 border border-gray-200 rounded-lg hover:border-amber-500 hover:bg-amber-50 transition">
-              <h3 className="font-semibold text-gray-900 group-hover:text-amber-600 mb-2">
-                Get in Touch
-              </h3>
-              <p className="text-sm text-gray-600">
-                Contact us for bulk orders or inquiries
-              </p>
-            </a>
-
-            <a
-              href="/blogs"
-              className="group p-6 border border-gray-200 rounded-lg hover:border-amber-500 hover:bg-amber-50 transition">
-              <h3 className="font-semibold text-gray-900 group-hover:text-amber-600 mb-2">
-                Blog & Stories
-              </h3>
-              <p className="text-sm text-gray-600">
-                Learn about organic living and food culture
-              </p>
-            </a>
-
-            <a
-              href="/reviews"
-              className="group p-6 border border-gray-200 rounded-lg hover:border-amber-500 hover:bg-amber-50 transition">
-              <h3 className="font-semibold text-gray-900 group-hover:text-amber-600 mb-2">
-                Reviews
-              </h3>
-              <p className="text-sm text-gray-600">
-                See what our customers say
-              </p>
-            </a>
-
-            <a
-              href="/contact"
-              className="group p-6 border border-gray-200 rounded-lg hover:border-amber-500 hover:bg-amber-50 transition">
-              <h3 className="font-semibold text-gray-900 group-hover:text-amber-600 mb-2">
-                Support
-              </h3>
-              <p className="text-sm text-gray-600">
-                Need help? Reach out to our team
-              </p>
-            </a>
+            <Link
+              to="/contact"
+              className="group p-6 md:p-7 border border-[#e5e5e5] hover:border-[#121212] bg-white transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-medium text-[16px] text-[#121212] group-hover:text-black tracking-wide">
+                    Support
+                  </h3>
+                  <span
+                    className="text-[#999999] group-hover:text-[#121212] group-hover:translate-x-1 transition-all duration-200"
+                    aria-hidden="true">
+                    →
+                  </span>
+                </div>
+                <p className="text-sm text-[#666666] mt-2 font-light leading-relaxed">
+                  Need help? Reach out to our team
+                </p>
+              </div>
+            </Link>
           </nav>
         </section>
 
-        {/* FAQ SECTION */}
-        <section className="max-w-4xl mx-auto px-6 py-16 border-t border-gray-200">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-10 text-center">
-            Frequently Asked Questions
-          </h2>
+        {/* FAQ SECTION - MINIMALIST CLEAN ACCORDION */}
+        <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24 border-t border-[#e8e8e8]">
+          <div className="text-center mb-10 md:mb-12">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-light tracking-[0.18em] text-[#121212] uppercase">
+              Frequently Asked Questions
+            </h2>
+            <div
+              className="w-8 h-[1px] bg-[#121212]/20 mx-auto mt-3"
+              aria-hidden="true"
+            />
+          </div>
 
-          <div className="space-y-6">
+          <div className="divide-y divide-[#ebebeb] border-y border-[#ebebeb]">
             {[
               {
                 q: "Who is Ghar Ka Organic?",
-                a: "Ghar Ka Organic is an Uttarakhand-based brand dedicated to bringing authentic Himalayan organic food to homes across India. We make handmade pickles, A2 bilona ghee, and raw forest honey using traditional methods.",
+                a: "Ghar Ka Organic is an Uttarakhand-based brand dedicated to bringing authentic Himalayan organic food to homes across India. We make handmade pickles, A2 bilona ghee, and raw forest honey using traditional methods and natural ingredients.",
               },
               {
                 q: "Where does Ghar Ka Organic come from?",
@@ -439,12 +520,27 @@ const OurStoryPage = () => {
             ].map((item, idx) => (
               <details
                 key={idx}
-                className="group border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-amber-500 transition">
-                <summary className="font-semibold text-gray-900 flex items-center justify-between">
-                  {item.q}
-                  <span className="group-open:rotate-180 transition">▼</span>
+                className="group py-5 transition-all">
+                <summary className="font-medium text-[16px] md:text-[17px] text-[#121212] flex items-center justify-between cursor-pointer list-none hover:text-[#315c3c] transition-colors py-1">
+                  <span>{item.q}</span>
+                  <span
+                    className="ml-4 shrink-0 text-[#888888] transition-transform duration-200 group-open:rotate-180"
+                    aria-hidden="true">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.75"
+                      viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </span>
                 </summary>
-                <p className="text-gray-600 mt-3 text-sm leading-relaxed">
+                <p className="text-[#555555] font-light text-[15px] leading-relaxed pt-3 pb-1">
                   {item.a}
                 </p>
               </details>

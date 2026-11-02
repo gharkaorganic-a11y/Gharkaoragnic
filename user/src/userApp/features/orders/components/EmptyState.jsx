@@ -8,7 +8,7 @@ const EmptyState = ({ navigate, isCancelled }) => (
     </div>
     <h2
       className="text-xl sm:text-2xl font-light text-gray-900 mb-2"
-      style={{ fontFamily: "'Playfair Display', serif" }}>
+      style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
       {isCancelled ? "No Cancelled Orders" : "No Orders Yet"}
     </h2>
     <p className="text-[11px] text-gray-400 uppercase tracking-[0.25em] mb-8 leading-loose max-w-xs">

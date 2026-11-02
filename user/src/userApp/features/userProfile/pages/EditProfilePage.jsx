@@ -13,28 +13,28 @@ import {
 
 const Input = ({ label, ...props }) => (
   <div className="flex flex-col gap-1 w-full relative group">
-    <label className="text-[10px] uppercase tracking-[0.2em] text-gray-400 group-focus-within:text-[#da127d] transition-colors">
+    <label className="text-[10px] uppercase tracking-[0.2em] text-gray-400 group-focus-within:text-[#315c3c] transition-colors">
       {label}
     </label>
     <input
       {...props}
-      className="border-b border-gray-200 focus:border-[#da127d] transition-colors py-3 text-[13px] text-black outline-none bg-transparent placeholder-gray-300 w-full rounded-none"
+      className="border-b border-gray-200 focus:border-[#315c3c] transition-colors py-3 text-[13px] text-black outline-none bg-transparent placeholder-gray-300 w-full rounded-none"
     />
   </div>
 );
 
 const Select = ({ label, children, ...props }) => (
   <div className="flex flex-col gap-1 w-full relative group">
-    <label className="text-[10px] uppercase tracking-[0.2em] text-gray-400 group-focus-within:text-[#da127d] transition-colors">
+    <label className="text-[10px] uppercase tracking-[0.2em] text-gray-400 group-focus-within:text-[#315c3c] transition-colors">
       {label}
     </label>
     <select
       {...props}
-      className="border-b border-gray-200 focus:border-[#da127d] transition-colors py-3 text-[13px] text-black outline-none bg-transparent w-full rounded-none cursor-pointer appearance-none">
+      className="border-b border-gray-200 focus:border-[#315c3c] transition-colors py-3 text-[13px] text-black outline-none bg-transparent w-full rounded-none cursor-pointer appearance-none">
       {children}
     </select>
     {/* Custom Dropdown Arrow to match thin stroke style */}
-    <div className="absolute right-0 bottom-4 pointer-events-none text-gray-400 group-focus-within:text-[#da127d]">
+    <div className="absolute right-0 bottom-4 pointer-events-none text-gray-400 group-focus-within:text-[#315c3c]">
       <svg
         className="w-3 h-3"
         fill="none"
@@ -59,7 +59,7 @@ const Toggle = ({ label, checked, onChange }) => (
       type="button"
       onClick={() => onChange({ target: { checked: !checked } })}
       className={`w-10 h-[22px] flex items-center rounded-full transition-colors duration-300 focus:outline-none ${
-        checked ? "bg-[#da127d]" : "bg-gray-200"
+        checked ? "bg-[#315c3c]" : "bg-gray-200"
       }`}>
       <span
         className={`w-[18px] h-[18px] bg-white rounded-full transform transition-transform duration-300 shadow-sm ${
@@ -166,12 +166,12 @@ const EditProfilePage = () => {
     `https://ui-avatars.com/api/?name=${user?.name || "U"}&background=f3f4f6&color=000000`;
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans selection:bg-[#da127d] selection:text-white pb-20">
+    <div className="min-h-screen bg-white text-black font-sans selection:bg-[#315c3c] selection:text-white pb-20">
       {/* ── HEADER ── */}
       <div className="flex items-center justify-between px-6 py-6 border-b border-gray-200 bg-white/95 backdrop-blur-sm sticky top-0 z-20">
         <button
           onClick={() => navigate("/user/profile")}
-          className="flex items-center gap-2 text-[10px] tracking-[0.2em] uppercase text-gray-500 hover:text-[#da127d] transition-colors">
+          className="flex items-center gap-2 text-[10px] tracking-[0.2em] uppercase text-gray-500 hover:text-[#315c3c] transition-colors">
           <ArrowLeftIcon className="w-4 h-4 stroke-1" />
           Back
         </button>
@@ -186,7 +186,7 @@ const EditProfilePage = () => {
         <div className="flex flex-col items-center gap-4 mb-14 pb-12 border-b border-gray-200">
           <div className="relative group cursor-pointer">
             {/* Inner border to look like an editorial crop */}
-            <div className="w-24 h-24 rounded-full border border-gray-200 p-1 transition-colors duration-300 group-hover:border-[#da127d]">
+            <div className="w-24 h-24 rounded-full border border-gray-200 p-1 transition-colors duration-300 group-hover:border-[#315c3c]">
               <img
                 src={avatar}
                 alt="Profile"
@@ -195,7 +195,7 @@ const EditProfilePage = () => {
             </div>
             <button
               type="button"
-              className="absolute bottom-0 right-0 bg-white border border-gray-200 text-black p-1.5 rounded-full shadow-sm group-hover:text-[#da127d] group-hover:border-[#da127d] transition-all">
+              className="absolute bottom-0 right-0 bg-white border border-gray-200 text-black p-1.5 rounded-full shadow-sm group-hover:text-[#315c3c] group-hover:border-[#315c3c] transition-all">
               <CameraIcon className="w-4 h-4 stroke-1" />
             </button>
           </div>
@@ -307,7 +307,7 @@ const EditProfilePage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full md:w-[400px] bg-black text-white py-4 text-[11px] tracking-[0.2em] uppercase flex items-center justify-center gap-3 hover:bg-[#da127d] transition-colors shadow-lg shadow-transparent hover:shadow-[#da127d]/20 disabled:opacity-50 disabled:hover:bg-black">
+            className="w-full md:w-[400px] bg-black text-white py-4 text-[11px] tracking-[0.2em] uppercase flex items-center justify-center gap-3 hover:bg-[#315c3c] transition-colors shadow-lg shadow-transparent hover:shadow-[#315c3c]/20 disabled:opacity-50 disabled:hover:bg-black">
             {loading ? (
               <span className="animate-pulse">SAVING CHANGES...</span>
             ) : (

@@ -33,7 +33,7 @@ export const dashboardService = {
   // Get total products count
   getProductsCount: async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, "products"));
+      const querySnapshot = await getDocs(collection(db, "storeProducts"));
       return querySnapshot.size;
     } catch (error) {
       throw new Error(`Failed to fetch products count: ${error.message}`);
@@ -54,7 +54,7 @@ export const dashboardService = {
   getRecentProducts: async (limitCount = 5) => {
     try {
       const q = query(
-        collection(db, "products"),
+        collection(db, "storeProducts"),
         orderBy("createdAt", "desc"),
         limit(limitCount)
       );
@@ -71,7 +71,7 @@ export const dashboardService = {
   // Get popular products (by views or orders)
   getPopularProducts: async (limitCount = 5) => {
     try {
-      const querySnapshot = await getDocs(collection(db, "products"));
+      const querySnapshot = await getDocs(collection(db, "storeProducts"));
       const products = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -112,7 +112,7 @@ export const dashboardService = {
   getLowStockProducts: async (threshold = 10) => {
     try {
       const q = query(
-        collection(db, "products"),
+        collection(db, "storeProducts"),
         where("stock", "<=", threshold)
       );
       const querySnapshot = await getDocs(q);

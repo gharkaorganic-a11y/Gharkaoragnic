@@ -4,7 +4,6 @@ import {
   PieChart,
   MessageSquare,
   Users,
-  Settings,
   LogOut,
   Menu,
   X,
@@ -30,7 +29,7 @@ const AdminInquiryLayout = () => {
   return (
     <div className="h-screen bg-[#F1F3F6] flex flex-col lg:flex-row font-sans text-[#212121] overflow-hidden antialiased">
       {/* --- FLIPKART MOBILE HEADER (Solid Blue) --- */}
-      <header className="lg:hidden bg-[#2874F0] h-14 border-b border-[#2874F0] flex items-center justify-between px-4 shrink-0 shadow-sm z-30 transition-colors">
+      <header className="lg:hidden bg-[#2874F0] h-14 border-b border-[#1c5fba] flex items-center justify-between px-4 shrink-0 shadow-sm z-30 transition-colors">
         <div className="flex items-center gap-3">
           <button
             onClick={() => setIsMobileMenuOpen(true)}
@@ -38,15 +37,11 @@ const AdminInquiryLayout = () => {
             aria-label="Open Menu">
             <Menu size={24} />
           </button>
-          <div className="flex items-center gap-2">
-            {/* White logo box for mobile contrast */}
-            <div className="h-7 w-7 bg-white rounded-sm flex items-center justify-center text-[#2874F0] font-black text-sm shadow-sm shrink-0">
-              M
-            </div>
-            <span className="font-bold text-white text-base tracking-tight">
-              Mnmukt Store
-            </span>
-          </div>
+            <img
+              src="https://gharkaorganic.com/logo/gharka-logo.png"
+              alt="Ghar Ka Organic"
+              className="h-9 w-auto max-w-[150px] rounded bg-white object-contain p-1"
+            />
         </div>
       </header>
 
@@ -67,16 +62,15 @@ const AdminInquiryLayout = () => {
           ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
         `}>
         <div className="flex flex-col h-full overflow-hidden">
-          {/* Brand Identity Header (Desktop) */}
+          {/* Brand identity */}
           <div className="h-16 flex items-center justify-between px-6 border-b border-gray-100 shrink-0 bg-white">
             <div className="flex items-center gap-3 overflow-hidden">
-              <div className="h-9 w-9 bg-[#2874F0] rounded-sm flex items-center justify-center text-white font-bold text-xl shadow-sm shrink-0">
-                M
-              </div>
+              <img
+                src="https://gharkaorganic.com/logo/gharka-logo.png"
+                alt="Ghar Ka Organic"
+                className="h-10 w-auto max-w-[155px] shrink-0 object-contain"
+              />
               <div className="overflow-hidden">
-                <span className="block font-bold text-[#212121] text-sm truncate leading-tight">
-                  Mnmukt Store
-                </span>
                 <span className="text-[11px] font-bold text-[#878787] uppercase tracking-wider block mt-0.5">
                   Seller Hub
                 </span>
@@ -99,10 +93,9 @@ const AdminInquiryLayout = () => {
 
             {/* Added Flipkart Orange Badge to this item */}
             <NavItem
-              to="/customers/messages"
+              to="/inquiries"
               icon={MessageSquare}
               label="Customer Inquiries"
-              badge="3 New"
             />
 
             <NavItem
@@ -115,8 +108,6 @@ const AdminInquiryLayout = () => {
 
         {/* Global Settings & Exit */}
         <div className="p-3 mb-2 space-y-1 border-t border-gray-100 bg-[#F9FAFB]">
-          <NavItem to="/settings" icon={Settings} label="Store Settings" />
-
           <Link
             to="/"
             title="Exit Seller Hub"

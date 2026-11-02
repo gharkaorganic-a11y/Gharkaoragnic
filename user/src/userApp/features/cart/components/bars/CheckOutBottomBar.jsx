@@ -65,7 +65,7 @@ const CheckOutBottomBar = ({
               ${
                 disabled || loading
                   ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                  : "bg-[#f43397] hover:bg-[#d82a85] active:scale-[0.98] text-white"
+                  : "bg-[#315c3c] text-white hover:bg-[#244b2e] active:scale-[0.98]"
               }
             `}>
             {loading ? (

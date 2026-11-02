@@ -22,13 +22,13 @@ const MobileBottomFilterBar = ({
           <AdjustmentsHorizontalIcon
             className={`w-5 h-5 stroke-2 transition ${
               filterCount > 0
-                ? "text-[#da127d]"
+                ? "text-[#315c3c]"
                 : "text-gray-500 group-hover:text-black"
             }`}
           />
 
           {filterCount > 0 && (
-            <span className="absolute -top-1.5 -right-2 w-[18px] h-[18px] bg-[#da127d] text-white text-[10px] font-bold flex items-center justify-center rounded-full border border-white">
+            <span className="absolute -top-1.5 -right-2 w-[18px] h-[18px] bg-[#315c3c] text-white text-[10px] font-bold flex items-center justify-center rounded-full border border-white">
               {filterCount}
             </span>
           )}
@@ -37,7 +37,7 @@ const MobileBottomFilterBar = ({
         <span
           className={`text-[12px] font-bold uppercase tracking-[0.15em] ${
             filterCount > 0
-              ? "text-[#da127d]"
+              ? "text-[#315c3c]"
               : "text-gray-700 group-hover:text-black"
           }`}>
           Filter
@@ -52,20 +52,20 @@ const MobileBottomFilterBar = ({
           <ArrowsUpDownIcon
             className={`w-5 h-5 stroke-2 transition ${
               sortActive
-                ? "text-[#da127d]"
+                ? "text-[#315c3c]"
                 : "text-gray-500 group-hover:text-black"
             }`}
           />
 
           {sortActive && (
-            <span className="absolute -top-0.5 -right-1.5 w-2 h-2 bg-[#da127d] rounded-full border border-white" />
+            <span className="absolute -top-0.5 -right-1.5 w-2 h-2 bg-[#315c3c] rounded-full border border-white" />
           )}
         </div>
 
         <span
           className={`text-[12px] font-bold uppercase tracking-[0.15em] ${
             sortActive
-              ? "text-[#da127d]"
+              ? "text-[#315c3c]"
               : "text-gray-700 group-hover:text-black"
           }`}>
           Sort

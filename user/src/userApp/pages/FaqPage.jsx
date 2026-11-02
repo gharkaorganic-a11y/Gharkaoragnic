@@ -40,7 +40,7 @@ const faqs = [
   {
     question: "How long does delivery take?",
     answer:
-      "Orders are usually delivered within 3–5 business days depending on your location. We ship across all major cities and states in India with free shipping on all orders. You'll receive a tracking number to monitor your shipment.",
+      "Delivery availability and estimated timelines depend on your location. Our team confirms the details and any applicable delivery charges with you on WhatsApp before your order is finalized.",
     category: "Shipping",
   },
   {
@@ -207,7 +207,7 @@ const FAQPage = () => {
         Skip to main content
       </a>
 
-      <div className="bg-[#F9F5EF] text-gray-800 px-6 py-12 min-h-screen">
+      <div className="bg-white text-gray-800 px-6 py-12 min-h-screen">
         {/* BREADCRUMB */}
         <nav
           aria-label="Breadcrumb"
@@ -339,7 +339,7 @@ const FAQPage = () => {
           </section>
 
           {/* CTA SECTION */}
-          <section className="mt-16 p-8 bg-amber-50 rounded-lg border border-amber-200 text-center">
+          <section className="mt-16 p-8 bg-white rounded-lg border border-gray-200 text-center shadow-sm">
             <h2 className="text-2xl font-bold text-gray-900 mb-3">
               Still have questions?
             </h2>

@@ -14,7 +14,11 @@ const UserNavbar = () => {
   const { cart } = useCart();
 
   // 3. Calculate counts (assuming items are stored in an array)
-  const cartCount = cart?.length || 0;
+  const cartCount =
+    cart?.reduce(
+      (count, item) => count + (Number(item.selectedQuantity) || 1),
+      0,
+    ) || 0;
   // console.log(cartCount);
   return (
     <>

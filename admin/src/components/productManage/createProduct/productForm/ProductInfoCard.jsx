@@ -75,6 +75,32 @@ const ProductInfoCard = ({ product, handleChange }) => {
           placeholder="e.g. 6 months"
         />
       </div>
+
+      <div>
+        <FieldLabel subtitle="Serving suggestions or preparation notes.">
+          How to Use
+        </FieldLabel>
+        <Textarea
+          name="usageInstructions"
+          rows={3}
+          value={product.usageInstructions}
+          onChange={handleChange}
+          placeholder="Add serving suggestions..."
+        />
+      </div>
+
+      <div>
+        <FieldLabel subtitle="Use the storage guidance from the product label.">
+          Storage Instructions
+        </FieldLabel>
+        <Textarea
+          name="storageInstructions"
+          rows={2}
+          value={product.storageInstructions}
+          onChange={handleChange}
+          placeholder="Enter the package storage instructions..."
+        />
+      </div>
     </Card>
   );
 };

@@ -47,7 +47,7 @@ const normalize = (id, data = {}) => ({
   description:  data.description   ?? "",
   image:        data.image         ?? data.banner ?? "",
   icon:         data.icon          ?? "",
-  color:        data.color         ?? "#da127d",
+  color:        data.color         ?? "#315c3c",
   isActive:     data.isActive      ?? true,
   sortOrder:    data.sortOrder     ?? 0,
   productCount: data.productCount  ?? 0,

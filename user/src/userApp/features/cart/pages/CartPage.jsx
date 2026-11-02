@@ -15,19 +15,18 @@ import EmptyCart from "../components/EmptyCart";
 import CartSkeleton from "../components/skeleton/CartSkeleton";
 
 import { Link, useNavigate } from "react-router-dom";
-import LoginPopup from "../../../components/pop-up/LoginPoup";
-import { useAuth } from "../../auth/context/UserContext";
 import NewBreadcrumb from "../../p/components/NewBreadcrumb";
 import { Leaf, ShieldCheck, Truck } from "lucide-react";
+import {
+  calculatePricing,
+} from "../../../services/pricingEngine";
 
 const round = (num) => Math.round(num * 100) / 100;
-const FREE_SHIPPING_THRESHOLD = 999;
 
 const CartPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { isLoggedIn } = useAuth();
   const { cart, updateQuantity, updateSize, remove, clear } = useCart();
   const { invalidateAll } = useProducts();
 
@@ -35,7 +34,7 @@ const CartPage = () => {
   const [loadingDetails, setLoadingDetails] = useState(true);
   const [error, setError] = useState(null);
   const [selected, setSelected] = useState([]);
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
 
   // Stable string key to detect real cart changes
   const cartIds = useMemo(() => {
@@ -48,7 +47,7 @@ const CartPage = () => {
   const prevCartIds = useRef("");
 
   useEffect(() => {
-    if (!cart.length) {
+    if (!cartIds) {
       setProducts([]);
       setLoadingDetails(false);
       prevCartIds.current = "";
@@ -65,7 +64,7 @@ const CartPage = () => {
       setError(null);
 
       try {
-        const ids = cart.map((i) => String(i.id));
+        const ids = cartIds.split(",").filter(Boolean);
 
         // FIX: Use queryClient.fetchQuery directly so signal works correctly
         // and we get proper React Query caching without the spurious invalidation
@@ -118,6 +117,10 @@ const CartPage = () => {
       })
       .filter(Boolean);
   }, [cart, productMap]);
+  const unavailableItems = useMemo(
+    () => cart.filter((item) => !productMap.has(String(item.id))),
+    [cart, productMap],
+  );
 
   useEffect(() => {
     setSelected((prev) => {
@@ -148,42 +151,19 @@ const CartPage = () => {
   }, [mergedCart, selected]);
 
   const pricing = useMemo(() => {
-    let subtotal = 0;
-    let originalTotalPrice = 0;
-
-    selectedItems.forEach((item) => {
-      const qty = item.selectedQuantity || 1;
-      const price = item.price || 0;
-      const mrp = item.mrp || item.originalPrice || price;
-
-      subtotal += price * qty;
-      originalTotalPrice += mrp * qty;
-    });
-
-    const gstRate = 0.18;
-    const gstAmount = round(subtotal * gstRate);
-    const platformFee =
-      subtotal > 0 && subtotal < FREE_SHIPPING_THRESHOLD ? 50 : 0;
-    const totalSavings = round(originalTotalPrice - subtotal);
-
+    const sharedPricing = calculatePricing(
+      selectedItems.map((item) => ({
+        ...item,
+        quantity: item.selectedQuantity || 1,
+      })),
+    );
     return {
-      subtotal: round(subtotal),
-      originalTotalPrice: round(originalTotalPrice),
-      totalSavings,
-      gstAmount,
-      platformFee,
-      totalPayable: round(subtotal + gstAmount + platformFee),
+      ...sharedPricing,
+      totalSavings: round(
+        sharedPricing.originalTotalPrice - sharedPricing.subtotal,
+      ),
     };
   }, [selectedItems]);
-
-  const amountToFreeShipping = Math.max(
-    0,
-    FREE_SHIPPING_THRESHOLD - pricing.subtotal,
-  );
-  const shippingProgress = Math.min(
-    100,
-    (pricing.subtotal / FREE_SHIPPING_THRESHOLD) * 100,
-  );
 
   const validateCart = useCallback(() => {
     for (const item of selectedItems) {
@@ -206,14 +186,22 @@ const CartPage = () => {
       return;
     }
 
-    if (!isLoggedIn) {
-      setIsLoginOpen(true);
+    setCheckoutError("");
+    try {
+      await invalidateAll();
+    } catch (storageError) {
+      console.error("Could not refresh checkout data:", storageError);
+      setCheckoutError(
+        "We could not prepare checkout. Please try again.",
+      );
       return;
     }
 
-    // FIX: Only invalidate at checkout, not on every cart change.
-    // This ensures stock/price are fresh before payment without spamming Firestore.
-    await invalidateAll();
+    try {
+      sessionStorage.setItem("checkoutItems", JSON.stringify(selectedItems));
+    } catch (storageError) {
+      console.error("Could not save checkout items for page refresh:", storageError);
+    }
 
     navigate("/checkout/address", {
       state: {
@@ -226,7 +214,6 @@ const CartPage = () => {
   }, [
     selectedItems,
     validateCart,
-    isLoggedIn,
     invalidateAll,
     navigate,
     pricing,
@@ -263,6 +250,33 @@ const CartPage = () => {
           />
 
           <div className="space-y-4 mt-4">
+            {unavailableItems.length > 0 && (
+              <div
+                role="alert"
+                className="space-y-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                <p>
+                  {unavailableItems.length === 1
+                    ? "This item is no longer available."
+                    : "Some items are no longer available."}{" "}
+                  Remove them to keep your cart up to date.
+                </p>
+                {unavailableItems.map((item) => (
+                  <div
+                    key={item.cartKey}
+                    className="flex items-center justify-between gap-3 border-t border-amber-200 pt-3">
+                    <span className="min-w-0 truncate font-medium">
+                      {item.name || "Unavailable product"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => remove(item.cartKey)}
+                      className="shrink-0 font-semibold underline underline-offset-2">
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
             {mergedCart.map((item) => (
               <CartItemCard
                 key={item.cartKey}
@@ -280,31 +294,17 @@ const CartPage = () => {
 
         {/* RIGHT SIDE: Summary & Trust Factors */}
         <div className="w-full lg:w-[400px] space-y-6">
-          {/* Free Shipping Tracker */}
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-[#D8F3DC]">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium text-[#1B4332]">
-                {amountToFreeShipping > 0
-                  ? `Add ₹${amountToFreeShipping} for Free Delivery`
-                  : "🎉 You unlocked Free Delivery!"}
-              </span>
-              <Truck size={20} className="text-[#2D6A4F]" />
-            </div>
-            <div className="w-full bg-gray-100 rounded-full h-2.5">
-              <div
-                className="bg-[#2D6A4F] h-2.5 rounded-full transition-all duration-500 ease-out"
-                style={{ width: `${shippingProgress}%` }}
-              />
-            </div>
-          </div>
-
+          {checkoutError && (
+            <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
+              {checkoutError}
+            </p>
+          )}
           {/* Cart Summary */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <CartSummary
               subtotal={pricing.subtotal}
               originalTotalPrice={pricing.originalTotalPrice}
-              gstAmount={pricing.gstAmount}
-              platformFee={pricing.platformFee}
+              totalPayable={pricing.totalPayable}
               selectedItems={selectedItems}
               onPlaceOrder={handleCheckout}
             />
@@ -335,7 +335,6 @@ const CartPage = () => {
         </div>
       </div>
 
-      <LoginPopup isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </div>
   );
 };

@@ -2,53 +2,57 @@
  * CollectionPage.jsx
  * Production-ready collection/category listing page.
  *
+ * Layout matches Namakwali (Image 2):
+ * - Circular green category navigation at top (Image 3)
+ * - Clean title & preserved SEO description and "Why Choose Us" trust strip
+ * - Sleek Filter & Sort bar (Availability, Price, Product | Sort by, Product count)
+ * - Borderless spacious product cards
+ * - Preserved Editorial SEO block & Trust Bar
+ *
  * Route shapes handled:
  * /collections → "all" section (canonical: /collections NOT /)
  * /collections/:slug → specific section
- * /:preferredSlug → canonical URL (e.g. /organic-rice)
+ * /:preferredSlug → canonical URL (e.g. /organic-honey)
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import {
-  AdjustmentsHorizontalIcon,
-  CheckBadgeIcon,
-} from "@heroicons/react/24/outline";
+import { CheckBadgeIcon } from "@heroicons/react/24/outline";
 
 import { productSections } from "../homepage/config/productCollection";
 import ProductSectionTabs from "./components/ProductSectionTabs";
 import { preferredSlug, routeAliases } from "./utils/SECTIONKEY";
 import { useCollection } from "./Usecollection";
 import Breadcrumb from "./components/NewBreadcrumb";
-import SortDropdown from "../account/components/dropdown/SortDropdown";
 import ProductGrid from "./components/ProductGrid";
+import CollectionFilterToolbar from "./components/CollectionFilterToolbar";
 
-/* ─────────────────────────────────────────────────────────────────────────────
+/* ─────────────────────────────────────────────────────────────
    CONSTANTS
-───────────────────────────────────────────────────────────────────────────── */
+───────────────────────────────────────────────────────────── */
 
 const BASE_URL = "https://gharkaorganic.com";
 const BRAND_GREEN = "#0B8A52";
 const INFINITE_SCROLL_MARGIN = "500px";
 
 const SORT_OPTIONS = [
-  { value: "popularity_desc", label: "Most Popular" },
-  { value: "createdAt_desc", label: "Newest First" },
+  { value: "popularity_desc", label: "Featured" },
   { value: "price_asc", label: "Price: Low to High" },
   { value: "price_desc", label: "Price: High to Low" },
+  { value: "createdAt_desc", label: "Newest First" },
   { value: "name_asc", label: "Name: A–Z" },
 ];
 
-/* ─────────────────────────────────────────────────────────────────────────────
+/* ─────────────────────────────────────────────────────────────
    SECTION MAP
-───────────────────────────────────────────────────────────────────────────── */
+───────────────────────────────────────────────────────────── */
 
 const sectionMap = Object.fromEntries(productSections.map((s) => [s.key, s]));
 
-/* ─────────────────────────────────────────────────────────────────────────────
+/* ─────────────────────────────────────────────────────────────
    HELPERS
-───────────────────────────────────────────────────────────────────────────── */
+───────────────────────────────────────────────────────────── */
 
 const resolveSection = (param) => {
   if (!param) return sectionMap["all"] ?? null;
@@ -67,9 +71,9 @@ const buildCanonical = (sectionKey) => {
 const toRelativePath = (canonical) =>
   canonical.replace(BASE_URL, "") || "/collections";
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   HOOKS
-───────────────────────────────────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────
+   SENTINEL HOOK
+───────────────────────────────────────────────────────────── */
 
 const useSentinel = (
   onIntersect,
@@ -91,45 +95,77 @@ const useSentinel = (
   return ref;
 };
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   SKELETON
-───────────────────────────────────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────
+   SKELETONS
+───────────────────────────────────────────────────────────── */
 
 const ProductSkeleton = () => (
-  <div className="animate-pulse">
-    <div className="bg-gray-200 aspect-square rounded-xl mb-3" />
-    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-    <div className="h-4 bg-gray-200 rounded w-1/2" />
+  <div className="flex flex-col h-full animate-pulse">
+    <div className="w-full aspect-square bg-[#f4f2e9] rounded-2xl" />
+    <div className="mt-3 sm:mt-4 space-y-2">
+      <div className="h-4 bg-[#f4f2e9] rounded w-4/5" />
+      <div className="h-3.5 bg-[#f4f2e9] rounded w-1/2" />
+      <div className="h-4 bg-[#f4f2e9] rounded w-1/3" />
+      <div className="h-8 bg-[#f4f2e9] rounded w-full mt-2" />
+    </div>
   </div>
 );
 
 const GridSkeleton = () => (
-  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+  <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:gap-x-8 sm:gap-y-12 md:grid-cols-3 md:gap-x-10 lg:grid-cols-4 lg:gap-x-12 xl:gap-x-14 lg:gap-y-14">
     {[...Array(8)].map((_, i) => (
       <ProductSkeleton key={i} />
     ))}
   </div>
 );
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   COMPONENT
-───────────────────────────────────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────
+   MAIN COMPONENT
+───────────────────────────────────────────────────────────── */
 
 const CollectionPage = () => {
   const { slug: urlSlug } = useParams();
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
+  const navigate = useNavigate();
 
   const [sort, setSort] = useState("popularity_desc");
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [availabilityFilter, setAvailabilityFilter] = useState("all");
+  const [priceFilter, setPriceFilter] = useState("all");
+  const [productFilter, setProductFilter] = useState("all");
+
   const handleSortChange = useCallback((v) => setSort(v), []);
 
-  /* ── 1. Resolve section ─────────────────────────────────────────────── */
-  const isCollectionsRoot =
-    pathname === "/collections" || pathname === "/collections/";
-  const section = useMemo(
-    () => (isCollectionsRoot ? sectionMap["all"] : resolveSection(urlSlug)),
-    [urlSlug, isCollectionsRoot],
-  );
+  /* ── 1. Resolve section (Query Param or Slug) ────────────────────────── */
+  const searchParams = useMemo(() => new URLSearchParams(search), [search]);
+  const categoryQuery =
+    searchParams.get("category") ||
+    searchParams.get("cat") ||
+    searchParams.get("collection") ||
+    searchParams.get("type");
+
+  const section = useMemo(() => {
+    // 1. If query parameter is provided (e.g. ?category=pickles, ?category=ghee, ?category=honey)
+    if (categoryQuery) {
+      const resolved = resolveSection(categoryQuery);
+      if (resolved) return resolved;
+    }
+
+    // 2. If visiting root collection paths without category query
+    const isCollectionsRoot =
+      pathname === "/collections" ||
+      pathname === "/collections/" ||
+      pathname === "/all-products" ||
+      pathname === "/all-products/" ||
+      pathname === "/shop" ||
+      pathname === "/shop/";
+
+    if (isCollectionsRoot) {
+      return sectionMap["all"] ?? null;
+    }
+
+    // 3. Resolve via dynamic slug (e.g. /pahadi-achar-online, /buy-desi-ghee-online)
+    return resolveSection(urlSlug);
+  }, [categoryQuery, pathname, urlSlug]);
 
   /* ── 2. Canonical + preferred path ─────────────────────────────────── */
   const canonical = useMemo(
@@ -156,7 +192,77 @@ const CollectionPage = () => {
     enabled: !!section,
   });
 
-  /* ── 4. Infinite scroll ─────────────────────────────────────────────── */
+  /* ── 4. Client-side filtering (Availability, Price, Product) ────────── */
+  const filteredProducts = useMemo(() => {
+    if (!displayProducts) return [];
+    return displayProducts.filter((product) => {
+      // Availability filter
+      if (availabilityFilter === "in_stock" && product.inStock === false) {
+        return false;
+      }
+      if (availabilityFilter === "out_of_stock" && product.inStock !== false) {
+        return false;
+      }
+
+      // Price filter
+      const p = Number(product.price || 0);
+      if (priceFilter === "under_300" && p >= 300) return false;
+      if (priceFilter === "300_600" && (p < 300 || p > 600)) return false;
+      if (priceFilter === "above_600" && p <= 600) return false;
+
+      // Product/category filter (when active on client)
+      if (productFilter && productFilter !== "all" && productFilter !== section?.key) {
+        const cat = String(
+          product.category || product.collectionType || "",
+        ).toLowerCase();
+        const matchesCat = cat.includes(productFilter.toLowerCase());
+        const matchesTag =
+          Array.isArray(product.tags) &&
+          product.tags.some((t) =>
+            String(t).toLowerCase().includes(productFilter.toLowerCase()),
+          );
+        if (!matchesCat && !matchesTag) return false;
+      }
+
+      return true;
+    });
+  }, [displayProducts, availabilityFilter, priceFilter, productFilter, section?.key]);
+
+  const handleProductFilterSelect = useCallback(
+    (key) => {
+      if (key === "all") {
+        if (pathname.includes("all-products")) {
+          navigate("/all-products");
+        } else {
+          navigate("/collections");
+        }
+      } else {
+        if (pathname.includes("all-products")) {
+          navigate(`/all-products?category=${key}`);
+        } else {
+          navigate(`/${preferredSlug[key] ?? key}`);
+        }
+      }
+    },
+    [navigate, pathname],
+  );
+
+  const handleResetFilters = useCallback(() => {
+    setAvailabilityFilter("all");
+    setPriceFilter("all");
+    setProductFilter("all");
+    if (categoryQuery) {
+      if (pathname.includes("all-products")) {
+        navigate("/all-products");
+      } else {
+        navigate("/collections");
+      }
+    } else if (urlSlug && section?.key !== "all") {
+      navigate("/collections");
+    }
+  }, [categoryQuery, pathname, urlSlug, section?.key, navigate]);
+
+  /* ── 5. Infinite scroll sentinel ────────────────────────────────────── */
   const handleSentinelIntersect = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
@@ -166,7 +272,7 @@ const CollectionPage = () => {
     rootMargin: INFINITE_SCROLL_MARGIN,
   });
 
-  /* ── 5. 404 state ───────────────────────────────────────────────────── */
+  /* ── 6. 404 state ───────────────────────────────────────────────────── */
   if (!section) {
     return (
       <main className="min-h-screen flex items-center justify-center bg-white">
@@ -187,12 +293,12 @@ const CollectionPage = () => {
           <div className="mt-6 flex flex-col gap-3">
             <a
               href="/"
-              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+              className="px-6 py-2 bg-[#008060] text-white rounded-lg hover:bg-green-700 transition font-medium">
               Go to Homepage
             </a>
             <a
               href="/collections"
-              className="text-green-600 font-medium hover:underline">
+              className="text-[#008060] font-medium hover:underline">
               Browse All Collections
             </a>
           </div>
@@ -201,11 +307,11 @@ const CollectionPage = () => {
     );
   }
 
-  /* ── 6. Render ──────────────────────────────────────────────────────── */
-  const productCount = displayProducts?.length ?? 0;
+  /* ── 7. Render ──────────────────────────────────────────────────────── */
+  const totalCount = filteredProducts?.length ?? 0;
   const isAllSection = section.key === "all";
 
-  /* Build JSON-LD with ItemList + Product + FAQ for rich results */
+  /* JSON-LD Schema strictly preserved */
   const jsonLd = useMemo(
     () => ({
       "@context": "https://schema.org",
@@ -247,7 +353,7 @@ const CollectionPage = () => {
           "@type": "ItemList",
           name: `${section.title} - Product List`,
           itemListElement:
-            displayProducts?.slice(0, 24).map((p, i) => ({
+            filteredProducts?.slice(0, 24).map((p, i) => ({
               "@type": "ListItem",
               position: i + 1,
               url: `${BASE_URL}/products/${p.slug}`,
@@ -308,13 +414,13 @@ const CollectionPage = () => {
         },
       ],
     }),
-    [section, canonical, displayProducts],
+    [section, canonical, filteredProducts],
   );
 
   return (
     <main className="min-h-screen bg-white">
       {/* ═══════════════════════════════════════════
-          SEO — INDEXING SIGNALS
+          SEO — INDEXING SIGNALS (PRESERVED 100%)
       ═══════════════════════════════════════════ */}
       <Helmet>
         <title>{section.seoTitle}</title>
@@ -374,161 +480,157 @@ const CollectionPage = () => {
           <link rel="preload" as="image" href={section.bannerImage} />
         )}
 
-        {/* JSON-LD */}
+        {/* JSON-LD Schema */}
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
 
-      {/* ───────── HERO BANNER ───────── */}
-      <section className="bg-gradient-to-b from-green-50/60 to-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-16">
-          <Breadcrumb
-            items={[
-              { label: "Home", href: "/" },
-              { label: section.title, href: canonical },
-            ]}
-          />
-          <div className="mt-6 sm:mt-8 grid lg:grid-cols-12 gap-8 items-center">
-            <div className="lg:col-span-7">
-              <span
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-widest mb-4"
-                style={{ backgroundColor: "#E8F5EE", color: BRAND_GREEN }}>
-                <CheckBadgeIcon className="w-4 h-4" /> From Uttarakhand Farms
-              </span>
+      {/* ═══════════════════════════════════════════
+          1. PAGE TITLE & PRESERVED SEO CONTENT (TEXT FIRST)
+      ═══════════════════════════════════════════ */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
+        <Breadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: section.title, href: canonical },
+          ]}
+        />
 
-              <h1
-                className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight leading-tight"
-                style={{ fontFamily: "'Playfair Display', serif" }}>
-                {section.title} from Uttarakhand Himalayas
-              </h1>
-              {section.seoDescription && (
-                <p className="mt-4 text-gray-600 text-sm sm:text-base max-w-2xl leading-relaxed">
-                  {section.seoDescription}
-                </p>
-              )}
-            </div>
+        <div className="mt-4 sm:mt-5">
+          {/* Authentic Himalayan Badge */}
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider bg-emerald-50 text-[#008060] mb-2.5">
+            <CheckBadgeIcon className="w-3.5 h-3.5" /> From Uttarakhand Farms
+          </span>
 
-            <div className="lg:col-span-5">
-              <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-6 shadow-sm">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                  Why Choose Us
-                </p>
-                <ul className="space-y-3 text-sm">
-                  {[
-                    "100% natural & chemical-free",
-                    "Directly from Uttarakhand farmers",
-                    "48hr dispatch, 15-day guarantee",
-                    "Free shipping on orders ₹499+",
-                  ].map((text) => (
-                    <li
-                      key={text}
-                      className="flex items-start gap-2.5 text-gray-700">
-                      <span
-                        className="font-bold text-base mt-0.5"
-                        style={{ color: BRAND_GREEN }}>
-                        ✓
-                      </span>
-                      {text}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+          {/* Primary H1 Heading - Simple, clean, elegant font */}
+          <h1 className="text-2xl sm:text-3xl font-medium text-gray-900 tracking-tight leading-snug">
+            {isAllSection
+              ? "All Organic Products from Uttarakhand Himalayas"
+              : `${section.title} from Uttarakhand Himalayas`}
+          </h1>
+
+          {/* SEO Description paragraph - Simple, clean font */}
+          {section.seoDescription && (
+            <p className="mt-2 text-sm sm:text-base text-gray-500 font-normal max-w-3xl leading-relaxed">
+              {section.seoDescription}
+            </p>
+          )}
+
+          {/* Trust points - Simple, clean inline strip */}
+          <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-gray-500 font-normal">
+            <span className="inline-flex items-center gap-1">
+              <span className="text-[#008060] font-semibold">✓</span> 100% natural &
+              chemical-free
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className="text-[#008060] font-semibold">✓</span> Directly from
+              Uttarakhand farmers
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className="text-[#008060] font-semibold">✓</span> 48hr dispatch,
+              15-day guarantee
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className="text-[#008060] font-semibold">✓</span> Free shipping on
+              orders ₹499+
+            </span>
           </div>
         </div>
-      </section>
-
-      {/* ───────── CATEGORY TABS ───────── */}
-      <div className="border-b border-gray-200 bg-white sticky top-0 z-30 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ProductSectionTabs
-            productSections={productSections}
-            currentKey={section.key}
-          />
-        </div>
-      </div>
-
-      {/* ───────── PRODUCT GRID ───────── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <div className="flex items-center justify-between gap-4 pb-6 mb-6 border-b border-gray-200">
-          <div className="flex items-center gap-4">
-            <h2 className="sr-only">Product List</h2>
-            <p className="text-sm text-gray-700">
-              <span className="font-semibold text-gray-900">
-                {isLoading ? "..." : productCount}
-              </span>{" "}
-              {productCount === 1 ? "product" : "products"} found
-            </p>
-            <button
-              onClick={() => setMobileFiltersOpen(true)}
-              className="lg:hidden flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-gray-900"
-              aria-label="Open filters">
-              <AdjustmentsHorizontalIcon className="w-5 h-5" />
-              Filters
-            </button>
-          </div>
-          <SortDropdown
-            options={SORT_OPTIONS}
-            value={sort}
-            onChange={handleSortChange}
-          />
-        </div>
-
-        {isLoading && productCount === 0 ? (
-          <GridSkeleton />
-        ) : isError ? (
-          <div className="text-center py-20 bg-gray-50 rounded-2xl">
-            <p className="text-gray-500 font-medium">Failed to load products</p>
-            <p className="text-sm text-gray-400 mt-1">
-              Please refresh the page
-            </p>
-          </div>
-        ) : productCount === 0 ? (
-          <div className="py-16 px-4 bg-gray-50 rounded-2xl max-w-3xl mx-auto text-center">
-            <h2 className="text-2xl font-semibold text-gray-900">
-              {section.title}
-            </h2>
-            {section.seoDescription && (
-              <p className="mt-3 text-gray-600">{section.seoDescription}</p>
-            )}
-            <p className="mt-4 text-sm text-gray-500">
-              We're updating inventory for this category. Explore our range of
-              authentic organic products from the Uttarakhand Himalayas. New
-              items coming soon.
-            </p>
-            <div className="mt-6 flex flex-wrap justify-center gap-4 text-sm">
-              <a
-                href="/collections"
-                className="text-green-700 hover:underline font-medium">
-                View All Collections
-              </a>
-              <a
-                href="/"
-                className="text-green-700 hover:underline font-medium">
-                Go to Homepage
-              </a>
-            </div>
-          </div>
-        ) : (
-          <>
-            <ProductGrid
-              isLoading={false}
-              isError={false}
-              displayProducts={displayProducts}
-              isFetchingNextPage={isFetchingNextPage}
-              hasNextPage={hasNextPage}
-              sentinelRef={sentinelRef}
-            />
-            {isFetchingNextPage && (
-              <div className="mt-8">
-                <GridSkeleton />
-              </div>
-            )}
-          </>
-        )}
       </div>
 
       {/* ═══════════════════════════════════════════
-          EDITORIAL SEO BLOCK - CRITICAL FOR RANKING
+          2. CATEGORY NAVIGATION (SHOP BY CATEGORY)
+      ═══════════════════════════════════════════ */}
+      <div className="mt-6">
+        <ProductSectionTabs
+          productSections={productSections}
+          currentKey={section.key}
+        />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* ═══════════════════════════════════════════
+            3. SLEEK FILTER & SORT TOOLBAR (IMAGE 2)
+        ═══════════════════════════════════════════ */}
+        <CollectionFilterToolbar
+          totalCount={totalCount}
+          currentSort={sort}
+          onSortChange={handleSortChange}
+          sortOptions={SORT_OPTIONS}
+          availabilityFilter={availabilityFilter}
+          onAvailabilityChange={setAvailabilityFilter}
+          priceFilter={priceFilter}
+          onPriceChange={setPriceFilter}
+          productFilter={section?.key || "all"}
+          onProductChange={handleProductFilterSelect}
+          productSections={productSections}
+          onResetFilters={handleResetFilters}
+        />
+
+        {/* ═══════════════════════════════════════════
+            4. PRODUCT GRID (IMAGE 2 BORDERLESS CARDS)
+        ═══════════════════════════════════════════ */}
+        <div className="pb-12 sm:pb-16">
+          {isLoading && totalCount === 0 ? (
+            <GridSkeleton />
+          ) : isError ? (
+            <div className="text-center py-20 bg-gray-50 rounded-2xl">
+              <p className="text-gray-500 font-medium">
+                Failed to load products
+              </p>
+              <p className="text-sm text-gray-400 mt-1">
+                Please refresh the page
+              </p>
+            </div>
+          ) : totalCount === 0 ? (
+            <div className="py-16 px-4 bg-gray-50 rounded-2xl max-w-3xl mx-auto text-center">
+              <h2 className="text-2xl font-semibold text-gray-900">
+                {section.title}
+              </h2>
+              {section.seoDescription && (
+                <p className="mt-3 text-gray-600">{section.seoDescription}</p>
+              )}
+              <p className="mt-4 text-sm text-gray-500">
+                We're updating inventory for this category or selected filters.
+                Explore our range of authentic organic products from the
+                Uttarakhand Himalayas.
+              </p>
+              <div className="mt-6 flex flex-wrap justify-center gap-4 text-sm">
+                <button
+                  type="button"
+                  onClick={handleResetFilters}
+                  className="px-4 py-2 bg-[#008060] text-white rounded-lg font-medium hover:bg-green-700 transition">
+                  Reset Filters
+                </button>
+                <a
+                  href="/collections"
+                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition font-medium">
+                  View All Collections
+                </a>
+              </div>
+            </div>
+          ) : (
+            <>
+              <ProductGrid
+                isLoading={false}
+                isError={false}
+                displayProducts={filteredProducts}
+                isFetchingNextPage={isFetchingNextPage}
+                hasNextPage={hasNextPage}
+                sentinelRef={sentinelRef}
+                clearFilters={handleResetFilters}
+              />
+              {isFetchingNextPage && (
+                <div className="mt-8">
+                  <GridSkeleton />
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════
+          5. EDITORIAL SEO BLOCK (STRICTLY PRESERVED)
       ═══════════════════════════════════════════ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-gray-100">
         <div className="max-w-4xl">
@@ -537,7 +639,7 @@ const CollectionPage = () => {
               ? "Pure Organic Products from Uttarakhand Himalayas"
               : `About Our ${section.title}`}
           </h2>
-          <div className="prose prose-sm text-gray-600 max-w-none space-y-4">
+          <div className="prose prose-sm text-gray-600 max-w-none space-y-4 leading-relaxed">
             <p>
               <strong>
                 Ghar Ka Organic{" "}
@@ -554,32 +656,32 @@ const CollectionPage = () => {
               and ship with our <strong>15-day freshness guarantee</strong>.
               Free shipping across India on orders above ₹499.
             </p>
-            <h3 className="text-lg font-semibold text-gray-900!mb-2!mt-6">
+            <h3 className="text-lg font-semibold text-gray-900 !mb-2 !mt-6">
               Related Categories
             </h3>
             <p>
               Explore our popular collections:{" "}
               <a
                 href="/organic-honey"
-                className="text-green-700 hover:underline font-medium">
+                className="text-[#008060] hover:underline font-medium">
                 raw organic honey
               </a>
               ,{" "}
               <a
                 href="/desi-ghee"
-                className="text-green-700 hover:underline font-medium">
+                className="text-[#008060] hover:underline font-medium">
                 A2 desi ghee
               </a>
               ,{" "}
               <a
                 href="/pahadi-pickles"
-                className="text-green-700 hover:underline font-medium">
+                className="text-[#008060] hover:underline font-medium">
                 traditional pahadi pickles
               </a>
               , and{" "}
               <a
                 href="/organic-pulses"
-                className="text-green-700 hover:underline font-medium">
+                className="text-[#008060] hover:underline font-medium">
                 Himalayan pulses
               </a>
               .
@@ -588,7 +690,9 @@ const CollectionPage = () => {
         </div>
       </section>
 
-      {/* ───────── TRUST BAR ───────── */}
+      {/* ═══════════════════════════════════════════
+          6. TRUST BAR (STRICTLY PRESERVED)
+      ═══════════════════════════════════════════ */}
       <section
         className="py-8 text-white"
         style={{ backgroundColor: BRAND_GREEN }}>

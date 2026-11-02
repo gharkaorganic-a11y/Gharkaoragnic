@@ -2,7 +2,7 @@ import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
 import React from "react";
 import countActive from "../utils/countActive";
 import FilterBody from "../FilterBody";
-const BRAND_PINK = "#da127d";
+const BRAND_PINK = "#315c3c";
 
 const DesktopSidebar = ({ facets, filters, setSp }) => {
   const cnt = countActive(filters);
@@ -27,7 +27,7 @@ const DesktopSidebar = ({ facets, filters, setSp }) => {
           {cnt > 0 && (
             <button
               onClick={() => setSp({})}
-              className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-[#da127d] transition-colors">
+              className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-[#315c3c] transition-colors">
               Clear all
             </button>
           )}

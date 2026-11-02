@@ -1,16 +1,15 @@
 import React from "react";
-import { FaInstagram, FaFacebookF } from "react-icons/fa";
 
 const RunningPromotionalBanner = ({ speed = 25 }) => {
-  // Simplified, high-impact messaging
   const messages = [
-    "ENJOY FREE SHIPPING ON ALL PREPAID ORDERS",
-    "A2 DESI GHEE • RAW HONEY • FARM FRESH PICKLES",
-    "100% NATURAL • DIRECT FROM FARMERS",
+    "OFF ABOVE ₹3000",
+    "EXTRA 2% OFF ON ALL PREPAID ORDERS",
+    "CASH ON DELIVERY AVAILABLE",
+    "DELIVERY CHARGES CONFIRMED WITH YOU ON WHATSAPP",
+    "100% PURE HIMALAYAN ORGANIC",
   ];
 
-  // Flattening ensures continuous scroll loop
-  const loopedItems = Array(8).fill(messages).flat();
+  const loopedItems = [...messages, ...messages];
 
   return (
     <>
@@ -30,43 +29,30 @@ const RunningPromotionalBanner = ({ speed = 25 }) => {
         .promo-track-container:hover {
           animation-play-state: paused;
         }
+
+        @media (prefers-reduced-motion: reduce) {
+          .promo-track-container {
+            animation: none;
+          }
+        }
       `}</style>
 
-      {/* SOLID BRAND GREEN BACKGROUND */}
       <div
-        style={{ "--marquee-speed": `${speed}s` }}
-        className="w-full bg-[#009762] text-white h-10 flex items-center overflow-hidden select-none">
-        {/* LEFT SIDE: SOCIAL MEDIA LINKS (With matching vertical separator) */}
-        <div className="flex items-center gap-5 px-5 h-full border-r border-[#006e47] z-20 shrink-0 bg-[#009762]">
-          <a
-            href="https://facebook.com/gharkaorganic"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Facebook"
-            className="hover:opacity-80 transition-opacity duration-200 focus:outline-none">
-            <FaFacebookF className="text-white w-3.5 h-3.5" />
-          </a>
-
-          <a
-            href="https://instagram.com/gharkaorganic"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Instagram"
-            className="hover:opacity-80 transition-opacity duration-200 focus:outline-none">
-            <FaInstagram className="text-white w-4 h-4" />
-          </a>
-        </div>
-
-        {/* RIGHT SIDE: CONTINUOUS SCROLLING TEXT TRACK */}
-        <div className="flex-1 overflow-hidden relative h-full flex items-center z-10">
+        style={{
+          "--marquee-speed": `${speed}s`,
+          backgroundColor: "var(--storefront-announcement-color, #009762)",
+        }}
+        className="flex h-8 sm:h-9 w-full select-none items-center overflow-hidden text-white">
+        <div className="relative flex h-full w-full items-center overflow-hidden">
           <div className="promo-track-container">
             {loopedItems.map((text, i) => (
               <div
                 key={i}
-                className="flex items-center whitespace-nowrap px-8 text-[11px] sm:text-[12px] md:text-[13px] font-medium tracking-widest uppercase text-white/95">
+                className="flex items-center whitespace-nowrap px-6 text-[10px] font-semibold tracking-[0.1em] text-white sm:px-8 sm:text-[11px] md:text-xs">
                 {text}
-                {/* Minimalist vertical pipe separator instead of glowing dots */}
-                <span className="ml-16 text-[#006e47] text-sm">|</span>
+                <span className="ml-8 text-white/80 sm:ml-12" aria-hidden="true">
+                  ✦
+                </span>
               </div>
             ))}
           </div>

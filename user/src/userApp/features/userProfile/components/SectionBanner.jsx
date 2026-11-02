@@ -6,12 +6,9 @@ const SectionBanner = ({
 }) => {
   return (
     <div className={`w-full flex justify-center px-4 ${className}`}>
-      {/* Outer Border (Green) - Achieved via background color + padding */}
-      <div className="w-full max-w-lg p-[2px] bg-green-600 rounded-xl shadow-sm">
-        {/* Inner Background (Green) + White Border */}
-        <div className="w-full bg-green-500 border-[3px] border-white rounded-[10px] px-6 py-3 flex justify-center items-center">
-          {/* Text Content */}
-          <h2 className="text-black font-extrabold text-lg sm:text-xl md:text-2xl tracking-wide text-center">
+      <div className="w-full max-w-lg rounded-2xl border border-[#d6e8d8] bg-white px-5 py-4 shadow-sm">
+        <div className="flex w-full items-center justify-center">
+          <h2 className="text-center font-sans text-lg font-semibold tracking-wide text-[#263329] sm:text-xl md:text-2xl">
             {title}
           </h2>
         </div>

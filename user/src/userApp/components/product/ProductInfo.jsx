@@ -45,13 +45,13 @@ const ProductInfo = ({
               <span className="bg-slate-950 text-white text-[8px] font-black px-2 py-0.5 uppercase tracking-[0.2em]">
                 Limited Edition
               </span>
-              <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#ff356c]">
+              <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#315c3c]">
                 Authorized Archive
               </p>
             </div>
             <h1 className="text-3xl md:text-5xl font-bold tracking-tighter text-slate-950 leading-[0.95]">
               {product.name}
-              <span className="text-[#ff356c] italic font-serif">.</span>
+              <span className="text-[#315c3c] italic font-sans">.</span>
             </h1>
           </div>
         </div>
@@ -67,12 +67,12 @@ const ProductInfo = ({
                 />
               ))}
             </div>
-            <span className="text-[9px] font-black uppercase tracking-widest text-slate-900 border-b border-[#ff356c]/30">
+            <span className="text-[9px] font-black uppercase tracking-widest text-slate-900 border-b border-[#315c3c]/30">
               {product.reviewsCount || "142"} Authenticated Reviews
             </span>
           </div>
           <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-slate-400">
-            <Hash className="w-3 h-3 text-[#ff356c]" />
+            <Hash className="w-3 h-3 text-[#315c3c]" />
             {product.sku || "MN-9921-X"}
           </div>
         </div>
@@ -97,7 +97,7 @@ const ProductInfo = ({
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-950">
                 Dimension Protocol
               </span>
-              <button className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-widest hover:text-[#ff356c] transition-colors group">
+              <button className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-widest hover:text-[#315c3c] transition-colors group">
                 <Ruler
                   size={13}
                   className="group-hover:rotate-45 transition-transform duration-500"
@@ -127,10 +127,10 @@ const ProductInfo = ({
           </div>
 
           {isLowStock ? (
-            <div className="flex items-center gap-3 text-[#ff356c] sm:text-right">
+            <div className="flex items-center gap-3 text-[#315c3c] sm:text-right">
               <div className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ff356c] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ff356c]"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#315c3c] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#315c3c]"></span>
               </div>
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest">
@@ -159,7 +159,7 @@ const ProductInfo = ({
             disabled={isAdding}
             onClick={handleAddToCart}
             className="group relative overflow-hidden w-full bg-slate-950 text-white py-6 md:py-7 text-[11px] font-black uppercase tracking-[0.5em] transition-all duration-500 disabled:opacity-40 flex items-center justify-center gap-4 active:scale-[0.98]">
-            <div className="absolute inset-0 bg-[#ff356c] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
+            <div className="absolute inset-0 bg-[#315c3c] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
             <div className="relative z-10 flex items-center gap-4">
               {isAdding ? (
                 <RefreshCcw className="animate-spin" size={16} />
@@ -181,7 +181,7 @@ const ProductInfo = ({
           </div>
         </div>
 
-        <p className="text-[9px] text-center text-slate-300 uppercase tracking-widest italic font-serif max-w-[260px] mx-auto leading-relaxed">
+        <p className="text-[9px] text-center text-slate-300 uppercase tracking-widest italic font-sans max-w-[260px] mx-auto leading-relaxed">
           Crafted in limited runs to preserve architectural integrity.
         </p>
       </section>
@@ -204,7 +204,7 @@ const ProductInfo = ({
           <div className="p-6 bg-white flex items-center gap-5">
             <ShieldCheck
               size={20}
-              className="text-[#ff356c]"
+              className="text-[#315c3c]"
               strokeWidth={1.5}
             />
             <div className="space-y-0.5">

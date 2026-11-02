@@ -9,16 +9,14 @@ import { auth, db } from "../config/firebase";
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
   signOut,
-  updateProfile,
 } from "firebase/auth";
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 
 const AdminAuthContext = createContext();
 
 // ── Constants ──
-const STORAGE_KEY = "mnmukt_admin_token";
+const STORAGE_KEY = "gharkaorganic_admin_token";
 const REVALIDATE_MS = 60 * 60 * 1000; // 1 hour
 
 // ── Cache helpers ──
@@ -116,41 +114,30 @@ export const AdminAuthProvider = ({ children }) => {
       const cred = await signInWithEmailAndPassword(auth, email, password);
       const snap = await getDoc(doc(db, "users", cred.user.uid));
 
-      if (!snap.exists() || !snap.data().isAdmin || snap.data().isBlocked) {
+      if (!snap.exists()) {
         await signOut(auth);
         clearSession();
-        throw new Error("Unauthorized access. Only admins allowed.");
+        throw new Error(
+          `No admin profile found. Create Firestore document users/${cred.user.uid}.`,
+        );
       }
 
-      const data = writeCache({ uid: cred.user.uid, ...snap.data() });
-      setAdmin(data);
-      setIsAuthorized(true);
-      lastVerifiedUid.current = cred.user.uid;
-    } finally {
-      setLoading(false);
-    }
-  };
+      const userData = snap.data();
+      if (userData.isAdmin !== true) {
+        await signOut(auth);
+        clearSession();
+        throw new Error(
+          "This account is not an admin. Set isAdmin to boolean true in its Firestore users document.",
+        );
+      }
 
-  // ── Admin register ──
-  const register = async (email, password, name) => {
-    setLoading(true);
-    try {
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(cred.user, { displayName: name });
+      if (userData.isBlocked === true) {
+        await signOut(auth);
+        clearSession();
+        throw new Error("This admin account is blocked. Set isBlocked to false.");
+      }
 
-      // Create Firestore admin entry
-      const adminData = {
-        uid: cred.user.uid,
-        name,
-        email,
-        isAdmin: true,
-        isBlocked: false,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      };
-      await setDoc(doc(db, "users", cred.user.uid), adminData);
-
-      const data = writeCache({ uid: cred.user.uid, ...adminData });
+      const data = writeCache({ uid: cred.user.uid, ...userData });
       setAdmin(data);
       setIsAuthorized(true);
       lastVerifiedUid.current = cred.user.uid;
@@ -172,10 +159,9 @@ export const AdminAuthProvider = ({ children }) => {
         isAuthorized,
         loading,
         login,
-        register,
         logout,
       }}>
-      {!loading && children}
+      {children}
     </AdminAuthContext.Provider>
   );
 };

@@ -1,38 +1,21 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../../../auth/context/UserContext";
 
 import {
   HomeIcon as HomeOutline,
   Squares2X2Icon as ExploreOutline,
-  HeartIcon as HeartOutline,
-  UserIcon as UserOutline,
 } from "@heroicons/react/24/outline";
 
 import {
   HomeIcon as HomeSolid,
   Squares2X2Icon as ExploreSolid,
-  HeartIcon as HeartSolid,
-  UserIcon as UserSolid,
 } from "@heroicons/react/24/solid";
 
 const THEME_COLOR = "#c8102e";
 
-const BottomNavbar = ({}) => {
-  const { isLoggedIn } = useAuth();
+const BottomNavbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
-  const handleProtected = (path) => {
-    if (isLoggedIn) {
-      navigate(path);
-    } else {
-      navigate("/auth/login", {
-        state: { from: location.pathname },
-        replace: true,
-      });
-    }
-  };
 
   const navItems = [
     { name: "Home", path: "/", IconOutline: HomeOutline, IconSolid: HomeSolid },
@@ -41,14 +24,6 @@ const BottomNavbar = ({}) => {
       path: "/categories",
       IconOutline: ExploreOutline,
       IconSolid: ExploreSolid,
-    },
-
-    {
-      name: "Profile",
-      path: "/user/profile",
-      IconOutline: UserOutline,
-      IconSolid: UserSolid,
-      protected: true,
     },
   ];
 
@@ -62,11 +37,7 @@ const BottomNavbar = ({}) => {
           return (
             <li key={item.name} className="flex-1 h-full">
               <button
-                onClick={() =>
-                  item.protected
-                    ? handleProtected(item.path)
-                    : navigate(item.path)
-                }
+                onClick={() => navigate(item.path)}
                 className="w-full h-full flex flex-col items-center justify-center gap-1 relative group">
                 {/* 🔴 Active Dot Indicator */}
                 {isActive && (

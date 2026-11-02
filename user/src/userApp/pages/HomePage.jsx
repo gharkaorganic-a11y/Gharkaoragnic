@@ -5,22 +5,24 @@ import React, {
   useState,
   memo,
   useCallback,
+  useMemo,
 } from "react";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 
 import { useHomepageProducts } from "../../userApp/features/homepage/hooks/useHomepageProducts";
 import { productSections } from "../../userApp/features/homepage/config/productCollection";
-import { IMAGES } from "../../assets/images";
+import { preferredSlug } from "../features/p/utils/SECTIONKEY";
 
 import { GridSectionSkeleton } from "../homepage/HomeSkeletons";
 import ScrollToTopButton from "../../shared/components/ScrollToTopButton";
-import CustomerReviewsSection from "../reviews/componenst/CustomerReviewsSection";
 import ReviewsGrid from "../reviews/componenst/ReviewsGrid";
 import FAQSection from "../homepage/FAQSection";
-import ProductSectionTabs from "../features/p/components/ProductSectionTabs";
 import HeroSection from "../homepage/HeroSection";
-import ExploreOurPicks from "../homepage/ExploreOurPicks";
 import OurStoryComponent from "../homepage/OurStoryComponent";
+import HomeTrustBar from "../homepage/HomeTrustBar";
+import HomeHeritagePromise from "../homepage/HomeHeritagePromise";
+import ProductSectionTabs from "../features/p/components/ProductSectionTabs";
 
 const ProductSection = React.lazy(
   () => import("../components/section/ProductSection"),
@@ -32,7 +34,16 @@ const ProductSection = React.lazy(
 
 const SITE_URL = "https://gharkaorganic.com";
 const SITE_NAME = "Ghar Ka Organic";
-const HOMEPAGE_KEYS = ["new", "pickle", "honey", "ghee"];
+const HOMEPAGE_KEYS = [
+  "new",
+  "pickle",
+  "honey",
+  "ghee",
+  "spices",
+  "pahadiSalts",
+  "pahadiDals",
+  "chutney",
+];
 
 const homepageSections = productSections
   .filter((s) => HOMEPAGE_KEYS.includes(s.key))
@@ -86,9 +97,7 @@ const PRODUCT_IMAGES = {
 };
 
 // ────────────────────────────────────────────────────────────────────────────
-// ✅ FIXED: COMPREHENSIVE PRODUCT SCHEMAS WITH ALL 5 PRODUCTS
-// Includes: Ghee, Honey, Mango Pickle, Lemon Pickle, Bhang Chutney
-// With: Reviews, AggregateRating, Offers, ReturnPolicy, Shipping
+// Product schemas include catalog and offer details; customer reviews load separately.
 // ────────────────────────────────────────────────────────────────────────────
 
 const HOMEPAGE_PRODUCT_SCHEMAS = [
@@ -106,41 +115,6 @@ const HOMEPAGE_PRODUCT_SCHEMAS = [
     sku: "GKO-GHEE-001",
     brand: { "@type": "Brand", name: "Ghar Ka Organic" },
     category: "Organic Food Products > Dairy > Ghee",
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: 4.9,
-      reviewCount: 24,
-      bestRating: 5,
-      worstRating: 1,
-    },
-    review: [
-      {
-        "@type": "Review",
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: 5,
-          bestRating: 5,
-          worstRating: 1,
-        },
-        author: { "@type": "Person", name: "Priya Sharma" },
-        reviewBody:
-          "Best bilona ghee I've ever tasted. Pure, aromatic, and you can taste the difference immediately. Worth every penny!",
-        datePublished: "2025-05-15",
-      },
-      {
-        "@type": "Review",
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: 5,
-          bestRating: 5,
-          worstRating: 1,
-        },
-        author: { "@type": "Person", name: "Rakesh Kumar" },
-        reviewBody:
-          "Authentic Uttarakhand ghee. The smell is incredible and it doesn't have that commercial aftertaste.",
-        datePublished: "2025-05-10",
-      },
-    ],
     offers: {
       "@type": "Offer",
       url: `${SITE_URL}/buy-desi-ghee-online`,
@@ -191,28 +165,6 @@ const HOMEPAGE_PRODUCT_SCHEMAS = [
     sku: "GKO-HONEY-001",
     brand: { "@type": "Brand", name: "Ghar Ka Organic" },
     category: "Organic Food Products > Honey > Raw Honey",
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: 4.9,
-      reviewCount: 18,
-      bestRating: 5,
-      worstRating: 1,
-    },
-    review: [
-      {
-        "@type": "Review",
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: 5,
-          bestRating: 5,
-          worstRating: 1,
-        },
-        author: { "@type": "Person", name: "Anjali Pant" },
-        reviewBody:
-          "Real raw honey! No processing, no additives. Can feel the authentic taste and the health benefits are genuine.",
-        datePublished: "2025-05-12",
-      },
-    ],
     offers: {
       "@type": "Offer",
       url: `${SITE_URL}/raw-honey-uttarakhand`,
@@ -261,28 +213,6 @@ const HOMEPAGE_PRODUCT_SCHEMAS = [
     sku: "GKO-PICKLE-AAM-001",
     brand: { "@type": "Brand", name: "Ghar Ka Organic" },
     category: "Organic Food Products > Pickles > Mango Pickle",
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: 5.0,
-      reviewCount: 14,
-      bestRating: 5,
-      worstRating: 1,
-    },
-    review: [
-      {
-        "@type": "Review",
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: 5,
-          bestRating: 5,
-          worstRating: 1,
-        },
-        author: { "@type": "Person", name: "Mohit Joshi" },
-        reviewBody:
-          "Exact taste of home pickles. No artificial flavor, no preservatives. This is how real achar should taste!",
-        datePublished: "2025-05-08",
-      },
-    ],
     offers: {
       "@type": "Offer",
       url: `${SITE_URL}/pahadi-achar-online`,
@@ -332,28 +262,6 @@ const HOMEPAGE_PRODUCT_SCHEMAS = [
     sku: "GKO-PICKLE-NIMBU-001",
     brand: { "@type": "Brand", name: "Ghar Ka Organic" },
     category: "Organic Food Products > Pickles > Lemon Pickle",
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: 4.8,
-      reviewCount: 8,
-      bestRating: 5,
-      worstRating: 1,
-    },
-    review: [
-      {
-        "@type": "Review",
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: 5,
-          bestRating: 5,
-          worstRating: 1,
-        },
-        author: { "@type": "Person", name: "Harsh Malhotra" },
-        reviewBody:
-          "Best lemon pickle ever! Tangy, spicy, and aromatic. Perfect with every meal. The mustard oil gives it authentic pahadi taste.",
-        datePublished: "2025-05-17",
-      },
-    ],
     offers: {
       "@type": "Offer",
       url: `${SITE_URL}/nimbu-achar-online`,
@@ -403,28 +311,6 @@ const HOMEPAGE_PRODUCT_SCHEMAS = [
     sku: "GKO-CHUTNEY-BHANG-001",
     brand: { "@type": "Brand", name: "Ghar Ka Organic" },
     category: "Organic Food Products > Chutneys > Traditional Chutney",
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: 4.8,
-      reviewCount: 5,
-      bestRating: 5,
-      worstRating: 1,
-    },
-    review: [
-      {
-        "@type": "Review",
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: 5,
-          bestRating: 5,
-          worstRating: 1,
-        },
-        author: { "@type": "Person", name: "Mohit Joshi" },
-        reviewBody:
-          "Traditional kumaoni flavor in every spoonful. Perfect with rotli and rice. Zero preservatives as mentioned.",
-        datePublished: "2025-05-15",
-      },
-    ],
     offers: {
       "@type": "Offer",
       url: `${SITE_URL}/pahadi-products-online`,
@@ -713,7 +599,7 @@ const MASTER_SCHEMA = {
           name: "Do you deliver across India?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes, we deliver our Pahadi products across all major cities and states in India with free shipping on all orders. Delivery typically takes 3-5 business days.",
+            text: "We deliver across many locations in India. Our team confirms delivery availability, timelines, and any delivery charges with you on WhatsApp before your order is finalized.",
           },
         },
         {
@@ -795,39 +681,70 @@ ViewportLoader.displayName = "ViewportLoader";
 
 const HomePage = () => {
   const isMobile = useIsMobile();
-  const { products: homeProducts = {}, loadingKeys = [] } =
-    useHomepageProducts(homepageSections);
+  const {
+    products: homeProducts = {},
+    loadingKeys = [],
+    errors = {},
+    refetchProducts,
+  } = useHomepageProducts(homepageSections);
+  const allHomepageProducts = useMemo(() => {
+    const productsById = new Map();
+    Object.values(homeProducts)
+      .flat()
+      .forEach((product) => {
+        if (product?.id && !productsById.has(product.id)) {
+          productsById.set(product.id, product);
+        }
+      });
+    return [...productsById.values()];
+  }, [homeProducts]);
 
   const getProducts = useCallback(
     (key) => {
-      const items = homeProducts[key] ?? [];
+      const items =
+        key === "all" ? allHomepageProducts : (homeProducts[key] ?? []);
       return isMobile ? items.slice(0, 4) : items;
     },
-    [homeProducts, isMobile],
+    [allHomepageProducts, homeProducts, isMobile],
   );
 
   const renderSection = useCallback(
     (key) => {
-      const section = homepageSections.find((s) => s.key === key);
+      const section = productSections.find((s) => s.key === key);
       if (!section) return null;
+      const sectionProducts = getProducts(section.key);
+      const sectionError =
+        section.key === "all"
+          ? (Object.values(errors)[0] ?? "")
+          : (errors[section.key] ?? "");
       return (
         <section key={section.key} className="w-full">
           <Suspense fallback={<GridSectionSkeleton />}>
             <ProductSection
               title={section.title}
               subtitle={section.subtitle}
-              products={getProducts(section.key)}
-              loading={loadingKeys.includes(section.key)}
+              badge={section.badge}
+              products={sectionProducts}
+              compact
+              loading={
+                section.key === "all"
+                  ? loadingKeys.length > 0
+                  : loadingKeys.includes(section.key)
+              }
+              error={sectionError}
+              onRetry={() => refetchProducts()}
+              navigateTo={
+                section.key === "all"
+                  ? "/collections"
+                  : `/${preferredSlug[section.key] ?? section.key}`
+              }
             />
           </Suspense>
         </section>
       );
     },
-    [getProducts, loadingKeys],
+    [errors, getProducts, loadingKeys, refetchProducts],
   );
-
-  const desktopSlides = IMAGES?.hero?.desktopSlides ?? [];
-  const mobileSlides = IMAGES?.hero?.mobileSlides ?? [];
 
   return (
     <main className="min-h-screen bg-white">
@@ -838,8 +755,6 @@ const HomePage = () => {
         {/* PERFORMANCE: RESOURCE HINTS FOR CORE WEB VITALS */}
         <link rel="preconnect" href="https://res.cloudinary.com" />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-
         {/* ┌───────────────────────────────────────────────────────┐ */}
         {/* │ CRITICAL SEO TAGS - TITLE, DESCRIPTION, CANONICAL    │ */}
         {/* └───────────────────────────────────────────────────────┘ */}
@@ -911,70 +826,31 @@ const HomePage = () => {
       {/* │ HERO SECTION                                                 │ */}
       {/* └─────────────────────────────────────────────────────────────┘ */}
       <section className="w-full">
-        <h1 className="sr-only">Ghar Ka Organic – Himalayan Organic Food</h1>
-        <div className="w-full aspect-[16/9] sm:aspect-[16/7] md:aspect-[16/6]">
-          <HeroSection
-            desktopSlides={desktopSlides}
-            mobileSlides={mobileSlides}
-          />
-        </div>
+        <HeroSection />
       </section>
 
-      {/* ┌─────────────────────────────────────────────────────────────┐ */}
-      {/* │ PRODUCT CATEGORY TABS                                        │ */}
-      {/* └─────────────────────────────────────────────────────────────┘ */}
-      <section
-        className="w-full mt-6 md:mt-10 max-w-7xl mx-auto px-4"
-        aria-label="Product Categories">
-        <ProductSectionTabs productSections={productSections} />
-      </section>
+      <ProductSectionTabs />
 
-      {/* ┌─────────────────────────────────────────────────────────────┐ */}
-      {/* │ PRODUCT SECTIONS - NEW ARRIVALS, PICKLES, HONEY, GHEE      │ */}
-      {/* └─────────────────────────────────────────────────────────────┘ */}
+      {/* ── 2. NEW ARRIVALS / BEST SELLERS ── */}
       {renderSection("new")}
 
-      <h2 className="sr-only">
-        Shop Ghar Ka Organic — Authentic Pahadi Pickles, Raw Honey & Bilona Desi
-        Ghee from Uttarakhand
-      </h2>
-
-      {renderSection("pickle")}
-
+      {/* ── 3. OUR STORY SIGNATURE 2-COLUMN COMPONENT ── */}
       <ViewportLoader>
         <OurStoryComponent />
       </ViewportLoader>
 
-      <ViewportLoader>
-        <ExploreOurPicks
-          data={{
-            img: "/banner/pahadiseid.png",
-            label: "Uttarakhand Himalayan Organic Pickles Collection",
-            link: "/collections/all",
-          }}
-        />
-      </ViewportLoader>
+      {/* ── 4. SIGNATURE PAHADI PICKLES & ACHAR ── */}
+      {renderSection("pickle")}
 
+      {/* ── 6. RAW FOREST HONEY ── */}
       {renderSection("honey")}
 
-      <ViewportLoader>
-        <ExploreOurPicks
-          data={{
-            img: "/banner/pahadipickle.png",
-            label: "Traditional Pahadi Organic Products from Uttarakhand",
-            link: "/collections/all",
-          }}
-        />
-      </ViewportLoader>
-
+      {/* ── 7. TRADITIONAL A2 BILONA GHEE ── */}
       {renderSection("ghee")}
 
       {/* ┌─────────────────────────────────────────────────────────────┐ */}
       {/* │ CUSTOMER REVIEWS - SOCIAL PROOF FOR RICH RESULTS            │ */}
       {/* └─────────────────────────────────────────────────────────────┘ */}
-      <ViewportLoader rootMargin="300px">
-        <CustomerReviewsSection showSchema={false} />
-      </ViewportLoader>
       <ViewportLoader rootMargin="300px">
         <ReviewsGrid showSchema={false} />
       </ViewportLoader>
@@ -1019,7 +895,7 @@ const HomePage = () => {
             <a
               key={item.link}
               href={item.link}
-              className="text-gray-500 hover:text-[#C1121F] transition-colors font-medium hover:underline underline-offset-4">
+              className="font-medium text-gray-500 transition-colors hover:text-[#315c3c] hover:underline underline-offset-4">
               {item.label}
             </a>
           ))}

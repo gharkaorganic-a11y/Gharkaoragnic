@@ -6,7 +6,7 @@ const ViewAllButton = ({
   onClick,
   loading = false,
   disabled = false,
-  bgColor = "#ff356c",
+  bgColor = "#315c3c",
   hoverBgColor = "#e62e5f",
   textColor = "white",
   fullWidth = false,

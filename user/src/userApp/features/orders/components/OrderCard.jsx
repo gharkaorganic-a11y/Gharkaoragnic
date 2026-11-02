@@ -1,7 +1,7 @@
 import React from "react";
 import { Package, IndianRupee, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { redirectToWhatsApp } from "../../../../utils/redirectToWhatsApp";
+import { normalizeOrderStatus } from "../utils/orders";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 export const formatDate = (dateStr) => {
@@ -17,6 +17,7 @@ export const formatDate = (dateStr) => {
 };
 
 export const getStatusMeta = (status) => {
+  const normalizedStatus = normalizeOrderStatus(status);
   const map = {
     delivered: { label: "Delivered", color: "text-green-600" },
     shipped: { label: "Out for delivery", color: "text-amber-500" },
@@ -24,7 +25,7 @@ export const getStatusMeta = (status) => {
     placed: { label: "Order Placed", color: "text-amber-500" },
     cancelled: { label: "Cancelled", color: "text-red-500" },
   };
-  return map[status] || { label: status, color: "text-gray-500" };
+  return map[normalizedStatus] || { label: status, color: "text-gray-500" };
 };
 
 // ── Dummy data (used when real API returns nothing) ────────────────────────────
@@ -157,31 +158,28 @@ const StatusDot = ({ status }) => {
 const OrderCard = ({
   order,
   navigate: navProp,
-  refreshOrders,
-  updateOrderInCache,
 }) => {
   const nav = useNavigate();
   const navigate = navProp || nav;
 
   const orderId = order?.id || order?.orderId;
   const amount = order?.totalAmount || 0;
-  const customerName = order?.addressSnapshot?.name;
+  const status = normalizeOrderStatus(order.orderStatus || order.status);
 
-  const isCancelled = order.orderStatus === "cancelled";
-  const isDelivered = order.orderStatus === "delivered";
-  const isInTransit =
-    order.orderStatus === "shipped" || order.orderStatus === "processing";
+  const isCancelled = status === "cancelled";
+  const isDelivered = status === "delivered";
+  const isInTransit = status === "shipped" || status === "processing";
 
   const deliveryDate =
     order.expectedDelivery || order.deliveredAt || order.updatedAt;
 
-  let statusDisplay = getStatusMeta(order.orderStatus).label;
+  let statusDisplay = getStatusMeta(status).label;
   if (isDelivered && deliveryDate)
     statusDisplay = `Delivered on ${formatDate(deliveryDate)}`;
-  else if (isCancelled) statusDisplay = "Refund Completed";
+  else if (isCancelled) statusDisplay = "Order Cancelled";
   else if (isInTransit && deliveryDate)
     statusDisplay = `Delivery expected by ${formatDate(deliveryDate)}`;
-  else if (order.orderStatus === "placed") statusDisplay = "Order Placed";
+  else if (status === "placed") statusDisplay = "Order Placed";
 
   // Support both full items array and lightweight previewItem
   const displayItems = order.items?.length
@@ -191,14 +189,10 @@ const OrderCard = ({
           {
             ...order.previewItem,
             quantity: order.itemCount || 1,
-            itemStatus: order.orderStatus,
+            itemStatus: status,
           },
         ]
       : [];
-
-  const showConfirmButton =
-    order.paymentStatus?.toLowerCase() === "pending" ||
-    order.orderStatus === "placed";
 
   return (
     <div className="bg-white  overflow-hidden w-full s mb-4 sm:mb-6">
@@ -235,38 +229,29 @@ const OrderCard = ({
 
         {/* Action Buttons (Full width on mobile, auto on desktop) */}
         <div className="flex gap-2 w-full md:w-auto mt-1 md:mt-0">
-          {showConfirmButton ? (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                redirectToWhatsApp({ orderId, amount, customerName });
-              }}
-              className="flex-1 md:flex-none px-4 py-2.5 text-sm font-semibold text-white bg-[#FF3F6C] rounded-lg hover:bg-[#d93059] active:scale-95 transition-all text-center">
-              Confirm Payment
-            </button>
-          ) : (
-            <>
-              <button
-                onClick={() => navigate(`/user/orders/${orderId}`)}
-                className="flex-1 md:flex-none px-4 py-2 text-xs sm:text-sm font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 active:scale-95 transition-all text-center">
-                View Order
-              </button>
-              {/* Removed hidden class to show full details on mobile */}
-              <button
-                onClick={() => navigate(`/orders/${orderId}/invoice`)}
-                className="flex-1 md:flex-none px-4 py-2 text-xs sm:text-sm font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 active:scale-95 transition-all text-center">
-                View Invoice
-              </button>
-            </>
-          )}
+          <button
+            onClick={() => navigate(`/user/orders/${orderId}`)}
+            className="flex-1 md:flex-none px-4 py-2 text-xs sm:text-sm font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 active:scale-95 transition-all text-center">
+            View Order
+          </button>
+          <button
+            onClick={() => navigate(`/orders/${orderId}/invoice`)}
+            className="flex-1 md:flex-none px-4 py-2 text-xs sm:text-sm font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 active:scale-95 transition-all text-center">
+            View Invoice
+          </button>
         </div>
       </div>
 
       {/* ── Items List ── */}
       <div className="divide-y divide-gray-100">
         {displayItems.map((item, index) => {
-          const itemDelivered = item.itemStatus === "delivered";
-          const itemCancelled = item.itemStatus === "cancelled";
+          const itemStatus = normalizeOrderStatus(
+            item.itemStatus && item.itemStatus !== "placed"
+              ? item.itemStatus
+              : status,
+          );
+          const itemDelivered = itemStatus === "delivered";
+          const itemCancelled = itemStatus === "cancelled";
 
           return (
             <div
@@ -326,7 +311,7 @@ const OrderCard = ({
                 {/* Status + Actions row (Wrapped elegantly for mobile) */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-4 sm:mt-auto pt-4 border-t border-gray-50 gap-3 sm:gap-4">
                   <div className="flex items-center gap-2">
-                    <StatusDot status={item.itemStatus || order.orderStatus} />
+                    <StatusDot status={itemStatus} />
                     <span
                       className={`text-xs sm:text-sm font-semibold ${
                         itemCancelled

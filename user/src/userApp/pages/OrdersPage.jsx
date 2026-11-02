@@ -1,10 +1,8 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useAuth } from "../features/auth/context/UserContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { orderService } from "../features/orders/services/orderService";
-import OrderCard, {
-  DUMMY_ORDERS,
-} from "../features/orders/components/OrderCard";
+import OrderCard from "../features/orders/components/OrderCard";
 import AuthRedirect from "../features/orders/components/AuthRedirect";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ShoppingBag } from "lucide-react";
@@ -13,6 +11,7 @@ import { ChevronLeft, ShoppingBag } from "lucide-react";
 const ordersKeys = {
   all: (userId) => ["orders", userId],
 };
+const EMPTY_ORDERS = [];
 
 /* ── Upgraded Skeleton Card (Matches New OrderCard Design) ── */
 const SkeletonCard = () => (
@@ -81,8 +80,19 @@ const OrdersPage = () => {
     refetchOnReconnect: true,
   });
 
-  // Use real orders if available, DUMMY_ORDERS only as dev preview fallback
-  const orders = data?.orders?.length ? data.orders : DUMMY_ORDERS;
+  useEffect(() => {
+    if (!userId || !isLoggedIn) return undefined;
+
+    return orderService.subscribeToUserOrders(
+      userId,
+      (orders) => queryClient.setQueryData(ordersKeys.all(userId), { orders }),
+      (listenerError) => {
+        console.error("[OrdersPage] Live order updates failed:", listenerError);
+      },
+    );
+  }, [userId, isLoggedIn, queryClient]);
+
+  const orders = data?.orders ?? EMPTY_ORDERS;
 
   /* ── Tab buckets ── */
   const { allOrders, activeOrders, cancelledOrders } = useMemo(() => {
@@ -113,24 +123,6 @@ const OrdersPage = () => {
   /* ── Auth Guard ── */
   if (!isLoggedIn) return <AuthRedirect navigate={navigate} />;
 
-  /* ── Cache helpers ── */
-  const refreshOrders = async () => {
-    await queryClient.invalidateQueries(ordersKeys.all(userId));
-  };
-
-  const updateOrderInCache = (updatedOrder) => {
-    queryClient.setQueryData(ordersKeys.all(userId), (oldData) => {
-      if (!oldData) return { orders: [updatedOrder] };
-      const copy = [...oldData.orders];
-      const idx = copy.findIndex(
-        (o) => o.id === updatedOrder.id || o.orderId === updatedOrder.orderId,
-      );
-      if (idx >= 0) copy[idx] = updatedOrder;
-      else copy.unshift(updatedOrder);
-      return { orders: copy };
-    });
-  };
-
   /* ── Tabs config ── */
   const tabs = [
     { key: "all", label: "All Orders", count: allOrders.length },
@@ -139,7 +131,7 @@ const OrdersPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f9fafb] pb-24 font-sans selection:bg-pink-100 selection:text-pink-900">
+    <div className="min-h-screen bg-[#f9fafb] pb-24 font-sans selection:bg-green-100 selection:text-green-900">
       {/* ── Sticky Header ── */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
         {/* Title Row */}
@@ -216,7 +208,7 @@ const OrdersPage = () => {
         ) : displayedOrders.length === 0 ? (
           /* Empty State */
           <div className="mt-16 sm:mt-24 flex flex-col items-center text-center px-6 max-w-md mx-auto">
-            <div className="w-20 h-20 rounded-full bg-[#fff0f3] flex items-center justify-center mb-6 shadow-sm border border-pink-50">
+            <div className="w-20 h-20 rounded-full bg-[#fff0f3] flex items-center justify-center mb-6 shadow-sm border border-green-50">
               <ShoppingBag size={32} className="text-[#FF3F6C]" />
             </div>
             <h2 className="text-xl font-bold text-gray-900 mb-2">
@@ -245,8 +237,6 @@ const OrdersPage = () => {
                 key={order.id || order.orderId || index}
                 order={order}
                 navigate={navigate}
-                refreshOrders={refreshOrders}
-                updateOrderInCache={updateOrderInCache}
               />
             ))}
           </div>

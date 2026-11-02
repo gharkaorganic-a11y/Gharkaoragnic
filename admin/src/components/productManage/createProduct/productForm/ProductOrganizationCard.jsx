@@ -67,7 +67,7 @@ const ProductOrganizationCard = ({
               className="w-full border border-[#e0e0e0] text-[#212121] p-2.5 rounded-sm focus:outline-none focus:border-[#2874f0] focus:ring-1 focus:ring-[#2874f0] text-[14px] transition-shadow bg-white">
               <option value="">Select predefined collection...</option>
               {productSections.map((section) => (
-                <option key={section.key} value={section.key}>
+                <option key={section.key} value={section.key.toLowerCase()}>
                   {section.title}
                 </option>
               ))}

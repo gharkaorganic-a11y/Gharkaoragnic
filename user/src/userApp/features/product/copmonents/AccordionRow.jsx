@@ -18,7 +18,7 @@ const AccordionRow = ({ label, children, defaultOpen = false }) => {
         <span
           className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300 ${
             open
-              ? "bg-pink-50 text-[#ff3f6c]"
+              ? "bg-green-50 text-[#ff3f6c]"
               : "bg-gray-50 text-gray-500 group-hover:bg-gray-100 group-hover:text-gray-900"
           }`}>
           <ChevronDown

@@ -22,7 +22,6 @@ import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import {
   collection,
   query,
-  orderBy,
   limit,
   startAfter,
   getDocs,
@@ -46,6 +45,7 @@ import ProductCard from "../../../components/cards/ProductCard"; // your existin
    CONSTANTS
 ───────────────────────────────────── */
 const PAGE_SIZE = 20; // docs fetched per Firestore call
+const collectionRef = collection(db, "storeProducts");
 
 const SORT_OPTIONS = [
   { value: "createdAt_desc", label: "Newest First" },
@@ -185,9 +185,8 @@ const FilterSidebar = ({
 
   return (
     <div
-      className={`bg-white flex flex-col h-full ${
-        isMobile ? "w-full" : "w-[220px] lg:w-[240px] flex-shrink-0"
-      }`}>
+      className={`bg-white flex flex-col h-full ${isMobile ? "w-full" : "w-[220px] lg:w-[240px] flex-shrink-0"
+        }`}>
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
         <div className="flex items-center gap-2">
@@ -196,7 +195,7 @@ const FilterSidebar = ({
             Filters
           </span>
           {activeCount > 0 && (
-            <span className="text-[10px] font-bold text-white bg-[#da127d] px-1.5 py-0.5 rounded-full">
+            <span className="rounded-full bg-[#315c3c] px-1.5 py-0.5 text-[10px] font-bold text-white">
               {activeCount}
             </span>
           )}
@@ -205,7 +204,7 @@ const FilterSidebar = ({
           {activeCount > 0 && (
             <button
               onClick={clearAll}
-              className="text-[11px] font-semibold text-[#da127d] hover:underline">
+              className="text-[11px] font-semibold text-[#315c3c] hover:underline">
               Clear all
             </button>
           )}
@@ -231,7 +230,7 @@ const FilterSidebar = ({
                     type="checkbox"
                     checked={filters.categories.includes(cat)}
                     onChange={() => toggle("categories", cat)}
-                    className="w-3.5 h-3.5 accent-[#da127d] cursor-pointer"
+                    className="h-3.5 w-3.5 cursor-pointer accent-[#315c3c]"
                   />
                   <span className="text-[12px] text-gray-600 group-hover:text-gray-900 capitalize">
                     {cat}
@@ -249,11 +248,10 @@ const FilterSidebar = ({
               <button
                 key={s}
                 onClick={() => toggle("sizes", s)}
-                className={`text-[11px] font-semibold px-2.5 py-1 border transition-colors duration-200 ${
-                  filters.sizes.includes(s)
-                    ? "bg-[#da127d] border-[#da127d] text-white"
-                    : "border-gray-200 text-gray-600 hover:border-[#da127d] hover:text-[#da127d]"
-                }`}>
+                className={`text-[11px] font-semibold px-2.5 py-1 border transition-colors duration-200 ${filters.sizes.includes(s)
+                    ? "border-[#315c3c] bg-[#315c3c] text-white"
+                    : "border-gray-200 text-gray-600 hover:border-[#315c3c] hover:text-[#315c3c]"
+                  }`}>
                 {s}
               </button>
             ))}
@@ -283,7 +281,7 @@ const FilterSidebar = ({
                           : { min: r.min, max: r.max },
                     }))
                   }
-                  className="accent-[#da127d] cursor-pointer"
+                  className="cursor-pointer accent-[#315c3c]"
                 />
                 <span className="text-[12px] text-gray-600 group-hover:text-gray-900">
                   {r.label}
@@ -302,7 +300,7 @@ const FilterSidebar = ({
               onChange={() =>
                 setFilters((prev) => ({ ...prev, inStock: !prev.inStock }))
               }
-              className="w-3.5 h-3.5 accent-[#da127d] cursor-pointer"
+              className="h-3.5 w-3.5 cursor-pointer accent-[#315c3c]"
             />
             <span className="text-[12px] text-gray-600">In stock only</span>
           </label>
@@ -314,7 +312,7 @@ const FilterSidebar = ({
         <div className="px-4 py-3 border-t border-gray-100">
           <button
             onClick={onClose}
-            className="w-full py-3 bg-[#da127d] text-white text-[12px] font-bold uppercase tracking-widest">
+            className="w-full rounded-lg bg-[#315c3c] py-3 text-[12px] font-bold uppercase tracking-widest text-white">
             Apply Filters
           </button>
         </div>
@@ -328,11 +326,12 @@ const FilterSidebar = ({
 ───────────────────────────────────── */
 const SkeletonCard = () => (
   <div className="flex flex-col w-full animate-pulse">
-    <div className="w-full aspect-[3/4] bg-gray-100" />
-    <div className="pt-3 space-y-2 px-1">
-      <div className="h-3 bg-gray-100 rounded w-3/4 mx-auto" />
-      <div className="h-3 bg-gray-100 rounded w-1/2 mx-auto" />
-      <div className="h-3 bg-gray-100 rounded w-1/3 mx-auto" />
+    <div className="w-full aspect-square bg-[#f4f2e9] rounded-2xl sm:rounded-none" />
+    <div className="mt-3 sm:mt-4 space-y-2">
+      <div className="h-4 bg-[#f4f2e9] rounded w-4/5" />
+      <div className="h-3.5 bg-[#f4f2e9] rounded w-1/2" />
+      <div className="h-4 bg-[#f4f2e9] rounded w-1/3" />
+      <div className="h-8 bg-[#f4f2e9] rounded w-full mt-2" />
     </div>
   </div>
 );
@@ -357,24 +356,24 @@ const ActiveChips = ({ filters, setFilters }) => {
     })),
     ...(filters.priceRange
       ? [
-          {
-            label:
-              PRICE_RANGES.find(
-                (r) =>
-                  r.min === filters.priceRange.min &&
-                  r.max === filters.priceRange.max,
-              )?.label ?? "Price",
-            remove: () => setFilters((p) => ({ ...p, priceRange: null })),
-          },
-        ]
+        {
+          label:
+            PRICE_RANGES.find(
+              (r) =>
+                r.min === filters.priceRange.min &&
+                r.max === filters.priceRange.max,
+            )?.label ?? "Price",
+          remove: () => setFilters((p) => ({ ...p, priceRange: null })),
+        },
+      ]
       : []),
     ...(filters.inStock
       ? [
-          {
-            label: "In stock",
-            remove: () => setFilters((p) => ({ ...p, inStock: false })),
-          },
-        ]
+        {
+          label: "In stock",
+          remove: () => setFilters((p) => ({ ...p, inStock: false })),
+        },
+      ]
       : []),
   ];
 
@@ -385,7 +384,7 @@ const ActiveChips = ({ filters, setFilters }) => {
       {chips.map((chip, i) => (
         <span
           key={i}
-          className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#da127d] bg-pink-50 border border-pink-100 px-2.5 py-1">
+          className="inline-flex items-center gap-1.5 border border-[#d6e8d8] bg-[#edf5ee] px-2.5 py-1 text-[11px] font-semibold text-[#315c3c]">
           {chip.label}
           <button onClick={chip.remove}>
             <X size={11} />
@@ -408,6 +407,7 @@ const ProductListPage = () => {
   const [allFetched, setAllFetched] = useState([]); // raw Firestore docs (grows with Load More)
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [fetchError, setFetchError] = useState("");
   const [hasMore, setHasMore] = useState(true);
   const [gridCols, setGridCols] = useState(4); // 2 | 3 | 4
   const [sort, setSort] = useState("createdAt_desc");
@@ -424,7 +424,6 @@ const ProductListPage = () => {
 
   /* ── Firestore cursor (never stale) ── */
   const cursorRef = useRef(null);
-  const collectionRef = collection(db, "products");
 
   /* ── Derived: unique categories from fetched docs ── */
   const allCategories = useMemo(() => {
@@ -445,6 +444,7 @@ const ProductListPage = () => {
     async (isFirstLoad = false) => {
       if (isFirstLoad) {
         setLoading(true);
+        setFetchError("");
         cursorRef.current = null;
       } else {
         if (!hasMore) return;
@@ -452,24 +452,21 @@ const ProductListPage = () => {
       }
 
       try {
-        /* Build base constraints — keep Firestore query minimal;
-           filtering is done client-side to avoid index explosion */
-        const constraints = [orderBy("createdAt", "desc"), limit(PAGE_SIZE)];
-
-        // Only add a where clause if we're on a category route
-        // and it's the very first load — avoids re-adding the constraint
-        // on "load more" (cursor already scoped)
-        if (categorySlug && isFirstLoad) {
-          constraints.unshift(where("category", "==", categorySlug));
+        const constraints = [];
+        if (categorySlug) {
+          constraints.push(where("category", "==", categorySlug));
         }
 
         if (cursorRef.current) {
           constraints.push(startAfter(cursorRef.current));
         }
+        constraints.push(limit(PAGE_SIZE));
 
         const snap = await getDocs(query(collectionRef, ...constraints));
 
-        const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        const docs = snap.docs
+          .map((d) => ({ id: d.id, ...d.data() }))
+          .filter((product) => product.isDeleted !== true && product.isActive !== false);
 
         cursorRef.current = snap.docs[snap.docs.length - 1] ?? null;
         setHasMore(docs.length === PAGE_SIZE);
@@ -477,6 +474,7 @@ const ProductListPage = () => {
         setAllFetched((prev) => (isFirstLoad ? docs : [...prev, ...docs]));
       } catch (err) {
         console.error("[ProductListPage] fetch error:", err);
+        setFetchError("We couldn't load products. Please try again.");
       } finally {
         setLoading(false);
         setLoadingMore(false);
@@ -497,7 +495,13 @@ const ProductListPage = () => {
     if (!sentinelRef.current) return;
     const obs = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && hasMore && !loadingMore && !loading) {
+        if (
+          entry.isIntersecting &&
+          hasMore &&
+          !loadingMore &&
+          !loading &&
+          !fetchError
+        ) {
           fetchProducts(false);
         }
       },
@@ -505,7 +509,7 @@ const ProductListPage = () => {
     );
     obs.observe(sentinelRef.current);
     return () => obs.disconnect();
-  }, [hasMore, loadingMore, loading, fetchProducts]);
+  }, [hasMore, loadingMore, loading, fetchError, fetchProducts]);
 
   /* ── Close sort menu on outside click ── */
   useEffect(() => {
@@ -518,14 +522,14 @@ const ProductListPage = () => {
   /* ── Page title ── */
   const pageTitle = categorySlug
     ? categorySlug.charAt(0).toUpperCase() +
-      categorySlug.slice(1).replace(/-/g, " ")
+    categorySlug.slice(1).replace(/-/g, " ")
     : "All Products";
 
   /* ── Grid class ── */
   const gridClass = {
-    2: "grid-cols-2",
-    3: "grid-cols-2 sm:grid-cols-3",
-    4: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4",
+    2: "grid-cols-2 gap-x-6 gap-y-10 sm:gap-x-8 sm:gap-y-12",
+    3: "grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-10 sm:gap-x-8 sm:gap-y-12 md:gap-x-10",
+    4: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10 sm:gap-x-8 sm:gap-y-12 md:gap-x-10 lg:gap-x-12 xl:gap-x-14 lg:gap-y-14",
   }[gridCols];
 
   return (
@@ -568,7 +572,7 @@ const ProductListPage = () => {
               filters={filters}
               setFilters={setFilters}
               allCategories={allCategories}
-              onClose={() => {}}
+              onClose={() => { }}
               isMobile={false}
             />
           </div>
@@ -591,13 +595,13 @@ const ProductListPage = () => {
                   (filters.priceRange ? 1 : 0) +
                   (filters.inStock ? 1 : 0) >
                   0 && (
-                  <span className="ml-1 text-[10px] font-bold text-white bg-[#da127d] px-1.5 py-0.5 rounded-full leading-none">
-                    {filters.categories.length +
-                      filters.sizes.length +
-                      (filters.priceRange ? 1 : 0) +
-                      (filters.inStock ? 1 : 0)}
-                  </span>
-                )}
+                    <span className="ml-1 rounded-full bg-[#315c3c] px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
+                      {filters.categories.length +
+                        filters.sizes.length +
+                        (filters.priceRange ? 1 : 0) +
+                        (filters.inStock ? 1 : 0)}
+                    </span>
+                  )}
               </button>
 
               {/* Page title with pink brush underline */}
@@ -607,7 +611,7 @@ const ProductListPage = () => {
                 </h1>
                 <div
                   className="absolute -bottom-1 left-0 h-[6px] w-full opacity-40 -z-10"
-                  style={{ background: "#da127d", borderRadius: 2 }}
+                  style={{ background: "#315c3c", borderRadius: 6 }}
                 />
               </div>
 
@@ -633,7 +637,7 @@ const ProductListPage = () => {
                   onChange={(e) =>
                     setFilters((p) => ({ ...p, search: e.target.value }))
                   }
-                  className="pl-7 pr-3 py-2 text-[11px] border border-gray-200 focus:outline-none focus:border-[#da127d] w-[130px] sm:w-[180px] transition-colors"
+                  className="w-[130px] border border-gray-200 py-2 pl-7 pr-3 text-[11px] transition-colors focus:border-[#315c3c] focus:outline-none sm:w-[180px]"
                 />
               </div>
 
@@ -647,12 +651,11 @@ const ProductListPage = () => {
                   <button
                     key={cols}
                     onClick={() => setGridCols(cols)}
-                    className={`p-2 transition-colors ${
-                      gridCols === cols
-                        ? "bg-[#da127d] text-white"
+                    className={`p-2 transition-colors ${gridCols === cols
+                        ? "bg-[#315c3c] text-white"
                         : "text-gray-400 hover:text-gray-700"
-                    }`}>
-                    <Icon size={14} />
+                      }`}>
+                    {React.createElement(Icon, { size: 14 })}
                   </button>
                 ))}
               </div>
@@ -683,11 +686,10 @@ const ProductListPage = () => {
                           setSort(opt.value);
                           setShowSortMenu(false);
                         }}
-                        className={`w-full text-left px-4 py-2.5 text-[12px] hover:bg-gray-50 transition-colors ${
-                          sort === opt.value
-                            ? "font-bold text-[#da127d]"
+                        className={`w-full text-left px-4 py-2.5 text-[12px] hover:bg-gray-50 transition-colors ${sort === opt.value
+                            ? "font-bold text-[#315c3c]"
                             : "text-gray-600"
-                        }`}>
+                          }`}>
                         {opt.label}
                       </button>
                     ))}
@@ -704,7 +706,7 @@ const ProductListPage = () => {
             </h1>
             <div
               className="absolute -bottom-0.5 left-0 h-[5px] w-full opacity-40 -z-10"
-              style={{ background: "#da127d" }}
+              style={{ background: "#315c3c" }}
             />
           </div>
 
@@ -713,10 +715,23 @@ const ProductListPage = () => {
 
           {/* ── Product Grid ── */}
           {loading ? (
-            <div className={`grid ${gridClass} gap-x-4 gap-y-8`}>
+            <div className={`grid ${gridClass}`}>
               {Array.from({ length: 8 }).map((_, i) => (
                 <SkeletonCard key={i} />
               ))}
+            </div>
+          ) : fetchError ? (
+            <div className="flex flex-col items-center justify-center py-24 text-center" role="alert">
+              <p className="text-[15px] font-bold text-gray-800 mb-1">
+                Products couldn't load
+              </p>
+              <p className="text-[13px] text-gray-500 mb-5">{fetchError}</p>
+              <button
+                type="button"
+                onClick={() => fetchProducts(true)}
+                className="rounded-lg bg-[#315c3c] px-6 py-3 text-[12px] font-bold uppercase tracking-widest text-white">
+                Try again
+              </button>
             </div>
           ) : displayProducts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center">
@@ -737,21 +752,25 @@ const ProductListPage = () => {
                     search: "",
                   })
                 }
-                className="text-[12px] font-bold uppercase tracking-widest text-white bg-[#da127d] px-6 py-3">
+                className="rounded-lg bg-[#315c3c] px-6 py-3 text-[12px] font-bold uppercase tracking-widest text-white">
                 Clear filters
               </button>
             </div>
           ) : (
             <>
-              <div className={`grid ${gridClass} gap-x-4 gap-y-8`}>
-                {displayProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+              <div className={`grid ${gridClass}`}>
+                {displayProducts.map((product, idx) => (
+                  <ProductCard
+                    key={product.id || idx}
+                    product={product}
+                    index={idx}
+                  />
                 ))}
               </div>
 
               {/* Skeleton rows while loading more */}
               {loadingMore && (
-                <div className={`grid ${gridClass} gap-x-4 gap-y-8 mt-8`}>
+                <div className={`grid ${gridClass} mt-10`}>
                   {Array.from({ length: 4 }).map((_, i) => (
                     <SkeletonCard key={i} />
                   ))}

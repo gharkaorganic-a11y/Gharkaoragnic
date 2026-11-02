@@ -159,7 +159,7 @@ const FilterBody = ({ facets }) => {
                 placeholder="Min"
                 value={filters.priceMin ?? ""}
                 onChange={(e) => setCustomPrice("priceMin", e.target.value)}
-                className="w-full pl-6 pr-2 py-2 text-xs bg-white border border-gray-200 focus:outline-none focus:border-[#da127d] transition-colors"
+                className="w-full pl-6 pr-2 py-2 text-xs bg-white border border-gray-200 focus:outline-none focus:border-[#315c3c] transition-colors"
               />
             </div>
             <span className="text-gray-300 text-xs flex-shrink-0">–</span>
@@ -172,7 +172,7 @@ const FilterBody = ({ facets }) => {
                 placeholder="Max"
                 value={filters.priceMax ?? ""}
                 onChange={(e) => setCustomPrice("priceMax", e.target.value)}
-                className="w-full pl-6 pr-2 py-2 text-xs bg-white border border-gray-200 focus:outline-none focus:border-[#da127d] transition-colors"
+                className="w-full pl-6 pr-2 py-2 text-xs bg-white border border-gray-200 focus:outline-none focus:border-[#315c3c] transition-colors"
               />
             </div>
           </div>

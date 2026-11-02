@@ -17,7 +17,7 @@ const CategoryScroller = ({ categories, loading, title, subtitle }) => {
   /* ── Loading Skeleton ── */
   if (loading) {
     return (
-      <section className="w-full bg-[#fdf0f5]">
+      <section className="w-full bg-[#fbfaf5]">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-10">
           <div className="text-center mb-10">
             <div className="h-8 w-64 bg-gray-200 animate-pulse mx-auto"></div>
@@ -39,9 +39,9 @@ const CategoryScroller = ({ categories, loading, title, subtitle }) => {
   }
 
   return (
-    <section className="w-full relative bg-gradient-to-b from-[#fff7fa] via-white to-[#fff0f6]">
+    <section className="relative w-full bg-gradient-to-b from-[#f7f5eb] via-white to-[#fbfaf5]">
       {/* ✨ Subtle texture */}
-      <div className="absolute inset-0 opacity-[0.04] pointer-events-none bg-[radial-gradient(circle_at_20%_20%,#da127d_1px,transparent_1px)] bg-[size:40px_40px]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,#315c3c_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.035]" />
 
       <div className="relative max-w-[1600px] py-5 md:py-10 mx-auto px-4 sm:px-6 lg:px-10">
         {/* ── HEADER ── */}
@@ -67,9 +67,9 @@ const CategoryScroller = ({ categories, loading, title, subtitle }) => {
             className={`group/btn hidden md:flex absolute top-[calc(50%-2rem)] -left-4 lg:-left-6 w-12 h-12 items-center justify-center z-20 transition-all duration-300 opacity-0 group-hover:opacity-100 ${
               isScrolling === "left" ? "scale-90" : "scale-100 hover:scale-110"
             }`}>
-            <span className="absolute inset-0 bg-white border border-gray-200 shadow-sm transition-all duration-300 group-hover/btn:border-[#da127d]" />
-            <span className="absolute inset-0 bg-[#da127d] scale-0 group-hover/btn:scale-100 transition-transform duration-300" />
-            <ChevronLeftIcon className="relative z-10 w-5 h-5 text-gray-600 group-hover/btn:text-white transition-colors duration-300 pr-0.5" />
+            <span className="absolute inset-0 border border-gray-200 bg-white shadow-sm transition-all duration-300 group-hover/btn:border-[#315c3c]" />
+            <span className="absolute inset-0 scale-0 bg-[#315c3c] transition-transform duration-300 group-hover/btn:scale-100" />
+            <ChevronLeftIcon className="relative z-10 w-5 h-5 pr-0.5 text-gray-600 transition-colors duration-300 group-hover/btn:text-white" />
           </button>
 
           {/* RIGHT BUTTON */}
@@ -78,9 +78,9 @@ const CategoryScroller = ({ categories, loading, title, subtitle }) => {
             className={`group/btn hidden md:flex absolute top-[calc(50%-2rem)] -right-4 lg:-right-6 w-12 h-12 items-center justify-center z-20 transition-all duration-300 opacity-0 group-hover:opacity-100 ${
               isScrolling === "right" ? "scale-90" : "scale-100 hover:scale-110"
             }`}>
-            <span className="absolute inset-0 bg-white border border-gray-200 shadow-sm transition-all duration-300 group-hover/btn:border-[#da127d]" />
-            <span className="absolute inset-0 bg-[#da127d] scale-0 group-hover/btn:scale-100 transition-transform duration-300" />
-            <ChevronRightIcon className="relative z-10 w-5 h-5 text-gray-600 group-hover/btn:text-white transition-colors duration-300 pl-0.5" />
+            <span className="absolute inset-0 border border-gray-200 bg-white shadow-sm transition-all duration-300 group-hover/btn:border-[#315c3c]" />
+            <span className="absolute inset-0 scale-0 bg-[#315c3c] transition-transform duration-300 group-hover/btn:scale-100" />
+            <ChevronRightIcon className="relative z-10 w-5 h-5 pl-0.5 text-gray-600 transition-colors duration-300 group-hover/btn:text-white" />
           </button>
 
           {/* ── SCROLL TRACK ── */}

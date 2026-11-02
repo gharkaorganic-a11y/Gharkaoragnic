@@ -25,11 +25,11 @@ const PermissionCard = ({
     }`}>
     <div className="flex justify-between items-start">
       <div
-        className={`p-3 ${active ? "bg-[#ff356c] text-white" : "bg-white text-slate-300 shadow-sm"}`}>
+        className={`p-3 ${active ? "bg-[#315c3c] text-white" : "bg-white text-slate-300 shadow-sm"}`}>
         <Icon size={20} strokeWidth={1.5} />
       </div>
       <div
-        className={`text-[10px] font-black uppercase tracking-widest ${active ? "text-[#ff356c]" : "text-slate-300"}`}>
+        className={`text-[10px] font-black uppercase tracking-widest ${active ? "text-[#315c3c]" : "text-slate-300"}`}>
         {active ? "Protocol Active" : "Disabled"}
       </div>
     </div>
@@ -46,7 +46,7 @@ const PermissionCard = ({
     {/* Custom Slider */}
     <div className="w-full h-1 bg-slate-100 mt-4 relative">
       <div
-        className={`absolute top-0 left-0 h-full bg-[#ff356c] transition-all duration-700 ${active ? "w-full" : "w-0"}`}
+        className={`absolute top-0 left-0 h-full bg-[#315c3c] transition-all duration-700 ${active ? "w-full" : "w-0"}`}
       />
     </div>
   </div>
@@ -72,7 +72,7 @@ const NotificationPermissions = () => {
           Settings
         </button>
         <div className="flex items-center gap-2">
-          <Lock size={14} className="text-[#ff356c]" />
+          <Lock size={14} className="text-[#315c3c]" />
           <span className="text-[9px] font-black uppercase tracking-widest text-slate-900">
             Privacy Manifest
           </span>
@@ -84,7 +84,7 @@ const NotificationPermissions = () => {
         <div className="mb-20 space-y-6">
           <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-slate-950 leading-none">
             Notification <br />{" "}
-            <span className="italic font-serif text-[#ff356c]">Authority.</span>
+            <span className="italic font-sans text-[#315c3c]">Authority.</span>
           </h1>
           <p className="max-w-md text-[11px] uppercase tracking-[0.3em] font-bold text-slate-400 leading-loose">
             To maintain the purity of your experience, we require explicit
@@ -113,7 +113,7 @@ const NotificationPermissions = () => {
         {/* 4. SECURITY FOOTER & ACTION */}
         <div className="bg-slate-50 p-10 space-y-10">
           <div className="flex items-start gap-6">
-            <ShieldCheck size={24} className="text-[#ff356c] shrink-0" />
+            <ShieldCheck size={24} className="text-[#315c3c] shrink-0" />
             <div className="space-y-2">
               <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-950">
                 Data Protocol
@@ -128,7 +128,7 @@ const NotificationPermissions = () => {
 
           <button
             onClick={() => navigate("/user/profile")}
-            className="w-full bg-slate-950 text-white py-6 text-[11px] font-black uppercase tracking-[0.5em] hover:bg-[#ff356c] transition-all duration-500 shadow-2xl disabled:opacity-20"
+            className="w-full bg-slate-950 text-white py-6 text-[11px] font-black uppercase tracking-[0.5em] hover:bg-[#315c3c] transition-all duration-500 shadow-2xl disabled:opacity-20"
             disabled={!mobileAuth && !emailAuth}>
             Confirm Digital Handshake
           </button>

@@ -109,11 +109,18 @@ export default function FirebaseActionPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-start pt-12 sm:pt-24 px-6 font-sans">
       <div className="w-full max-w-[360px] flex flex-col items-center relative">
+        <Link to="/" className="mb-8 inline-flex justify-center">
+          <img
+            src="https://gharkaorganic.com/logo/gharka-logo.png"
+            alt="Ghar Ka Organic"
+            className="h-16 w-auto max-w-[220px] object-contain"
+          />
+        </Link>
         {/* ── Top Back Button ── */}
         {(status === STATUS.RESET || status === STATUS.ERROR) && (
           <Link
             to="/auth/login"
-            className="absolute -top-6 -left-2 p-2 text-gray-400 hover:text-[#df0059] transition-colors bg-white rounded-full z-10"
+            className="absolute -top-6 -left-2 p-2 text-gray-400 hover:text-[#315c3c] transition-colors bg-white rounded-full z-10"
             aria-label="Go back">
             <svg
               width="24"
@@ -133,7 +140,7 @@ export default function FirebaseActionPage() {
         {status === STATUS.LOADING && (
           <div className="w-full flex flex-col items-center justify-center animate-fade-in mt-10">
             <svg
-              className="animate-spin h-10 w-10 text-[#df0059] mb-6"
+              className="animate-spin h-10 w-10 text-[#315c3c] mb-6"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24">
@@ -170,7 +177,7 @@ export default function FirebaseActionPage() {
 
             {/* Error Message */}
             {message && (
-              <div className="w-full text-[#df0059] text-[13px] text-center font-medium bg-[#df0059]/5 py-2.5 rounded-[4px] border border-[#df0059]/20 mb-5 animate-fade-in">
+              <div className="w-full text-[#315c3c] text-[13px] text-center font-medium bg-[#315c3c]/5 py-2.5 rounded-[4px] border border-[#315c3c]/20 mb-5 animate-fade-in">
                 {message}
               </div>
             )}
@@ -178,7 +185,7 @@ export default function FirebaseActionPage() {
             <div className="w-full space-y-4">
               {/* New Password Input */}
               <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#df0059] transition-colors pointer-events-none">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#315c3c] transition-colors pointer-events-none">
                   <svg
                     width="20"
                     height="20"
@@ -206,19 +213,19 @@ export default function FirebaseActionPage() {
                     setPassword(e.target.value);
                     setMessage("");
                   }}
-                  className="w-full h-[52px] bg-white border border-gray-300 rounded-[4px] pl-12 pr-16 text-[14px] text-gray-800 outline-none focus:border-[#df0059] focus:ring-1 focus:ring-[#df0059] transition-all placeholder:text-gray-400 shadow-sm"
+                  className="w-full h-[52px] bg-white border border-gray-300 rounded-[4px] pl-12 pr-16 text-[14px] text-gray-800 outline-none focus:border-[#315c3c] focus:ring-1 focus:ring-[#315c3c] transition-all placeholder:text-gray-400 shadow-sm"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-400 hover:text-[#df0059] tracking-wide transition-colors p-1">
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-400 hover:text-[#315c3c] tracking-wide transition-colors p-1">
                   {showPassword ? "HIDE" : "SHOW"}
                 </button>
               </div>
 
               {/* Confirm Password Input */}
               <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#df0059] transition-colors pointer-events-none">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#315c3c] transition-colors pointer-events-none">
                   <svg
                     width="20"
                     height="20"
@@ -239,12 +246,12 @@ export default function FirebaseActionPage() {
                     setConfirmPassword(e.target.value);
                     setMessage("");
                   }}
-                  className="w-full h-[52px] bg-white border border-gray-300 rounded-[4px] pl-12 pr-16 text-[14px] text-gray-800 outline-none focus:border-[#df0059] focus:ring-1 focus:ring-[#df0059] transition-all placeholder:text-gray-400 shadow-sm"
+                  className="w-full h-[52px] bg-white border border-gray-300 rounded-[4px] pl-12 pr-16 text-[14px] text-gray-800 outline-none focus:border-[#315c3c] focus:ring-1 focus:ring-[#315c3c] transition-all placeholder:text-gray-400 shadow-sm"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-400 hover:text-[#df0059] tracking-wide transition-colors p-1">
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-400 hover:text-[#315c3c] tracking-wide transition-colors p-1">
                   {showConfirm ? "HIDE" : "SHOW"}
                 </button>
               </div>
@@ -253,7 +260,7 @@ export default function FirebaseActionPage() {
               <button
                 onClick={resetPassword}
                 disabled={isSubmitting || !password || !confirmPassword}
-                className="w-full h-[52px] mt-2 bg-[#df0059] hover:bg-[#c2004d] active:scale-[0.98] text-white text-[13px] font-medium tracking-wider uppercase rounded-[4px] transition-all disabled:opacity-70 flex items-center justify-center shadow-md shadow-[#df0059]/20">
+                className="w-full h-[52px] mt-2 bg-[#315c3c] hover:bg-[#c2004d] active:scale-[0.98] text-white text-[13px] font-medium tracking-wider uppercase rounded-[4px] transition-all disabled:opacity-70 flex items-center justify-center shadow-md shadow-[#315c3c]/20">
                 {isSubmitting ? (
                   <svg
                     className="animate-spin h-5 w-5 text-white"
@@ -283,9 +290,9 @@ export default function FirebaseActionPage() {
         {/* ── SUCCESS STATE ── */}
         {status === STATUS.SUCCESS && (
           <div className="w-full flex flex-col items-center animate-fade-in text-center mt-6">
-            <div className="w-20 h-20 bg-[#df0059]/10 rounded-full flex items-center justify-center mb-6">
+            <div className="w-20 h-20 bg-[#315c3c]/10 rounded-full flex items-center justify-center mb-6">
               <svg
-                className="w-10 h-10 text-[#df0059]"
+                className="w-10 h-10 text-[#315c3c]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -307,7 +314,7 @@ export default function FirebaseActionPage() {
 
             <Link
               to="/auth/login"
-              className="w-full h-[52px] bg-[#df0059] hover:bg-[#c2004d] active:scale-[0.98] text-white text-[13px] font-medium tracking-wider uppercase rounded-[4px] transition-all flex items-center justify-center shadow-sm">
+              className="w-full h-[52px] bg-[#315c3c] hover:bg-[#c2004d] active:scale-[0.98] text-white text-[13px] font-medium tracking-wider uppercase rounded-[4px] transition-all flex items-center justify-center shadow-sm">
               Back to Login
             </Link>
           </div>
@@ -316,9 +323,9 @@ export default function FirebaseActionPage() {
         {/* ── ERROR STATE ── */}
         {status === STATUS.ERROR && (
           <div className="w-full flex flex-col items-center animate-fade-in text-center mt-6">
-            <div className="w-20 h-20 bg-[#df0059]/10 rounded-full flex items-center justify-center mb-6">
+            <div className="w-20 h-20 bg-[#315c3c]/10 rounded-full flex items-center justify-center mb-6">
               <svg
-                className="w-10 h-10 text-[#df0059]"
+                className="w-10 h-10 text-[#315c3c]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -340,7 +347,7 @@ export default function FirebaseActionPage() {
 
             <Link
               to="/auth/login"
-              className="w-full h-[52px] bg-[#df0059] hover:bg-[#c2004d] active:scale-[0.98] text-white text-[13px] font-medium tracking-wider uppercase rounded-[4px] transition-all flex items-center justify-center shadow-sm">
+              className="w-full h-[52px] bg-[#315c3c] hover:bg-[#c2004d] active:scale-[0.98] text-white text-[13px] font-medium tracking-wider uppercase rounded-[4px] transition-all flex items-center justify-center shadow-sm">
               Back to Login
             </Link>
           </div>

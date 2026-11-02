@@ -8,8 +8,15 @@ const fmt = (n) =>
     maximumFractionDigits: 0,
   }).format(n);
 
-const ProductBottomBar = ({ product, handleAddToCart, isAdding }) => {
+const ProductBottomBar = ({
+  product,
+  handleAddToCart,
+  onAddToCart,
+  isAdding = false,
+}) => {
   if (!product) return null;
+
+  const onAdd = handleAddToCart || onAddToCart;
 
   const price = Number(product.price || 0);
   const originalPrice = Number(product.originalPrice || price);
@@ -27,11 +34,11 @@ const ProductBottomBar = ({ product, handleAddToCart, isAdding }) => {
         {/* ── LEFT: Editorial Price Block ── */}
         <div className="flex flex-col justify-center shrink-0">
           <div className="flex items-baseline gap-2">
-            <span className="text-[22px] font-bold text-[#1B4332] tracking-tight">
+            <span className="text-[22px] font-bold text-gray-900 tracking-tight">
               {fmt(price)}
             </span>
             {discount > 0 && (
-              <span className="text-[13px] font-medium text-gray-400 line-through">
+              <span className="text-[13px] font-normal text-gray-400 line-through">
                 {fmt(originalPrice)}
               </span>
             )}
@@ -39,13 +46,13 @@ const ProductBottomBar = ({ product, handleAddToCart, isAdding }) => {
 
           {discount > 0 ? (
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="bg-[#BC6C25]/10 text-[#BC6C25] text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
+              <span className="bg-[#edf5ee] text-[#315c3c] text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
                 Save {discount}%
               </span>
             </div>
           ) : (
             <span className="text-[10px] uppercase tracking-widest font-semibold text-gray-400 mt-1">
-              Pure & Organic
+              Pure &amp; Organic
             </span>
           )}
         </div>
@@ -53,13 +60,14 @@ const ProductBottomBar = ({ product, handleAddToCart, isAdding }) => {
         {/* ── RIGHT: Premium Action Button ── */}
         <div className="flex-1 max-w-[200px]">
           <button
-            onClick={handleAddToCart}
+            type="button"
+            onClick={onAdd}
             disabled={isAdding || isOutOfStock}
-            className={`w-full h-[52px] flex items-center justify-center gap-2.5 text-[12px] font-bold uppercase tracking-[0.2em] rounded-full transition-all duration-300 active:scale-95
+            className={`w-full h-[50px] flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wider rounded-lg transition-all duration-200 active:scale-95
               ${
                 isOutOfStock
                   ? "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
-                  : "bg-[#1B4332] text-white shadow-lg shadow-[#1B4332]/20 hover:bg-[#143225]"
+                  : "bg-[#315c3c] text-white shadow-sm hover:bg-[#25482f]"
               }
             `}>
             {isAdding ? (

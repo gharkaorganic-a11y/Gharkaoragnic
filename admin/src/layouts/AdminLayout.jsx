@@ -1,15 +1,11 @@
-import React from "react";
 import { Outlet } from "react-router-dom";
 import AdminNavbar from "../components/bars/AdminNavbar";
 
-const AdminLayout = ({}) => {
+const AdminLayout = () => {
   return (
-    <div>
-      {/* Navbar */}
+    <div className="min-h-screen bg-[#F1F3F6]">
       <AdminNavbar />
-
-      {/* Main content */}
-      <main className="flex-1 pt-20 ">
+      <main className="min-h-screen bg-[#F1F3F6] pt-14 lg:pt-24">
         <Outlet />
       </main>
     </div>

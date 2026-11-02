@@ -38,7 +38,8 @@ import {
 /* ─────────────────────────────────────────────────────────────────────────────
    CONSTANTS & CONFIG
 ───────────────────────────────────────────────────────────────────────────── */
-const COLLECTION = "products";
+const COLLECTION = "storeProducts";
+const LEGACY_COLLECTION = "products";
 const PAGE_SIZE = 20;
 const CACHE_TTL_MS = 60_000; // 1 minute (Adjust based on how realtime you need the UI)
 const FIRESTORE_BATCH_LIMIT = 500; // Firestore hard limit for batched writes
@@ -67,14 +68,16 @@ const cacheSet = (key, value, ttl = CACHE_TTL_MS) =>
 const cacheDelete = (key) => cache.delete(key);
 const cacheClear = () => cache.clear();
 const buildKey = (params) => JSON.stringify(params);
+const normalizeProductName = (name) =>
+  String(name ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
 
 /* ─────────────────────────────────────────────────────────────────────────────
    UTILITY HELPERS
 ───────────────────────────────────────────────────────────────────────────── */
 
 /** Sub-collection reference for reviews */
-const reviewsRef = (productId) =>
-  collection(db, COLLECTION, productId, "reviews");
+const reviewsRef = (productId, collectionName = COLLECTION) =>
+  collection(db, collectionName, productId, "reviews");
 
 /**
  * Splits a large array into smaller arrays to safely bypass Firestore limits.
@@ -106,6 +109,8 @@ const mapDoc = (snap) => {
     ingredients: d.ingredients ?? "",
     shelfLife: d.shelfLife ?? "",
     benefits: d.benefits ?? "",
+    usageInstructions: d.usageInstructions ?? "",
+    storageInstructions: d.storageInstructions ?? "",
     
     // Arrays
     images: Array.isArray(d.images) ? d.images : [],
@@ -174,7 +179,174 @@ const sanitize = (data) => {
    MAIN SERVICE EXPORT
 ───────────────────────────────────────────────────────────────────────────── */
 export const productService = {
-  
+
+  async enrichPublicProductDetails(productsToKeep = []) {
+    const detailsByName = new Map([
+      [
+        normalizeProductName(
+          "Pahadi Salt with dhaniya, Garlic and green chillies.",
+        ),
+        {
+          slug: "pahadi-salt-with-dhaniya-garlic-and-green-chillies",
+          shortDescription:
+            "A savory Pahadi seasoning with coriander, garlic, and green chilli for everyday meals and snacks.",
+          description:
+            "Bring an aromatic Pahadi-style seasoning to everyday meals. Himalayan salt is combined with coriander, garlic, and green chilli for savory, herby flavor with a gentle chilli kick. Sprinkle lightly over fruit, salads, curd, chaas, cooked vegetables, eggs, or snacks, then adjust to taste.",
+          ingredients: "Salt, Garlic, Coriander, Green Chilli",
+          benefits:
+            "A convenient all-in-one seasoning that adds salty, herby flavor to snacks and everyday dishes.",
+          usageInstructions:
+            "Sprinkle a small amount over fruit, curd, salads, chaas, cooked vegetables, eggs, or snacks. Adjust to taste.",
+          faq: [
+            {
+              question: "How can I use this Pahadi salt?",
+              answer:
+                "Use a small amount to season fruit, curd, salads, chaas, cooked vegetables, eggs, or snacks, and adjust to taste.",
+            },
+            {
+              question: "How should I store it?",
+              answer:
+                "Follow the storage directions printed on the product package.",
+            },
+          ],
+          tags: ["pahadi salt", "coriander seasoning", "garlic seasoning"],
+          metaTitle:
+            "Pahadi Salt with Coriander, Garlic & Green Chilli | Ghar Ka Organic",
+          metaDescription:
+            "Shop Pahadi salt seasoned with coriander, garlic, and green chilli. A savory seasoning for fruit, meals, and snacks.",
+        },
+      ],
+      [
+        normalizeProductName("GHAR KA HONEY"),
+        {
+          slug: "ghar-ka-honey",
+          shortDescription:
+            "A sweet, aromatic honey for breakfast, warm drinks, and desserts.",
+          description:
+            "Enjoy the natural sweetness, delicate floral notes, and rich aroma of Ghar Ka Honey. Drizzle it over toast or breakfast, stir it into a warm drink, or use it to add sweetness to desserts. Made in small batches and packed with care.",
+          benefits:
+            "A versatile sweetener with a rich aroma for drinks, breakfast, and desserts.",
+          usageInstructions:
+            "Drizzle over toast or breakfast, stir into a warm drink, or add to desserts to taste.",
+          faq: [
+            {
+              question: "How can I enjoy Ghar Ka Honey?",
+              answer:
+                "Drizzle it over toast or breakfast, stir it into a warm drink, or use it to sweeten desserts.",
+            },
+            {
+              question: "How should I store it?",
+              answer:
+                "Follow the storage directions and best-before date printed on the product package.",
+            },
+          ],
+          tags: ["honey", "pahadi honey", "sweetener"],
+          metaTitle: "Ghar Ka Honey | Pahadi Honey from Uttarakhand",
+          metaDescription:
+            "Discover Ghar Ka Honey, a sweet and aromatic honey for breakfast, warm drinks, and desserts.",
+        },
+      ],
+      [
+        normalizeProductName(
+          "GHAR KA Mirch Ka Achar (Green chilly pickle)",
+        ),
+        {
+          slug: "ghar-ka-mirch-ka-achar-green-chilly-pickle",
+          shortDescription:
+            "A green chilli pickle to serve alongside everyday meals.",
+          description:
+            "Add a bold, chilli-forward accompaniment to everyday meals with Ghar Ka Mirch Ka Achar. Serve a small portion alongside dal, rice, roti, or paratha, and adjust the serving to your taste. Please refer to the product package for the full ingredient list, storage directions, and best-before date.",
+          benefits:
+            "A ready-to-serve condiment that brings a bold green chilli flavor to everyday meals.",
+          usageInstructions:
+            "Serve a small portion alongside dal, rice, roti, or paratha. Adjust the serving to your taste.",
+          storageInstructions:
+            "Follow the storage directions printed on the product package.",
+          faq: [
+            {
+              question: "How can I serve this green chilli pickle?",
+              answer:
+                "Serve a small portion alongside dal, rice, roti, or paratha, and adjust the serving to your taste.",
+            },
+            {
+              question: "Where can I find the ingredients and storage details?",
+              answer:
+                "Check the product package for the complete ingredient list, storage directions, and best-before date.",
+            },
+          ],
+          tags: ["green chilli pickle", "mirch ka achar", "pahadi pickle"],
+          metaTitle:
+            "Ghar Ka Mirch Ka Achar | Green Chilli Pickle",
+          metaDescription:
+            "Shop Ghar Ka Mirch Ka Achar, a green chilli pickle served with dal, rice, roti, and paratha.",
+        },
+      ],
+    ]);
+
+    const requestedNames = new Set(
+      productsToKeep.map((product) => normalizeProductName(product.name)),
+    );
+    if (
+      productsToKeep.length !== detailsByName.size ||
+      requestedNames.size !== detailsByName.size ||
+      [...detailsByName.keys()].some((name) => !requestedNames.has(name))
+    ) {
+      throw new Error("The catalog must include the three approved products.");
+    }
+
+    const snapshot = await getDocs(collection(db, COLLECTION));
+    if (snapshot.size !== detailsByName.size) {
+      throw new Error(
+        `Expected exactly ${detailsByName.size} products in ${COLLECTION}; found ${snapshot.size}. No product details were changed.`,
+      );
+    }
+
+    const matchedProducts = new Map();
+    snapshot.docs.forEach((productDoc) => {
+      const product = productDoc.data();
+      const details = detailsByName.get(normalizeProductName(product.name));
+      if (!details || product.slug !== details.slug) return;
+      matchedProducts.set(productDoc.id, { product, details });
+    });
+
+    if (matchedProducts.size !== detailsByName.size) {
+      throw new Error(
+        "Could not match all three approved products by their current names and slugs. No product details were changed.",
+      );
+    }
+
+    const batch = writeBatch(db);
+    for (const [productId, { product, details }] of matchedProducts) {
+      const patch = {
+        shortDescription: details.shortDescription,
+        description: details.description,
+        benefits: details.benefits,
+        usageInstructions: details.usageInstructions,
+        storageInstructions:
+          details.storageInstructions ??
+          "Follow the storage directions printed on the product package.",
+        faq: details.faq,
+        tags: [...new Set([...(product.tags ?? []), ...details.tags])],
+        metaTitle: details.metaTitle,
+        metaDescription: details.metaDescription,
+        canonicalUrl: `https://gharkaorganic.com/product/${details.slug}`,
+      };
+
+      if (details.ingredients && !product.ingredients?.trim()) {
+        patch.ingredients = details.ingredients;
+      }
+
+      batch.update(doc(db, COLLECTION, productId), {
+        ...patch,
+        updatedAt: serverTimestamp(),
+      });
+    }
+
+    await batch.commit();
+    cacheClear();
+    return matchedProducts.size;
+  },
+
   /* ──────────────────────────
      CREATE
   ────────────────────────── */
@@ -215,7 +387,9 @@ export const productService = {
     pageSize = PAGE_SIZE,
     includeDeleted = false,   // Admins can pass true to audit deleted items
   } = {}) {
-    const cacheKey = buildKey({ lastDoc: lastDoc?.id ?? null, collectionType, status, categoryId, tag, pageSize, includeDeleted });
+    const normalizedCollectionType =
+      collectionType === "all" ? "all" : collectionType.toLowerCase();
+    const cacheKey = buildKey({ lastDoc: lastDoc?.id ?? null, collectionType: normalizedCollectionType, status, categoryId, tag, pageSize, includeDeleted });
     const cached = cacheGet(cacheKey);
     if (cached) return cached;
 
@@ -223,7 +397,11 @@ export const productService = {
 
     // Apply Filters safely
     if (!includeDeleted) constraints.push(where("isDeleted", "==", false));
-    if (collectionType !== "all") constraints.push(where("collectionTypes", "array-contains", collectionType));
+    if (normalizedCollectionType !== "all") {
+      constraints.push(
+        where("collectionTypes", "array-contains", normalizedCollectionType),
+      );
+    }
     if (status !== "all") constraints.push(where("isActive", "==", status === "active"));
     if (categoryId) constraints.push(where("categoryId", "==", categoryId));
     if (tag) constraints.push(where("tags", "array-contains", tag));
@@ -538,6 +716,347 @@ export const productService = {
       return true;
     } catch (err) {
       throw new Error(`bulkSetActive failed: ${err.message}`);
+    }
+  },
+
+  async syncProductsToStore(productsToKeep = []) {
+    const keepProducts = productsToKeep.map((product) => ({
+      ...product,
+      normalizedName: normalizeProductName(product.name),
+    }));
+    if (
+      !keepProducts.length ||
+      keepProducts.some(
+        ({ normalizedName, collectionTypes }) =>
+          !normalizedName ||
+          !Array.isArray(collectionTypes) ||
+          collectionTypes.length === 0,
+      )
+    ) {
+      throw new Error("Provide each product name and its collection types.");
+    }
+
+    try {
+      const sourceSnapshot = await getDocs(
+        collection(db, LEGACY_COLLECTION),
+      );
+      const sourceProducts = sourceSnapshot.docs;
+      const targetSnapshot = await getDocs(collection(db, COLLECTION));
+      const targetProducts = targetSnapshot.docs;
+      const targetProductsByName = new Map();
+      targetProducts.forEach((product) => {
+        const name = normalizeProductName(product.data().name);
+        const matches = targetProductsByName.get(name) ?? [];
+        matches.push(product);
+        targetProductsByName.set(name, matches);
+      });
+
+      for (const [name, matches] of targetProductsByName) {
+        if (matches.length !== 1) {
+          throw new Error(
+            `The new "${COLLECTION}" collection contains duplicate product "${name}". No old products were removed.`,
+          );
+        }
+      }
+
+      const keptProducts = new Map();
+
+      for (const keepProduct of keepProducts) {
+        const sourceMatches = sourceProducts.filter(
+          (product) =>
+            normalizeProductName(product.data().name) ===
+            keepProduct.normalizedName,
+        );
+        const targetMatches =
+          targetProductsByName.get(keepProduct.normalizedName) ?? [];
+        if (sourceMatches.length > 1 || targetMatches.length > 1) {
+          throw new Error(
+            `Found duplicate copies of "${keepProduct.name}". No old products were removed.`,
+          );
+        }
+        const sourceProduct = sourceMatches[0] ?? null;
+        const targetProduct = targetMatches[0] ?? null;
+        if (!sourceProduct && !targetProduct) {
+          throw new Error(
+            `Could not find "${keepProduct.name}" in either collection. No old products were removed.`,
+          );
+        }
+        if (
+          sourceProduct &&
+          targetProduct &&
+          sourceProduct.id !== targetProduct.id
+        ) {
+          throw new Error(
+            `The old and new copies of "${keepProduct.name}" have different IDs. No old products were removed.`,
+          );
+        }
+
+        const product = sourceProduct ?? targetProduct;
+        keptProducts.set(product.id, {
+          data: product.data(),
+          hasSource: Boolean(sourceProduct),
+          collectionTypes: keepProduct.collectionTypes,
+        });
+      }
+
+      for (const targetProduct of targetProducts) {
+        if (!keptProducts.has(targetProduct.id)) {
+          throw new Error(
+            `The new "${COLLECTION}" collection already contains an unexpected product. No old products were removed.`,
+          );
+        }
+      }
+
+      const sourceReviews = await Promise.all(
+        [...keptProducts.entries()]
+          .filter(([, product]) => product.hasSource)
+          .map(async ([productId]) => ({
+            productId,
+            docs: (
+              await getDocs(reviewsRef(productId, LEGACY_COLLECTION))
+            ).docs,
+          })),
+      );
+
+      const reviewsByProduct = new Map(
+        sourceReviews.map(({ productId, docs }) => [productId, docs]),
+      );
+      const copyOperations = [];
+
+      for (const [productId, product] of keptProducts) {
+        copyOperations.push({
+          ref: doc(db, COLLECTION, productId),
+          data: {
+            ...product.data,
+            isActive: true,
+            isDeleted: false,
+            collectionTypes: product.collectionTypes,
+            updatedAt: serverTimestamp(),
+          },
+        });
+
+        const sourceReviewDocs = product.hasSource
+          ? (reviewsByProduct.get(productId) ?? [])
+          : null;
+        const targetReviewDocs = await getDocs(
+          reviewsRef(productId, COLLECTION),
+        );
+        const sourceReviewIds = new Set(
+          (sourceReviewDocs ?? []).map((review) => review.id),
+        );
+        if (
+          sourceReviewDocs &&
+          targetReviewDocs.docs.some(
+            (review) => !sourceReviewIds.has(review.id),
+          )
+        ) {
+          throw new Error(
+            `The new reviews for "${product.data.name}" contain unexpected records. No old products were removed.`,
+          );
+        }
+
+        if (sourceReviewDocs) {
+          sourceReviewDocs.forEach((review) => {
+            copyOperations.push({
+              ref: doc(db, COLLECTION, productId, "reviews", review.id),
+              data: review.data(),
+            });
+          });
+        } else {
+          reviewsByProduct.set(productId, {
+            docs: targetReviewDocs.docs,
+          });
+        }
+      }
+
+      for (const operationChunk of chunkArray(
+        copyOperations,
+        FIRESTORE_BATCH_LIMIT,
+      )) {
+        const batch = writeBatch(db);
+        operationChunk.forEach(({ ref, data }) => {
+          batch.set(ref, data);
+        });
+        await batch.commit();
+      }
+
+      for (const [productId, product] of keptProducts) {
+        const targetProduct = await getDoc(doc(db, COLLECTION, productId));
+        if (
+          !targetProduct.exists() ||
+          normalizeProductName(targetProduct.data().name) !==
+            normalizeProductName(product.data.name) ||
+          targetProduct.data().isActive !== true ||
+          targetProduct.data().isDeleted !== false
+        ) {
+          throw new Error(
+            `Could not verify the copied product "${product.data.name}". Old products were not removed.`,
+          );
+        }
+
+        const copiedReviews = await getDocs(reviewsRef(productId, COLLECTION));
+        const sourceReviewEntry = reviewsByProduct.get(productId);
+        const sourceReviewIds = new Set(
+          Array.isArray(sourceReviewEntry)
+            ? sourceReviewEntry.map((review) => review.id)
+            : (sourceReviewEntry?.docs ?? []).map((review) => review.id),
+        );
+        if (
+          copiedReviews.size !== sourceReviewIds.size ||
+          copiedReviews.docs.some((review) => !sourceReviewIds.has(review.id))
+        ) {
+          throw new Error(
+            `Could not verify copied reviews for "${product.data.name}". Old products were not removed.`,
+          );
+        }
+      }
+
+      cacheClear();
+      return { keptCount: keptProducts.size };
+    } catch (err) {
+      throw new Error(`Product sync failed: ${err.message}`);
+    }
+  },
+
+  async cleanLegacyProducts(productsToKeep = []) {
+    const keepProducts = productsToKeep.map((product) => ({
+      ...product,
+      normalizedName: normalizeProductName(product.name),
+    }));
+    if (
+      !keepProducts.length ||
+      keepProducts.some(
+        ({ normalizedName, collectionTypes }) =>
+          !normalizedName ||
+          !Array.isArray(collectionTypes) ||
+          collectionTypes.length === 0,
+      )
+    ) {
+      throw new Error("Provide each product name and its collection types.");
+    }
+
+    try {
+      const targetSnapshot = await getDocs(collection(db, COLLECTION));
+      if (targetSnapshot.size !== keepProducts.length) {
+        throw new Error(
+          `The new collection must contain exactly ${keepProducts.length} products before cleanup. No old products were removed.`,
+        );
+      }
+
+      const targetByName = new Map(
+        targetSnapshot.docs.map((product) => [
+          normalizeProductName(product.data().name),
+          product,
+        ]),
+      );
+      const targetByExpectedName = new Map();
+      for (const keepProduct of keepProducts) {
+        const target = targetByName.get(keepProduct.normalizedName);
+        const collectionTypes = target?.data().collectionTypes;
+        if (
+          !target ||
+          targetByExpectedName.has(keepProduct.normalizedName) ||
+          target.data().isActive !== true ||
+          target.data().isDeleted !== false ||
+          !Array.isArray(collectionTypes) ||
+          keepProduct.collectionTypes.some(
+            (type) => !collectionTypes.includes(type),
+          )
+        ) {
+          throw new Error(
+            `The new collection is missing a verified active copy of "${keepProduct.name}". No old products were removed.`,
+          );
+        }
+        targetByExpectedName.set(keepProduct.normalizedName, target);
+      }
+
+      const sourceSnapshot = await getDocs(
+        collection(db, LEGACY_COLLECTION),
+      );
+      const sourceProducts = sourceSnapshot.docs;
+      const sourceReviews = await Promise.all(
+        sourceProducts.map(async (product) => ({
+          productId: product.id,
+          docs: (
+            await getDocs(reviewsRef(product.id, LEGACY_COLLECTION))
+          ).docs,
+        })),
+      );
+
+      const sourceReviewsByProduct = new Map(
+        sourceReviews.map(({ productId, docs }) => [productId, docs]),
+      );
+      for (const keepProduct of keepProducts) {
+        const sourceMatches = sourceProducts.filter(
+          (product) =>
+            normalizeProductName(product.data().name) ===
+            keepProduct.normalizedName,
+        );
+        if (sourceMatches.length > 1) {
+          throw new Error(
+            `Found duplicate old copies of "${keepProduct.name}". No old products were removed.`,
+          );
+        }
+        const sourceProduct = sourceMatches[0];
+        if (!sourceProduct) continue;
+
+        const targetProduct = targetByExpectedName.get(
+          keepProduct.normalizedName,
+        );
+        if (sourceProduct.id !== targetProduct.id) {
+          throw new Error(
+            `The old and new copies of "${keepProduct.name}" have different IDs. No old products were removed.`,
+          );
+        }
+
+        const sourceReviewIds = new Set(
+          (sourceReviewsByProduct.get(sourceProduct.id) ?? []).map(
+            (review) => review.id,
+          ),
+        );
+        const targetReviewSnapshot = await getDocs(
+          reviewsRef(targetProduct.id, COLLECTION),
+        );
+        if (
+          targetReviewSnapshot.size !== sourceReviewIds.size ||
+          targetReviewSnapshot.docs.some(
+            (review) => !sourceReviewIds.has(review.id),
+          )
+        ) {
+          throw new Error(
+            `Reviews for "${keepProduct.name}" are not fully synced. No old products were removed.`,
+          );
+        }
+      }
+
+      const deleteOperations = sourceReviews.flatMap(({ docs }) =>
+        docs.map((review) => ({ ref: review.ref })),
+      );
+      deleteOperations.push(
+        ...sourceProducts.map((product) => ({ ref: product.ref })),
+      );
+      for (const operationChunk of chunkArray(
+        deleteOperations,
+        FIRESTORE_BATCH_LIMIT,
+      )) {
+        const batch = writeBatch(db);
+        operationChunk.forEach(({ ref }) => batch.delete(ref));
+        await batch.commit();
+      }
+
+      const remainingSourceProducts = await getDocs(
+        collection(db, LEGACY_COLLECTION),
+      );
+      if (!remainingSourceProducts.empty) {
+        throw new Error(
+          `${remainingSourceProducts.size} old product document(s) remain after cleanup.`,
+        );
+      }
+
+      cacheClear();
+      return { removedCount: sourceProducts.length };
+    } catch (err) {
+      throw new Error(`Old product cleanup failed: ${err.message}`);
     }
   },
 

@@ -37,6 +37,8 @@ export const PRODUCT_FIELDS = {
   ingredients: "",       // comma-separated or prose
   shelfLife: "",         // e.g. "12 months"
   benefits: "",          // prose
+  usageInstructions: "",
+  storageInstructions: "",
   certifications: [],    // e.g. ["USDA Organic", "Non-GMO"]
   faq: [],               // { question: string, answer: string }[]
 
@@ -90,6 +92,8 @@ export const WRITABLE_FIELDS = [
   "ingredients",
   "shelfLife",
   "benefits",
+  "usageInstructions",
+  "storageInstructions",
   "certifications",
   "faq",
   "isActive",

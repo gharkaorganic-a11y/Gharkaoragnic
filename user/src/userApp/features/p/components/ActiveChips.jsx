@@ -63,18 +63,18 @@ const ActiveChips = ({ filters }) => {
       {chips.map((chip, i) => (
         <span
           key={i}
-          className="group inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 border border-gray-200 bg-white shadow-sm text-black transition-colors hover:border-[#da127d]">
+          className="group inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 border border-gray-200 bg-white shadow-sm text-black transition-colors hover:border-[#315c3c]">
           {chip.label}
           <button
             onClick={chip.rm}
-            className="text-gray-400 group-hover:text-[#da127d] transition-colors focus:outline-none">
+            className="text-gray-400 group-hover:text-[#315c3c] transition-colors focus:outline-none">
             <XMarkIcon className="w-3.5 h-3.5 stroke-2" />
           </button>
         </span>
       ))}
       <button
         onClick={() => setSp({})}
-        className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-[#da127d] transition-colors ml-2 focus:outline-none">
+        className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-[#315c3c] transition-colors ml-2 focus:outline-none">
         Clear all
       </button>
     </div>

@@ -2,13 +2,7 @@ import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import QuantityPopup from "../../../../components/pop-up/QuantityPopup";
 import SizePopup from "../../../../components/pop-up/SizePopup";
-import { ChevronDown, Trash2, Heart, Truck } from "lucide-react";
-
-// ─── Premium D2C Theme Colors ──────────────────
-// Primary Brand Green: #00A859 (Trust, delivery, success)
-// Deep Crimson Red:    #8B0000 (Urgency, discount, removal actions)
-// Dark Text:           #2C2416 (Readability)
-// ───────────────────────────────────────────────
+import { ChevronDown, Trash2, Heart } from "lucide-react";
 
 const CartItemCard = ({
   product,
@@ -82,14 +76,6 @@ const CartItemCard = ({
     setShowSizePopup(false);
   };
 
-  // Delivery date — 4 days from now
-  const deliveryDate = new Date();
-  deliveryDate.setDate(deliveryDate.getDate() + 4);
-  const formattedDelivery = deliveryDate.toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-  });
-
   return (
     <div className="w-full bg-white sm:rounded-xl flex flex-col font-sans shadow-sm sm:border border-gray-100 transition-all hover:border-gray-200">
       {/* TOP: Checkbox + Image + Info */}
@@ -127,8 +113,7 @@ const CartItemCard = ({
           <Link to={productLink}>
             <h3
               title={product.name}
-              className="text-[14px] sm:text-[15px] font-semibold leading-snug line-clamp-2 hover:text-[#00A859] transition-colors"
-              style={{ color: "#2C2416" }}>
+              className="line-clamp-2 text-[14px] font-semibold leading-snug transition-colors hover:text-[#315c3c] sm:text-[15px]">
               {product.name}
             </h3>
           </Link>
@@ -136,7 +121,7 @@ const CartItemCard = ({
           {/* Brand / Seller */}
           <p className="text-[12px] text-gray-500 mt-1 truncate">
             Sold by:{" "}
-            <span className="font-medium" style={{ color: "#2C2416" }}>
+            <span className="font-medium text-[#315c3c]">
               Ghar Ka Organic
             </span>
           </p>
@@ -151,7 +136,7 @@ const CartItemCard = ({
                 <span className="text-[13px] text-gray-400 line-through decoration-gray-300">
                   ₹{mrp.toLocaleString("en-IN")}
                 </span>
-                <span className="text-[12px] font-bold px-1.5 py-0.5 bg-red-50 rounded text-[#8B0000]">
+                <span className="rounded bg-[#edf5ee] px-1.5 py-0.5 text-[12px] font-bold text-[#315c3c]">
                   {discountPercent}% OFF
                 </span>
               </>
@@ -194,16 +179,7 @@ const CartItemCard = ({
           <div className="mt-4 flex flex-col gap-1.5">
             <div className="flex items-center gap-2 text-[11.5px] text-gray-600 font-medium">
               <Heart size={14} className="text-gray-400" />
-              14 days return available
-            </div>
-            <div className="flex items-center gap-2 text-[11.5px] text-gray-600 font-medium">
-              <Truck size={14} className="text-[#00A859]" />
-              Delivery by{" "}
-              <span className="font-bold text-gray-800">
-                {formattedDelivery}
-              </span>
-              <span className="text-gray-300 mx-0.5">|</span>
-              <span className="font-bold text-[#00A859]">FREE</span>
+              Carefully packed for delivery
             </div>
           </div>
         </div>

@@ -12,23 +12,21 @@ const AdminAuthPage = lazy(() => import("./pages/AdminAuthPage"));
 /* ---------------- ULTRA-FAST SYSTEM LOADER ---------------- */
 // Removed external icon libraries here. Using pure CSS/Tailwind for instant rendering.
 const InitializingSystem = () => (
-  <div className="min-h-screen flex flex-col items-center justify-center bg-[#f1f3f6] antialiased fixed inset-0 z-[9999]">
+  <div className="fixed inset-0 z-[9999] flex min-h-screen flex-col items-center justify-center bg-[#F1F3F6] antialiased">
     <div className="flex flex-col items-center animate-in fade-in zoom-in-95 duration-300 ease-out">
-      {/* Brand Logo Box (Flipkart Style) */}
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-12 h-12 bg-[#2874f0] rounded-sm flex items-center justify-center shadow-[0_2px_4px_rgba(0,0,0,0.15)] relative overflow-hidden">
-          <span className="text-white font-bold text-2xl italic tracking-tighter pr-1">
-            M
+        <div className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-[#2874F0] shadow-sm">
+          <span className="pr-1 text-2xl font-bold tracking-tighter text-white">
+            G
           </span>
-          {/* Signature Yellow Accent */}
-          <div className="absolute bottom-2 right-2 w-1.5 h-1.5 bg-[#ffe500] rounded-full"></div>
+          <div className="absolute bottom-2 right-2 h-1.5 w-1.5 rounded-full bg-[#FFE500]" />
         </div>
         <div className="flex flex-col">
-          <span className="text-2xl font-bold italic tracking-tight text-[#212121] leading-none">
-            Mnmukt
+          <span className="text-xl font-semibold tracking-tight text-[#202124] leading-none">
+            Ghar Ka Organic
           </span>
-          <span className="text-[10px] font-bold text-[#878787] uppercase tracking-widest mt-1">
-            Seller Hub
+          <span className="mt-1 text-[10px] font-semibold uppercase tracking-widest text-[#2874F0]">
+            Store management
           </span>
         </div>
       </div>
@@ -36,7 +34,7 @@ const InitializingSystem = () => (
       {/* Pure CSS Loading Indicator (Zero Dependencies) */}
       <div className="flex flex-col items-center gap-4 bg-white px-8 py-5 rounded-sm border border-gray-200 shadow-[0_1px_2px_0_rgba(0,0,0,0.05)]">
         {/* Tailwind CSS Spinner */}
-        <div className="w-7 h-7 border-[3px] border-[#e0e0e0] border-t-[#2874f0] rounded-full animate-spin"></div>
+        <div className="h-7 w-7 animate-spin rounded-full border-[3px] border-[#e0e0e0] border-t-[#2874F0]" />
         <span className="text-[13px] font-medium text-[#878787] tracking-wide">
           Securely connecting to workspace...
         </span>
@@ -48,7 +46,7 @@ const InitializingSystem = () => (
 /* ---------------- APP ENTRY POINT ---------------- */
 const App = () => {
   return (
-    <div className="min-h-screen bg-[#f1f3f6] font-sans text-[#212121] selection:bg-[#2874f0] selection:text-white antialiased">
+    <div className="min-h-screen bg-[#F1F3F6] font-sans text-[#202124] selection:bg-[#2874F0] selection:text-white antialiased">
       <main>
         <Suspense fallback={<InitializingSystem />}>
           <Routes>
@@ -69,9 +67,9 @@ const App = () => {
             <Route
               path="/*"
               element={
-                // <ProtectedRoute>
-                <AdminLayoutRoutes />
-                // </ProtectedRoute>
+                <ProtectedRoute>
+                  <AdminLayoutRoutes />
+                </ProtectedRoute>
               }
             />
           </Routes>

@@ -33,7 +33,7 @@ const CustomerSpotlight = () => {
         {/* ── LEFT CONTENT ── */}
         <div className="w-full lg:w-1/3 text-center lg:text-left">
           {/* Tag */}
-          <span className="text-[#da127d] uppercase tracking-[0.25em] text-[11px] font-medium block mb-3">
+          <span className="text-[#315c3c] uppercase tracking-[0.25em] text-[11px] font-medium block mb-3">
             Our Community
           </span>
 
@@ -57,7 +57,7 @@ const CustomerSpotlight = () => {
           {/* CTA */}
           <a
             href={CONFIG?.websiteURL || "/"}
-            className="inline-block mt-6 px-7 py-3 text-[11px] uppercase tracking-[0.2em] border border-gray-300 text-black hover:bg-[#da127d] hover:text-white hover:border-[#da127d] transition-all duration-300">
+            className="inline-block mt-6 px-7 py-3 text-[11px] uppercase tracking-[0.2em] border border-gray-300 text-black hover:bg-[#315c3c] hover:text-white hover:border-[#315c3c] transition-all duration-300">
             Explore Stories
           </a>
         </div>

@@ -42,7 +42,7 @@ const CategoryCard = ({ category, index, onHover }) => {
 
       {/* Text */}
       <div className="text-center">
-        <p className="text-[11px] uppercase tracking-[0.12em] font-medium text-[#1a1a1a] group-hover:text-[#da127d] transition-colors duration-300">
+        <p className="text-[11px] uppercase tracking-[0.12em] font-medium text-[#1a1a1a] group-hover:text-[#315c3c] transition-colors duration-300">
           {category.name}
         </p>
         {category.description && (
@@ -133,7 +133,7 @@ const CategoriesPage = () => {
       {/* Refetch bar */}
       {isFetching && !isLoading && (
         <div className="fixed top-0 left-0 right-0 z-50 h-0.5 bg-gray-100 overflow-hidden">
-          <div className="h-full w-1/3 bg-[#da127d] animate-[slide_1.2s_ease-in-out_infinite]" />
+          <div className="h-full w-1/3 bg-[#315c3c] animate-[slide_1.2s_ease-in-out_infinite]" />
         </div>
       )}
 
@@ -160,7 +160,7 @@ const CategoriesPage = () => {
               placeholder="Search categories…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-8 pr-4 py-2 border border-gray-200 focus:border-[#da127d] outline-none text-[12px] text-gray-700 placeholder:text-gray-300 bg-white transition-colors duration-200"
+              className="w-full pl-8 pr-4 py-2 border border-gray-200 focus:border-[#315c3c] outline-none text-[12px] text-gray-700 placeholder:text-gray-300 bg-white transition-colors duration-200"
             />
             <svg
               className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-300 w-3.5 h-3.5"
@@ -188,7 +188,7 @@ const CategoriesPage = () => {
 
         {/* ── GRID (matches ProductSection grid) ── */}
         {!isError && (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-x-8 md:gap-y-14">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:gap-x-8 sm:gap-y-12 md:grid-cols-3 md:gap-x-10 lg:grid-cols-4 lg:gap-x-12 xl:gap-x-14 lg:gap-y-14">
             {isLoading
               ? Array.from({ length: 8 }).map((_, i) => (
                   <CategorySkeleton key={i} />
@@ -209,7 +209,7 @@ const CategoriesPage = () => {
           <div className="mt-12 flex justify-center">
             <button
               onClick={() => navigate("/categories")}
-              className="px-8 py-3 text-[12px] uppercase tracking-[0.18em] transition-all duration-300 bg-white text-black border border-[#da127d] hover:opacity-90">
+              className="px-8 py-3 text-[12px] uppercase tracking-[0.18em] transition-all duration-300 bg-white text-black border border-[#315c3c] hover:opacity-90">
               View All Collections
             </button>
           </div>

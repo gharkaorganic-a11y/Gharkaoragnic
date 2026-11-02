@@ -76,14 +76,38 @@ const TestimonialsAdminPage = () => {
     setFormData((prev) => ({ ...prev, [key]: value }));
 
   const handleSave = async () => {
-    if (!formData.name.trim() || !formData.message.trim()) return;
+    const name = formData.name.trim();
+    const message = formData.message.trim();
+    const img = formData.img.trim();
+    const rating = Number(formData.rating);
+
+    if (!name || !message) {
+      showToast("error", "Customer name and review message are required.");
+      return;
+    }
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      showToast("error", "Choose a rating between 1 and 5 stars.");
+      return;
+    }
+    if (img) {
+      try {
+        if (new URL(img).protocol !== "https:") {
+          throw new Error("The customer photo URL must use HTTPS.");
+        }
+      } catch {
+        showToast("error", "Enter a valid HTTPS customer photo URL.");
+        return;
+      }
+    }
+
+    const reviewData = { name, img, message, rating };
     setSaving(true);
     try {
       if (editingId) {
-        await testimonialService.update(editingId, formData);
+        await testimonialService.update(editingId, reviewData);
         showToast("success", "Review updated successfully!");
       } else {
-        await testimonialService.create(formData);
+        await testimonialService.create(reviewData);
         showToast("success", "New review added successfully!");
       }
       await loadTestimonials();
@@ -126,7 +150,7 @@ const TestimonialsAdminPage = () => {
   };
 
   const total = testimonials.length;
-  const live = testimonials.filter((t) => t.isActive).length;
+  const live = testimonials.filter((t) => t.isActive !== false).length;
   const avgRating = total
     ? (testimonials.reduce((s, t) => s + (t.rating || 5), 0) / total).toFixed(1)
     : "—";
@@ -185,11 +209,13 @@ const TestimonialsAdminPage = () => {
               Manage the testimonials shown on your store front.
             </p>
           </div>
-          <button
-            onClick={openAdd}
-            className="flex items-center justify-center gap-2 bg-[#2874F0] text-white px-6 py-3.5 rounded-lg font-bold shadow-sm hover:bg-blue-700 active:scale-95 transition-all text-base w-full sm:w-auto">
-            <Plus size={20} /> Add New Review
-          </button>
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <button
+              onClick={openAdd}
+              className="flex items-center justify-center gap-2 bg-[#2874F0] text-white px-6 py-3.5 rounded-lg font-bold shadow-sm hover:bg-blue-700 active:scale-95 transition-all text-base">
+              <Plus size={20} /> Add New Review
+            </button>
+          </div>
         </div>
       </div>
 
@@ -234,7 +260,13 @@ const TestimonialsAdminPage = () => {
 
       {/* Reviews Grid */}
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {testimonials.map((t) => (
+        {testimonials.length === 0 ? (
+          <p className="col-span-full rounded-xl border border-dashed border-gray-300 bg-white px-6 py-12 text-center text-gray-600">
+            No customer reviews yet. Add a customer-approved review to publish
+            it on your storefront.
+          </p>
+        ) : (
+          testimonials.map((t) => (
           <div
             key={t.id}
             className="bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col">
@@ -277,7 +309,7 @@ const TestimonialsAdminPage = () => {
               <button
                 onClick={() => handleToggle(t)}
                 disabled={toggling === t.id}
-                className="flex items-center gap-2.5">
+                className="flex items-center gap-2.5 disabled:cursor-not-allowed disabled:opacity-60">
                 <div
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${t.isActive ? "bg-green-500" : "bg-gray-300"}`}>
                   {toggling === t.id ? (
@@ -311,7 +343,8 @@ const TestimonialsAdminPage = () => {
               </div>
             </div>
           </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

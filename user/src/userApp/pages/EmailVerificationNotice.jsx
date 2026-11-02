@@ -8,7 +8,7 @@ const EmailVerification = () => {
 
   // Custom color scheme
   const COLORS = {
-    primary: "#ff356c",
+    primary: "#315c3c",
     secondary: "#e0e0e0",
     text: "#2d3748",
     success: "#10b981",
@@ -60,7 +60,7 @@ const EmailVerification = () => {
     <div className="min-h-screen flex items-center justify-center bg-white md:bg-gray-50 p-4">
       <div className="max-w-md w-full bg-white p-8 md:rounded-2xl md:shadow-lg">
         {/* Header */}
-        <h2 className="text-3xl font-[lora] text-[#ff356c] text-center mb-4">
+        <h2 className="text-3xl font-sans text-[#315c3c] text-center mb-4">
           Email Verification
         </h2>
 
@@ -70,10 +70,10 @@ const EmailVerification = () => {
           {status === "loading" && (
             <div className="text-center space-y-6">
               <div className="relative">
-                <div className="w-20 h-20 border-4 border-gray-200 border-t-[#ff356c] rounded-full animate-spin mx-auto"></div>
+                <div className="w-20 h-20 border-4 border-gray-200 border-t-[#315c3c] rounded-full animate-spin mx-auto"></div>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <svg
-                    className="w-8 h-8 text-[#ff356c]"
+                    className="w-8 h-8 text-[#315c3c]"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24">
@@ -130,7 +130,7 @@ const EmailVerification = () => {
               <div className="space-y-3">
                 <button
                   onClick={handleNavigateToDashboard}
-                  className="w-full bg-[#ff356c] hover:opacity-90 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200">
+                  className="w-full bg-[#315c3c] hover:opacity-90 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200">
                   Go to Dashboard
                 </button>
                 <button
@@ -182,7 +182,7 @@ const EmailVerification = () => {
               <div className="space-y-3">
                 <button
                   onClick={handleRetry}
-                  className="w-full bg-[#ff356c] hover:opacity-90 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200">
+                  className="w-full bg-[#315c3c] hover:opacity-90 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200">
                   Try Again
                 </button>
                 <Link
@@ -224,12 +224,12 @@ const EmailVerification = () => {
               <div className="space-y-3">
                 <Link
                   to="/account/login"
-                  className="block w-full bg-[#ff356c] hover:opacity-90 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 text-center">
+                  className="block w-full bg-[#315c3c] hover:opacity-90 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 text-center">
                   Go to Login
                 </Link>
                 <Link
                   to="/"
-                  className="block text-[#ff356c] hover:opacity-80 text-sm font-medium text-center">
+                  className="block text-[#315c3c] hover:opacity-80 text-sm font-medium text-center">
                   Return to Homepage
                 </Link>
               </div>

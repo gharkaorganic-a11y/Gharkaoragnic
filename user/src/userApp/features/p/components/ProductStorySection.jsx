@@ -65,7 +65,7 @@ const ProductStorySection = () => {
                   Chemical
                 </span>
 
-                <span className="absolute -top-12 left-1/2 -translate-x-1/2 text-[#ff6b81] font-serif italic text-5xl md:text-6xl drop-shadow-sm">
+                <span className="absolute -top-12 left-1/2 -translate-x-1/2 text-[#315c3c] font-sans italic text-5xl md:text-6xl drop-shadow-sm">
                   love
                 </span>
               </span>

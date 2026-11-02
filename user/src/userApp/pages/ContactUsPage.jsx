@@ -1,30 +1,33 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 import { db } from "../../config/firebaseDB";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-
 import {
   ArrowRight,
   Loader2,
   MapPin,
   Phone,
   Mail,
-  Clock,
-  Instagram,
   Check,
+  MessageCircle,
+  Mountain,
+  HeartHandshake,
+  ShieldCheck,
+  ChevronDown,
 } from "lucide-react";
 
 /* ─────────────────────────────────────────────
-   CONSTANTS
+   CONSTANTS & SEO
 ───────────────────────────────────────────── */
 const BASE_URL = "https://gharkaorganic.com";
-const CANONICAL = `${BASE_URL}/pages/contact`;
-
+const CANONICAL = `${BASE_URL}/contact`;
 const OG_IMAGE =
   "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1776770687/Organic_Himalayan_food_from_Bhimtal_Uttarakhand_by_Ghar_Ka_Organic_wbolwx.webp";
 
 // Unified contact details
 const CONTACT_PHONE = "+919897447525";
+const CONTACT_PHONE_DISPLAY = "+91 98974 47525";
 const CONTACT_EMAIL = "gharkaorganic@gmail.com";
 
 const JSONLD = JSON.stringify({
@@ -51,13 +54,12 @@ const JSONLD = JSON.stringify({
         "@id": `${BASE_URL}/#business`,
       },
     },
-
     {
       "@id": `${BASE_URL}/#business`,
       "@type": ["LocalBusiness", "OnlineStore", "FoodManufacturer"],
       name: "Ghar Ka Organic",
       image: [OG_IMAGE],
-      logo: `${BASE_URL}/gharka-logo.png`,
+      logo: `${BASE_URL}/logo/gharka-logo.png`,
       url: BASE_URL,
       telephone: CONTACT_PHONE,
       email: CONTACT_EMAIL,
@@ -113,7 +115,6 @@ const JSONLD = JSON.stringify({
         "Traditional Uttarakhand Food",
       ],
     },
-
     {
       "@type": "BreadcrumbList",
       itemListElement: [
@@ -131,7 +132,6 @@ const JSONLD = JSON.stringify({
         },
       ],
     },
-
     {
       "@type": "FAQPage",
       mainEntity: [
@@ -140,7 +140,7 @@ const JSONLD = JSON.stringify({
           name: "How can I contact Ghar Ka Organic?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "You can reach us at +919897447525 (WhatsApp available) or email gharkaorganic@gmail.com. Our customer support team responds within 24 hours.",
+            text: "You can reach us at +91 98974 47525 (WhatsApp available) or email gharkaorganic@gmail.com. Our customer support team responds within 24 hours.",
           },
         },
         {
@@ -159,15 +159,41 @@ const JSONLD = JSON.stringify({
             text: "Yes, we offer bulk orders and wholesale prices. Contact us for bulk inquiry details and customized packages.",
           },
         },
+        {
+          "@type": "Question",
+          name: "Where are your products made and shipped from?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "All our products are handmade by local mountain women in Bhimtal, Nainital, Uttarakhand, and shipped directly across India.",
+          },
+        },
       ],
     },
   ],
 });
 
-/* ═══════════════════════════════════════════════
-   COMPONENT
-═══════════════════════════════════════════════ */
+const faqs = [
+  {
+    q: "How can I contact Ghar Ka Organic?",
+    a: "You can reach us via WhatsApp or phone at +91 98974 47525, or email us at gharkaorganic@gmail.com. Our support team typically responds within a few hours during working days.",
+  },
+  {
+    q: "What are your working hours?",
+    a: "Our Bhimtal kitchen and customer support are active Monday to Saturday, from 10:00 AM to 7:00 PM IST. Online store orders can be placed 24/7.",
+  },
+  {
+    q: "Do you offer bulk orders or corporate gifting?",
+    a: "Yes! We work with corporate partners, organic stores, and events for customized gift hampers and wholesale shipments of our authentic Himalayan pickles, honey, and ghee.",
+  },
+  {
+    q: "Where are your products made and shipped from?",
+    a: "All Ghar Ka Organic foods are crafted in small batches by women farmer groups in Bhimtal, Nainital, Uttarakhand, using multi-generational Kumaoni recipes without chemicals or preservatives.",
+  },
+];
 
+/* ─────────────────────────────────────────────
+   COMPONENT
+───────────────────────────────────────────── */
 const ContactUsPage = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -179,6 +205,7 @@ const ContactUsPage = () => {
   });
 
   const [status, setStatus] = useState("idle");
+  const [openFaq, setOpenFaq] = useState(null);
 
   const handleChange = (e) => {
     setFormData({
@@ -208,41 +235,33 @@ const ContactUsPage = () => {
         message: "",
       });
 
-      setTimeout(() => {
-        setStatus("idle");
-      }, 5000);
+      setTimeout(() => setStatus("idle"), 5000);
     } catch (error) {
-      console.error(error);
+      console.error("Inquiry submission error:", error);
       setStatus("error");
-      setTimeout(() => {
-        setStatus("idle");
-      }, 5000);
+      setTimeout(() => setStatus("idle"), 5000);
     }
   };
 
   return (
-    <div className="min-h-screen bg-white pb-20">
+    <div className="min-h-screen bg-white font-sans text-[#121212] selection:bg-[#ebe7df] selection:text-[#121212]">
       {/* ───────────────── SEO ───────────────── */}
       <Helmet>
         <title>
           Contact Ghar Ka Organic | Himalayan Pickles, Honey & Organic Products
         </title>
-
         <meta
           name="description"
           content="Contact Ghar Ka Organic for homemade Himalayan pickles, raw forest honey, bilona desi ghee, organic chutneys and Uttarakhand food products delivered across India."
         />
-
         <meta
           name="keywords"
           content="contact Ghar Ka Organic, Himalayan organic products, pahadi pickles, raw honey Uttarakhand, bilona ghee India, organic food support, customer service"
         />
-
         <meta
           name="robots"
           content="index, follow, max-image-preview:large, max-snippet:-1"
         />
-
         <link rel="canonical" href={CANONICAL} />
         <meta name="author" content="Ghar Ka Organic" />
         <meta name="geo.region" content="IN-UT" />
@@ -273,333 +292,492 @@ const ContactUsPage = () => {
         {/* JSON-LD */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSONLD,
-          }}
+          dangerouslySetInnerHTML={{ __html: JSONLD }}
         />
       </Helmet>
 
-      {/* ───────────────── HERO ───────────────── */}
-      <section className="relative w-full h-[40vh] md:h-[55vh] overflow-hidden">
-        <img
-          src={OG_IMAGE}
-          alt="Ghar Ka Organic Himalayan Products"
-          className="w-full h-full object-cover"
-          loading="eager"
-          fetchpriority="high"
+      {/* ───────────────── SUBTLE BREADCRUMB ───────────────── */}
+      <nav
+        aria-label="Breadcrumb"
+        className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-xs tracking-wider text-neutral-400 border-b border-neutral-100">
+        <ol className="flex items-center gap-2">
+          <li>
+            <Link
+              to="/"
+              className="hover:text-neutral-900 transition-colors uppercase font-medium">
+              Home
+            </Link>
+          </li>
+          <li className="text-neutral-300">/</li>
+          <li
+            className="text-neutral-800 font-medium uppercase"
+            aria-current="page">
+            Contact Us
+          </li>
+        </ol>
+      </nav>
+
+      {/* ───────────────── HERO HEADER ───────────────── */}
+      <header className="py-12 sm:py-16 md:py-20 text-center px-4 max-w-3xl mx-auto">
+        <p className="text-[11px] sm:text-xs font-medium uppercase tracking-[0.22em] text-neutral-500 mb-4">
+          Bhimtal, Nainital • Uttarakhand
+        </p>
+
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-[#121212] leading-tight">
+          We'd Love to Hear From You
+        </h1>
+
+        <div
+          className="w-10 h-[1.5px] bg-[#121212]/30 mx-auto mt-6 mb-6"
+          aria-hidden="true"
         />
 
-        <div className="absolute inset-0 bg-black/40" />
+        <p className="text-sm sm:text-base text-neutral-600 leading-relaxed font-light max-w-2xl mx-auto">
+          Have questions about our authentic Himalayan pickles, wild forest
+          honey, or A2 bilona desi ghee? Want to discuss wholesale or custom
+          orders? Reach out to our hill kitchen team directly.
+        </p>
+      </header>
 
-        <div className="absolute inset-0 flex items-center justify-center px-4">
-          <div className="text-center max-w-3xl">
-            <h1 className="text-white text-3xl md:text-5xl font-light">
-              Contact Ghar Ka Organic
-            </h1>
+      {/* ───────────────── 4 QUICK ACTION CARDS ───────────────── */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-14 sm:mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+          {/* WhatsApp Card */}
+          <a
+            href="https://wa.me/919897447525?text=Hi%20Ghar%20Ka%20Organic,%20I%20have%20an%20inquiry%20about%20your%20products"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group p-6 bg-white rounded-xl border border-[#e5e5e5] hover:border-[#121212] transition-all duration-300 flex flex-col justify-between shadow-xs">
+            <div>
+              <div className="w-10 h-10 rounded-lg bg-neutral-100 text-[#121212] flex items-center justify-center mb-4 group-hover:bg-[#121212] group-hover:text-white transition-colors duration-300">
+                <MessageCircle size={20} />
+              </div>
+              <h3 className="text-[15px] font-medium text-[#121212]">
+                WhatsApp Chat
+              </h3>
+              <p className="text-xs text-neutral-500 mt-1">
+                Fastest support response
+              </p>
+            </div>
+            <span className="mt-5 text-xs font-medium text-[#121212] inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+              Chat on WhatsApp →
+            </span>
+          </a>
 
-            <p className="text-white/80 mt-4 text-sm md:text-base">
-              Himalayan Pickles • Raw Honey • Bilona Desi Ghee • Organic Food
-            </p>
+          {/* Call Support Card */}
+          <a
+            href={`tel:${CONTACT_PHONE}`}
+            className="group p-6 bg-white rounded-xl border border-[#e5e5e5] hover:border-[#121212] transition-all duration-300 flex flex-col justify-between shadow-xs">
+            <div>
+              <div className="w-10 h-10 rounded-lg bg-neutral-100 text-[#121212] flex items-center justify-center mb-4 group-hover:bg-[#121212] group-hover:text-white transition-colors duration-300">
+                <Phone size={20} />
+              </div>
+              <h3 className="text-[15px] font-medium text-[#121212]">
+                Direct Phone
+              </h3>
+              <p className="text-xs text-neutral-600 font-normal mt-1">
+                {CONTACT_PHONE_DISPLAY}
+              </p>
+            </div>
+            <span className="mt-5 text-xs text-neutral-500">
+              Mon–Sat, 10 AM – 7 PM
+            </span>
+          </a>
+
+          {/* Email Support Card */}
+          <a
+            href={`mailto:${CONTACT_EMAIL}`}
+            className="group p-6 bg-white rounded-xl border border-[#e5e5e5] hover:border-[#121212] transition-all duration-300 flex flex-col justify-between shadow-xs">
+            <div>
+              <div className="w-10 h-10 rounded-lg bg-neutral-100 text-[#121212] flex items-center justify-center mb-4 group-hover:bg-[#121212] group-hover:text-white transition-colors duration-300">
+                <Mail size={20} />
+              </div>
+              <h3 className="text-[15px] font-medium text-[#121212]">
+                Email Inquiries
+              </h3>
+              <p className="text-xs text-neutral-600 font-normal mt-1 truncate">
+                {CONTACT_EMAIL}
+              </p>
+            </div>
+            <span className="mt-5 text-xs text-neutral-500">
+              Replies within 24 hours
+            </span>
+          </a>
+
+          {/* Location Card */}
+          <div className="p-6 bg-white rounded-xl border border-[#e5e5e5] flex flex-col justify-between shadow-xs">
+            <div>
+              <div className="w-10 h-10 rounded-lg bg-neutral-100 text-[#121212] flex items-center justify-center mb-4">
+                <MapPin size={20} />
+              </div>
+              <h3 className="text-[15px] font-medium text-[#121212]">
+                Mountain Kitchen
+              </h3>
+              <p className="text-xs text-neutral-600 mt-1 leading-snug">
+                Ward No. 2, Nalni, Bhimtal, Uttarakhand – 263136
+              </p>
+            </div>
+            <span className="mt-5 text-xs font-medium text-neutral-500">
+              Made in Uttarakhand
+            </span>
           </div>
         </div>
       </section>
 
-      {/* ───────────────── HEADER ───────────────── */}
-      <header className="text-center px-6 pt-16 pb-10">
-        <div className="max-w-3xl mx-auto">
-          <span className="uppercase tracking-[0.3em] text-xs text-amber-600 font-bold">
-            Customer Support
-          </span>
+      {/* ───────────────── MAIN CONTENT: FORM + KITCHEN STORY ───────────────── */}
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+          {/* ───────── CONTACT FORM (7 cols) ───────── */}
+          <section
+            className="lg:col-span-7 bg-white border border-[#e5e5e5] rounded-2xl p-6 sm:p-10 shadow-xs"
+            aria-label="Send a message form">
+            <div className="mb-8">
+              <span className="text-[11px] uppercase tracking-[0.2em] font-semibold text-neutral-400 block mb-1">
+                Direct Communication
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-light text-[#121212] tracking-tight">
+                Send Us a Message
+              </h2>
+              <p className="text-xs sm:text-sm text-neutral-500 mt-1 font-light">
+                Fill out the form below. We respond promptly during working
+                hours.
+              </p>
+            </div>
 
-          <h2 className="text-3xl md:text-5xl text-gray-900 mt-4 font-light">
-            We'd Love to Hear From You
-          </h2>
-
-          <p className="mt-5 text-gray-600 leading-relaxed">
-            Contact us for product support, bulk orders, partnerships, Himalayan
-            homemade pickles, organic chutneys, raw forest honey, bilona desi
-            ghee and Uttarakhand organic food products.
-          </p>
-        </div>
-      </header>
-
-      {/* ───────────────── MAIN ───────────────── */}
-      <main className="max-w-6xl mx-auto px-4 md:px-6 py-10">
-        <div className="grid lg:grid-cols-2 gap-12">
-          {/* ───────── CONTACT FORM SECTION ───────── */}
-          <section aria-label="Contact form">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-              Send a Message
-            </h2>
-
-            {/* SUCCESS MESSAGE */}
+            {/* SUCCESS BANNER */}
             {status === "success" && (
               <div
-                className="mb-5 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2"
+                className="mb-6 bg-neutral-100 border border-neutral-300 text-neutral-900 px-4 py-3.5 rounded-xl text-sm flex items-center gap-2.5"
                 role="alert">
-                <Check size={16} />
-                Message sent successfully.
+                <Check size={18} className="text-[#121212] shrink-0" />
+                <span>
+                  Thank you! Your message has been sent to our Bhimtal team. We
+                  will get back to you shortly.
+                </span>
               </div>
             )}
 
-            {/* ERROR MESSAGE */}
+            {/* ERROR BANNER */}
             {status === "error" && (
               <div
-                className="mb-5 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"
+                className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3.5 rounded-xl text-sm"
                 role="alert">
-                Something went wrong. Please try again.
+                Something went wrong. Please reach out via WhatsApp at +91 98974
+                47525.
               </div>
             )}
 
             {/* FORM */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                type="text"
-                name="name"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Full Name"
-                className="w-full border border-gray-200 rounded-lg px-4 py-3 outline-none focus:border-amber-500"
-                aria-label="Full Name"
-              />
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1.5">
+                    Your Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    required
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="e.g. Anjali Sharma"
+                    className="w-full bg-white border border-[#e5e5e5] rounded-xl px-4 py-3 text-sm text-[#121212] placeholder-neutral-400 focus:outline-none focus:border-[#121212] focus:ring-1 focus:ring-[#121212] transition"
+                  />
+                </div>
 
-              <input
-                type="email"
-                name="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="Email Address"
-                className="w-full border border-gray-200 rounded-lg px-4 py-3 outline-none focus:border-amber-500"
-                aria-label="Email Address"
-              />
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1.5">
+                    Email Address <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="e.g. anjali@example.com"
+                    className="w-full bg-white border border-[#e5e5e5] rounded-xl px-4 py-3 text-sm text-[#121212] placeholder-neutral-400 focus:outline-none focus:border-[#121212] focus:ring-1 focus:ring-[#121212] transition"
+                  />
+                </div>
+              </div>
 
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                placeholder="Phone Number"
-                className="w-full border border-gray-200 rounded-lg px-4 py-3 outline-none focus:border-amber-500"
-                aria-label="Phone Number"
-              />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1.5">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="e.g. +91 98765 43210"
+                    className="w-full bg-white border border-[#e5e5e5] rounded-xl px-4 py-3 text-sm text-[#121212] placeholder-neutral-400 focus:outline-none focus:border-[#121212] focus:ring-1 focus:ring-[#121212] transition"
+                  />
+                </div>
 
-              <input
-                type="text"
-                name="orderId"
-                value={formData.orderId}
-                onChange={handleChange}
-                placeholder="Order ID (Optional)"
-                className="w-full border border-gray-200 rounded-lg px-4 py-3 outline-none focus:border-amber-500"
-                aria-label="Order ID"
-              />
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1.5">
+                    Order ID (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    name="orderId"
+                    value={formData.orderId}
+                    onChange={handleChange}
+                    placeholder="e.g. #ORD-1042"
+                    className="w-full bg-white border border-[#e5e5e5] rounded-xl px-4 py-3 text-sm text-[#121212] placeholder-neutral-400 focus:outline-none focus:border-[#121212] focus:ring-1 focus:ring-[#121212] transition"
+                  />
+                </div>
+              </div>
 
-              {/* PROPER SELECT DROPDOWN */}
-              <select
-                name="subject"
-                value={formData.subject}
-                onChange={handleChange}
-                className="w-full border border-gray-200 rounded-lg px-4 py-3 outline-none focus:border-amber-500 bg-white"
-                aria-label="Subject">
-                <option value="General Inquiry">General Inquiry</option>
-                <option value="Product Support">Product Support</option>
-                <option value="Bulk Order">Bulk Order</option>
-                <option value="Partnership">Partnership Inquiry</option>
-                <option value="Order Issue">Order Issue</option>
-                <option value="Quality Feedback">Quality Feedback</option>
-              </select>
+              <div>
+                <label className="block text-xs font-medium text-neutral-700 mb-1.5">
+                  Subject / Inquiry Type
+                </label>
+                <div className="relative">
+                  <select
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    className="w-full appearance-none bg-white border border-[#e5e5e5] rounded-xl px-4 py-3 pr-10 text-sm text-[#121212] focus:outline-none focus:border-[#121212] focus:ring-1 focus:ring-[#121212] transition cursor-pointer">
+                    <option value="General Inquiry">General Inquiry</option>
+                    <option value="Product Support">Product Support</option>
+                    <option value="Bulk Order">
+                      Bulk Order / Wholesale Inquiry
+                    </option>
+                    <option value="Partnership">
+                      Partnership & Distribution
+                    </option>
+                    <option value="Order Issue">
+                      Order Issue / Shipping Status
+                    </option>
+                    <option value="Quality Feedback">Quality Feedback</option>
+                  </select>
+                  <ChevronDown
+                    size={16}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                  />
+                </div>
+              </div>
 
-              <textarea
-                rows={5}
-                name="message"
-                required
-                value={formData.message}
-                onChange={handleChange}
-                placeholder="Write your message..."
-                className="w-full border border-gray-200 rounded-lg px-4 py-3 outline-none resize-none focus:border-amber-500"
-                aria-label="Message"
-              />
+              <div>
+                <label className="block text-xs font-medium text-neutral-700 mb-1.5">
+                  Message <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  rows={5}
+                  name="message"
+                  required
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder="Tell us what you're looking for, or share your question..."
+                  className="w-full bg-white border border-[#e5e5e5] rounded-xl px-4 py-3 text-sm text-[#121212] placeholder-neutral-400 focus:outline-none focus:border-[#121212] focus:ring-1 focus:ring-[#121212] transition resize-none"
+                />
+              </div>
 
-              <button
-                type="submit"
-                disabled={status === "loading"}
-                className="bg-black text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-gray-800 transition disabled:opacity-50">
-                {status === "loading" ? (
-                  <Loader2 className="animate-spin" size={18} />
-                ) : (
-                  <>
-                    Send Message
-                    <ArrowRight size={18} />
-                  </>
-                )}
-              </button>
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={status === "loading"}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#121212] text-white px-8 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-black focus:outline-none focus:ring-2 focus:ring-[#121212] focus:ring-offset-2 active:scale-[0.99] disabled:opacity-70 shadow-xs cursor-pointer">
+                  {status === "loading" ? (
+                    <>
+                      <Loader2 className="animate-spin" size={17} />
+                      <span>Sending message...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Send Message</span>
+                      <ArrowRight size={17} />
+                    </>
+                  )}
+                </button>
+              </div>
             </form>
           </section>
 
-          {/* ───────── CONTACT INFO SECTION ───────── */}
-          <section
-            className="bg-gray-50 rounded-2xl p-8 space-y-8 border border-gray-100"
-            aria-label="Contact information">
-            <div>
-              <h2 className="text-2xl font-semibold text-gray-900">
-                Contact Information
-              </h2>
+          {/* ───────── MOUNTAIN ORIGIN & STORY CARD (5 cols) ───────── */}
+          <aside className="lg:col-span-5 space-y-6">
+            <div className="bg-white border border-[#e5e5e5] rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
+              <div>
+                <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.2em] font-medium text-neutral-500 block mb-1">
+                  Rooted in Uttarakhand
+                </span>
+                <h3 className="text-xl sm:text-2xl font-light text-[#121212] tracking-tight">
+                  Handmade with Mountain Care
+                </h3>
+              </div>
 
-              <p className="text-gray-600 mt-2 text-sm">
-                Reach out for product inquiries, support, or wholesale orders.
+              <p className="text-sm text-neutral-600 leading-relaxed font-light">
+                Ghar Ka Organic is based in Bhimtal, Nainital, Uttarakhand. Every
+                jar of pickle, bottle of raw honey, and jar of A2 bilona ghee is
+                prepared by mountain women using pure Himalayan ingredients and
+                age-old Kumaoni recipes without chemicals or preservatives.
               </p>
-            </div>
 
-            {/* ADDRESS */}
-            <div className="flex items-start gap-4">
-              <MapPin className="text-amber-600 mt-1 flex-shrink-0" size={20} />
+              {/* Trust Badges */}
+              <div className="space-y-3.5 pt-4 border-t border-[#f0f0f0]">
+                <div className="flex items-center gap-3 text-xs sm:text-sm text-neutral-700">
+                  <div className="w-8 h-8 rounded-full bg-neutral-100 text-[#121212] flex items-center justify-center shrink-0">
+                    <Mountain size={16} />
+                  </div>
+                  <span>Born in Bhimtal, Nainital (Uttarakhand)</span>
+                </div>
 
-              <address className="not-italic">
-                <p className="text-xs uppercase text-gray-500 mb-1">Address</p>
+                <div className="flex items-center gap-3 text-xs sm:text-sm text-neutral-700">
+                  <div className="w-8 h-8 rounded-full bg-neutral-100 text-[#121212] flex items-center justify-center shrink-0">
+                    <HeartHandshake size={16} />
+                  </div>
+                  <span>Empowering Local Pahadi Women Artisans</span>
+                </div>
 
-                <p className="text-sm text-gray-700 leading-relaxed">
-                  Ward No. 2, Nalni
-                  <br />
-                  Nainital, Uttarakhand – 263136
-                  <br />
-                  India
-                </p>
-              </address>
-            </div>
-
-            {/* PHONE */}
-            <div className="flex items-start gap-4">
-              <Phone className="text-amber-600 mt-1 flex-shrink-0" size={20} />
-
-              <div>
-                <p className="text-xs uppercase text-gray-500 mb-1">Phone</p>
-
-                <a
-                  href={`tel:${CONTACT_PHONE}`}
-                  className="text-sm text-gray-700 hover:text-amber-600 transition">
-                  {CONTACT_PHONE}
-                </a>
-                <p className="text-xs text-gray-500 mt-1">WhatsApp available</p>
+                <div className="flex items-center gap-3 text-xs sm:text-sm text-neutral-700">
+                  <div className="w-8 h-8 rounded-full bg-neutral-100 text-[#121212] flex items-center justify-center shrink-0">
+                    <ShieldCheck size={16} />
+                  </div>
+                  <span>Zero Artificial Preservatives or Chemicals</span>
+                </div>
               </div>
-            </div>
 
-            {/* EMAIL */}
-            <div className="flex items-start gap-4">
-              <Mail className="text-amber-600 mt-1 flex-shrink-0" size={20} />
-
-              <div>
-                <p className="text-xs uppercase text-gray-500 mb-1">Email</p>
-
-                <a
-                  href={`mailto:${CONTACT_EMAIL}`}
-                  className="text-sm text-gray-700 hover:text-amber-600 transition">
-                  {CONTACT_EMAIL}
-                </a>
+              {/* FSSAI Badge */}
+              <div className="pt-4 border-t border-[#f0f0f0]">
+                <div className="bg-white p-3.5 rounded-xl border border-[#e5e5e5] flex items-center gap-3.5 shadow-2xs">
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/en/e/e2/FSSAI_logo.png"
+                    alt="FSSAI Certified – Food Safety Authority of India"
+                    className="h-8 object-contain"
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-[#121212] text-xs font-semibold tracking-wider uppercase">
+                      100% Certified Safe
+                    </span>
+                    <span className="text-neutral-500 text-[11px]">
+                      FSSAI Registered • Nainital, Uttarakhand
+                    </span>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            {/* HOURS */}
-            <div className="flex items-start gap-4">
-              <Clock className="text-amber-600 mt-1 flex-shrink-0" size={20} />
-
-              <div>
-                <p className="text-xs uppercase text-gray-500 mb-1">
-                  Working Hours
-                </p>
-
-                <p className="text-sm text-gray-700">
-                  Monday – Saturday
-                  <br />
-                  10:00 AM – 7:00 PM IST
-                </p>
-              </div>
-            </div>
-
-            {/* INSTAGRAM */}
-            <div className="flex items-start gap-4">
-              <Instagram
-                className="text-amber-600 mt-1 flex-shrink-0"
-                size={20}
-              />
-
-              <div>
-                <p className="text-xs uppercase text-gray-500 mb-1">
-                  Instagram
-                </p>
-
+              {/* Direct WhatsApp Callout */}
+              <div className="pt-2">
                 <a
-                  href="https://instagram.com/gharkaorganic"
+                  href="https://wa.me/919897447525?text=Hi%20Ghar%20Ka%20Organic,%20I%20want%20to%20inquire%20about%20your%20products"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-gray-700 hover:text-amber-600 transition">
-                  @gharkaorganic
+                  className="w-full inline-flex items-center justify-center gap-2 bg-[#121212] hover:bg-black text-white py-3 px-5 rounded-xl text-xs sm:text-sm font-medium transition shadow-xs">
+                  <MessageCircle size={17} />
+                  <span>Chat on WhatsApp Directly</span>
                 </a>
               </div>
             </div>
 
-            {/* SEO TEXT */}
-            <div className="pt-6 border-t border-gray-200">
-              <p className="text-sm text-gray-600 leading-relaxed">
-                Ghar Ka Organic is an Uttarakhand-based Himalayan organic food
-                brand offering homemade pickles, Kumaoni chutneys, raw forest
-                honey, bilona desi ghee and traditional village food products
-                across India.
-              </p>
-            </div>
-          </section>
+            {/* Instagram Follow */}
+            <a
+              href="https://instagram.com/gharkaorganic"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-5 bg-white rounded-2xl border border-[#e5e5e5] hover:border-[#121212] flex items-center justify-between transition group shadow-2xs">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-neutral-100 text-[#121212] flex items-center justify-center shrink-0">
+                  <span className="font-semibold text-sm">IG</span>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-[#121212]">
+                    @gharkaorganic
+                  </p>
+                  <p className="text-[11px] text-neutral-500">
+                    Follow our stories from the Kumaon hills
+                  </p>
+                </div>
+              </div>
+              <ArrowRight
+                size={16}
+                className="text-neutral-400 group-hover:text-[#121212] group-hover:translate-x-1 transition"
+              />
+            </a>
+          </aside>
         </div>
 
-        {/* ───────────────── INTERNAL LINKS SECTION ───────────────── */}
+        {/* ───────────────── INTERACTIVE FAQ SECTION ───────────────── */}
         <section
-          className="mt-16 pt-10 border-t border-gray-200"
-          aria-label="Related products">
-          <h3 className="text-lg font-semibold text-gray-900 mb-5">
-            Explore Our Products
+          className="mt-16 sm:mt-20 pt-12 border-t border-[#e8e8e8]"
+          aria-label="Frequently Asked Questions">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-10">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-light tracking-[0.18em] text-[#121212] uppercase">
+                Frequently Asked Questions
+              </h2>
+              <div
+                className="w-8 h-[1px] bg-[#121212]/20 mx-auto mt-3"
+                aria-hidden="true"
+              />
+            </div>
+
+            <div className="divide-y divide-[#ebebeb] border-y border-[#ebebeb]">
+              {faqs.map((faq, idx) => {
+                const isOpen = openFaq === idx;
+                return (
+                  <div key={idx} className="py-4">
+                    <button
+                      type="button"
+                      onClick={() => setOpenFaq(isOpen ? null : idx)}
+                      className="w-full text-left flex items-center justify-between gap-4 py-2 hover:text-black transition cursor-pointer">
+                      <span className="text-[15px] sm:text-[16px] font-medium text-[#121212]">
+                        {faq.q}
+                      </span>
+                      <ChevronDown
+                        size={16}
+                        className={`text-neutral-500 shrink-0 transition-transform duration-200 ${
+                          isOpen ? "rotate-180 text-black" : ""
+                        }`}
+                      />
+                    </button>
+                    {isOpen && (
+                      <div className="text-sm text-neutral-600 leading-relaxed font-light pt-2 pb-2">
+                        {faq.a}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* ───────────────── EXPLORE OUR PRODUCTS ───────────────── */}
+        <section
+          className="mt-16 pt-12 border-t border-[#e8e8e8] text-center"
+          aria-label="Related products navigation">
+          <h3 className="text-xs uppercase tracking-[0.18em] font-medium text-neutral-500 mb-6">
+            Explore Himalayan Organic Products
           </h3>
 
-          <nav className="flex flex-wrap gap-4 text-sm">
-            <a
-              href="/all-products"
-              className="text-amber-700 hover:underline"
-              title="View all Himalayan organic products">
-              Himalayan Organic Products
-            </a>
-
-            <a
-              href="/shop/best-sellers"
-              className="text-amber-700 hover:underline"
-              title="Shop best-selling pickles and organic items">
-              Best Sellers
-            </a>
-
-            <a
-              href="/buy-mango-pickle-online"
-              className="text-amber-700 hover:underline"
-              title="Buy homemade mango pickle online">
-              Homemade Mango Pickle
-            </a>
-
-            <a
-              href="/organic-honey"
-              className="text-amber-700 hover:underline"
-              title="Buy raw forest honey from Uttarakhand">
-              Raw Forest Honey
-            </a>
-
-            <a
-              href="/buy-desi-ghee-online"
-              className="text-amber-700 hover:underline"
-              title="Order bilona desi ghee online">
-              Bilona Desi Ghee
-            </a>
-
-            <a
-              href="/pahadi-achar-online"
-              className="text-amber-700 hover:underline"
-              title="Buy authentic pahadi pickles">
-              Pahadi Pickles
-            </a>
+          <nav className="flex flex-wrap justify-center gap-2.5 sm:gap-3">
+            {[
+              { name: "All Products", url: "/all-products" },
+              { name: "Best Sellers", url: "/shop/best-sellers" },
+              { name: "Raw Forest Honey", url: "/all-products?category=honey" },
+              {
+                name: "A2 Bilona Desi Ghee",
+                url: "/all-products?category=ghee",
+              },
+              {
+                name: "Sun-Dried Mango Achar",
+                url: "/all-products?category=pickles",
+              },
+              {
+                name: "Authentic Pahadi Pickles",
+                url: "/all-products?category=pickles",
+              },
+            ].map((link, i) => (
+              <Link
+                key={i}
+                to={link.url}
+                className="px-4 py-2 rounded-full text-xs font-medium bg-white text-[#121212] border border-[#e5e5e5] hover:border-[#121212] hover:bg-[#121212] hover:text-white transition-all duration-200">
+                {link.name}
+              </Link>
+            ))}
           </nav>
         </section>
       </main>

@@ -41,8 +41,8 @@ const Notification = ({ type = "info", message, onClose, duration = 4000 }) => {
       label: "Authorization Warning",
     },
     info: {
-      icon: <FaCircleInfo className="text-[#ff356c]" />,
-      accent: "bg-[#ff356c]",
+      icon: <FaCircleInfo className="text-[#2874F0]" />,
+      accent: "bg-[#2874F0]",
       label: "Status Manifest",
     },
   };

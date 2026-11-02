@@ -1,6 +1,6 @@
 [
   {
-    "message": "✨ Free Shipping Above ₹1000/- ✨",
+    "message": "Delivery charges confirmed on WhatsApp",
     "linkText": "Shop Now",
     "linkUrl": "/sale",
     "bgColor": "#FFF0F5",
@@ -8,7 +8,7 @@
     "linkColor": "#D63384"
   },
   {
-    "message": "Free Shipping on Orders Above ₹999!",
+    "message": "Cash on delivery available",
     "linkText": "Explore",
     "linkUrl": "/collections",
     "bgColor": "#F8C8DC",

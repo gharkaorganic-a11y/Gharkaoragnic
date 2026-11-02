@@ -1,7 +1,7 @@
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Calendar, MessageCircle, ArrowRight, Search, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import {
   allBlogs,
   getAllCategories,
@@ -9,11 +9,11 @@ import {
   searchBlogs,
 } from "../data/blogData";
 
-const ACCENT = "#F59E0B";
 const SITE_URL = "https://gharkaorganic.com";
 const LOGO_URL = "https://gharkaorganic.com/logo/gharka-logo.png";
 const DEFAULT_BLOG_IMAGE =
   "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776768403/Local_women_in_Bhimtal_Uttarakhand_preparing_traditional_Himalayan_organic_food_tbpvgk.webp";
+
 const formatDate = (dateStr) =>
   new Date(dateStr).toLocaleDateString("en-IN", {
     month: "long",
@@ -37,7 +37,7 @@ const BlogListPage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const postsPerPage = 9;
+  const postsPerPage = 10; // Balanced 2-column layout like Namakwali
 
   const debouncedSearch = useDebounce(searchQuery, 300);
 
@@ -86,7 +86,7 @@ const BlogListPage = () => {
   const paginatedBlogs = useMemo(() => {
     const start = (currentPage - 1) * postsPerPage;
     return filteredBlogs.slice(start, start + postsPerPage);
-  }, [filteredBlogs, currentPage]);
+  }, [filteredBlogs, currentPage, postsPerPage]);
 
   const featuredPost = allBlogs.find((b) => b.featured) || allBlogs[0];
   const categories = getAllCategories();
@@ -98,7 +98,7 @@ const BlogListPage = () => {
     setCurrentPage(1);
   };
 
-  // SEO Schema with ItemList for better search visibility
+  // SEO Schema with ItemList for search visibility
   const blogListSchema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
@@ -248,458 +248,296 @@ const BlogListPage = () => {
       {/* Skip to content link */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-amber-500 text-white px-4 py-2 rounded-md z-50">
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-[#315c3c] text-white px-4 py-2 rounded-sm z-50 shadow-md">
         Skip to main content
       </a>
 
-      {/* Breadcrumb */}
-      <nav
-        aria-label="Breadcrumb"
-        className="bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <ol className="flex flex-wrap items-center gap-2 text-sm">
+      <div className="bg-white min-h-screen text-[#121212] font-sans selection:bg-[#ebe7df] selection:text-[#121212]">
+        {/* SUBTLE BREADCRUMB */}
+        <nav
+          aria-label="Breadcrumb"
+          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 text-xs tracking-wider uppercase text-neutral-400">
+          <ol className="flex items-center gap-2">
             <li>
-              <Link to="/" className="text-gray-500 hover:text-gray-700">
+              <Link
+                to="/"
+                className="hover:text-neutral-900 transition-colors font-medium">
                 Home
               </Link>
             </li>
-            <li className="text-gray-400">/</li>
-            <li className="text-gray-900 font-medium" aria-current="page">
-              Blog
+            <li className="text-neutral-300">/</li>
+            <li className="text-neutral-700 font-medium" aria-current="page">
+              Blogs
             </li>
           </ol>
-        </div>
-      </nav>
+        </nav>
 
-      <main id="main-content" className="bg-white min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-          {/* Page Header */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-1 h-8 rounded-full bg-amber-500"></div>
-
+        {/* MAIN BLOG SECTION (NAMAKWALI BLOGS STYLE) */}
+        <main
+          id="main-content"
+          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-20 md:pb-28">
+          {/* BLOG HEADER */}
+          <header className="mb-8 md:mb-12">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-neutral-200">
               <div>
-                <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-amber-600">
-                  Organic Knowledge Hub
-                </span>
-
-                <h1 className="font-heading text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
+                <h1 className="text-3xl sm:text-4xl md:text-[42px] font-normal tracking-tight text-[#121212] leading-tight">
                   {selectedCategory
                     ? `${selectedCategory} Articles`
                     : debouncedSearch
-                      ? "Search Results"
+                      ? `Search: "${debouncedSearch}"`
                       : "Ghar Ka Organic Blogs"}
                 </h1>
-              </div>
-            </div>
-
-            {!selectedCategory && !debouncedSearch && (
-              <p className="max-w-2xl text-sm md:text-base text-gray-600 leading-relaxed">
-                Discover authentic Himalayan ingredients, traditional
-                Uttarakhand foods, organic farming wisdom, health benefits,
-                recipes, and stories from the mountains.
-              </p>
-            )}
-          </div>
-
-          {/* Search Bar */}
-          <div className="mb-8 max-w-md mx-auto lg:mx-0">
-            <div className="relative">
-              <Search
-                size={18}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                aria-hidden="true"
-              />
-              <input
-                type="search"
-                placeholder="Search articles by title, category, or tags..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
-                aria-label="Search articles"
-              />
-            </div>
-          </div>
-
-          {/* Two-Column Layout */}
-          <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
-            {/* Main Content */}
-            <div className="lg:col-span-8">
-              {/* Featured Post - Only show when no filters */}
-              {!isFiltered && featuredPost && (
-                <section className="mb-10">
-                  {/* Section Header */}
-                  <div className="flex items-center gap-3 mb-5">
-                    <div className="w-1 h-6 rounded-full bg-amber-500"></div>
-
-                    <div>
-                      <span className="block text-[10px] uppercase tracking-[0.18em] font-semibold text-amber-600">
-                        Editor's Picks
-                      </span>
-
-                      <h2 className="text-lg md:text-xl font-bold text-gray-900">
-                        Featured Articles
-                      </h2>
-                    </div>
-                  </div>
-
-                  {/* Featured Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {allBlogs
-                      .filter((blog) => blog.featured)
-                      .slice(0, 2)
-                      .map((post) => (
-                        <article
-                          key={post.slug}
-                          className="
-                group
-                bg-white
-                rounded-2xl
-                overflow-hidden
-                border border-amber-100
-                hover:border-amber-300
-                hover:shadow-xl
-                hover:-translate-y-1
-                transition-all duration-300
-              ">
-                          {/* Image */}
-                          <Link
-                            to={`/blogs/${post.slug}`}
-                            className="relative block overflow-hidden">
-                            <img
-                              src={post.image || DEFAULT_BLOG_IMAGE}
-                              alt={post.title}
-                              onError={(e) => {
-                                e.currentTarget.onerror = null;
-                                e.currentTarget.src = DEFAULT_BLOG_IMAGE;
-                              }}
-                              className="
-    w-full
-    h-48
-    sm:h-56
-    md:h-auto
-    md:aspect-[16/10]
-    object-cover
-    group-hover:scale-105
-    transition-transform duration-700
-  "
-                            />
-
-                            <span
-                              className="
-                  absolute top-3 left-3
-                  bg-white/90 backdrop-blur-sm
-                  px-2.5 py-1
-                  rounded-full
-                  text-[10px]
-                  font-bold
-                  text-amber-700
-                  shadow-sm
-                ">
-                              Featured
-                            </span>
-                          </Link>
-
-                          {/* Content */}
-                          <div className="p-4 md:p-5 flex flex-col h-full">
-                            {" "}
-                            <span
-                              className="
-                    inline-flex
-                    px-2.5 py-1
-                    rounded-full
-                    text-[11px]
-                    font-semibold
-                    bg-gradient-to-r
-                    from-amber-100
-                    to-orange-100
-                    text-amber-800
-                    mb-2
-                  ">
-                              {post.category}
-                            </span>
-                            <h3
-                              className="
-    text-sm
-    sm:text-base
-    md:text-lg
-    font-bold
-    text-gray-900
-    leading-6
-    line-clamp-2
-    break-words
-    mb-2
-  ">
-                              <Link
-                                to={`/blogs/${post.slug}`}
-                                className="hover:text-amber-600 transition-colors">
-                                {post.title}
-                              </Link>
-                            </h3>
-                            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed line-clamp-2 mb-4">
-                              {post.excerpt}
-                            </p>
-                            <div className="flex items-center justify-between text-xs border-t border-gray-100 pt-3">
-                              <time className="text-gray-400">
-                                {formatDate(post.date)}
-                              </time>
-
-                              <Link
-                                to={`/blogs/${post.slug}`}
-                                className="
-                      font-semibold
-                      text-amber-600
-                      hover:text-amber-700
-                      transition-colors
-                    ">
-                                Read →
-                              </Link>
-                            </div>
-                          </div>
-                        </article>
-                      ))}
-                  </div>
-                </section>
-              )}
-
-              {/* Blog Grid Header */}
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-xl font-bold text-gray-900">
-                  {filteredBlogs.length === 0 && isFiltered
-                    ? "No articles found"
-                    : `Latest Articles (${filteredBlogs.length})`}
-                </h2>
-              </div>
-
-              {/* Blog Grid */}
-              {filteredBlogs.length > 0 ? (
-                <>
-                  <div className="grid sm:grid-cols-2 gap-6">
-                    {paginatedBlogs.map((post) => (
-                      <article
-                        key={post.slug}
-                        className="
-    group
-    flex flex-col
-    h-full
-    bg-white
-    rounded-2xl
-    overflow-hidden
-    border border-amber-100
-    hover:border-amber-300
-    hover:shadow-xl
-    hover:-translate-y-1
-    transition-all duration-300
-  ">
-                        <Link to={`/blogs/${post.slug}`}>
-                          <picture>
-                            <source
-                              srcSet={post.image.replace(
-                                /\.(jpg|png)$/,
-                                ".webp",
-                              )}
-                              type="image/webp"
-                            />
-                            <img
-                              src={post.image || DEFAULT_BLOG_IMAGE}
-                              alt={post.title}
-                              loading="lazy"
-                              width="400"
-                              height="240"
-                              onError={(e) => {
-                                e.currentTarget.onerror = null;
-                                e.currentTarget.src = DEFAULT_BLOG_IMAGE;
-                              }}
-                              className="
-    w-full
-    h-48
-    object-cover
-    group-hover:scale-105
-    transition-transform
-    duration-300
-  "
-                              style={{ aspectRatio: "400/240" }}
-                            />
-                          </picture>
-                        </Link>
-                        <div className="p-5">
-                          <span className="inline-block px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 mb-3">
-                            {post.category}
-                          </span>
-                          <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
-                            <Link
-                              to={`/blogs/${post.slug}`}
-                              className="hover:text-amber-600 transition">
-                              {post.title}
-                            </Link>
-                          </h3>
-                          <p className="text-gray-600 text-sm leading-relaxed mb-3 line-clamp-2">
-                            {post.excerpt}
-                          </p>
-                          <div className="flex items-center justify-between text-xs text-gray-400 pt-3 border-t border-gray-100">
-                            <span className="flex items-center gap-1">
-                              <Calendar size={12} />
-                              <time dateTime={post.date}>
-                                {formatDate(post.date)}
-                              </time>
-                            </span>
-                          </div>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-
-                  {/* Pagination */}
-                  {totalPages > 1 && (
-                    <nav
-                      className="flex justify-center gap-2 mt-10"
-                      aria-label="Blog pagination">
-                      <button
-                        onClick={() =>
-                          setCurrentPage((p) => Math.max(1, p - 1))
-                        }
-                        disabled={currentPage === 1}
-                        className="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition"
-                        aria-label="Previous page">
-                        Previous
-                      </button>
-                      <div className="flex gap-1">
-                        {Array.from(
-                          { length: Math.min(5, totalPages) },
-                          (_, i) => {
-                            let pageNum;
-                            if (totalPages <= 5) {
-                              pageNum = i + 1;
-                            } else if (currentPage <= 3) {
-                              pageNum = i + 1;
-                            } else if (currentPage >= totalPages - 2) {
-                              pageNum = totalPages - 4 + i;
-                            } else {
-                              pageNum = currentPage - 2 + i;
-                            }
-                            return (
-                              <button
-                                key={pageNum}
-                                onClick={() => setCurrentPage(pageNum)}
-                                className={`w-10 h-10 rounded-lg font-medium transition ${
-                                  currentPage === pageNum
-                                    ? "bg-amber-500 text-white"
-                                    : "border border-gray-200 text-gray-600 hover:bg-gray-50"
-                                }`}
-                                aria-label={`Page ${pageNum}`}
-                                aria-current={
-                                  currentPage === pageNum ? "page" : undefined
-                                }>
-                                {pageNum}
-                              </button>
-                            );
-                          },
-                        )}
-                      </div>
-                      <button
-                        onClick={() =>
-                          setCurrentPage((p) => Math.min(totalPages, p + 1))
-                        }
-                        disabled={currentPage === totalPages}
-                        className="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition"
-                        aria-label="Next page">
-                        Next
-                      </button>
-                    </nav>
-                  )}
-                </>
-              ) : (
-                <div className="text-center py-16 bg-gray-50 rounded-2xl">
-                  <p className="text-gray-500 mb-4">
-                    No articles found matching your criteria.
+                {!selectedCategory && !debouncedSearch && (
+                  <p className="text-neutral-600 text-sm md:text-base font-light max-w-2xl mt-3 leading-relaxed">
+                    Discover authentic Himalayan ingredients, traditional
+                    Uttarakhand recipes, A2 ghee benefits, organic farming
+                    wisdom, and wholesome living from the mountains.
                   </p>
+                )}
+              </div>
+
+              {/* SEARCH INPUT */}
+              <div className="relative w-full md:w-72 shrink-0">
+                <Search
+                  size={16}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
+                  aria-hidden="true"
+                />
+                <input
+                  type="search"
+                  placeholder="Search articles..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-8 py-2 text-sm bg-neutral-50 hover:bg-neutral-100/70 focus:bg-white border border-neutral-200 rounded-full focus:outline-none focus:border-neutral-900 transition-colors"
+                  aria-label="Search articles"
+                />
+                {searchQuery && (
                   <button
-                    onClick={clearFilters}
-                    className="text-amber-600 font-semibold hover:underline">
-                    Clear filters and browse all articles
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
+                    aria-label="Clear search">
+                    <X size={14} />
                   </button>
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
-            {/* Sidebar */}
-            <aside className="lg:col-span-4">
-              <div className="sticky top-24 space-y-8">
-                {/* Recent Posts */}
-                <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-                  <h3 className="font-heading text-xl font-bold text-gray-900 mb-5">
-                    Recent Posts
-                  </h3>
+            {/* CATEGORY FILTER PILLS */}
+            <div className="flex items-center gap-2 overflow-x-auto py-4 scrollbar-none no-scrollbar text-xs md:text-sm">
+              <button
+                onClick={() => setSelectedCategory(null)}
+                className={`px-4 py-1.5 rounded-full transition-all shrink-0 font-medium ${
+                  !selectedCategory
+                    ? "bg-[#121212] text-white"
+                    : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200/70"
+                }`}>
+                All Articles
+              </button>
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() =>
+                    setSelectedCategory(cat === selectedCategory ? null : cat)
+                  }
+                  className={`px-4 py-1.5 rounded-full transition-all shrink-0 font-medium ${
+                    selectedCategory === cat
+                      ? "bg-[#121212] text-white"
+                      : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200/70"
+                  }`}>
+                  {cat}
+                </button>
+              ))}
+            </div>
 
-                  <div className="space-y-3">
-                    {filteredBlogs.slice(0, 5).map((post) => (
-                      <Link
-                        key={post.slug}
-                        to={`/blogs/${post.slug}`}
-                        className="block p-3 rounded-xl hover:bg-amber-50 transition">
-                        <h4 className="font-semibold text-sm text-gray-800 line-clamp-2">
+            {/* ACTIVE FILTER NOTICE */}
+            {isFiltered && (
+              <div className="flex items-center justify-between pt-2 text-xs text-neutral-500">
+                <span>
+                  Showing {filteredBlogs.length}{" "}
+                  {filteredBlogs.length === 1 ? "article" : "articles"}
+                </span>
+                <button
+                  onClick={clearFilters}
+                  className="text-neutral-900 font-medium hover:underline">
+                  Clear all filters
+                </button>
+              </div>
+            )}
+          </header>
+
+          {/* 2-COLUMN ARTICLE GRID (MATCHING NAMAKWALI BLOG-ARTICLES) */}
+          {filteredBlogs.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 lg:gap-x-12 gap-y-12 lg:gap-y-16">
+                {paginatedBlogs.map((post) => (
+                  <article
+                    key={post.slug}
+                    className="group flex flex-col cursor-pointer">
+                    {/* ARTICLE IMAGE CONTAINER (16:9 RATIO LIKE NAMAKWALI) */}
+                    <Link
+                      to={`/blogs/${post.slug}`}
+                      className="relative block w-full aspect-[16/9] overflow-hidden bg-neutral-100 rounded-sm">
+                      <picture>
+                        <source
+                          srcSet={post.image.replace(/\.(jpg|png)$/, ".webp")}
+                          type="image/webp"
+                        />
+                        <img
+                          src={post.image || DEFAULT_BLOG_IMAGE}
+                          alt={post.title}
+                          loading="lazy"
+                          width="720"
+                          height="405"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = DEFAULT_BLOG_IMAGE;
+                          }}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                        />
+                      </picture>
+                      {post.category && (
+                        <span className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-[#121212] text-[10px] sm:text-[11px] font-medium uppercase tracking-wider px-2.5 py-1 rounded-sm shadow-xs">
+                          {post.category}
+                        </span>
+                      )}
+                    </Link>
+
+                    {/* ARTICLE CONTENT MATCHING NAMAKWALI */}
+                    <div className="pt-5 sm:pt-6 flex flex-col flex-1">
+                      <h2 className="text-xl sm:text-2xl font-normal text-[#121212] leading-snug tracking-tight mb-2 group-hover:underline underline-offset-4 decoration-1 transition-all">
+                        <Link to={`/blogs/${post.slug}`}>
                           {post.title}
-                        </h4>
+                        </Link>
+                      </h2>
 
-                        <time className="text-xs text-gray-400 mt-2 block">
+                      <div className="text-xs sm:text-[13px] tracking-wider uppercase text-neutral-500 font-light mb-3">
+                        <time dateTime={post.date}>
                           {formatDate(post.date)}
                         </time>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
+                      </div>
 
-                {/* Popular Articles */}
-                <div className="bg-gradient-to-br from-white to-amber-50 rounded-2xl border border-amber-100 p-6">
-                  <h3 className="font-heading text-xl font-bold text-gray-900 mb-5">
-                    Popular Articles
-                  </h3>
+                      <p className="text-neutral-600 font-light text-[14.5px] sm:text-[15.5px] leading-relaxed line-clamp-3 mb-4">
+                        {post.excerpt}
+                      </p>
 
-                  <ul className="space-y-4">
-                    {allBlogs.slice(0, 4).map((blog, i) => (
-                      <li key={blog.slug} className="flex gap-3">
-                        <span className="text-amber-500 font-bold">
-                          0{i + 1}
-                        </span>
-
+                      <div className="mt-auto pt-1">
                         <Link
-                          to={`/blogs/${blog.slug}`}
-                          className="text-sm font-medium text-gray-700 hover:text-amber-600">
-                          {blog.title}
+                          to={`/blogs/${post.slug}`}
+                          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-[#121212] group-hover:gap-2.5 transition-all">
+                          Read article <span aria-hidden="true">→</span>
                         </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* About */}
-                <div className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 rounded-2xl p-7 border border-amber-100">
-                  <img
-                    src={LOGO_URL}
-                    alt="Ghar Ka Organic"
-                    className="w-32 mb-5"
-                  />
-
-                  <h3 className="font-heading text-xl font-bold text-gray-900 mb-3">
-                    About Ghar Ka Organic
-                  </h3>
-
-                  <p className="text-sm text-gray-600 leading-relaxed mb-5">
-                    Pure, natural, and organic products sourced directly from
-                    Himalayan farms.
-                  </p>
-
-                  <Link
-                    to="/our-story"
-                    className="inline-flex items-center px-5 py-3 bg-amber-500 text-white rounded-xl font-semibold hover:bg-amber-600 transition">
-                    Read Our Story
-                  </Link>
-                </div>
+                      </div>
+                    </div>
+                  </article>
+                ))}
               </div>
-            </aside>
-          </div>
-        </div>
-      </main>
+
+              {/* NAMAKWALI-STYLE MINIMALIST PAGINATION */}
+              {totalPages > 1 && (
+                <nav
+                  className="flex justify-center items-center gap-1 sm:gap-2 mt-16 pt-10 border-t border-neutral-100"
+                  aria-label="Pagination">
+                  <button
+                    onClick={() => {
+                      setCurrentPage((p) => Math.max(1, p - 1));
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                    disabled={currentPage === 1}
+                    className="p-2 sm:px-3 text-neutral-500 hover:text-neutral-900 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+                    aria-label="Previous page">
+                    <svg
+                      className="w-3.5 h-3.5 rotate-180"
+                      viewBox="0 0 10 6"
+                      fill="currentColor"
+                      aria-hidden="true">
+                      <path
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                        d="M9.354.646a.5.5 0 00-.708 0L5 4.293 1.354.646a.5.5 0 00-.708.708l4 4a.5.5 0 00.708 0l4-4a.5.5 0 000-.708z"
+                      />
+                    </svg>
+                  </button>
+
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter((pageNum) => {
+                      return (
+                        pageNum === 1 ||
+                        pageNum === totalPages ||
+                        Math.abs(pageNum - currentPage) <= 1
+                      );
+                    })
+                    .reduce((acc, pageNum, idx, arr) => {
+                      if (idx > 0 && pageNum - arr[idx - 1] > 1) {
+                        acc.push({
+                          type: "ellipsis",
+                          key: `ellipsis-${pageNum}`,
+                        });
+                      }
+                      acc.push({ type: "page", pageNum, key: pageNum });
+                      return acc;
+                    }, [])
+                    .map((item) =>
+                      item.type === "ellipsis" ? (
+                        <span key={item.key} className="px-2 text-neutral-400">
+                          …
+                        </span>
+                      ) : (
+                        <button
+                          key={item.key}
+                          onClick={() => {
+                            setCurrentPage(item.pageNum);
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }}
+                          className={`min-w-9 h-9 px-2 text-sm transition-all ${
+                            currentPage === item.pageNum
+                              ? "font-semibold text-[#121212] border-b-2 border-[#121212]"
+                              : "text-neutral-500 hover:text-neutral-900"
+                          }`}
+                          aria-current={
+                            currentPage === item.pageNum ? "page" : undefined
+                          }>
+                          {item.pageNum}
+                        </button>
+                      ),
+                    )}
+
+                  <button
+                    onClick={() => {
+                      setCurrentPage((p) => Math.min(totalPages, p + 1));
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                    disabled={currentPage === totalPages}
+                    className="p-2 sm:px-3 text-neutral-500 hover:text-neutral-900 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+                    aria-label="Next page">
+                    <svg
+                      className="w-3.5 h-3.5"
+                      viewBox="0 0 10 6"
+                      fill="currentColor"
+                      aria-hidden="true">
+                      <path
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                        d="M9.354.646a.5.5 0 00-.708 0L5 4.293 1.354.646a.5.5 0 00-.708.708l4 4a.5.5 0 00.708 0l4-4a.5.5 0 000-.708z"
+                      />
+                    </svg>
+                  </button>
+                </nav>
+              )}
+            </>
+          ) : (
+            <div className="text-center py-20 bg-neutral-50/50 rounded-sm">
+              <p className="text-neutral-600 text-base mb-4 font-light">
+                No articles found matching your criteria.
+              </p>
+              <button
+                onClick={clearFilters}
+                className="text-[#121212] font-medium underline underline-offset-4 hover:text-neutral-600 transition">
+                Clear all filters
+              </button>
+            </div>
+          )}
+        </main>
+      </div>
     </>
   );
 };

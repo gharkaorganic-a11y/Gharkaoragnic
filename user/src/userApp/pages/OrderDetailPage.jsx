@@ -14,12 +14,14 @@
  * Route: /orders/:orderId
  */
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { orderService } from "../features/orders/services/orderService";
-import { formatDate } from "../features/orders/utils/orders";
-import getTrackingSteps from "../features/orders/components/getTrackingSteps";
+import {
+  formatDate,
+  normalizeOrderStatus,
+} from "../features/orders/utils/orders";
 import {
   ChevronLeft,
   ChevronRight,
@@ -68,7 +70,11 @@ const stepIdx = (status) => {
    TRACKING BAR  (reference-style thin bar)
 ───────────────────────────────────── */
 const TrackingBar = ({ orderStatus, itemStatus, label }) => {
-  const status = itemStatus || orderStatus || "placed";
+  const status = normalizeOrderStatus(
+    itemStatus && itemStatus !== "placed"
+      ? itemStatus
+      : orderStatus || itemStatus,
+  );
   const current = stepIdx(status);
   const cancelled = status?.toLowerCase() === "cancelled";
 
@@ -175,7 +181,10 @@ const ItemCard = ({ item, orderStatus, address, index }) => {
               )}
             </div>
             <p className="text-[17px] font-bold text-gray-900 flex-shrink-0">
-              {fmt(item.price)}
+              {fmt(
+                Number(item.price || 0) *
+                  Number(item.quantity ?? item.selectedQuantity ?? 1),
+              )}
             </p>
           </div>
 
@@ -254,17 +263,24 @@ const ItemCard = ({ item, orderStatus, address, index }) => {
 const BillingFooter = ({ order }) => {
   const p = order?.pricing ?? {};
   const address = order?.addressSnapshot;
+  const shippingFee = p.deliveryCharge ?? p.deliveryFee ?? p.shippingFee;
 
   const priceRows = [
     {
       label: "Subtotal",
       value: p.subtotal ?? p.totalMRP ?? order?.totalAmount,
     },
-    {
-      label: "Shipping",
-      value: p.deliveryCharge ?? p.deliveryFee ?? 0,
-      free: (p.deliveryCharge ?? p.deliveryFee ?? 0) === 0,
-    },
+    shippingFee == null
+      ? {
+          label: "Delivery",
+          value: "Confirm on WhatsApp",
+          pending: true,
+        }
+      : {
+          label: "Delivery",
+          value: shippingFee,
+          free: shippingFee === 0,
+        },
     p.discount > 0 && { label: "Discount", value: -p.discount, green: true },
     p.couponDiscount > 0 && {
       label: "Coupon",
@@ -336,7 +352,9 @@ const BillingFooter = ({ order }) => {
                   className={`text-[13px] font-semibold ${
                     row.green ? "text-green-600" : "text-gray-900"
                   }`}>
-                  {row.free
+                  {row.pending
+                    ? row.value
+                    : row.free
                     ? "Free"
                     : row.value < 0
                       ? `− ${fmt(Math.abs(row.value))}`
@@ -402,12 +420,12 @@ const PageSkeleton = () => (
 const OrderDetailPage = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const {
     data: order,
     isLoading,
     error,
-    refetch,
   } = useQuery({
     queryKey: ["order", orderId],
     queryFn: () => orderService.getOrderDetails(orderId),
@@ -416,6 +434,20 @@ const OrderDetailPage = () => {
     gcTime: 30 * 60 * 1000,
     retry: 2,
   });
+
+  useEffect(() => {
+    if (!orderId) return undefined;
+
+    return orderService.subscribeToOrder(
+      orderId,
+      (updatedOrder) => {
+        queryClient.setQueryData(["order", orderId], updatedOrder);
+      },
+      (listenerError) => {
+        console.error("[OrderDetailPage] Live order update failed:", listenerError);
+      },
+    );
+  }, [orderId, queryClient]);
 
   /* ── Loading ── */
   if (isLoading)
@@ -446,13 +478,12 @@ const OrderDetailPage = () => {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap');
         .od-page * { box-sizing: border-box; }
       `}</style>
 
       <div
         className="od-page min-h-screen bg-white pb-20"
-        style={{ fontFamily: "'DM Sans', sans-serif", color: DARK }}>
+        style={{ color: DARK }}>
         {/* ── Minimal Top Nav ── */}
         <nav className="border-b border-gray-200 sticky top-0 z-40 bg-white">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center gap-3">

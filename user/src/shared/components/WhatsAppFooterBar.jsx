@@ -39,8 +39,8 @@ const WhatsAppFooterBar = () => {
         }
       `}</style>
 
-      {/* MATCHING THE UPLOADED IMAGE: Solid Flat Green Background */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#009762] text-white animate-slide-up-simple select-none shadow-lg">
+      {/* Desktop Only: Solid Flat Green Background */}
+      <div className="hidden md:block fixed bottom-0 left-0 right-0 z-50 bg-[#009762] text-white animate-slide-up-simple select-none shadow-lg">
         <div className="max-w-7xl mx-auto px-4">
           {/* Constrain height to match the sleek look of the image */}
           <div className="flex items-center justify-between h-10 sm:h-12">

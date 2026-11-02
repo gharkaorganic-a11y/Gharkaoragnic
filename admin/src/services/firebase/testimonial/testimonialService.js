@@ -1,4 +1,12 @@
-import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../../config/firebase";
 
 const COLLECTION = "testimonials";
@@ -6,12 +14,22 @@ const COLLECTION = "testimonials";
 export const testimonialService = {
   getAll: async () => {
     const snap = await getDocs(collection(db, COLLECTION));
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    return snap.docs
+      .map((document) => {
+        const data = document.data();
+        return {
+          id: document.id,
+          ...data,
+          isActive: data.isActive !== false,
+        };
+      })
+      .filter((testimonial) => testimonial.isDemo !== true);
   },
 
   create: async (data) => {
     const docRef = await addDoc(collection(db, COLLECTION), {
       ...data,
+      isDemo: false,
       isActive: true,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),

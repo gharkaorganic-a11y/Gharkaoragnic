@@ -1,9 +1,11 @@
 export const SkeletonCard = () => (
-  <div className="animate-pulse flex flex-col gap-3">
-    <div className="w-full aspect-3/4 bg-gray-100 border border-gray-100" />
-    <div className="space-y-2 px-1">
-      <div className="h-2.5 bg-gray-100 w-3/4" />
-      <div className="h-2.5 bg-gray-100 w-1/2" />
+  <div className="flex flex-col h-full animate-pulse">
+    <div className="w-full aspect-square bg-[#f4f2e9] rounded-2xl sm:rounded-none" />
+    <div className="mt-3 sm:mt-4 space-y-2">
+      <div className="h-4 bg-[#f4f2e9] rounded w-4/5" />
+      <div className="h-3.5 bg-[#f4f2e9] rounded w-1/2" />
+      <div className="h-4 bg-[#f4f2e9] rounded w-1/3" />
+      <div className="h-8 bg-[#f4f2e9] rounded w-full mt-2" />
     </div>
   </div>
 );

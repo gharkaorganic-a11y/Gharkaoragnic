@@ -1,25 +1,14 @@
 import React, { useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useParams } from "react-router-dom";
-import {
-  CalendarDays,
-  Clock3,
-  ArrowRight,
-  Share2,
-  Facebook,
-  Twitter,
-  Linkedin,
-  Mail,
-} from "lucide-react";
-
+import { Facebook, Twitter, Linkedin, Mail } from "lucide-react";
 import { getBlogBySlug, getRecentBlogs } from "../data/blogData";
 
-const ACCENT = "#F59E0B";
-const YELLOW_BANNER = "#FDE047";
 const SITE_URL = "https://gharkaorganic.com";
 const LOGO_URL = "https://gharkaorganic.com/logo/gharka-logo.png";
-const ABOUT_URL = "https://gharkaorganic.com/our-story";
 const AUTHOR_PAGE = "https://gharkaorganic.com/pages/authors";
+const DEFAULT_BLOG_IMAGE =
+  "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776768403/Local_women_in_Bhimtal_Uttarakhand_preparing_traditional_Himalayan_organic_food_tbpvgk.webp";
 
 const formatDate = (dateStr) =>
   new Date(dateStr).toLocaleDateString("en-US", {
@@ -32,25 +21,6 @@ const getReadTimeSchema = (readTimeStr) => {
   const minutes = parseInt(readTimeStr?.match(/\d+/)?.[0]) || 5;
   return `PT${minutes}M`;
 };
-
-// Fallback banner component
-const BlogImageFallback = ({ title, className = "" }) => (
-  <div
-    className={`w-full bg-gradient-to-br from-amber-100 via-orange-50 to-yellow-50 flex items-center justify-center ${className}`}>
-    <div className="text-center px-6 py-12">
-      <img
-        src={LOGO_URL}
-        alt="Ghar Ka Organic"
-        className="w-24 mx-auto mb-3 opacity-90"
-        width="96"
-        height="96"
-      />
-      <p className="text-sm font-bold text-amber-800 uppercase tracking-wide line-clamp-2 max-w-xs">
-        {title || "Ghar Ka Organic"}
-      </p>
-    </div>
-  </div>
-);
 
 const BlogDetailPage = () => {
   const { slug } = useParams();
@@ -185,16 +155,15 @@ const BlogDetailPage = () => {
             alt="Ghar Ka Organic"
             className="w-24 mx-auto mb-6 opacity-80"
           />
-          <h1 className="text-3xl font-bold text-gray-900 mb-3">
+          <h1 className="text-3xl font-light text-[#121212] mb-3">
             Article Not Found
           </h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-neutral-600 mb-6 font-light">
             The article you are looking for does not exist or has been moved.
           </p>
           <Link
             to="/blogs"
-            className="inline-flex items-center gap-2 font-semibold px-6 py-3 bg-amber-500 text-white rounded-xl hover:bg-amber-600 transition"
-            style={{ backgroundColor: ACCENT }}>
+            className="inline-flex items-center gap-2 font-medium px-6 py-2.5 bg-[#121212] text-white rounded-full hover:bg-neutral-800 transition">
             Back to Blogs
           </Link>
         </div>
@@ -239,7 +208,6 @@ const BlogDetailPage = () => {
         {featuredImage && (
           <link rel="preload" as="image" href={featuredImage} />
         )}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
 
         <meta property="og:type" content="article" />
@@ -274,301 +242,271 @@ const BlogDetailPage = () => {
         )}
       </Helmet>
 
+      {/* Skip link */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-amber-500 text-white px-4 py-2 rounded-md z-50">
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-[#315c3c] text-white px-4 py-2 rounded-sm z-50 shadow-md">
         Skip to main content
       </a>
 
-      <div className="bg-white text-gray-900 min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-14">
-          {/* Breadcrumb */}
-          <nav
-            aria-label="Breadcrumb"
-            className="text-sm text-gray-500 mb-6 lg:mb-8">
-            <ol className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-              <li>
-                <Link to="/" className="hover:text-amber-600 transition">
-                  Home
-                </Link>
-              </li>
-              <li className="text-gray-400">/</li>
-              <li>
-                <Link to="/blogs" className="hover:text-amber-600 transition">
-                  Blogs
-                </Link>
-              </li>
-              <li className="text-gray-400">/</li>
-              <li>
-                <Link
-                  to={`/blogs?category=${encodeURIComponent(blog.category || "")}`}
-                  className="hover:text-amber-600 transition">
-                  {blog.category}
-                </Link>
-              </li>
-              <li className="text-gray-400 hidden sm:block">/</li>
-              <li
-                className="text-gray-900 truncate max-w- sm:max-w-none"
-                aria-current="page">
-                {blog.title}
-              </li>
-            </ol>
-          </nav>
+      <div className="bg-white text-[#121212] font-sans selection:bg-[#ebe7df] selection:text-[#121212] min-h-screen">
+        {/* SUBTLE BREADCRUMB */}
+        <nav
+          aria-label="Breadcrumb"
+          className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 text-xs tracking-wider uppercase text-neutral-400">
+          <ol className="flex flex-wrap items-center gap-2">
+            <li>
+              <Link
+                to="/"
+                className="hover:text-neutral-900 transition-colors font-medium">
+                Home
+              </Link>
+            </li>
+            <li className="text-neutral-300">/</li>
+            <li>
+              <Link
+                to="/blogs"
+                className="hover:text-neutral-900 transition-colors font-medium">
+                Blogs
+              </Link>
+            </li>
+            {blog.category && (
+              <>
+                <li className="text-neutral-300">/</li>
+                <li>
+                  <Link
+                    to={`/blogs?category=${encodeURIComponent(blog.category)}`}
+                    className="hover:text-neutral-900 transition-colors font-medium">
+                    {blog.category}
+                  </Link>
+                </li>
+              </>
+            )}
+          </ol>
+        </nav>
 
-          <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
-            {/* MAIN CONTENT */}
-            <main id="main-content" className="lg:col-span-8">
-              {/* Category */}
-              <div className="mb-4">
-                <span
-                  className="inline-flex px-3 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase"
-                  style={{ backgroundColor: "#FEF3C7", color: "#92400E" }}>
-                  {blog.category}
-                </span>
-              </div>
-
-              {/* Title */}
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight tracking-tight mb-4 lg:mb-5 text-gray-900">
-                {blog.title}
-              </h1>
-
-              {/* Meta info */}
-              <div className="flex flex-wrap items-center gap-4 sm:gap-5 text-sm text-gray-500 border-b border-gray-200 pb-5 lg:pb-6 mb-6 lg:mb-8">
-                <span className="flex items-center gap-2">
-                  <CalendarDays size={16} className="text-amber-600" />
-                  <time dateTime={blog.date}>{formatDate(blog.date)}</time>
-                </span>
-                <span className="flex items-center gap-2">
-                  <Clock3 size={16} className="text-amber-600" />
-                  <span>{blog.read_time}</span>
-                </span>
-                <span className="text-gray-600">
-                  By{" "}
-                  <a
-                    href={`${AUTHOR_PAGE}/${blog.author?.toLowerCase().replace(/\s+/g, "-")}`}
-                    className="font-semibold hover:text-amber-600 transition">
-                    {blog.author || "Ghar Ka Organic"}
-                  </a>
-                </span>
-              </div>
-
-              {/* Optional banner */}
-              {blog.banner_title && (
-                <div
-                  className="rounded-t-2xl px-5 py-4 mb-0"
-                  style={{ backgroundColor: YELLOW_BANNER }}>
-                  <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-red-700">
-                    {blog.banner_title}
-                  </h2>
-                </div>
-              )}
-
-              {/* Feature Image with Fallback */}
-              <div
-                className={`overflow-hidden shadow-md ${blog.banner_title ? "rounded-b-2xl" : "rounded-2xl"}`}>
-                {!imgError && featuredImage ? (
-                  <picture>
-                    {getWebPImage(featuredImage) && (
-                      <source
-                        srcSet={getWebPImage(featuredImage)}
-                        type="image/webp"
-                      />
-                    )}
-                    <img
-                      src={featuredImage}
-                      alt={blogImageAlt}
-                      className="w-full h-auto object-cover"
-                      loading="eager"
-                      fetchPriority="high"
-                      decoding="async"
-                      width="1200"
-                      height="630"
-                      style={{ aspectRatio: "1200/630" }}
-                      onError={() => setImgError(true)}
-                    />
-                  </picture>
-                ) : (
-                  <BlogImageFallback
-                    title={blog.title}
-                    className="aspect-[1200/630]"
+        {/* ARTICLE HERO IMAGE CONTAINER (16:9 PROPORTION MATCHING NAMAKWALI) */}
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-6">
+          <div className="w-full aspect-[16/9] sm:aspect-[21/10] overflow-hidden bg-neutral-100 rounded-sm">
+            {!imgError && featuredImage ? (
+              <picture>
+                {getWebPImage(featuredImage) && (
+                  <source
+                    srcSet={getWebPImage(featuredImage)}
+                    type="image/webp"
                   />
                 )}
-              </div>
-
-              {/* Content */}
-              <article
-                className="blog-content prose prose-sm sm:prose-base lg:prose-lg max-w-none mt-8 lg:mt-10
-                  prose-headings:font-bold prose-headings:text-gray-900 prose-headings:tracking-tight
-                  prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
-                  prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
-                  prose-p:text-gray-700 prose-p:leading-7 sm:prose-p:leading-8 prose-p:mb-4
-                  prose-a:text-amber-600 prose-a:no-underline hover:prose-a:underline prose-a:font-semibold
-                  prose-img:rounded-xl prose-img:shadow-md prose-img:my-8
-                  prose-blockquote:border-l-4 prose-blockquote:border-amber-500 prose-blockquote:italic prose-blockquote:bg-amber-50 prose-blockquote:py-2 prose-blockquote:px-4
-                  prose-li:marker:text-amber-500 prose-ul:my-4 prose-ol:my-4
-                  prose-strong:text-gray-900 prose-strong:font-bold"
-                dangerouslySetInnerHTML={{ __html: blog.content }}
+                <img
+                  src={featuredImage}
+                  alt={blogImageAlt}
+                  className="w-full h-full object-cover"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  width="1200"
+                  height="630"
+                  onError={() => setImgError(true)}
+                />
+              </picture>
+            ) : (
+              <img
+                src={DEFAULT_BLOG_IMAGE}
+                alt={blog.title}
+                className="w-full h-full object-cover"
               />
-
-              {/* Tags */}
-              {blog.tags?.length > 0 && (
-                <section className="mt-10 lg:mt-12 pt-6 border-t border-gray-100">
-                  <h3 className="font-bold text-lg mb-4 text-gray-900">
-                    Related Topics
-                  </h3>
-                  <div className="flex flex-wrap gap-2 sm:gap-3">
-                    {blog.tags.map((tag) => (
-                      <Link
-                        key={tag}
-                        to={`/blogs?tag=${encodeURIComponent(tag)}`}
-                        className="px-3 sm:px-4 py-2 rounded-full bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-sm font-medium text-amber-800 border border-amber-100 transition-all hover:shadow-sm"
-                        rel="tag">
-                        #{tag}
-                      </Link>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {/* Social Share Buttons */}
-              <section className="mt-8 pt-6 border-t border-gray-100">
-                <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-gray-900">
-                  <Share2 size={18} className="text-amber-600" /> Share this
-                  article
-                </h3>
-                <div className="flex gap-3 flex-wrap">
-                  <a
-                    href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`}
-                    target="_blank"
-                    rel="noopener noreferrer nofollow"
-                    className="p-3 bg-gray-50 rounded-xl hover:bg-blue-50 border border-gray-200 hover:border-blue-200 transition group"
-                    aria-label="Share on Facebook">
-                    <Facebook
-                      size={20}
-                      className="text-gray-600 group-hover:text-blue-600"
-                    />
-                  </a>
-                  <a
-                    href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareText}`}
-                    target="_blank"
-                    rel="noopener noreferrer nofollow"
-                    className="p-3 bg-gray-50 rounded-xl hover:bg-sky-50 border border-gray-200 hover:border-sky-200 transition group"
-                    aria-label="Share on Twitter">
-                    <Twitter
-                      size={20}
-                      className="text-gray-600 group-hover:text-sky-500"
-                    />
-                  </a>
-                  <a
-                    href={`https://www.linkedin.com/shareArticle?mini=true&url=${shareUrl}`}
-                    target="_blank"
-                    rel="noopener noreferrer nofollow"
-                    className="p-3 bg-gray-50 rounded-xl hover:bg-blue-50 border border-gray-200 hover:border-blue-200 transition group"
-                    aria-label="Share on LinkedIn">
-                    <Linkedin
-                      size={20}
-                      className="text-gray-600 group-hover:text-blue-700"
-                    />
-                  </a>
-                  <a
-                    href={`mailto:?subject=${shareText}&body=${shareUrl}`}
-                    className="p-3 bg-gray-50 rounded-xl hover:bg-gray-100 border border-gray-200 hover:border-gray-300 transition group"
-                    aria-label="Share via Email">
-                    <Mail
-                      size={20}
-                      className="text-gray-600 group-hover:text-gray-900"
-                    />
-                  </a>
-                </div>
-              </section>
-            </main>
-
-            {/* SIDEBAR */}
-            <aside className="lg:col-span-4">
-              <div className="sticky top-24 space-y-6 lg:space-y-8">
-                {/* Recent Articles */}
-                <div className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm">
-                  <h3
-                    className="text-xl font-bold mb-5 pb-3 border-b-2 inline-block"
-                    style={{ color: ACCENT, borderColor: "#FDE68A" }}>
-                    Recent Articles
-                  </h3>
-                  <div className="space-y-5">
-                    {recentArticles.map((post) => (
-                      <article
-                        key={post.slug}
-                        className="group border-b border-gray-100 pb-4 last:border-0 last:pb-0">
-                        <Link to={`/blogs/${post.slug}`} className="block">
-                          <h4 className="font-bold leading-snug text-gray-900 group-hover:text-amber-600 transition mb-2 line-clamp-2 text-sm sm:text-base">
-                            {post.title}
-                          </h4>
-                          <p className="text-xs text-gray-500 flex items-center gap-1">
-                            <CalendarDays size={12} />
-                            <time dateTime={post.date}>
-                              {formatDate(post.date)}
-                            </time>
-                          </p>
-                        </Link>
-                      </article>
-                    ))}
-                  </div>
-                  <Link
-                    to="/blogs"
-                    className="inline-flex items-center gap-2 mt-6 font-semibold text-sm group"
-                    style={{ color: ACCENT }}>
-                    View All Articles
-                    <ArrowRight
-                      size={16}
-                      className="group-hover:translate-x-1 transition-transform"
-                    />
-                  </Link>
-                </div>
-
-                {/* About the Organization */}
-                <div className="bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 rounded-2xl p-6 sm:p-7 border border-amber-100">
-                  <img
-                    src={LOGO_URL}
-                    alt="Ghar Ka Organic Logo"
-                    className="h-14 w-auto mb-4"
-                    width="120"
-                    height="56"
-                  />
-                  <h3 className="font-bold text-xl mb-3 text-gray-900">
-                    About Ghar Ka Organic
-                  </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed mb-5">
-                    Pure, natural, and organic products sourced directly from
-                    Himalayan farms. Rooted in Uttarakhand tradition, delivered
-                    across India.
-                  </p>
-                  <Link
-                    to={ABOUT_URL}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 text-white rounded-xl font-semibold hover:bg-amber-600 transition shadow-sm hover:shadow text-sm">
-                    Read Our Story
-                    <ArrowRight size={16} />
-                  </Link>
-                </div>
-
-                {/* Newsletter CTA - New Addition */}
-                <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 sm:p-7 text-white">
-                  <h3 className="font-bold text-xl mb-2">
-                    Join Our Organic Journey
-                  </h3>
-                  <p className="text-gray-300 text-sm mb-4 leading-relaxed">
-                    Get weekly tips on organic living, recipes, and exclusive
-                    offers from the Himalayas.
-                  </p>
-                  <Link
-                    to="/newsletter"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-gray-900 rounded-xl font-semibold hover:bg-gray-100 transition text-sm">
-                    Subscribe Now
-                    <ArrowRight size={16} />
-                  </Link>
-                </div>
-              </div>
-            </aside>
+            )}
           </div>
         </div>
+
+        {/* ARTICLE HEADER & EDITORIAL COLUMN */}
+        <main id="main-content" className="max-w-3xl mx-auto px-4 sm:px-6 pb-20">
+          <header className="pt-4 pb-8 border-b border-neutral-200">
+            {/* Category */}
+            {blog.category && (
+              <div className="mb-3">
+                <Link
+                  to={`/blogs?category=${encodeURIComponent(blog.category)}`}
+                  className="text-xs uppercase tracking-[0.2em] font-medium text-neutral-500 hover:text-neutral-900 transition-colors">
+                  {blog.category}
+                </Link>
+              </div>
+            )}
+
+            {/* Title */}
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-normal leading-[1.25] tracking-tight text-[#121212] mb-4">
+              {blog.title}
+            </h1>
+
+            {/* Meta info: Date, Read Time, Author */}
+            <div className="flex flex-wrap items-center gap-3 text-xs sm:text-[13px] tracking-wider uppercase text-neutral-500 font-light pt-1">
+              <time dateTime={blog.date}>{formatDate(blog.date)}</time>
+              {blog.read_time && (
+                <>
+                  <span className="text-neutral-300">•</span>
+                  <span>{blog.read_time}</span>
+                </>
+              )}
+              {blog.author && (
+                <>
+                  <span className="text-neutral-300">•</span>
+                  <span>By {blog.author}</span>
+                </>
+              )}
+            </div>
+
+            {/* Social Share Icons */}
+            <div className="flex items-center gap-2 pt-6">
+              <span className="text-[11px] uppercase tracking-wider text-neutral-400 mr-2">
+                Share:
+              </span>
+              <a
+                href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`}
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                className="w-8 h-8 rounded-full border border-neutral-200 hover:border-neutral-900 flex items-center justify-center text-neutral-600 hover:text-neutral-900 transition-colors"
+                aria-label="Share on Facebook">
+                <Facebook size={14} />
+              </a>
+              <a
+                href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareText}`}
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                className="w-8 h-8 rounded-full border border-neutral-200 hover:border-neutral-900 flex items-center justify-center text-neutral-600 hover:text-neutral-900 transition-colors"
+                aria-label="Share on Twitter">
+                <Twitter size={14} />
+              </a>
+              <a
+                href={`https://www.linkedin.com/shareArticle?mini=true&url=${shareUrl}`}
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                className="w-8 h-8 rounded-full border border-neutral-200 hover:border-neutral-900 flex items-center justify-center text-neutral-600 hover:text-neutral-900 transition-colors"
+                aria-label="Share on LinkedIn">
+                <Linkedin size={14} />
+              </a>
+              <a
+                href={`mailto:?subject=${shareText}&body=${shareUrl}`}
+                className="w-8 h-8 rounded-full border border-neutral-200 hover:border-neutral-900 flex items-center justify-center text-neutral-600 hover:text-neutral-900 transition-colors"
+                aria-label="Share via Email">
+                <Mail size={14} />
+              </a>
+            </div>
+          </header>
+
+          {/* Optional banner title */}
+          {blog.banner_title && (
+            <div className="my-8 py-3 px-5 bg-neutral-100 border-l-2 border-[#121212] text-sm md:text-base font-medium text-[#121212]">
+              {blog.banner_title}
+            </div>
+          )}
+
+          {/* ARTICLE BODY - NAMAKWALI TYPOGRAPHY & SPACING */}
+          <article
+            className="blog-content pt-8 text-[#2c2c2c] text-[16px] sm:text-[17.5px] leading-[2.05] md:leading-[2.2] font-light
+              [&>h2]:text-2xl [&>h2]:sm:text-[28px] [&>h2]:font-normal [&>h2]:text-[#121212] [&>h2]:mt-12 [&>h2]:mb-4 [&>h2]:tracking-tight
+              [&>h3]:text-xl [&>h3]:sm:text-[22px] [&>h3]:font-normal [&>h3]:text-[#121212] [&>h3]:mt-10 [&>h3]:mb-3
+              [&>h4]:text-lg [&>h4]:font-medium [&>h4]:text-[#121212] [&>h4]:mt-6 [&>h4]:mb-2
+              [&>p]:mb-6 [&>p]:leading-relaxed
+              [&>ul]:my-6 [&>ul]:pl-6 [&>ul]:space-y-2 [&>ul]:list-disc [&>ul]:text-[#333333]
+              [&>ol]:my-6 [&>ol]:pl-6 [&>ol]:space-y-2 [&>ol]:list-decimal [&>ol]:text-[#333333]
+              [&>blockquote]:border-l-2 [&>blockquote]:border-[#121212] [&>blockquote]:pl-5 [&>blockquote]:italic [&>blockquote]:text-neutral-700 [&>blockquote]:my-8
+              [&>img]:rounded-sm [&>img]:my-8 [&>img]:w-full [&>img]:h-auto
+              [&>a]:text-[#121212] [&>a]:underline [&>a]:underline-offset-4 [&>a]:hover:text-neutral-600
+              [&>strong]:font-semibold [&>strong]:text-[#121212]"
+            dangerouslySetInnerHTML={{ __html: blog.content }}
+          />
+
+          {/* TAGS */}
+          {blog.tags?.length > 0 && (
+            <div className="mt-12 pt-6 border-t border-neutral-200">
+              <span className="block text-xs uppercase tracking-wider text-neutral-400 mb-3">
+                Topics:
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {blog.tags.map((tag) => (
+                  <Link
+                    key={tag}
+                    to={`/blogs?search=${encodeURIComponent(tag)}`}
+                    className="px-3.5 py-1 text-xs font-medium text-neutral-600 bg-neutral-100 hover:bg-neutral-200 rounded-full transition-colors"
+                    rel="tag">
+                    #{tag}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* BACK TO BLOGS BUTTON (NAMAKWALI ARTICLE-TEMPLATE__BACK) */}
+          <div className="pt-16 pb-6 text-center border-t border-neutral-200 mt-16">
+            <Link
+              to="/blogs"
+              className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium uppercase tracking-[0.18em] text-[#121212] hover:text-neutral-600 transition-colors">
+              <span aria-hidden="true">←</span> Back to blog
+            </Link>
+          </div>
+        </main>
+
+        {/* RELATED ARTICLES - 2-COLUMN MINIMALIST GRID */}
+        {recentArticles.length > 0 && (
+          <section className="border-t border-neutral-200 pt-16 pb-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-normal tracking-[0.18em] text-[#121212] uppercase">
+                More From Our Journal
+              </h2>
+              <div
+                className="w-8 h-[1px] bg-[#121212]/20 mx-auto mt-3"
+                aria-hidden="true"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 lg:gap-x-12 gap-y-12">
+              {recentArticles.slice(0, 2).map((post) => (
+                <article
+                  key={post.slug}
+                  className="group flex flex-col cursor-pointer">
+                  <Link
+                    to={`/blogs/${post.slug}`}
+                    className="relative block w-full aspect-[16/9] overflow-hidden bg-neutral-100 rounded-sm">
+                    <img
+                      src={post.image || DEFAULT_BLOG_IMAGE}
+                      alt={post.title}
+                      loading="lazy"
+                      width="720"
+                      height="405"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                    />
+                    {post.category && (
+                      <span className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-[#121212] text-[10px] sm:text-[11px] font-medium uppercase tracking-wider px-2.5 py-1 rounded-sm shadow-xs">
+                        {post.category}
+                      </span>
+                    )}
+                  </Link>
+
+                  <div className="pt-5 sm:pt-6 flex flex-col flex-1">
+                    <h3 className="text-xl sm:text-2xl font-normal text-[#121212] leading-snug tracking-tight mb-2 group-hover:underline underline-offset-4 decoration-1 transition-all">
+                      <Link to={`/blogs/${post.slug}`}>{post.title}</Link>
+                    </h3>
+
+                    <div className="text-xs sm:text-[13px] tracking-wider uppercase text-neutral-500 font-light mb-3">
+                      <time dateTime={post.date}>{formatDate(post.date)}</time>
+                    </div>
+
+                    <p className="text-neutral-600 font-light text-[14px] sm:text-[15.5px] leading-relaxed line-clamp-3 mb-4">
+                      {post.excerpt}
+                    </p>
+
+                    <div className="mt-auto pt-1">
+                      <Link
+                        to={`/blogs/${post.slug}`}
+                        className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-[#121212] group-hover:gap-2.5 transition-all">
+                        Read article <span aria-hidden="true">→</span>
+                      </Link>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </>
   );

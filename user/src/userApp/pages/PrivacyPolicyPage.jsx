@@ -1,226 +1,449 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
+import {
+  ShieldCheck,
+  Lock,
+  EyeOff,
+  FileCheck,
+  ArrowRight,
+  Mail,
+  Phone,
+  MapPin,
+  Clock,
+  CheckCircle2,
+} from "lucide-react";
+
+/* ─────────────────────────────────────────────
+   CONSTANTS & SEO
+───────────────────────────────────────────── */
+const BASE_URL = "https://gharkaorganic.com";
+const CANONICAL = `${BASE_URL}/pages/privacy-policy`;
+const LAST_UPDATED = "November 2026";
+
+const JSONLD = JSON.stringify({
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${CANONICAL}#webpage`,
+      url: CANONICAL,
+      name: "Privacy Policy | Ghar Ka Organic",
+      description:
+        "Learn how Ghar Ka Organic protects your personal information, addresses, and payment data while shopping for pure Himalayan organic foods.",
+      inLanguage: "en-IN",
+      isPartOf: {
+        "@type": "WebSite",
+        name: "Ghar Ka Organic",
+        url: BASE_URL,
+      },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${CANONICAL}#breadcrumb`,
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: BASE_URL,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Privacy Policy",
+          item: CANONICAL,
+        },
+      ],
+    },
+  ],
+});
 
 const PrivacyPolicyPage = () => {
-  const lastUpdated = "June 4, 2026";
-
   return (
-    <div className="bg-gray-50 min-h-screen text-gray-800 font-sans selection:bg-[#990000] selection:text-white">
-      {/* ┌─────────────────────────────────────────────────────────────┐ */}
-      {/* │ SEO & META TAGS                                             │ */}
-      {/* └─────────────────────────────────────────────────────────────┘ */}
+    <div className="bg-white min-h-screen text-[#121212] font-sans selection:bg-[#121212] selection:text-white">
+      {/* ─────────────── SEO & META TAGS ─────────────── */}
       <Helmet>
         <title>Privacy Policy | Ghar Ka Organic</title>
         <meta
           name="description"
-          content="Privacy Policy for Ghar Ka Organic. Learn how we collect, use, and protect your personal information while shopping for authentic Himalayan food."
+          content="Privacy Policy for Ghar Ka Organic. Learn how we safeguard your personal data, courier addresses, and payments with 256-bit SSL encryption."
         />
         <meta name="robots" content="index, follow" />
-        <link
-          rel="canonical"
-          href="https://gharkaorganic.com/pages/privacy-policy"
-        />
+        <link rel="canonical" href={CANONICAL} />
+        <script type="application/ld+json">{JSONLD}</script>
       </Helmet>
 
-      {/* ┌─────────────────────────────────────────────────────────────┐ */}
-      {/* │ HEADER SECTION                                              │ */}
-      {/* └─────────────────────────────────────────────────────────────┘ */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-6 py-12 md:py-16 text-center">
-          <h1 className="text-3xl md:text-5xl font-light tracking-tight text-gray-900 mb-4">
+      {/* ─────────────── HERO SECTION (BLACK & WHITE DESIGN) ─────────────── */}
+      <header className="border-b border-[#e5e5e5] bg-white pt-12 pb-14 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center">
+          <span className="text-[11px] uppercase tracking-[0.2em] font-semibold text-neutral-400 block mb-3">
+            Legal & Data Protection
+          </span>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-light text-[#121212] tracking-tight mb-4">
             Privacy Policy
           </h1>
-          <p className="text-gray-500 text-sm tracking-wide uppercase">
-            Last Updated: {lastUpdated}
+          <p className="text-sm sm:text-base text-neutral-500 font-light max-w-2xl mx-auto leading-relaxed">
+            At Ghar Ka Organic, we hold your trust with the same sacred reverence
+            as our Himalayan heritage. Here is how your personal information is
+            protected, stored, and respected.
           </p>
+          <div className="mt-5 inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neutral-200 text-xs text-neutral-500">
+            <Clock size={13} className="text-neutral-400" />
+            <span>Last Updated: {LAST_UPDATED} • Applies PAN-India</span>
+          </div>
         </div>
-      </div>
+      </header>
 
-      {/* ┌─────────────────────────────────────────────────────────────┐ */}
-      {/* │ MAIN DOCUMENT CONTENT                                       │ */}
-      {/* └─────────────────────────────────────────────────────────────┘ */}
-      <main className="max-w-4xl mx-auto px-6 py-12">
-        <div className="bg-white p-8 md:p-12 shadow-sm border-t-4 border-[#990000] rounded-b-lg text-[15px] leading-relaxed text-gray-600 space-y-10">
-          <section>
-            <p>
-              Welcome to <strong>Ghar Ka Organic</strong> ("we," "our," or
-              "us"). We are committed to protecting your personal information
-              and your right to privacy. This Privacy Policy explains how we
-              collect, use, disclose, and safeguard your information when you
-              visit our website and purchase our authentic Himalayan organic
-              products.
+      {/* ─────────────── 4 TRUST PILLARS (BLACK & WHITE STYLE) ─────────────── */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          <div className="p-4 sm:p-5 bg-white border border-[#e5e5e5] rounded-xl shadow-xs hover:border-[#121212] transition-colors">
+            <div className="w-8 h-8 rounded-lg bg-neutral-100 text-[#121212] flex items-center justify-center mb-2.5">
+              <EyeOff size={16} />
+            </div>
+            <h2 className="text-xs sm:text-sm font-medium text-[#121212]">
+              Never Sold
+            </h2>
+            <p className="text-[11px] text-neutral-500 mt-0.5 leading-snug">
+              We never sell or rent your data to advertisers.
             </p>
-            <p className="mt-4">
-              By accessing or using our website, you agree to the terms of this
-              Privacy Policy.
+          </div>
+
+          <div className="p-4 sm:p-5 bg-white border border-[#e5e5e5] rounded-xl shadow-xs hover:border-[#121212] transition-colors">
+            <div className="w-8 h-8 rounded-lg bg-neutral-100 text-[#121212] flex items-center justify-center mb-2.5">
+              <Lock size={16} />
+            </div>
+            <h2 className="text-xs sm:text-sm font-medium text-[#121212]">
+              256-Bit SSL
+            </h2>
+            <p className="text-[11px] text-neutral-500 mt-0.5 leading-snug">
+              Bank-grade encryption for all payments.
+            </p>
+          </div>
+
+          <div className="p-4 sm:p-5 bg-white border border-[#e5e5e5] rounded-xl shadow-xs hover:border-[#121212] transition-colors">
+            <div className="w-8 h-8 rounded-lg bg-neutral-100 text-[#121212] flex items-center justify-center mb-2.5">
+              <ShieldCheck size={16} />
+            </div>
+            <h2 className="text-xs sm:text-sm font-medium text-[#121212]">
+              Zero Spam
+            </h2>
+            <p className="text-[11px] text-neutral-500 mt-0.5 leading-snug">
+              Only authentic delivery & order updates.
+            </p>
+          </div>
+
+          <div className="p-4 sm:p-5 bg-white border border-[#e5e5e5] rounded-xl shadow-xs hover:border-[#121212] transition-colors">
+            <div className="w-8 h-8 rounded-lg bg-neutral-100 text-[#121212] flex items-center justify-center mb-2.5">
+              <FileCheck size={16} />
+            </div>
+            <h2 className="text-xs sm:text-sm font-medium text-[#121212]">
+              FSSAI Compliant
+            </h2>
+            <p className="text-[11px] text-neutral-500 mt-0.5 leading-snug">
+              Full regulatory & consumer privacy norms.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────── MAIN DOCUMENT CONTENT ─────────────── */}
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+        <div className="space-y-12 text-[15px] leading-relaxed text-neutral-700">
+          {/* SECTION 1 */}
+          <section className="pb-8 border-b border-neutral-100">
+            <span className="text-[11px] uppercase tracking-wider font-semibold text-neutral-400 block mb-1">
+              Section 01
+            </span>
+            <h2 className="text-xl sm:text-2xl font-light text-[#121212] tracking-tight mb-4">
+              Overview & Scope
+            </h2>
+            <p className="text-neutral-600 mb-3">
+              This Privacy Policy applies to all customers and visitors who
+              interact with <strong>Ghar Ka Organic</strong> through our official
+              website (<span className="font-mono text-xs">gharkaorganic.com</span>
+              ), mobile applications, direct WhatsApp support channels, and
+              customer service lines.
+            </p>
+            <p className="text-neutral-600">
+              When you purchase our authentic A2 Badri cow desi ghee, Bhimtal raw
+              forest honey, sun-dried Kumaoni pickles, or mountain spices, we
+              collect only the essential information needed to fulfill and deliver
+              your order securely to your doorstep across India.
             </p>
           </section>
 
-          <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-100">
-              1. Information We Collect
+          {/* SECTION 2 */}
+          <section className="pb-8 border-b border-neutral-100">
+            <span className="text-[11px] uppercase tracking-wider font-semibold text-neutral-400 block mb-1">
+              Section 02
+            </span>
+            <h2 className="text-xl sm:text-2xl font-light text-[#121212] tracking-tight mb-4">
+              Information We Collect
             </h2>
-            <p className="mb-4">
-              To provide you with our homemade Kumaoni products and ensure
-              smooth pan-India delivery, we collect the following types of
-              information:
+            <p className="text-neutral-600 mb-4">
+              We collect information transparently in three straightforward
+              categories:
             </p>
-            <ul className="list-disc pl-5 space-y-2">
-              <li>
-                <strong className="text-gray-800">
-                  Personal Identification:
-                </strong>{" "}
-                Name, email address, phone number, and billing/shipping
-                addresses.
+
+            <div className="space-y-3">
+              <div className="p-4 rounded-xl border border-neutral-200 bg-white">
+                <h3 className="text-sm font-medium text-[#121212] mb-1 flex items-center gap-2">
+                  <CheckCircle2 size={16} className="text-neutral-800" />
+                  Personal Contact Details
+                </h3>
+                <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
+                  Your full name, mobile telephone number, email address, and
+                  detailed shipping destination (including house number, locality,
+                  city, state, and 6-digit postal PIN code) required by courier
+                  carriers for physical delivery.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl border border-neutral-200 bg-white">
+                <h3 className="text-sm font-medium text-[#121212] mb-1 flex items-center gap-2">
+                  <CheckCircle2 size={16} className="text-neutral-800" />
+                  Payment & Transaction Security
+                </h3>
+                <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
+                  All online payments (UPI, Credit/Debit cards, Net Banking, and
+                  Wallets) are processed through Reserve Bank of India (RBI)
+                  authorized payment gateways. <strong>We never store, see, or
+                  retain</strong> your full credit card credentials, CVV codes, or
+                  UPI MPINs on our servers.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl border border-neutral-200 bg-white">
+                <h3 className="text-sm font-medium text-[#121212] mb-1 flex items-center gap-2">
+                  <CheckCircle2 size={16} className="text-neutral-800" />
+                  Technical & Device Logs
+                </h3>
+                <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
+                  IP addresses, approximate geographic location (city level),
+                  browser type, and cart state to remember your items, prevent
+                  fraudulent checkout attempts, and optimize site speed.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* SECTION 3 */}
+          <section className="pb-8 border-b border-neutral-100">
+            <span className="text-[11px] uppercase tracking-wider font-semibold text-neutral-400 block mb-1">
+              Section 03
+            </span>
+            <h2 className="text-xl sm:text-2xl font-light text-[#121212] tracking-tight mb-4">
+              How We Use Your Information
+            </h2>
+            <p className="text-neutral-600 mb-4">
+              Your data is utilized solely for legitimate operational needs:
+            </p>
+            <ul className="space-y-2.5 text-neutral-600 text-sm">
+              <li className="flex items-start gap-2.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-neutral-900 mt-2 flex-shrink-0" />
+                <span>
+                  <strong>Order Dispatch & Delivery:</strong> Generating shipping
+                  labels, packing airtight glass jars, and providing real-time
+                  live tracking links via SMS/WhatsApp.
+                </span>
               </li>
-              <li>
-                <strong className="text-gray-800">Payment Information:</strong>{" "}
-                Processed securely through our third-party payment gateways
-                (UPI, Credit/Debit cards). We do not store your full credit card
-                numbers or UPI PINs on our servers.
+              <li className="flex items-start gap-2.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-neutral-900 mt-2 flex-shrink-0" />
+                <span>
+                  <strong>Direct Customer Support:</strong> Responding to your
+                  inquiries, verifying package transit in high-altitude zones, and
+                  handling replacements or refunds.
+                </span>
               </li>
-              <li>
-                <strong className="text-gray-800">Account Data:</strong> Login
-                credentials, order history, and saved preferences.
+              <li className="flex items-start gap-2.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-neutral-900 mt-2 flex-shrink-0" />
+                <span>
+                  <strong>Order & Storefront Security:</strong> Detecting and mitigating
+                  bot attacks, fraudulent COD orders, and fake requests.
+                </span>
               </li>
-              <li>
-                <strong className="text-gray-800">
-                  Automatically Collected Data:
-                </strong>{" "}
-                IP address, browser type, device specifications, and browsing
-                behavior.
+              <li className="flex items-start gap-2.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-neutral-900 mt-2 flex-shrink-0" />
+                <span>
+                  <strong>Regulatory Obligations:</strong> Complying with GST
+                  invoicing, FSSAI quality documentation, and government taxation
+                  mandates.
+                </span>
               </li>
             </ul>
           </section>
 
-          <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-100">
-              2. How We Use Your Information
+          {/* SECTION 4 */}
+          <section className="pb-8 border-b border-neutral-100">
+            <span className="text-[11px] uppercase tracking-wider font-semibold text-neutral-400 block mb-1">
+              Section 04
+            </span>
+            <h2 className="text-xl sm:text-2xl font-light text-[#121212] tracking-tight mb-4">
+              Data Sharing & Third-Party Safeguards
             </h2>
-            <ul className="list-disc pl-5 space-y-2">
-              <li>
-                <strong>Order Fulfillment:</strong> To process transactions,
-                verify payments, and deliver products to your doorstep.
-              </li>
-              <li>
-                <strong>Customer Support:</strong> To resolve issues, process
-                refunds, and respond to your inquiries.
-              </li>
-              <li>
-                <strong>Communication:</strong> To send order confirmations,
-                shipping updates, and administrative emails.
-              </li>
-              <li>
-                <strong>Website Optimization:</strong> To analyze user behavior,
-                improve our UI/UX, and ensure our platform runs securely.
-              </li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-100">
-              3. Information Sharing and Disclosure
-            </h2>
-            <p className="mb-4">
-              We respect your privacy and do not sell or rent your personal
-              information to third parties. We only share your data in the
-              following operational circumstances:
+            <p className="text-neutral-600 mb-4">
+              We maintain a strict zero-leakage policy. Your information is only
+              shared with verified partners under non-disclosure obligations:
             </p>
-            <ul className="list-disc pl-5 space-y-2">
-              <li>
-                <strong>Logistics Partners:</strong> Sharing your name, phone
-                number, and shipping address with courier partners for order
-                delivery.
-              </li>
-              <li>
-                <strong>Payment Processors:</strong> Sharing transaction details
-                with secure gateway partners to process payments safely.
-              </li>
-              <li>
-                <strong>Legal Compliance:</strong> Disclosing information if
-                required by law, such as to comply with FSSAI regulations or
-                government requests.
-              </li>
-            </ul>
+            <div className="grid sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+              <div className="p-4 rounded-xl border border-neutral-200">
+                <h3 className="font-medium text-[#121212] mb-1">
+                  Logistics & Air Courier Partners
+                </h3>
+                <p className="text-neutral-500 leading-snug">
+                  Shared exclusively with trusted delivery partners (e.g. Bluedart,
+                  Delhivery, DTDC, India Post) solely to print airway bills and
+                  complete final-mile delivery.
+                </p>
+              </div>
+              <div className="p-4 rounded-xl border border-neutral-200">
+                <h3 className="font-medium text-[#121212] mb-1">
+                  Payment Gateway Providers
+                </h3>
+                <p className="text-neutral-500 leading-snug">
+                  Certified PCI-DSS Level 1 compliant financial switches that
+                  validate transactions with two-factor authentication and bank
+                  OTPs.
+                </p>
+              </div>
+            </div>
           </section>
 
-          <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-100">
-              4. Data Security
+          {/* SECTION 5 */}
+          <section className="pb-8 border-b border-neutral-100">
+            <span className="text-[11px] uppercase tracking-wider font-semibold text-neutral-400 block mb-1">
+              Section 05
+            </span>
+            <h2 className="text-xl sm:text-2xl font-light text-[#121212] tracking-tight mb-4">
+              Cookies & Browser Storage
             </h2>
-            <p>
-              We implement robust administrative, technical, and physical
-              security measures to protect your personal information. Our
-              website uses secure data networks protected by industry-standard
-              SSL encryption. While we strive to protect your data, no method of
-              transmission over the internet or electronic storage is 100%
-              secure.
+            <p className="text-neutral-600 leading-relaxed mb-3">
+              We use minimal, privacy-first cookies and browser storage
+              mechanisms. These maintain your active login session, preserve your
+              shopping cart items across page visits, and cache store catalog
+              data so your browser loads instantly with zero unnecessary network
+              strain.
+            </p>
+            <p className="text-neutral-500 text-xs sm:text-sm">
+              You can disable cookies in your browser settings at any time; however,
+              doing so may require you to re-add products to your bag upon page
+              refresh.
             </p>
           </section>
 
-          <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-100">
-              5. Cookies and Tracking Technologies
+          {/* SECTION 6 */}
+          <section className="pb-8 border-b border-neutral-100">
+            <span className="text-[11px] uppercase tracking-wider font-semibold text-neutral-400 block mb-1">
+              Section 06
+            </span>
+            <h2 className="text-xl sm:text-2xl font-light text-[#121212] tracking-tight mb-4">
+              Your Privacy Rights & Controls
             </h2>
-            <p>
-              Our website uses cookies and similar tracking technologies to
-              track activity and improve your shopping experience. You can
-              instruct your browser to refuse all cookies; however, if you do
-              not accept cookies, some portions of our website (like your
-              shopping cart) may not function properly.
+            <p className="text-neutral-600 mb-4">
+              You retain complete ownership over your personal data:
             </p>
+            <div className="space-y-2 text-xs sm:text-sm text-neutral-600">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 size={15} className="text-neutral-900 flex-shrink-0" />
+                <span>
+                  <strong>Right to Access:</strong> Request a copy of all data
+                  stored in your Ghar Ka Organic profile.
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 size={15} className="text-neutral-900 flex-shrink-0" />
+                <span>
+                  <strong>Right to Rectification:</strong> Update or modify any
+                  incorrect address or contact number directly during checkout or by messaging us on WhatsApp.
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 size={15} className="text-neutral-900 flex-shrink-0" />
+                <span>
+                  <strong>Right to Erasure:</strong> Request the deletion of your
+                  delivery records and personal details by emailing us.
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 size={15} className="text-neutral-900 flex-shrink-0" />
+                <span>
+                  <strong>Opt-Out:</strong> Unsubscribe from non-essential
+                  notifications at any time with a single click.
+                </span>
+              </div>
+            </div>
           </section>
 
-          <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-100">
-              6. Your Data Privacy Rights
+          {/* SECTION 7: GRIEVANCE OFFICER & CONTACT (MATCHING CONTACT PAGE CARD) */}
+          <section className="p-6 sm:p-8 bg-white border border-[#e5e5e5] rounded-2xl shadow-xs">
+            <span className="text-[11px] uppercase tracking-[0.2em] font-semibold text-neutral-400 block mb-1">
+              Direct Assistance
+            </span>
+            <h2 className="text-2xl font-light text-[#121212] tracking-tight mb-2">
+              Privacy Grievance & Kitchen Contact
             </h2>
-            <p className="mb-4">
-              Depending on your location, you have the right to:
+            <p className="text-xs sm:text-sm text-neutral-500 mb-6 font-light">
+              For any questions, data deletion requests, or privacy concerns,
+              please reach out directly to our team in Bhimtal:
             </p>
-            <ul className="list-disc pl-5 space-y-2">
-              <li>Request access to the personal data we hold about you.</li>
-              <li>Request corrections to any inaccurate or incomplete data.</li>
-              <li>
-                Request the deletion of your personal data, subject to legal
-                exceptions.
-              </li>
-              <li>Opt-out of marketing communications at any time.</li>
-            </ul>
-          </section>
 
-          <section className="bg-pink-50/50 p-6 rounded-md border border-pink-100 mt-8">
-            <h2 className="text-lg font-semibold text-[#990000] mb-3">
-              7. Contact Us
-            </h2>
-            <p className="mb-4 text-gray-700">
-              If you have questions, concerns, or requests regarding this
-              Privacy Policy, please reach out to our team:
-            </p>
-            <address className="not-italic text-gray-600 space-y-1">
-              <p>
-                <strong>Ghar Ka Organic</strong>
-              </p>
-              <p>Ward No. 2, Nalni</p>
-              <p>Nainital, Uttarakhand 263136, India</p>
-              <p className="pt-2">
-                <strong>Email:</strong>{" "}
-                <a
-                  href="mailto:gharkaorganic@gmail.com"
-                  className="text-[#990000] hover:underline">
+            <div className="grid sm:grid-cols-3 gap-4 mb-8">
+              <div className="p-4 rounded-xl border border-neutral-100 bg-neutral-50/50">
+                <div className="w-8 h-8 rounded-lg bg-neutral-200 text-[#121212] flex items-center justify-center mb-2">
+                  <MapPin size={16} />
+                </div>
+                <h3 className="text-xs font-semibold text-[#121212]">
+                  Mountain Kitchen
+                </h3>
+                <p className="text-xs text-neutral-600 mt-1 leading-snug">
+                  Ward No. 2, Nalni, Bhimtal, Nainital, Uttarakhand – 263136
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl border border-neutral-100 bg-neutral-50/50">
+                <div className="w-8 h-8 rounded-lg bg-neutral-200 text-[#121212] flex items-center justify-center mb-2">
+                  <Phone size={16} />
+                </div>
+                <h3 className="text-xs font-semibold text-[#121212]">
+                  Direct Telephone
+                </h3>
+                <p className="text-xs text-neutral-600 mt-1">
+                  +91 98974 47525
+                </p>
+                <span className="text-[10px] text-neutral-400 block mt-0.5">
+                  Mon–Sat, 10 AM – 7 PM
+                </span>
+              </div>
+
+              <div className="p-4 rounded-xl border border-neutral-100 bg-neutral-50/50">
+                <div className="w-8 h-8 rounded-lg bg-neutral-200 text-[#121212] flex items-center justify-center mb-2">
+                  <Mail size={16} />
+                </div>
+                <h3 className="text-xs font-semibold text-[#121212]">
+                  Direct Email
+                </h3>
+                <p className="text-xs text-neutral-600 mt-1 truncate">
                   gharkaorganic@gmail.com
-                </a>
-              </p>
-              <p>
-                <strong>Phone:</strong> +91-9897447525
-              </p>
-            </address>
-            <div className="mt-6">
+                </p>
+                <span className="text-[10px] text-neutral-400 block mt-0.5">
+                  Replies within 24 hours
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-neutral-100">
               <Link
                 to="/contact"
-                className="inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-sm font-medium rounded-sm text-white bg-[#990000] hover:bg-[#7a0000] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#990000]">
-                Contact Support
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#121212] hover:bg-neutral-800 text-white text-xs font-semibold tracking-wide transition-all shadow-xs">
+                <span>Visit Contact Support</span>
+                <ArrowRight size={14} />
+              </Link>
+              <Link
+                to="/pages/shipping"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-neutral-300 hover:border-[#121212] text-[#121212] text-xs font-semibold tracking-wide transition-all">
+                <span>View Shipping Policy</span>
               </Link>
             </div>
           </section>

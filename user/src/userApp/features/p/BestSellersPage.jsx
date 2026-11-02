@@ -24,15 +24,19 @@ const SORT_OPTIONS = [
 
 /* ───────── SKELETON ───────── */
 const ProductSkeleton = () => (
-  <div className="animate-pulse">
-    <div className="bg-gray-200 aspect-square rounded-xl mb-3" />
-    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-    <div className="h-4 bg-gray-200 rounded w-1/2" />
+  <div className="flex flex-col h-full animate-pulse">
+    <div className="w-full aspect-square bg-[#f4f2e9] rounded-2xl sm:rounded-none" />
+    <div className="mt-3 sm:mt-4 space-y-2">
+      <div className="h-4 bg-[#f4f2e9] rounded w-4/5" />
+      <div className="h-3.5 bg-[#f4f2e9] rounded w-1/2" />
+      <div className="h-4 bg-[#f4f2e9] rounded w-1/3" />
+      <div className="h-8 bg-[#f4f2e9] rounded w-full mt-2" />
+    </div>
   </div>
 );
 
 const GridSkeleton = () => (
-  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+  <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:gap-x-8 sm:gap-y-12 md:grid-cols-3 md:gap-x-10 lg:grid-cols-4 lg:gap-x-12 xl:gap-x-14 lg:gap-y-14">
     {[...Array(8)].map((_, i) => (
       <ProductSkeleton key={i} />
     ))}
@@ -227,77 +231,65 @@ const BestSellersPage = () => {
       </Helmet>
 
       {/* ═══════════════════════════════════════════
-          HERO
+          1. PAGE TITLE & PRESERVED SEO CONTENT (TEXT FIRST)
       ═══════════════════════════════════════════ */}
-      <section className="bg-gradient-to-b from-green-50/70 to-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-16">
-          <Breadcrumb
-            items={[
-              { label: "Home", href: "/" },
-              { label: "Best Sellers", href: "/shop/best-sellers" },
-            ]}
-          />
-          <div className="mt-6 sm:mt-8 grid lg:grid-cols-12 gap-8 items-end">
-            <div className="lg:col-span-8">
-              <span
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-widest mb-4"
-                style={{ backgroundColor: "#E8F5EE", color: BRAND_GREEN }}>
-                ★ Customer Favourites
-              </span>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
+        <Breadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Best Sellers", href: "/shop/best-sellers" },
+          ]}
+        />
 
-              <h1
-                className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 tracking-tight leading-tight"
-                style={{ fontFamily: "'Playfair Display', serif" }}>
-                Best Selling Organic Products from Uttarakhand
-              </h1>
+        <div className="mt-4 sm:mt-5">
+          {/* Authentic Himalayan Badge */}
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider bg-emerald-50 text-[#008060] mb-2.5">
+            ★ Customer Favourites
+          </span>
 
-              <p className="mt-4 text-gray-600 text-sm sm:text-base max-w-2xl leading-relaxed">
-                Hand-picked by thousands of families — pure A2 Badri ghee, raw
-                forest honey, traditional pahadi pickles, and Himalayan spices.
-                Sourced directly from women-led farms in Uttarakhand, delivered
-                fresh to your door.
-              </p>
-            </div>
+          {/* Primary H1 Heading - Simple, clean, elegant font */}
+          <h1 className="text-2xl sm:text-3xl font-medium text-gray-900 tracking-tight leading-snug">
+            Best Selling Organic Products from Uttarakhand
+          </h1>
 
-            {/* Trust checklist */}
-            <div className="lg:col-span-4">
-              <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                  Why Our Best Sellers?
-                </p>
-                <ul className="space-y-2.5 text-sm">
-                  {[
-                    "100% natural & chemical-free",
-                    "No preservatives or additives",
-                    "Directly from Uttarakhand farms",
-                    "15-day freshness guarantee",
-                  ].map((text) => (
-                    <li
-                      key={text}
-                      className="flex items-start gap-2 text-gray-700">
-                      <span
-                        className="font-bold text-base mt-0.5"
-                        style={{ color: BRAND_GREEN }}>
-                        ✓
-                      </span>
-                      {text}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+          {/* SEO Description paragraph - Simple, clean font */}
+          <p className="mt-2 text-sm sm:text-base text-gray-500 font-normal max-w-3xl leading-relaxed">
+            Hand-picked by thousands of families — pure A2 Badri ghee, raw
+            forest honey, traditional pahadi pickles, and Himalayan spices.
+            Sourced directly from women-led farms in Uttarakhand, delivered
+            fresh to your door.
+          </p>
+
+          {/* Trust points - Simple, clean inline strip */}
+          <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-gray-500 font-normal">
+            <span className="inline-flex items-center gap-1">
+              <span className="text-[#008060] font-semibold">✓</span> 100% natural &
+              chemical-free
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className="text-[#008060] font-semibold">✓</span> No preservatives
+              or additives
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className="text-[#008060] font-semibold">✓</span> Directly from
+              Uttarakhand farms
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className="text-[#008060] font-semibold">✓</span> 15-day freshness
+              guarantee
+            </span>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* ───────── CATEGORY TABS ───────── */}
-      <div className="border-b border-gray-200 bg-white sticky top-0 z-30 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ProductSectionTabs
-            productSections={productSections}
-            currentKey="best"
-          />
-        </div>
+      {/* ═══════════════════════════════════════════
+          2. CATEGORY NAVIGATION (SHOP BY CATEGORY)
+      ═══════════════════════════════════════════ */}
+      <div className="mt-6">
+        <ProductSectionTabs
+          productSections={productSections}
+          currentKey="new"
+        />
       </div>
 
       {/* ───────── PRODUCT GRID ───────── */}

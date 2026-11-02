@@ -14,6 +14,7 @@ import {
   getDocs,
   getDoc,
   updateDoc,
+  onSnapshot,
 } from "firebase/firestore";
 
 import { db } from "../../../../config/firebaseDB";
@@ -21,12 +22,11 @@ import { db } from "../../../../config/firebaseDB";
 /* ───────────────────────────────
    ORDER ID GENERATOR
 ────────────────────────────── */
-export const makeOrderId = (name = "user") => {
-  const prefix = name.replace(/\s+/g, "").toLowerCase().slice(0, 4);
-  const time = Date.now().toString(36).toUpperCase();
-  const rand = Math.random().toString(36).slice(2, 5).toUpperCase();
-  return `${prefix}-${time}${rand}`;
-};
+export const makeOrderId = () =>
+  `GKO-${Date.now().toString(36).toUpperCase()}-${crypto
+    .randomUUID()
+    .slice(0, 8)
+    .toUpperCase()}`;
 
 /* ───────────────────────────────
    CREATE ORDER (FIXED SYNC MODEL)
@@ -42,6 +42,9 @@ export const createOrder = async ({
   if (!user?.uid) throw new Error("User not authenticated");
   if (!items?.length) throw new Error("Order items missing");
   if (!selectedAddress) throw new Error("Delivery address missing");
+  if (paymentMethod !== "cod") {
+    throw new Error("Only Cash on Delivery is currently available");
+  }
 
   const now = serverTimestamp();
   const batch = writeBatch(db);
@@ -67,6 +70,7 @@ export const createOrder = async ({
   const baseOrderData = {
     orderId,
     userId: user.uid,
+    userOrderMirror: !user.isAnonymous,
 
     orderStatus: "placed",
     paymentStatus: "pending",
@@ -81,10 +85,12 @@ export const createOrder = async ({
     addressSnapshot: {
       name: selectedAddress.name,
       phone: selectedAddress.phone,
+      email: selectedAddress.email || user.email || "",
       line1:
         selectedAddress.line1 ||
         selectedAddress.addressLine1 ||
         "",
+      line2: selectedAddress.line2 || "",
       city: selectedAddress.city,
       state: selectedAddress.state,
       pincode: selectedAddress.pincode,
@@ -121,16 +127,18 @@ export const createOrder = async ({
   /* ───────── USER MIRROR (LIST VIEW) ───────── */
   const previewItem = normalisedItems[0];
 
-  batch.set(doc(db, "users", user.uid, "orders", orderId), {
-    ...baseOrderData,
+  if (!user.isAnonymous) {
+    batch.set(doc(db, "users", user.uid, "orders", orderId), {
+      ...baseOrderData,
 
-    previewItem: {
-      name: previewItem?.name ?? "",
-      image: previewItem?.image ?? "",
-      price: previewItem?.price ?? 0,
-      description: previewItem?.description ?? "",
-    },
-  });
+      previewItem: {
+        name: previewItem?.name ?? "",
+        image: previewItem?.image ?? "",
+        price: previewItem?.price ?? 0,
+        description: previewItem?.description ?? "",
+      },
+    });
+  }
 
   await batch.commit();
   return { orderId };
@@ -140,6 +148,61 @@ export const createOrder = async ({
    ORDER SERVICE API
 ────────────────────────────── */
 export const orderService = {
+  subscribeToUserOrders(userId, onOrders, onError) {
+    if (!userId) return () => {};
+
+    const ordersQuery = query(
+      collection(db, "users", userId, "orders"),
+      orderBy("createdAt", "desc"),
+      limit(20),
+    );
+
+    return onSnapshot(
+      ordersQuery,
+      (snap) =>
+        onOrders(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      onError,
+    );
+  },
+
+  subscribeToOrder(orderId, onOrder, onError) {
+    if (!orderId) return () => {};
+
+    let orderData;
+    let items = [];
+    let orderReady = false;
+    let itemsReady = false;
+
+    const emitOrder = () => {
+      if (!orderReady || !itemsReady) return;
+      onOrder(orderData ? { ...orderData, items } : null);
+    };
+
+    const unsubscribeOrder = onSnapshot(
+      doc(db, "orders", orderId),
+      (snap) => {
+        orderReady = true;
+        orderData = snap.exists() ? { id: snap.id, ...snap.data() } : null;
+        emitOrder();
+      },
+      onError,
+    );
+    const unsubscribeItems = onSnapshot(
+      collection(db, "orders", orderId, "items"),
+      (snap) => {
+        itemsReady = true;
+        items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        emitOrder();
+      },
+      onError,
+    );
+
+    return () => {
+      unsubscribeOrder();
+      unsubscribeItems();
+    };
+  },
+
   /* ───────── USER ORDERS ───────── */
   async getUserOrders(userId, maxResults = 20, lastDoc = null) {
     if (!userId) return { orders: [], lastDoc: null };

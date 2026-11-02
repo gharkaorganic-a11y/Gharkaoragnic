@@ -3,7 +3,7 @@ const EmptyState = ({
   title = "No products found",
   description = "Try adjusting your filters or clearing your search.",
   buttonText = "Clear Filters",
-  buttonColor = "#da127d",
+  buttonColor = "#315c3c",
   onAction,
   showButton = true,
 }) => {

@@ -1,10 +1,9 @@
 import { Suspense, lazy } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import CheckoutLayout from "../layouts/CheckoutLayout";
 import LoadingScreen from "../components/loading/LoadingScreen";
 
 /* ─── Lazy: Checkout Pages ───────────────────────────────────────────────── */
-const CartPage = lazy(() => import("../features/cart/pages/CartPage"));
 const AddressPage = lazy(() => import("../pages/AddressPage"));
 
 /* ─── Inline Loader ──────────────────────────────────────────────────────── */
@@ -20,20 +19,9 @@ const CheckoutRoutes = () => {
       <Route path="/" element={<CheckoutLayout />}>
         <Route
           index
-          element={
-            <Suspense fallback={<InlineLoader />}>
-              <CartPage />
-            </Suspense>
-          }
+          element={<Navigate to="address" replace />}
         />
-        <Route
-          path="cart"
-          element={
-            <Suspense fallback={<InlineLoader />}>
-              <CartPage />
-            </Suspense>
-          }
-        />
+        <Route path="cart" element={<Navigate to="/" replace />} />
         <Route
           path="address"
           element={

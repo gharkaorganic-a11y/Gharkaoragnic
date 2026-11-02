@@ -13,8 +13,12 @@ const ReviewsSection = ({
       <Star
         key={i}
         size={size}
-        fill={i < Math.floor(rating) ? "#fbbf24" : "none"} // Amber-400
-        color="#fbbf24"
+        fill={
+          i < Math.floor(rating)
+            ? "var(--storefront-star-color, #fbbf24)"
+            : "none"
+        }
+        color="var(--storefront-star-color, #fbbf24)"
         strokeWidth={2}
         className="mr-1"
       />

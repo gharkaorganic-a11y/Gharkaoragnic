@@ -15,24 +15,24 @@ import { productService } from "../services/ProductService";
          the silent killer of invalidation and cache reads.
 ───────────────────────────────────────────────────────────────────────────── */
 export const PRODUCT_KEYS = {
-  all: () => ["products", "all"],
-  byId: (id) => ["products", "id", String(id || "")],
-  bySlug: (slug) => ["products", "slug", String(slug || "")],
-  byCollection: (collection) => ["products", "collection", String(collection || "")],
+  all: () => ["storeProducts", "all"],
+  byId: (id) => ["storeProducts", "id", String(id || "")],
+  bySlug: (slug) => ["storeProducts", "slug", String(slug || "")],
+  byCollection: (collection) => ["storeProducts", "collection", String(collection || "")],
   related: (productId, collections, limit) => [
-    "products",
+    "storeProducts",
     "related",
     String(productId || ""),
     collections,
     limit,
   ],
-  byIds: (ids = []) => ["products", "ids", [...(ids || [])].sort().join(",")],
-  search: (term) => ["products", "search", String(term || "").trim().toLowerCase()],
+  byIds: (ids = []) => ["storeProducts", "ids", [...(ids || [])].sort().join(",")],
+  search: (term) => ["storeProducts", "search", String(term || "").trim().toLowerCase()],
 
   // FIX: Canonical order is (productId, approvedOnly, pageSize).
   // invalidateReviews uses just the productId prefix to bust all variants.
   reviews: (productId, approvedOnly, pageSize) => [
-    "products",
+    "storeProducts",
     "reviews",
     String(productId || ""),
     Boolean(approvedOnly),   // Force boolean so true !== "true" never happens
@@ -96,7 +96,7 @@ export const useProductsByCollection = (collection, limit) =>
    COMPLEX HOOKS
 ───────────────────────────────────────────────────────────────────────────── */
 
-export const useRelatedProducts = (product, limit = 5) => {
+export const useRelatedProducts = (product, limit = 4) => {
   // Memoize to prevent unstable array references causing infinite re-renders
   const collections = useMemo(() => {
     if (!product?.collectionTypes) return [];
@@ -108,10 +108,14 @@ export const useRelatedProducts = (product, limit = 5) => {
   return useQuery({
     queryKey: PRODUCT_KEYS.related(product?.id, collections, limit),
     queryFn: async ({ signal }) => {
-      const items = await productService.getProductsByCollections(collections, {
-        limit: limit + 8, // Over-fetch to ensure we have enough after filtering
-        signal,
-      });
+      let items = [];
+      if (collections.length > 0) {
+        items =
+          (await productService.getProductsByCollections(collections, {
+            limit: limit + 8, // Over-fetch to ensure we have enough after filtering
+            signal,
+          })) || [];
+      }
 
       const unique = new Map();
       items?.forEach((item) => {
@@ -120,9 +124,46 @@ export const useRelatedProducts = (product, limit = 5) => {
         }
       });
 
+      // Fallback 1: category products if under limit
+      if (unique.size < limit && product?.category) {
+        try {
+          const catItems = await productService.getProductsByCategory(
+            product.category,
+            {
+              limit: limit + 4,
+              signal,
+            },
+          );
+          catItems?.forEach((item) => {
+            if (item.id !== product?.id && !unique.has(item.id)) {
+              unique.set(item.id, item);
+            }
+          });
+        } catch {
+          // silently ignore error and continue
+        }
+      }
+
+      // Fallback 2: general products if still under limit
+      if (unique.size < limit) {
+        try {
+          const general = await productService.getProducts({
+            pageSize: limit + 4,
+            signal,
+          });
+          general?.products?.forEach((item) => {
+            if (item.id !== product?.id && !unique.has(item.id)) {
+              unique.set(item.id, item);
+            }
+          });
+        } catch {
+          // silently ignore error
+        }
+      }
+
       return [...unique.values()].slice(0, limit);
     },
-    enabled: Boolean(product?.id && collections.length > 0),
+    enabled: Boolean(product?.id),
     ...META_OPTS,
   });
 };
@@ -302,17 +343,17 @@ export const useProducts = () => {
   );
 
   const invalidateAll = useCallback(
-    () => qc.invalidateQueries({ queryKey: ["products"] }),
+    () => qc.invalidateQueries({ queryKey: ["storeProducts"] }),
     [qc],
   );
 
-  // FIX: Uses ["products", "reviews", productId] as a prefix.
+  // FIX: Uses ["storeProducts", "reviews", productId] as a prefix.
   // React Query invalidates ALL keys that START WITH this prefix,
   // so every pageSize/approvedOnly variant for this product gets busted.
   const invalidateReviews = useCallback(
     (productId) =>
       qc.invalidateQueries({
-        queryKey: ["products", "reviews", String(productId || "")],
+        queryKey: ["storeProducts", "reviews", String(productId || "")],
       }),
     [qc],
   );

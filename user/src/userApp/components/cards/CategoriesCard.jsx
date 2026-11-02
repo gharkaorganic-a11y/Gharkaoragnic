@@ -1,30 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const CategoriesCard = ({ cat }) => {
   const navigate = useNavigate();
+  const [imageFailed, setImageFailed] = useState(false);
+  const name = cat.name || cat.label;
 
   return (
-    <div
+    <button
+      type="button"
       onClick={() => navigate(`/category/${cat.slug || cat.id}`)}
-      className="group w-full flex flex-col items-center cursor-pointer">
-      {/* ── Image Container (Rounded corners, no borders) ── */}
-      <div className="relative w-full aspect-4/5 overflow-hidden bg-gray-100 shadow-sm transition-shadow duration-300 group-hover:shadow-md">
-        <img
-          src={cat.image || cat.img}
-          alt={cat.name || cat.label}
-          loading="lazy"
-          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-        />
-        {/* Very subtle dark tint on hover to indicate clickability */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
+      className="group flex w-full flex-col items-center text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#315c3c]">
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-[#f1efe4] shadow-sm transition-shadow duration-300 group-hover:shadow-md">
+        {!imageFailed && (cat.image || cat.img) ? (
+          <img
+            src={cat.image || cat.img}
+            alt=""
+            loading="lazy"
+            onError={() => setImageFailed(true)}
+            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center px-4 font-sans text-lg font-medium text-[#52644d]">
+            {name}
+          </div>
+        )}
+        <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/5" />
       </div>
 
-      {/* ── Clean Text Label Below Image ── */}
-      <h3 className="mt-4 text-[13px] md:text-[14px] font-medium text-gray-900 text-center transition-colors duration-300 group-hover:text-[#da127d]">
-        {cat.name || cat.label}
+      <h3 className="mt-3 text-center text-[13px] font-medium text-[#344238] transition-colors duration-300 group-hover:text-[#315c3c] md:text-sm">
+        {name}
       </h3>
-    </div>
+    </button>
   );
 };
 

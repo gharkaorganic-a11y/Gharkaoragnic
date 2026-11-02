@@ -52,7 +52,7 @@ const JSONLD = JSON.stringify({
 
       url: BASE_URL,
 
-      logo: `${BASE_URL}/gharka-logo.png`,
+      logo: `${BASE_URL}/logo/gharka-logo.png`,
 
       image: OG_IMAGE,
 
@@ -271,6 +271,13 @@ export default function SignupPage() {
       <div className="min-h-screen bg-white">
         <section className="max-w-2xl mx-auto px-6 py-20">
           <div className="text-center mb-12">
+            <Link to="/" className="mb-8 inline-flex justify-center">
+              <img
+                src={`${BASE_URL}/logo/gharka-logo.png`}
+                alt="Ghar Ka Organic"
+                className="h-20 w-auto max-w-[260px] object-contain"
+              />
+            </Link>
             <h1 className="text-4xl font-light text-gray-900">
               Create Your Account
             </h1>

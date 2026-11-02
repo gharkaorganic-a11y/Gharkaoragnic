@@ -27,13 +27,13 @@ const CollectionSearch = ({ value, sp, setSp, mobile = false }) => {
           value={value}
           placeholder="SEARCH..."
           onChange={(e) => handleChange(e.target.value)}
-          className="w-full pl-11 pr-10 py-3.5 text-[11px] font-bold tracking-widest uppercase border border-gray-200 focus:outline-none focus:border-[#da127d] bg-gray-50 focus:bg-white transition-colors"
+          className="w-full pl-11 pr-10 py-3.5 text-[11px] font-bold tracking-widest uppercase border border-gray-200 focus:outline-none focus:border-[#315c3c] bg-gray-50 focus:bg-white transition-colors"
         />
 
         {value && (
           <button
             onClick={clear}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#da127d]">
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#315c3c]">
             <X className="w-4 h-4 stroke-2" />
           </button>
         )}
@@ -50,7 +50,7 @@ const CollectionSearch = ({ value, sp, setSp, mobile = false }) => {
           value={value}
           placeholder="Search..."
           onChange={(e) => handleChange(e.target.value)}
-          className="pl-9 pr-8 py-2 text-[12px] font-bold uppercase tracking-widest border-b border-gray-200 focus:outline-none focus:border-[#da127d] w-[220px] bg-transparent"
+          className="pl-9 pr-8 py-2 text-[12px] font-bold uppercase tracking-widest border-b border-gray-200 focus:outline-none focus:border-[#315c3c] w-[220px] bg-transparent"
         />
 
         {value && (

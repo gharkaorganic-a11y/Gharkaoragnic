@@ -60,7 +60,7 @@ const JSONLD = JSON.stringify({
 
       url: BASE_URL,
 
-      logo: `${BASE_URL}/gharka-logo.png`,
+      logo: `${BASE_URL}/logo/gharka-logo.png`,
 
       image:
         "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776768403/Local_women_in_Bhimtal_Uttarakhand_preparing_traditional_Himalayan_organic_food_tbpvgk.webp",
@@ -249,6 +249,13 @@ export default function LoginPage() {
         <section className="max-w-[32rem] mx-auto px-6 py-20">
           {/* Intro */}
           <div className="text-center mb-14">
+            <Link to="/" className="mb-8 inline-flex justify-center">
+              <img
+                src={`${BASE_URL}/logo/gharka-logo.png`}
+                alt="Ghar Ka Organic"
+                className="h-20 w-auto max-w-[260px] object-contain"
+              />
+            </Link>
             <h2 className="text-3xl md:text-4xl font-light tracking-wide text-[#333] mb-5">
               Login To Your Account
             </h2>

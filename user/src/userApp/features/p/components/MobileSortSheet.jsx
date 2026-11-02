@@ -43,7 +43,7 @@ const MobileSortSheet = ({ sort, onSelect, onClose }) => {
                   onClose();
                 }}
                 className={`w-full flex items-center justify-between px-6 py-5 border-b border-gray-100 transition hover:bg-gray-50 ${
-                  active ? "bg-pink-50/40" : ""
+                  active ? "bg-green-50/40" : ""
                 }`}>
                 <span
                   className={`text-[13px] uppercase tracking-wide ${

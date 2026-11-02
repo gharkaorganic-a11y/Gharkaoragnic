@@ -13,7 +13,7 @@ export const useHomepageProducts = (sections = []) => {
 
   const productResults = useQueries({
     queries: sections.map((section) => ({
-      queryKey: ["homepage", "products", section.key],
+      queryKey: ["homepage", "products-v4", section.key],
       queryFn: async () => {
         const data = await homepageService.getProductsByCollection(section.key, 8);
 
@@ -23,12 +23,12 @@ export const useHomepageProducts = (sections = []) => {
         data.forEach((product) => {
           if (!product?.id) return;
           queryClient.setQueryData(
-            ["products", "id", product.id],
+            ["storeProducts", "id", product.id],
             (old) => old ?? product,
           );
           if (product.slug) {
             queryClient.setQueryData(
-              ["products", "slug", product.slug],
+              ["storeProducts", "slug", product.slug],
               (old) => old ?? product,
             );
           }
@@ -95,5 +95,7 @@ export const useHomepageProducts = (sections = []) => {
     loadingKeys,
     errors,
     hasError: Object.keys(errors).length > 0,
+    refetchProducts: () =>
+      Promise.all(productResults.map((result) => result.refetch())),
   };
 };
