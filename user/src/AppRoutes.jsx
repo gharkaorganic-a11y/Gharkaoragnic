@@ -29,6 +29,9 @@ const ProductDetailsPage = lazy(
 const ContactUsPage = lazy(() => import("./userApp/pages/ContactUsPage"));
 const OurStoryPage = lazy(() => import("./userApp/pages/OurStoryPage"));
 const FaqPage = lazy(() => import("./userApp/pages/FaqPage"));
+const WebsiteDeveloperPage = lazy(
+  () => import("./userApp/pages/WebsiteDeveloperPage"),
+);
 const SearchPage = lazy(() => import("./userApp/pages/SearchPage"));
 const CheckoutRoutes = lazy(() => import("./userApp/routes/CheckoutRoutes"));
 const OrderConfirmationPage = lazy(
@@ -167,6 +170,7 @@ const AppRoutes = () => (
         <Route path="/reviews" element={<ReviewsPage />} />
         <Route path="/faq" element={<FaqPage />} />
         <Route path="/contact" element={<ContactUsPage />} />
+        <Route path="/website-developer" element={<WebsiteDeveloperPage />} />
 
         {/* SEARCH PAGE WITH URL ROUTING */}
         <Route path="/search" element={<SearchPage />} />

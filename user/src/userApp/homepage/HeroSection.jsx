@@ -3,23 +3,27 @@ import { Link } from "react-router-dom";
 
 const desktopSlides = [
   {
-    image: "/banner/pahadiseid.png",
-    alt: "Ghar Ka Organic Himalayan product range",
+    image:
+      "https://res.cloudinary.com/dbcciugyn/image/upload/v1794418871/74a7589c-117d-45b4-87f5-61860e39b7d1.png",
+    alt: "Ghar Ka Organic featured banner 1",
     href: "/all-products",
   },
   {
-    image: "/banner/himlayanbanner.png",
-    alt: "Himalayan products from Ghar Ka Organic",
+    image:
+      "https://res.cloudinary.com/dbcciugyn/image/upload/v1794419028/04227414-89e6-40ae-b9fd-f5ee2d004cc3.png",
+    alt: "Ghar Ka Organic featured banner 2",
     href: "/all-products",
   },
   {
-    image: "/banner/pahadipickle.png",
-    alt: "Traditional Pahadi pickles from Ghar Ka Organic",
-    href: "/buy-mango-pickle-online",
+    image:
+      "https://res.cloudinary.com/dbcciugyn/image/upload/v1794419278/52623cce-b145-44e2-a406-3f580e3a65e6.png",
+    alt: "Ghar Ka Organic featured banner 3",
+    href: "/all-products",
   },
   {
-    image: "/banner/natural.png",
-    alt: "Natural Himalayan food products from Ghar Ka Organic",
+    image:
+      "https://res.cloudinary.com/dbcciugyn/image/upload/v1794419553/9bd1c6ab-d705-4242-8cac-cb44dea72b52.png",
+    alt: "Ghar Ka Organic featured banner 4",
     href: "/all-products",
   },
 ];

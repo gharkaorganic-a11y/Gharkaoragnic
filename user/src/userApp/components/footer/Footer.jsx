@@ -158,13 +158,11 @@ const Footer = () => {
               {/* Subtitle */}
               <p className="text-xs sm:text-sm text-[#F7EFE6]/85 font-light max-w-lg mb-6 leading-relaxed">
                 Designed &amp; Developed by{" "}
-                <a
-                  href="https://www.instagram.com/raviiiiii._0/"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  to="/website-developer"
                   className="font-semibold text-[#FFE3B3] hover:underline">
                   Ravi Sharma
-                </a>
+                </Link>
                 . Get a premium, blazing-fast eCommerce store or custom website. Call or WhatsApp:{" "}
                 <a
                   href="https://wa.me/918392856993?text=Hi%20Ravi%20Sharma,%20I%20want%20a%20website%20like%20Ghar%20Ka%20Organic"
@@ -513,13 +511,11 @@ const Footer = () => {
         <div className="border-t border-white/15 bg-black/15 py-3">
           <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-10 flex flex-wrap items-center justify-center gap-2 text-[11px] text-[#F7EFE6]/70 text-center">
             <span>Website Designed &amp; Developed by</span>
-            <a
-              href="https://www.instagram.com/raviiiiii._0/"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to="/website-developer"
               className="font-semibold text-[#FFE3B3] hover:underline">
               Ravi Sharma
-            </a>
+            </Link>
             <span className="hidden sm:inline text-white/30">•</span>
             <span>
               WhatsApp / Call:{" "}

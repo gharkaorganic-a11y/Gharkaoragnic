@@ -1,9 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { STORY_INTRO_PARAGRAPHS, STORY_LOCATION } from "./ourStoryContent";
 
 const OurStoryComponent = () => {
   return (
-    <section className="bg-white px-5 py-12 font-sans sm:px-8 sm:py-16 lg:py-20 border-t border-gray-100">
+    <section className="our-story bg-white px-5 py-12 font-sans sm:px-8 sm:py-16 lg:py-20 border-t border-gray-100">
       <div className="mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-2 md:gap-14 lg:gap-20">
         <figure className="w-full m-0 order-1 md:order-1">
           <picture>
@@ -13,7 +14,7 @@ const OurStoryComponent = () => {
             />
             <img
               src="https://res.cloudinary.com/dwgro3zo7/image/upload/v1776768403/Local_women_in_Bhimtal_Uttarakhand_preparing_traditional_Himalayan_organic_food_tbpvgk.webp"
-              alt="Traditional Himalayan organic food preparation in Bhimtal Uttarakhand by local women for Ghar Ka Organic"
+              alt="Traditional Himalayan homemade food preparation in Mangoli, Nainital, Uttarakhand by local women for Ghar Ka Organic"
               loading="lazy"
               width="800"
               height="1000"
@@ -28,7 +29,7 @@ const OurStoryComponent = () => {
           itemScope
           itemType="https://schema.org/Organization">
           <meta itemProp="name" content="Ghar Ka Organic" />
-          <meta itemProp="location" content="Bhimtal, Uttarakhand, India" />
+          <meta itemProp="location" content={STORY_LOCATION} />
 
           <h2
             className="text-2xl sm:text-3xl md:text-4xl font-light tracking-widest text-[#2a2a2a] mb-6 uppercase leading-snug font-sans"
@@ -41,29 +42,9 @@ const OurStoryComponent = () => {
           <div
             className="font-light text-[15px] md:text-[15.5px] leading-[2.2] text-[#4f4f4f] space-y-6 antialiased"
             itemProp="description">
-            <p>
-              <strong className="font-medium text-[#1a1a1a]">
-                GHAR KA ORGANIC
-              </strong>{" "}
-              started with a simple mission in the hills of Bhimtal, Nainital —
-              to bring back the authentic taste of the Himalayas through pure,
-              homemade goodness and zero artificial preservatives.
-            </p>
-
-            <p>
-              In today’s world filled with synthetic flavors and chemicals, we
-              wanted people across India to experience what real “ghar ka
-              khaana” truly feels like. We achieve this through our traditional
-              Kumaoni pickles, raw forest honey, and hand-churned A2 Bilona Desi
-              Ghee.
-            </p>
-
-            <p>
-              Deeply connected to our pahadi roots in the Kumaon and Garhwal
-              regions, we aim to share the beauty of Himalayan culture using
-              locally harvested ingredients and timeless, multi-generational
-              food wisdom.
-            </p>
+            {STORY_INTRO_PARAGRAPHS.map((paragraph, idx) => (
+              <p key={idx}>{paragraph}</p>
+            ))}
 
             <div className="pt-2">
               <Link

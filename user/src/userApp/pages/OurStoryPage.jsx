@@ -1,6 +1,12 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
+import {
+  STORY_FAQS,
+  STORY_INTRO_PARAGRAPHS,
+  STORY_LOCATION,
+  STORY_SECTIONS,
+} from "../homepage/ourStoryContent";
 
 const BASE_URL = "https://gharkaorganic.com";
 const CANONICAL = `${BASE_URL}/our-story`;
@@ -16,7 +22,7 @@ const JSONLD = JSON.stringify({
       url: CANONICAL,
       name: "Our Story | Ghar Ka Organic",
       description:
-        "Story of Ghar Ka Organic from Bhimtal, Uttarakhand – handmade Himalayan pickles, A2 ghee and raw honey.",
+        "Story of Ghar Ka Organic from Mangoli, Nainital, Uttarakhand – homemade pickles, pure ghee, natural honey, traditional pahadi dals, spices and pahadi salts.",
       inLanguage: "en-IN",
       isPartOf: {
         "@id": `${BASE_URL}/#website`,
@@ -38,7 +44,7 @@ const JSONLD = JSON.stringify({
       url: CANONICAL,
       name: "Our Story",
       description:
-        "Learn how Ghar Ka Organic started — bringing authentic Himalayan organic food from Uttarakhand to India.",
+        "Learn how GHAR KA started in Mangoli, Nainital, Uttarakhand — bringing the goodness, authenticity and familiar taste of homemade food to households everywhere.",
       isPartOf: {
         "@id": `${BASE_URL}/#website`,
       },
@@ -55,11 +61,11 @@ const JSONLD = JSON.stringify({
       url: BASE_URL,
       logo: `${BASE_URL}/logo/gharka-logo.png`,
       description:
-        "Ghar Ka Organic is an Uttarakhand-based brand bringing authentic Himalayan organic food – handmade pickles, A2 bilona ghee, and raw forest honey – to homes across India.",
+        "Ghar Ka Organic is a Mangoli, Nainital, Uttarakhand-based brand bringing homemade pickles, pure ghee, natural honey, traditional pahadi dals, spices and pahadi salts to households everywhere without unnecessary chemicals or artificial preservatives.",
       foundingDate: "2020",
       foundingLocation: {
         "@type": "Place",
-        name: "Bhimtal, Uttarakhand",
+        name: "Mangoli, Nainital, Uttarakhand",
       },
       sameAs: [
         "https://www.instagram.com/gharkaorganic/",
@@ -78,11 +84,12 @@ const JSONLD = JSON.stringify({
       email: "gharkaorganic@gmail.com",
       knowsAbout: [
         "Uttarakhand Organic Food",
-        "Pahadi Pickles",
-        "A2 Bilona Ghee",
-        "Raw Forest Honey",
+        "Homemade Pickles",
+        "Pure Ghee",
+        "Natural Honey",
+        "Traditional Pahadi Dals",
+        "Pahadi Salts",
         "Himalayan Traditional Food",
-        "Kumaoni Cuisine",
       ],
       areaServed: {
         "@type": "Country",
@@ -119,40 +126,14 @@ const JSONLD = JSON.stringify({
     {
       "@type": "FAQPage",
       "@id": `${CANONICAL}#faq`,
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "Who is Ghar Ka Organic?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Ghar Ka Organic is an Uttarakhand-based brand dedicated to bringing authentic Himalayan organic food to homes across India. We make handmade pickles, A2 bilona ghee, and raw forest honey using traditional methods and natural ingredients.",
-          },
+      mainEntity: STORY_FAQS.map((item) => ({
+        "@type": "Question",
+        name: item.q,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.a,
         },
-        {
-          "@type": "Question",
-          name: "Where does Ghar Ka Organic come from?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "We are based in Bhimtal, Uttarakhand, in the beautiful Himalayas. Our mission is to preserve the authentic taste and tradition of Pahadi food while supporting local communities.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Why is it called Ghar Ka Organic?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "'Ghar Ka' means 'from home' in Hindi. Our name reflects our commitment to homemade authenticity — food made with the same care and quality as if prepared in your own kitchen.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Are Ghar Ka Organic products truly organic?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Yes, all our products are made with organic and natural ingredients. We use no artificial preservatives, chemicals, or additives — only pure, traditional Himalayan ingredients.",
-          },
-        },
-      ],
+      })),
     },
   ],
 });
@@ -166,17 +147,17 @@ const OurStoryPage = () => {
       <Helmet>
         {/* BASIC SEO */}
         <title>
-          Our Story | Ghar Ka Organic – Bhimtal Uttarakhand Organic Food Brand
+          Our Story | Ghar Ka Organic – Mangoli, Nainital, Uttarakhand
         </title>
 
         <meta
           name="description"
-          content="Learn how Ghar Ka Organic started in Bhimtal, Uttarakhand. Handmade Himalayan pickles, A2 ghee, and raw forest honey made using traditional methods with zero preservatives."
+          content="Learn how GHAR KA began in Mangoli, Nainital, Uttarakhand. Homemade pickles, pure ghee, natural honey, traditional pahadi dals, spices and pahadi salts made without unnecessary chemicals or artificial preservatives."
         />
 
         <meta
           name="keywords"
-          content="Ghar Ka Organic, Uttarakhand organic food, Bhimtal pickles, A2 ghee, raw honey, pahadi products, Himalayan food, organic brand"
+          content="Ghar Ka Organic, GHAR KA, Mangoli Nainital, Uttarakhand organic food, homemade pickles, pure ghee, natural honey, pahadi dals, pahadi salts, traditional Indian food"
         />
 
         <meta
@@ -194,14 +175,14 @@ const OurStoryPage = () => {
         <meta property="og:title" content="Our Story | Ghar Ka Organic" />
         <meta
           property="og:description"
-          content="From Bhimtal, Uttarakhand — discover the story behind Ghar Ka Organic's authentic Himalayan organic food."
+          content="From Mangoli, Nainital, Uttarakhand — discover the story behind GHAR KA and the familiar taste of homemade food."
         />
         <meta property="og:image" content={OG_IMAGE} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta
           property="og:image:alt"
-          content="Local women preparing traditional Himalayan organic food in Bhimtal, Uttarakhand"
+          content="Local women preparing traditional Himalayan homemade food in Mangoli, Nainital, Uttarakhand"
         />
         <meta property="og:url" content={CANONICAL} />
         <meta property="og:site_name" content="Ghar Ka Organic" />
@@ -212,7 +193,7 @@ const OurStoryPage = () => {
         <meta name="twitter:title" content="Our Story | Ghar Ka Organic" />
         <meta
           name="twitter:description"
-          content="Authentic Himalayan organic food from Bhimtal, Uttarakhand. Handmade pickles, A2 ghee, and raw honey."
+          content="From Mangoli, Nainital, Uttarakhand — homemade pickles, pure ghee, natural honey, traditional pahadi dals, spices and pahadi salts."
         />
         <meta name="twitter:image" content={OG_IMAGE} />
         <meta name="twitter:site" content="@gharkaorganic" />
@@ -275,7 +256,7 @@ const OurStoryPage = () => {
                 />
                 <img
                   src={heroImage}
-                  alt="Traditional Himalayan organic food preparation in Bhimtal Uttarakhand by local women for Ghar Ka Organic"
+                  alt="Traditional Himalayan homemade food preparation in Mangoli, Nainital, Uttarakhand by local women for Ghar Ka Organic"
                   loading="eager"
                   fetchPriority="high"
                   width="800"
@@ -286,13 +267,13 @@ const OurStoryPage = () => {
               </picture>
             </figure>
 
-            {/* STORY NARRATIVE (RIGHT COLUMN) */}
+            {/* STORY NARRATIVE INTRO (RIGHT COLUMN) */}
             <article
               className="text-left flex flex-col justify-center order-2 md:order-2"
               itemScope
               itemType="https://schema.org/Organization">
               <meta itemProp="name" content="Ghar Ka Organic" />
-              <meta itemProp="location" content="Bhimtal, Uttarakhand, India" />
+              <meta itemProp="location" content={STORY_LOCATION} />
 
               <h1
                 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-widest text-[#2a2a2a] mb-6 uppercase leading-snug font-sans"
@@ -303,50 +284,29 @@ const OurStoryPage = () => {
               <div className="w-12 h-[1.5px] bg-gray-300 mb-8" aria-hidden="true" />
 
               <div
-                className="font-light text-[15px] md:text-[15.5px] leading-[2.2] text-[#4f4f4f] space-y-6 md:space-y-7 antialiased"
+                className="font-light text-[15px] md:text-[15.5px] leading-[2.2] text-[#4f4f4f] space-y-5 md:space-y-6 antialiased"
                 itemProp="description">
-                <p>
-                  <strong className="font-medium text-[#1a1a1a]">
-                    GHAR KA ORGANIC
-                  </strong>{" "}
-                  started with a simple mission in the hills of Bhimtal, Nainital —
-                  to bring back the authentic taste of the Himalayas through pure,
-                  homemade goodness and zero artificial preservatives.
-                </p>
-
-                <p>
-                  In today’s world filled with synthetic flavors and chemicals, we
-                  wanted people across India to experience what real “ghar ka
-                  khaana” truly feels like. We achieve this through our traditional
-                  Kumaoni pickles, raw forest honey, and hand-churned A2 Bilona Desi
-                  Ghee.
-                </p>
-
-                <p>
-                  Deeply connected to our pahadi roots in the Kumaon and Garhwal
-                  regions, we aim to share the beauty of Himalayan culture using
-                  locally harvested ingredients and timeless, multi-generational
-                  food wisdom.
-                </p>
-
-                <p>
-                  Every product we create, from our authentic Hemp Seed (Bhang)
-                  Chutney to our sun-fermented Mango Achar, carries the soul of the
-                  mountains — natural ingredients, authentic pahadi taste, and the
-                  warmth of home in every bite.
-                </p>
-
-                <p>
-                  GHAR KA ORGANIC is not just a brand. It is a movement built to
-                  preserve Kumaoni culture, empower women-led farmer groups in
-                  Uttarakhand, and share the real taste of the pahad with the world.
-                </p>
-
-                <p className="font-medium text-[#1a1a1a] pt-1">
-                  Pure taste. Pahadi roots. Zero preservatives.
-                </p>
+                {STORY_INTRO_PARAGRAPHS.map((paragraph, idx) => (
+                  <p key={idx}>{paragraph}</p>
+                ))}
               </div>
             </article>
+          </div>
+
+          {/* FULL STORY CHAPTERS */}
+          <div className="max-w-3xl mx-auto mt-14 md:mt-20 pt-12 md:pt-16 border-t border-[#e8e8e8] space-y-12 md:space-y-14">
+            {STORY_SECTIONS.map((section) => (
+              <section key={section.heading} className="space-y-5 md:space-y-6">
+                <h2 className="text-xl sm:text-2xl font-light tracking-wide text-[#2a2a2a] leading-snug">
+                  {section.heading}
+                </h2>
+                <div className="font-light text-[15px] md:text-[15.5px] leading-[2.2] text-[#4f4f4f] space-y-5 md:space-y-6 antialiased">
+                  {section.paragraphs.map((paragraph, idx) => (
+                    <p key={idx}>{paragraph}</p>
+                  ))}
+                </div>
+              </section>
+            ))}
           </div>
         </main>
 
@@ -500,24 +460,7 @@ const OurStoryPage = () => {
           </div>
 
           <div className="divide-y divide-[#ebebeb] border-y border-[#ebebeb]">
-            {[
-              {
-                q: "Who is Ghar Ka Organic?",
-                a: "Ghar Ka Organic is an Uttarakhand-based brand dedicated to bringing authentic Himalayan organic food to homes across India. We make handmade pickles, A2 bilona ghee, and raw forest honey using traditional methods and natural ingredients.",
-              },
-              {
-                q: "Where does Ghar Ka Organic come from?",
-                a: "We are based in Bhimtal, Uttarakhand, in the beautiful Himalayas. Our mission is to preserve the authentic taste and tradition of Pahadi food while supporting local communities.",
-              },
-              {
-                q: "Why is it called Ghar Ka Organic?",
-                a: "'Ghar Ka' means 'from home' in Hindi. Our name reflects our commitment to homemade authenticity — food made with the same care and quality as if prepared in your own kitchen.",
-              },
-              {
-                q: "Are Ghar Ka Organic products truly organic?",
-                a: "Yes, all our products are made with organic and natural ingredients. We use no artificial preservatives, chemicals, or additives — only pure, traditional Himalayan ingredients.",
-              },
-            ].map((item, idx) => (
+            {STORY_FAQS.map((item, idx) => (
               <details
                 key={idx}
                 className="group py-5 transition-all">

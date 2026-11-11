@@ -131,6 +131,11 @@ const sitemapData = [
       },
       { name: "Privacy Policy", path: "/privacy", desc: "Data protection" },
       { name: "Terms & Conditions", path: "/terms", desc: "Usage terms" },
+      {
+        name: "Website Developer – Ravi Sharma (RSDEV)",
+        path: "/website-developer",
+        desc: "Custom React & Firebase engineering by RSDEV",
+      },
     ],
   },
 ];

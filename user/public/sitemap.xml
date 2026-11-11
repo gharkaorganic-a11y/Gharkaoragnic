@@ -70,6 +70,14 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- Website Developer Attribution & Services -->
+  <url>
+    <loc>https://gharkaorganic.com/website-developer</loc>
+    <lastmod>2026-11-11T23:59:00+05:30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
   <!-- ┌─────────────────────────────────────────────────────────────┐ -->
   <!-- │ PRIMARY PRODUCT PAGES (Canonical URLs Only)                 │ -->
   <!-- └─────────────────────────────────────────────────────────────┘ -->
