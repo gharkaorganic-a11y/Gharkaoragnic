@@ -646,15 +646,17 @@ const CollectionPage = () => {
                 {isAllSection ? "best sellers" : section.title.toLowerCase()}
               </strong>
               {isAllSection
-                ? " represent products our customers trust most — pure A2 Badri Desi Ghee churned using the traditional bilona method, raw forest honey harvested from Himalayan wildflowers, and pahadi pickles made with age-old Kumaoni recipes."
-                : ` are sourced directly from women-led farmer groups in Uttarakhand. We use no preservatives, chemicals, or artificial additives — only traditional methods passed down generations.`}
+                ? " represent products our customers trust most — homemade pickles, pure ghee, natural honey, traditional pahadi dals, spices, and pahadi salts crafted in Mangoli, Nainital, Uttarakhand."
+                : ` are prepared in Mangoli, Nainital, Uttarakhand using carefully selected ingredients and traditional preparation methods. We don't use unnecessary chemicals or artificial preservatives — only honest, simple recipes passed down generations.`}
             </p>
             <p>
-              Every product comes from verified farmers across Kumaon and
-              Garhwal regions — Bhimtal, Almora, Pithoragarh, and Nainital. No
-              middlemen, no cold storage. We pack within 48 hours of your order
-              and ship with our <strong>15-day freshness guarantee</strong>.
-              Free shipping across India on orders above ₹499.
+              Every item carries the authentic taste of{" "}
+              <strong>Ghar Ka Khana</strong> from Mangoli, Nainital,
+              Uttarakhand — made using carefully selected ingredients and
+              traditional recipes without unnecessary chemicals or artificial
+              preservatives. We pack within 48 hours of your order and ship
+              with our <strong>15-day freshness guarantee</strong>. Free
+              shipping across India on orders above ₹499.
             </p>
             <h3 className="text-lg font-semibold text-gray-900 !mb-2 !mt-6">
               Related Categories

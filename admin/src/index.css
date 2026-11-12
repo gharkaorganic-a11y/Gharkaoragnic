@@ -1,17 +1,20 @@
 @import "tailwindcss";
 
 @theme {
+  --font-serif: "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif;
   --color-brand-blue: #2874f0;
   --color-brand-blue-dark: #1c5fba;
   --color-brand-blue-light: #eaf2ff;
-  --color-brand-canvas: #f1f3f6;
+  --color-brand-yellow: #ffe500;
+  --color-brand-yellow-soft: #fff8d6;
+  --color-brand-canvas: #f1f2f4;
 }
 
 @layer base {
   :root {
     color-scheme: light;
-    background: #f1f3f6;
-    color: #202124;
+    background: #f1f2f4;
+    color: #303030;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
   }
@@ -24,7 +27,7 @@
     min-width: 320px;
     min-height: 100vh;
     margin: 0;
-    background: #f1f3f6;
+    background: #f1f2f4;
     font-family: "Poppins", sans-serif;
   }
 

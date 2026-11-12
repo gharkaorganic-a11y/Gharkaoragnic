@@ -17,7 +17,9 @@ const INITIAL_REVIEW = {
   
   // --- Admin Only Fields ---
   title: "", 
+  reply: "",
   verified: true, 
+  isApproved: true,
   date: "" 
 };
 
@@ -207,7 +209,9 @@ export const useReviewForm = (productId) => {
       await productService.addReview(productId, {
         ...review,
         imageUrl: uploadedImageUrl, // Pass the URL, not the File
-        date: finalDate
+        date: finalDate,
+        source: "admin",
+        createdBy: "admin",
       });
 
       reset();

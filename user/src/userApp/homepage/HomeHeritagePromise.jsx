@@ -1,91 +1,147 @@
 import React, { memo } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Leaf, ShieldCheck, Heart } from "lucide-react";
+import { Leaf, ShieldCheck, Heart, Sparkles, Award } from "lucide-react";
 
 const HomeHeritagePromise = () => {
-  const cards = [
+  const pillars = [
     {
       icon: Leaf,
-      badge: "Pure Sourcing",
-      title: "Direct from Mountain Terraces",
+      title: "Carefully Selected Ingredients",
       description:
-        "Harvested by smallholder farmers in the pesticide-free valleys of Bhimtal, Nainital, and Almora. We use native Himalayan ingredients nourished only by glacier waters and mountain soil.",
-    },
-    {
-      icon: ShieldCheck,
-      badge: "Traditional Wisdom",
-      title: "Zero Preservatives, Slow-Fermented",
-      description:
-        "Every batch of pickle is naturally sun-cured in traditional ceramic barnis over several weeks. No artificial chemicals, synthetic vinegar, or preservatives — only pure cold-pressed mustard oil and rock salt.",
+        "We keep things as natural and simple as possible, choosing ingredients carefully so families know what goes into their food.",
+      badge: "Pure & Simple",
+      cardBg: "bg-[#f6f9f4]",
+      borderColor: "border-[#e0edd9]",
+      iconBg: "bg-[#e2f0dc]",
+      iconColor: "text-[#315c3c]",
     },
     {
       icon: Heart,
-      badge: "Community First",
-      title: "Handmade by Pahadi Women",
+      title: "Inspired by Mothers' Kitchens",
       description:
-        "Our kitchen in Nalni, Bhimtal is powered by local women self-help collectives. Every purchase directly supports rural Himalayan families, preserving age-old Kumaoni culinary wisdom.",
+        "Born in Mangoli, Nainital, Uttarakhand — surrounded by the natural beauty, traditions, and pahadi food culture of the hills.",
+      badge: "Pahadi Roots",
+      cardBg: "bg-[#fdfbf6]",
+      borderColor: "border-[#f3ebd7]",
+      iconBg: "bg-[#faedd4]",
+      iconColor: "text-[#9a6a2f]",
+    },
+    {
+      icon: Sparkles,
+      title: "Traditional Home Recipes",
+      description:
+        "From homemade pickles and pure ghee to natural honey, traditional pahadi dals, spices, and pahadi salts prepared with care.",
+      badge: "Ghar Ka Taste",
+      cardBg: "bg-[#faf9f5]",
+      borderColor: "border-[#ede7dc]",
+      iconBg: "bg-[#ede4d2]",
+      iconColor: "text-[#7a5332]",
+    },
+    {
+      icon: ShieldCheck,
+      title: "Zero Artificial Preservatives",
+      description:
+        "Food does not need unnecessary chemicals or artificial preservatives to taste good — we preserve honest homemade taste and quality.",
+      badge: "Honest Food",
+      cardBg: "bg-[#f5f8f8]",
+      borderColor: "border-[#dbeef0]",
+      iconBg: "bg-[#d8eff0]",
+      iconColor: "text-[#1d6b70]",
     },
   ];
 
   return (
-    <section className="w-full bg-white py-14 sm:py-20 border-t border-gray-100 font-sans">
+    <section
+      aria-label="Ghar Ka Organic story and promise"
+      className="w-full bg-[#fdfcf9] py-14 sm:py-20 border-y border-[#eee9df] font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-          <span className="text-[11px] uppercase tracking-[0.22em] font-semibold text-[#315c3c] block mb-2">
-            The Ghar Ka Organic Promise
-          </span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-normal text-gray-900 tracking-tight">
-            Pure Pahadi Goodness in Every Jar
-          </h2>
-          <p className="mt-3 text-xs sm:text-sm md:text-base text-gray-500 font-light leading-relaxed">
-            We don't use factories, artificial chemicals, or commercial
-            shortcuts. Every product is made the authentic way — just like home
-            in the Uttarakhand hills.
-          </p>
+        {/* ── TOP SPLIT: Story & Illustrated Harvest Banner ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center mb-12 sm:mb-16">
+          {/* Left: Text Story */}
+          <div className="lg:col-span-6 space-y-4 text-left">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-[#edf5ee] text-[#315c3c]">
+              <Leaf size={13} className="text-[#315c3c]" /> A Small Beginning in the Hills
+            </span>
+
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-normal text-gray-900 tracking-tight leading-snug">
+              Rooted in Mangoli, Nainital, Uttarakhand
+            </h2>
+
+            <p className="text-sm sm:text-base text-gray-600 font-normal leading-relaxed">
+              GHAR KA began in the small town of Mangoli, Nainital, Uttarakhand — inspired by the simplicity of pahadi food and our mothers’ kitchens. We are not a large food corporation; we believe the best food comes from traditions carried in our homes for generations, without unnecessary chemicals or artificial preservatives.
+            </p>
+
+            <div className="pt-2 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs sm:text-sm font-medium text-gray-700">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#315c3c]" /> No Artificial Preservatives
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#9a6a2f]" /> Born in Mangoli, Nainital
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#1d6b70]" /> Taste of Ghar Ka Khana
+              </span>
+            </div>
+
+            <div className="pt-3">
+              <Link
+                to="/our-story"
+                className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#315c3c] hover:text-[#23462c] transition group">
+                Read our complete story
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Right: Colored SVG / Illustration Artwork Card */}
+          <div className="lg:col-span-6">
+            <div className="relative rounded-2xl overflow-hidden border border-[#e5dfd2] bg-white shadow-xs group">
+              <img
+                src="/illustrations/pahadi-farm-harvest.png"
+                alt="Traditional homemade pahadi food and ingredients from Mangoli, Nainital, Uttarakhand"
+                className="w-full h-auto object-cover max-h-[380px] transition-transform duration-700 ease-out group-hover:scale-105"
+                loading="lazy"
+              />
+              <div className="absolute bottom-3 left-3 right-3 bg-white/95 backdrop-blur-md rounded-xl px-4 py-2.5 border border-gray-100 shadow-sm flex items-center justify-between text-xs text-gray-700 font-medium">
+                <span className="truncate pr-2">From our home in Mangoli, Nainital, Uttarakhand</span>
+                <span className="shrink-0 text-[11px] font-bold uppercase tracking-wider text-[#315c3c] bg-[#edf5ee] px-2 py-0.5 rounded">
+                  Pure Pahadi
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* 3-Card Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10">
-          {cards.map((card, idx) => {
-            const Icon = card.icon;
+        {/* ── BOTTOM: 4-Card Colored Grid ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+          {pillars.map((pillar, idx) => {
+            const Icon = pillar.icon;
             return (
               <div
                 key={idx}
-                className="group p-6 sm:p-8 rounded-2xl bg-[#FAF8F5] border border-[#EAE3D6] hover:border-[#315c3c] hover:bg-white shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col justify-between text-left">
+                className={`p-6 rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-md flex flex-col justify-between text-left ${pillar.cardBg} ${pillar.borderColor}`}>
                 <div>
-                  <div className="w-12 h-12 rounded-xl bg-white border border-[#EAE3D6] group-hover:bg-[#315c3c] text-[#315c3c] group-hover:text-white flex items-center justify-center transition-colors duration-300 mb-6 shadow-2xs">
-                    <Icon size={22} strokeWidth={1.8} />
+                  <div className="flex items-center justify-between mb-4">
+                    <div
+                      className={`w-11 h-11 rounded-xl flex items-center justify-center shadow-2xs ${pillar.iconBg} ${pillar.iconColor}`}>
+                      <Icon size={20} strokeWidth={2} />
+                    </div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                      {pillar.badge}
+                    </span>
                   </div>
-                  <span className="text-[10px] uppercase tracking-wider font-semibold text-[#8F6646] block mb-1">
-                    {card.badge}
-                  </span>
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 tracking-tight">
-                    {card.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-gray-600 font-light leading-relaxed">
-                    {card.description}
-                  </p>
-                </div>
 
-                <div className="pt-6 mt-6 border-t border-gray-200/60">
-                  <span className="text-xs font-semibold text-[#315c3c] inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                    Learn about our roots →
-                  </span>
+                  <h3 className="text-base font-semibold text-gray-900 mb-2 tracking-tight">
+                    {pillar.title}
+                  </h3>
+
+                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
+                    {pillar.description}
+                  </p>
                 </div>
               </div>
             );
           })}
-        </div>
-
-        {/* Story Link Callout */}
-        <div className="mt-12 sm:mt-14 text-center">
-          <Link
-            to="/our-story"
-            className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#315c3c] hover:text-[#244b2e] underline underline-offset-4 transition">
-            <span>Read our complete story from Bhimtal, Nainital</span>
-            <ArrowRight size={15} />
-          </Link>
         </div>
       </div>
     </section>

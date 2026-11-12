@@ -9,13 +9,36 @@ import { preferredSlug } from "../utils/SECTIONKEY";
  * Exactly max-w-7xl px-4 sm:px-6 lg:px-8 aligning with header, hero, and product cards.
  */
 const ProductSectionTabs = memo(
-  ({ productSections = defaultSections, currentKey, onSelect }) => {
+  ({
+    productSections = defaultSections,
+    currentKey,
+    onSelect,
+    title,
+    subtitle,
+  }) => {
     return (
       <section
-        aria-label="Shop by category"
-        className="w-full border-y border-[#ece9df] bg-white py-3.5 sm:py-4.5">
+        aria-label={title || "Shop by category"}
+        className={`w-full border-y border-[#ece9df] bg-white ${
+          title ? "py-7 sm:py-10" : "py-3.5 sm:py-4.5"
+        }`}>
         {/* Exactly matching storefront content width (max-w-7xl px-4 sm:px-6 lg:px-8) */}
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          {title && (
+            <div className="mb-6 sm:mb-8 text-center">
+              <h2
+                className="text-center text-2xl font-medium tracking-tight sm:text-[28px]"
+                style={{ color: "var(--storefront-heading-color, #263329)" }}>
+                {title}
+              </h2>
+              {subtitle && (
+                <p className="mt-1.5 text-xs sm:text-sm text-gray-500 font-normal">
+                  {subtitle}
+                </p>
+              )}
+            </div>
+          )}
+
           <div className="flex snap-x snap-mandatory items-start gap-3.5 sm:gap-4 lg:gap-0 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden justify-start lg:justify-between">
             {productSections.map((category) => {
               const isActive = currentKey && category.key === currentKey;

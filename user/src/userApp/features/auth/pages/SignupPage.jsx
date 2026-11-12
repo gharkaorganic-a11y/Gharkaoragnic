@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/context/UserContext";
+import BrandLogo from "../../../../components/common/BrandLogo";
 
 const BASE_URL = "https://gharkaorganic.com";
 
@@ -33,41 +34,7 @@ const JSONLD = JSON.stringify({
       inLanguage: "en-IN",
 
       isPartOf: {
-        "@type": "WebSite",
-
         "@id": `${BASE_URL}/#website`,
-
-        name: "Ghar Ka Organic",
-
-        url: BASE_URL,
-      },
-    },
-
-    {
-      "@type": "Organization",
-
-      "@id": `${BASE_URL}/#organization`,
-
-      name: "Ghar Ka Organic",
-
-      url: BASE_URL,
-
-      logo: `${BASE_URL}/logo/gharka-logo.png`,
-
-      image: OG_IMAGE,
-
-      email: "gharkaorganic@gmail.com",
-
-      telephone: "+91 7983990550",
-
-      sameAs: ["https://www.instagram.com/gharkaorganic/"],
-
-      address: {
-        "@type": "PostalAddress",
-
-        addressRegion: "Uttarakhand",
-
-        addressCountry: "IN",
       },
     },
 
@@ -271,13 +238,9 @@ export default function SignupPage() {
       <div className="min-h-screen bg-white">
         <section className="max-w-2xl mx-auto px-6 py-20">
           <div className="text-center mb-12">
-            <Link to="/" className="mb-8 inline-flex justify-center">
-              <img
-                src={`${BASE_URL}/logo/gharka-logo.png`}
-                alt="Ghar Ka Organic"
-                className="h-20 w-auto max-w-[260px] object-contain"
-              />
-            </Link>
+            <div className="mb-8 flex justify-center">
+              <BrandLogo variant="default" size="lg" to="/" />
+            </div>
             <h1 className="text-4xl font-light text-gray-900">
               Create Your Account
             </h1>

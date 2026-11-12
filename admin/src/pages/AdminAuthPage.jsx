@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LockKeyhole, Mail } from "lucide-react";
 import { useAdminAuth } from "../context/AdminAuthContext";
+import BrandLogo from "../components/common/BrandLogo";
 
 export default function AdminAuthPage() {
   const navigate = useNavigate();
@@ -27,14 +28,8 @@ export default function AdminAuthPage() {
       <div className="pointer-events-none absolute -bottom-40 -left-24 h-96 w-96 rounded-full bg-sky-100/70 blur-3xl" />
       <section className="relative w-full max-w-md rounded-2xl border border-gray-200 bg-white p-7 shadow-xl shadow-blue-900/5 sm:p-9">
         <div className="mb-8 flex flex-col items-center text-center">
-          <img
-            src="https://gharkaorganic.com/logo/gharka-logo.png"
-            alt="Ghar Ka Organic"
-            className="mb-4 h-16 w-auto max-w-[240px] object-contain"
-          />
-          <h1 className="text-2xl font-semibold tracking-tight text-[#202124]">
-            Ghar Ka Organic
-          </h1>
+          <BrandLogo variant="default" size="lg" className="mb-3" />
+          <h1 className="sr-only">Ghar Ka Organic Admin Sign In</h1>
           <p className="mt-1 text-sm text-[#667067]">Admin sign in</p>
         </div>
 

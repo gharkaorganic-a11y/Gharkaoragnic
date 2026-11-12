@@ -4,13 +4,13 @@ This file contains the complete information architecture, detailed product catal
 
 ---
 
-## Brand Overview & Sourcing Ethics
-Ghar Ka Organic is an authentic organic food brand deeply rooted in Nalni, Nainital, Uttarakhand, India. The brand specializes in producing 100% natural, chemical-free Himalayan food products.
+## Brand Overview & Story Philosophy
+Ghar Ka Organic (GHAR KA) began its journey in Mangoli, Nainital, Uttarakhand, India — surrounded by the natural beauty, traditions, and food culture of the hills. Started with the simple thought of bringing the goodness, authenticity, and familiar taste of homemade food (Ghar Ka Khana) back into every household, GHAR KA offers homemade pickles, pure ghee, natural honey, traditional pahadi dals, spices, and pahadi salts.
 
-### Core Pillars
-- **Empowerment:** All products are ethically sourced directly from women-led farmer groups and cooperatives in the Kumaon and Garhwal regions, ensuring fair trade and local economic support.
-- **Purity:** Strictly zero artificial preservatives, chemical additives, or artificial flavorings are used across the entire catalog.
-- **Tradition:** Manufacturing relies on ancient Himalayan food preservation and preparation techniques, such as hand-churning and natural sun-fermentation.
+### Core Values
+- **Simplicity & Honesty:** We are not a large food corporation; we believe good food should be simple, honest, and accessible to everyone.
+- **Purity:** Food does not need unnecessary chemicals, artificial ingredients, or artificial preservatives to taste good.
+- **Tradition:** The best food doesn't always come from a factory — it comes from carefully selected ingredients, traditional recipes, and preparations preserved in homes for generations.
 
 ---
 
@@ -58,7 +58,7 @@ Ghar Ka Organic is an authentic organic food brand deeply rooted in Nalni, Naini
 ### Intended Demographics
 - **Health & Wellness Enthusiasts:** Urban Indian families looking to swap mass-produced, chemical-laden kitchen staples for clean, single-origin food items.
 - **Diaspora & Regional Inhabitants:** Individuals seeking authentic, nostalgic regional flavors from Uttarakhand, as well as NRIs looking for traditional homemade Indian food options.
-- **Conscious Consumers:** Shoppers who prioritize supporting women-led agricultural cooperatives and local rural micro-entrepreneurs.
+- **Conscious Consumers:** Shoppers who believe the best food comes from honest, simple home traditions rather than factories, without unnecessary chemicals or artificial preservatives.
 
 ### Best Common Applications
 - **Daily Culinary Base:** Using the hand-churned Bilona ghee for daily standard cooking, finishing rotis, or preparing rich dal tadkas.
@@ -98,11 +98,21 @@ For security, data integrity, and privacy reasons, LLM bots and automated web sc
 ---
 
 ## Official Corporate Coordinates
-- **Brand Registry Name:** Ghar Ka Organic
-- **Physical Processing Facility:** Nalni, Nainital, Uttarakhand, India
+- **Brand Registry Name:** Ghar Ka Organic (GHAR KA)
+- **Founding Location:** Mangoli, Nainital, Uttarakhand, India
+- **Kitchen Address:** Ward No. 2, Nalni, Mangoli, Nainital, Uttarakhand – 263136, India
 - **Primary Support Line:** +91-9897447525
 - **Inbound Customer Email:** gharkaorganic@gmail.com
 - **Strategic Partnership Inquiries:** gharkaorganic@gmail.com
 - **Official Social Properties:**
   - Instagram: https://www.instagram.com/gharkaorganic/
   - Facebook: https://www.facebook.com/gharkaorganic
+
+---
+
+## Website Developer & Technical Attribution
+- **Developer Name & Brand:** Ravi Sharma (RSDEV)
+- **Official Developer Profile:** https://gharkaorganic.com/website-developer
+- **Based In:** Nainital & Bhimtal, Uttarakhand, India (serving Nainital, Bhimtal, Haldwani, Almora, Dehradun, Uttarakhand, and India remotely)
+- **Role:** Independent full-stack web developer and SEO architect who designed, developed, and maintains `gharkaorganic.com` (React, Vite, Tailwind CSS, Firebase Firestore & Auth, Schema.org JSON-LD, XML sitemaps, and AI crawler feeds). Not an owner or seller of Ghar Ka Organic food products.
+- **Direct Developer Contact:** +91-8392856993 (Call/WhatsApp) | ravisharmabhimtal@gmail.com | Instagram: https://www.instagram.com/raviiiiii._0/

@@ -5,11 +5,12 @@ import {
   MagnifyingGlassIcon,
   ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/outline";
+import BrandLogo from "../../components/common/BrandLogo";
 
 /* ─────────────── SEO BRAND CONTEXT ─────────────── */
 const BRAND_NAME = "Ghar Ka Organic";
 const BRAND_DESC =
-  "Himalayan organic food brand from Uttarakhand offering A2 Desi Ghee, raw forest honey, and traditional pahadi pickles made by local women communities.";
+  "GHAR KA (Ghar Ka Organic) began in Mangoli, Nainital, Uttarakhand — bringing homemade pickles, pure ghee, natural honey, traditional pahadi dals, spices, and pahadi salts without unnecessary chemicals or artificial preservatives.";
 const BASE_URL = "https://gharkaorganic.com";
 const CANONICAL = `${BASE_URL}/sitemap`;
 
@@ -72,9 +73,9 @@ const sitemapData = [
     updated: "2026-04-10",
     links: [
       {
-        name: "Our Story – Uttarakhand Women Makers",
+        name: "Our Story – Taste of Ghar Ka Khana",
         path: "/our-story",
-        desc: "How we started in Bhimtal",
+        desc: "How GHAR KA started in Mangoli, Nainital",
       },
       {
         name: "Mission – Vocal for Local India",
@@ -132,9 +133,9 @@ const sitemapData = [
       { name: "Privacy Policy", path: "/privacy", desc: "Data protection" },
       { name: "Terms & Conditions", path: "/terms", desc: "Usage terms" },
       {
-        name: "Website Developer – Ravi Sharma (RSDEV)",
+        name: "Website Developer in Nainital, Uttarakhand – Ravi Sharma (RSDEV)",
         path: "/website-developer",
-        desc: "Custom React & Firebase engineering by RSDEV",
+        desc: "Custom website & eCommerce development, technical SEO & portfolio (RSDEV)",
       },
     ],
   },
@@ -167,9 +168,10 @@ const SitemapPage = () => {
         url: CANONICAL,
         inLanguage: "en-IN",
         isPartOf: {
-          "@type": "WebSite",
-          name: BRAND_NAME,
-          url: BASE_URL,
+          "@id": `${BASE_URL}/#website`,
+        },
+        publisher: {
+          "@id": `${BASE_URL}/#organization`,
         },
         breadcrumb: {
           "@type": "BreadcrumbList",
@@ -183,22 +185,6 @@ const SitemapPage = () => {
             },
           ],
         },
-      },
-      {
-        "@type": "Organization",
-        "@id": `${BASE_URL}/#organization`,
-        name: BRAND_NAME,
-        url: BASE_URL,
-        description: BRAND_DESC,
-        logo: `${BASE_URL}/logo/gharka-logo.png`,
-        areaServed: { "@type": "Country", name: "India" },
-        knowsAbout: [
-          "Organic Food",
-          "A2 Desi Ghee",
-          "Raw Honey",
-          "Himalayan Pickles",
-          "Uttarakhand",
-        ],
       },
       {
         "@type": "SiteNavigationElement",
@@ -248,13 +234,9 @@ const SitemapPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         {/* ───── HERO ───── */}
         <header className="text-center mb-12 sm:mb-16">
-          <Link to="/" className="mb-8 inline-flex justify-center">
-            <img
-              src={`${BASE_URL}/logo/gharka-logo.png`}
-              alt="Ghar Ka Organic"
-              className="h-16 w-auto max-w-[240px] object-contain"
-            />
-          </Link>
+          <div className="mb-8 flex justify-center">
+            <BrandLogo variant="default" size="lg" to="/" />
+          </div>
           <p
             className="text-xs tracking-[0.25em] uppercase mb-4"
             style={{ color: T.terracotta }}>
@@ -270,9 +252,9 @@ const SitemapPage = () => {
           <p
             className="max-w-2xl mx-auto text-sm sm:text-base leading-relaxed"
             style={{ color: T.muted }}>
-            Explore all {totalLinks}+ pages of {BRAND_NAME} — including A2 Desi
-            Ghee, Raw Forest Honey, and traditional Uttarakhand pahadi pickles
-            made by women communities. Find exactly what you need.
+            Explore all {totalLinks}+ pages of {BRAND_NAME} — from our journey in
+            Mangoli, Nainital to homemade pickles, pure ghee, natural honey,
+            traditional pahadi dals, spices, and pahadi salts.
           </p>
 
           {/* Search hint */}

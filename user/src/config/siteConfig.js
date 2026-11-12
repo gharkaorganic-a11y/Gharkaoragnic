@@ -65,7 +65,9 @@ const SITE_CONFIG = {
   ogImage:
     "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776768403/Local_women_in_Bhimtal_Uttarakhand_preparing_traditional_Himalayan_organic_food_tbpvgk.webp",
 
-  logo: "https://gharkaorganic.com/logo/gharka-logo.png",
+  logo: "https://gharkaorganic.com/logo/gharka-logo-full.png",
+
+  logoSymbol: "https://gharkaorganic.com/logo/gharka-logo-symbol.png",
 
   favicon: "/favicon.png",
 

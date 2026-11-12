@@ -77,6 +77,9 @@ export const createOrder = async ({
     paymentMethod,
 
     itemCount: normalisedItems.length,
+    subtotal: Number(pricing.subtotal ?? totalAmount) || 0,
+    discount: Number(pricing.couponDiscount ?? pricing.discount ?? 0) || 0,
+    couponCode: pricing.couponCode || "",
     totalAmount,
     pricing,
 

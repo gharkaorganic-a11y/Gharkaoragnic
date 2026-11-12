@@ -7,6 +7,7 @@ import {
   STORY_LOCATION,
   STORY_SECTIONS,
 } from "../homepage/ourStoryContent";
+import BrandLogo from "../../components/common/BrandLogo";
 
 const BASE_URL = "https://gharkaorganic.com";
 const CANONICAL = `${BASE_URL}/our-story`;
@@ -51,56 +52,6 @@ const JSONLD = JSON.stringify({
       primaryImageOfPage: {
         "@type": "ImageObject",
         url: OG_IMAGE,
-      },
-    },
-
-    {
-      "@type": "Organization",
-      "@id": `${BASE_URL}/#organization`,
-      name: "Ghar Ka Organic",
-      url: BASE_URL,
-      logo: `${BASE_URL}/logo/gharka-logo.png`,
-      description:
-        "Ghar Ka Organic is a Mangoli, Nainital, Uttarakhand-based brand bringing homemade pickles, pure ghee, natural honey, traditional pahadi dals, spices and pahadi salts to households everywhere without unnecessary chemicals or artificial preservatives.",
-      foundingDate: "2020",
-      foundingLocation: {
-        "@type": "Place",
-        name: "Mangoli, Nainital, Uttarakhand",
-      },
-      sameAs: [
-        "https://www.instagram.com/gharkaorganic/",
-        "https://www.facebook.com/gharkaorganic/",
-        "https://www.twitter.com/gharkaorganic/",
-      ],
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: "Ward No. 2, Nalni",
-        addressLocality: "Nainital",
-        addressRegion: "Uttarakhand",
-        postalCode: "263136",
-        addressCountry: "IN",
-      },
-      telephone: "+91-9897447525",
-      email: "gharkaorganic@gmail.com",
-      knowsAbout: [
-        "Uttarakhand Organic Food",
-        "Homemade Pickles",
-        "Pure Ghee",
-        "Natural Honey",
-        "Traditional Pahadi Dals",
-        "Pahadi Salts",
-        "Himalayan Traditional Food",
-      ],
-      areaServed: {
-        "@type": "Country",
-        name: "India",
-      },
-      contactPoint: {
-        "@type": "ContactPoint",
-        contactType: "Customer Support",
-        telephone: "+91-9897447525",
-        email: "gharkaorganic@gmail.com",
-        availableLanguage: ["English", "Hindi"],
       },
     },
 
@@ -274,6 +225,8 @@ const OurStoryPage = () => {
               itemType="https://schema.org/Organization">
               <meta itemProp="name" content="Ghar Ka Organic" />
               <meta itemProp="location" content={STORY_LOCATION} />
+
+              <BrandLogo variant="horizontal" size="sm" className="mb-4" />
 
               <h1
                 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-widest text-[#2a2a2a] mb-6 uppercase leading-snug font-sans"

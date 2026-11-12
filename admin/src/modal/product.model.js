@@ -16,6 +16,7 @@ export const PRODUCT_FIELDS = {
   /* ── MEDIA ── */
   banner: "",
   images: [],            // string[]
+  detailsImage: "",      // string (Full-width / full-screen storytelling & infographic banner image)
 
   /* ── PRICING ── */
   price: 0,
@@ -79,6 +80,7 @@ export const WRITABLE_FIELDS = [
   "shortDescription",
   "banner",
   "images",
+  "detailsImage",
   "price",
   "originalPrice",
   "stock",

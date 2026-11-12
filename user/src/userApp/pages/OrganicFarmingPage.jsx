@@ -270,10 +270,12 @@ const SCHEMA = {
   },
   publisher: {
     "@type": "Organization",
-    name: "GharKaOrganic",
+    name: "Ghar Ka Organic",
     logo: {
       "@type": "ImageObject",
-      url: "https://gharkaorganic.com/logo.png",
+      url: "https://gharkaorganic.com/logo/gharka-logo-full.png",
+      width: 2172,
+      height: 724,
     },
   },
   mainEntityOfPage: {

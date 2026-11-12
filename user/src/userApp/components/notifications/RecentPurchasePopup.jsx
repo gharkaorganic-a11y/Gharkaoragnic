@@ -1,273 +1,260 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
-const IMAGE_SALT =
-  "https://res.cloudinary.com/dwgro3zo7/image/upload/v1790512823/gharka-organic/products/fttrz26ukuxngr2knc7f.jpg";
-const IMAGE_GHEE_HONEY =
-  "https://res.cloudinary.com/dwgro3zo7/image/upload/v1790510595/gharka-organic/products/e6qmitnpen0qsgfimte0.jpg";
+// Authentic, verified Cloudinary product photography
+const PRODUCT_IMAGES = {
+  GHEE: "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779804926/uttarakhand-desi-ghee_mhth1n_kwdmv9.webp",
+  HONEY: "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779805346/6b28f8bd-630a-4ad8-99c2-38a0fb306d15.png",
+  AAM_ACHAR: "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779805758/a332c4ef-1765-4f47-b4d4-4012140de26e.png",
+  NIMBU_ACHAR: "https://res.cloudinary.com/dwgro3zo7/image/upload/w_1200,h_1200,c_fill,q_auto,f_auto/v1779806656/c2153e88-16ac-498e-a526-1976f375a691_un6xul.png",
+  BHANG_CHUTNEY: "https://res.cloudinary.com/dwgro3zo7/image/upload/w_1200,h_1200,c_fill,q_auto,f_auto/v1779806954/5fbff796-8d70-4624-931e-f7d36a5ec9a9_leazcc.png",
+  SALT: "https://res.cloudinary.com/dwgro3zo7/image/upload/v1790512823/gharka-organic/products/fttrz26ukuxngr2knc7f.jpg",
+  DALS: "/banners/dals-1500x500.webp",
+  SPICES: "/banners/spices-1500x500.webp",
+};
 
 export const SAMPLE_PURCHASES = [
   {
     id: 1,
-    name: "Amit Sharma",
-    city: "Lucknow, Uttar Pradesh",
-    product: "Pahadi Salt with Dhaniya, Garlic & Green Chillies",
-    image: IMAGE_SALT,
-    timeAgo: "3 minutes ago",
-  },
-  {
-    id: 2,
     name: "Pooja Rawat",
     city: "Dehradun, Uttarakhand",
     product: "Pure Desi Cow Ghee (Bilona Churned)",
-    image: IMAGE_GHEE_HONEY,
-    timeAgo: "7 minutes ago",
+    image: PRODUCT_IMAGES.GHEE,
+    path: "/product/a2-badri-cow-desi-ghee-500ml",
+    minutesAgo: 3,
+  },
+  {
+    id: 2,
+    name: "Rohit Sharma",
+    city: "South Delhi, Delhi",
+    product: "Raw Himalayan Forest Honey",
+    image: PRODUCT_IMAGES.HONEY,
+    path: "/product/bhimtal-raw-forest-honey-500g",
+    minutesAgo: 6,
   },
   {
     id: 3,
-    name: "Rohit Verma",
-    city: "South Delhi, Delhi",
-    product: "Pahadi Salt with Dhaniya, Garlic & Green Chillies",
-    image: IMAGE_SALT,
-    timeAgo: "12 minutes ago",
+    name: "Neha Joshi",
+    city: "Nainital, Uttarakhand",
+    product: "Authentic Pahadi Mango Pickle (Aam Ka Achar)",
+    image: PRODUCT_IMAGES.AAM_ACHAR,
+    path: "/product/pahadi-aam-ka-achar-400g",
+    minutesAgo: 11,
   },
   {
     id: 4,
-    name: "Neha Joshi",
-    city: "Gurugram, Haryana",
-    product: "Raw Himalayan Forest Honey",
-    image: IMAGE_GHEE_HONEY,
-    timeAgo: "16 minutes ago",
+    name: "Amit Verma",
+    city: "Lucknow, Uttar Pradesh",
+    product: "Pahadi Salt with Dhaniya, Garlic & Green Chillies",
+    image: PRODUCT_IMAGES.SALT,
+    path: "/product/pahadi-pisyu-loon-herb-salt-200g",
+    minutesAgo: 15,
   },
   {
     id: 5,
-    name: "Vikram Bisht",
-    city: "Nainital, Uttarakhand",
-    product: "Pahadi Salt with Dhaniya, Garlic & Green Chillies",
-    image: IMAGE_SALT,
-    timeAgo: "21 minutes ago",
+    name: "Sneha Kulkarni",
+    city: "Kothrud, Pune",
+    product: "Kumaoni Sun-Cured Lemon Pickle (Nimbu Achar)",
+    image: PRODUCT_IMAGES.NIMBU_ACHAR,
+    path: "/product/kumaoni-nimbu-achar-400g",
+    minutesAgo: 22,
   },
   {
     id: 6,
-    name: "Sneha Kulkarni",
-    city: "Kothrud, Pune",
-    product: "Pure Desi Cow Ghee (Bilona Churned)",
-    image: IMAGE_GHEE_HONEY,
-    timeAgo: "27 minutes ago",
+    name: "Deepak Negi",
+    city: "Haldwani, Uttarakhand",
+    product: "Traditional Pahadi Bhang Ki Chutney",
+    image: PRODUCT_IMAGES.BHANG_CHUTNEY,
+    path: "/collections",
+    minutesAgo: 28,
   },
   {
     id: 7,
-    name: "Rajesh Mehra",
-    city: "Sector 18, Chandigarh",
-    product: "Pahadi Salt with Dhaniya, Garlic & Green Chillies",
-    image: IMAGE_SALT,
-    timeAgo: "33 minutes ago",
+    name: "Ananya Sengupta",
+    city: "Indiranagar, Bengaluru",
+    product: "Pure Desi Cow Ghee (Bilona Churned)",
+    image: PRODUCT_IMAGES.GHEE,
+    path: "/product/a2-badri-cow-desi-ghee-500ml",
+    minutesAgo: 34,
   },
   {
     id: 8,
-    name: "Ananya Sengupta",
-    city: "Indiranagar, Bengaluru",
-    product: "Raw Himalayan Forest Honey",
-    image: IMAGE_GHEE_HONEY,
-    timeAgo: "39 minutes ago",
+    name: "Vikram Bisht",
+    city: "Almora, Uttarakhand",
+    product: "Organic Uttarakhand Bhatt Ki Dal (Black Soybean)",
+    image: PRODUCT_IMAGES.DALS,
+    path: "/product/organic-bhatt-ki-dal-500g",
+    minutesAgo: 41,
   },
   {
     id: 9,
-    name: "Deepak Negi",
-    city: "Haldwani, Uttarakhand",
-    product: "Pahadi Salt with Dhaniya, Garlic & Green Chillies",
-    image: IMAGE_SALT,
-    timeAgo: "44 minutes ago",
+    name: "Priya Nair",
+    city: "Andheri West, Mumbai",
+    product: "Raw Himalayan Forest Honey",
+    image: PRODUCT_IMAGES.HONEY,
+    path: "/product/bhimtal-raw-forest-honey-500g",
+    minutesAgo: 49,
   },
   {
     id: 10,
-    name: "Priya Nair",
-    city: "Andheri West, Mumbai",
-    product: "Pure Desi Cow Ghee (Bilona Churned)",
-    image: IMAGE_GHEE_HONEY,
-    timeAgo: "51 minutes ago",
+    name: "Rajesh Mehra",
+    city: "Sector 18, Chandigarh",
+    product: "Wild Himalayan Timur Pepper (Sichuan Pepper)",
+    image: PRODUCT_IMAGES.SPICES,
+    path: "/product/wild-himalayan-timur-pepper-100g",
+    minutesAgo: 56,
   },
   {
     id: 11,
-    name: "Suresh Pant",
-    city: "Almora, Uttarakhand",
-    product: "Pahadi Salt with Dhaniya, Garlic & Green Chillies",
-    image: IMAGE_SALT,
-    timeAgo: "58 minutes ago",
+    name: "Kavita Aggarwal",
+    city: "Sector 62, Noida",
+    product: "Authentic Pahadi Mango Pickle (Aam Ka Achar)",
+    image: PRODUCT_IMAGES.AAM_ACHAR,
+    path: "/product/pahadi-aam-ka-achar-400g",
+    minutesAgo: 64,
   },
   {
     id: 12,
-    name: "Kavita Aggarwal",
-    city: "Sector 62, Noida",
-    product: "Raw Himalayan Forest Honey",
-    image: IMAGE_GHEE_HONEY,
-    timeAgo: "1 hour ago",
-  },
-  {
-    id: 13,
     name: "Manoj Pandey",
     city: "Rishikesh, Uttarakhand",
     product: "Pahadi Salt with Dhaniya, Garlic & Green Chillies",
-    image: IMAGE_SALT,
-    timeAgo: "1 hour ago",
+    image: PRODUCT_IMAGES.SALT,
+    path: "/product/pahadi-pisyu-loon-herb-salt-200g",
+    minutesAgo: 73,
   },
   {
-    id: 14,
+    id: 13,
     name: "Sunita Reddy",
     city: "Jubilee Hills, Hyderabad",
     product: "Pure Desi Cow Ghee (Bilona Churned)",
-    image: IMAGE_GHEE_HONEY,
-    timeAgo: "1 hour ago",
+    image: PRODUCT_IMAGES.GHEE,
+    path: "/product/a2-badri-cow-desi-ghee-500ml",
+    minutesAgo: 85,
+  },
+  {
+    id: 14,
+    name: "Tarun Kapoor",
+    city: "Malviya Nagar, Jaipur",
+    product: "Kumaoni Sun-Cured Lemon Pickle (Nimbu Achar)",
+    image: PRODUCT_IMAGES.NIMBU_ACHAR,
+    path: "/product/kumaoni-nimbu-achar-400g",
+    minutesAgo: 94,
   },
   {
     id: 15,
-    name: "Tarun Kapoor",
-    city: "Malviya Nagar, Jaipur",
-    product: "Pahadi Salt with Dhaniya, Garlic & Green Chillies",
-    image: IMAGE_SALT,
-    timeAgo: "2 hours ago",
+    name: "Ritu Bhatt",
+    city: "Haridwar, Uttarakhand",
+    product: "Munsiyari White Pahadi Rajma",
+    image: PRODUCT_IMAGES.DALS,
+    path: "/product/munsiyari-pahadi-rajma-500g",
+    minutesAgo: 108,
   },
   {
     id: 16,
-    name: "Ritu Bhatt",
-    city: "Haridwar, Uttarakhand",
+    name: "Alok Pandey",
+    city: "Swaroop Nagar, Kanpur",
     product: "Raw Himalayan Forest Honey",
-    image: IMAGE_GHEE_HONEY,
-    timeAgo: "2 hours ago",
+    image: PRODUCT_IMAGES.HONEY,
+    path: "/product/bhimtal-raw-forest-honey-500g",
+    minutesAgo: 120,
   },
   {
     id: 17,
-    name: "Alok Pandey",
-    city: "Swaroop Nagar, Kanpur",
-    product: "Pahadi Salt with Dhaniya, Garlic & Green Chillies",
-    image: IMAGE_SALT,
-    timeAgo: "2 hours ago",
+    name: "Shweta Tiwari",
+    city: "Vijay Nagar, Indore",
+    product: "Traditional Pahadi Bhang Ki Chutney",
+    image: PRODUCT_IMAGES.BHANG_CHUTNEY,
+    path: "/collections",
+    minutesAgo: 135,
   },
   {
     id: 18,
-    name: "Shweta Tiwari",
-    city: "Vijay Nagar, Indore",
+    name: "Gaurav Malhotra",
+    city: "Sector 15, Faridabad",
     product: "Pure Desi Cow Ghee (Bilona Churned)",
-    image: IMAGE_GHEE_HONEY,
-    timeAgo: "3 hours ago",
+    image: PRODUCT_IMAGES.GHEE,
+    path: "/product/a2-badri-cow-desi-ghee-500ml",
+    minutesAgo: 150,
   },
   {
     id: 19,
-    name: "Gaurav Malhotra",
-    city: "Sector 15, Faridabad",
+    name: "Divya Chauhan",
+    city: "Chotta Shimla, Shimla",
     product: "Pahadi Salt with Dhaniya, Garlic & Green Chillies",
-    image: IMAGE_SALT,
-    timeAgo: "3 hours ago",
+    image: PRODUCT_IMAGES.SALT,
+    path: "/product/pahadi-pisyu-loon-herb-salt-200g",
+    minutesAgo: 165,
   },
   {
     id: 20,
-    name: "Divya Chauhan",
-    city: "Chotta Shimla, Shimla",
-    product: "Raw Himalayan Forest Honey",
-    image: IMAGE_GHEE_HONEY,
-    timeAgo: "3 hours ago",
-  },
-  {
-    id: 21,
     name: "Manish Tiwari",
     city: "Bhowali, Nainital",
-    product: "Pahadi Salt with Dhaniya, Garlic & Green Chillies",
-    image: IMAGE_SALT,
-    timeAgo: "4 hours ago",
-  },
-  {
-    id: 22,
-    name: "Swati Deshmukh",
-    city: "Dharampeth, Nagpur",
-    product: "Pure Desi Cow Ghee (Bilona Churned)",
-    image: IMAGE_GHEE_HONEY,
-    timeAgo: "4 hours ago",
-  },
-  {
-    id: 23,
-    name: "Naveen Upadhyay",
-    city: "Pithoragarh, Uttarakhand",
-    product: "Pahadi Salt with Dhaniya, Garlic & Green Chillies",
-    image: IMAGE_SALT,
-    timeAgo: "5 hours ago",
-  },
-  {
-    id: 24,
-    name: "Meenakshi Sundaram",
-    city: "Adyar, Chennai",
-    product: "Raw Himalayan Forest Honey",
-    image: IMAGE_GHEE_HONEY,
-    timeAgo: "5 hours ago",
-  },
-  {
-    id: 25,
-    name: "Karan Tripathi",
-    city: "Sigra, Varanasi",
-    product: "Pahadi Salt with Dhaniya, Garlic & Green Chillies",
-    image: IMAGE_SALT,
-    timeAgo: "6 hours ago",
-  },
-  {
-    id: 26,
-    name: "Rashmi Saxena",
-    city: "Gomti Nagar, Lucknow",
-    product: "Pure Desi Cow Ghee (Bilona Churned)",
-    image: IMAGE_GHEE_HONEY,
-    timeAgo: "6 hours ago",
-  },
-  {
-    id: 27,
-    name: "Harish Chandra",
-    city: "Ranikhet, Uttarakhand",
-    product: "Pahadi Salt with Dhaniya, Garlic & Green Chillies",
-    image: IMAGE_SALT,
-    timeAgo: "7 hours ago",
-  },
-  {
-    id: 28,
-    name: "Aarti Singhal",
-    city: "Ghaziabad, Uttar Pradesh",
-    product: "Raw Himalayan Forest Honey",
-    image: IMAGE_GHEE_HONEY,
-    timeAgo: "7 hours ago",
-  },
-  {
-    id: 29,
-    name: "Bhupendra Singh",
-    city: "Rudrapur, Uttarakhand",
-    product: "Pahadi Salt with Dhaniya, Garlic & Green Chillies",
-    image: IMAGE_SALT,
-    timeAgo: "8 hours ago",
-  },
-  {
-    id: 30,
-    name: "Shalini Menon",
-    city: "Vashi, Navi Mumbai",
-    product: "Pure Desi Cow Ghee (Bilona Churned)",
-    image: IMAGE_GHEE_HONEY,
-    timeAgo: "8 hours ago",
+    product: "Jakhiya Seeds – Uttarakhand Tempering",
+    image: PRODUCT_IMAGES.SPICES,
+    path: "/product/jakhiya-seeds-uttarakhand-150g",
+    minutesAgo: 180,
   },
 ];
 
+const formatTimeAgo = (minutes) => {
+  if (minutes < 5) return "Just now";
+  if (minutes < 60) return `${minutes} minutes ago`;
+  const hours = Math.floor(minutes / 60);
+  return hours === 1 ? "1 hour ago" : `${hours} hours ago`;
+};
+
 /**
- * RecentPurchasePopup
- * Clean, authentic social-proof purchase notification.
- * - Displays image and purchase details ONLY (No redirect / No navigation on click)
- * - 30 authentic samples with natural timings
- * - Calm, long delays:
- *   * Initial appearance: 20 seconds after opening website (NOT instant)
- *   * Calm interval between popups: 40 to 65 seconds (NOT continuous)
- *   * Display duration: 5.5 seconds
- *   * Dismiss pause: 3 minutes
+ * Natural, calm timing parameters:
+ * - Does not blast the user immediately (waits 16s - 24s after arrival)
+ * - Stays visible for 5.5s
+ * - Calm, irregular intervals (45s - 75s) between notifications
+ * - Randomizes initial item across sessions to avoid repeating the same product
  */
-const INITIAL_DELAY_MS = 20000; // 20 seconds after opening website
-const DISPLAY_DURATION_MS = 5500; // Visible for 5.5 seconds
-const MIN_INTERVAL_MS = 40000; // 40 seconds minimum between popups
-const RANDOM_INTERVAL_RANGE_MS = 25000; // Random additional 0-25s (total 40s - 65s)
-const DISMISS_PAUSE_MS = 180000; // 3 minutes pause on explicit dismiss
+const INITIAL_DELAY_MIN = 12000;
+const INITIAL_DELAY_RANGE = 6000;
+const DISPLAY_DURATION_MS = 5500;
+const MIN_INTERVAL_MS = 35000;
+const RANDOM_INTERVAL_RANGE_MS = 20000;
+const DISMISS_PAUSE_MS = 180000; // 3 minutes pause if explicitly closed
+const MAX_SHOWS_PER_SESSION = 2; // Show only 1 to 2 times when visiting website
+
+const getSessionShowCount = () => {
+  try {
+    return parseInt(
+      sessionStorage.getItem("gharka_purchase_popup_count") || "0",
+      10,
+    );
+  } catch {
+    return 0;
+  }
+};
+
+const incrementSessionShowCount = () => {
+  try {
+    const next = getSessionShowCount() + 1;
+    sessionStorage.setItem("gharka_purchase_popup_count", String(next));
+    return next;
+  } catch {
+    return 1;
+  }
+};
+
+const getInitialRandomIndex = () => {
+  try {
+    const last = parseInt(sessionStorage.getItem("gharka_last_purchase_idx") || "-1", 10);
+    let chosen = Math.floor(Math.random() * SAMPLE_PURCHASES.length);
+    if (chosen === last) {
+      chosen = (chosen + 1) % SAMPLE_PURCHASES.length;
+    }
+    sessionStorage.setItem("gharka_last_purchase_idx", String(chosen));
+    return chosen;
+  } catch {
+    return Math.floor(Math.random() * SAMPLE_PURCHASES.length);
+  }
+};
 
 const RecentPurchasePopup = () => {
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(getInitialRandomIndex);
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -275,59 +262,67 @@ const RecentPurchasePopup = () => {
   const timerRef = useRef(null);
   const pauseRef = useRef(paused);
   pauseRef.current = paused;
-
-  const handleNext = useCallback(() => {
-    if (dismissed) return;
-
-    // Pick next item in sequence
-    setIndex((prev) => (prev + 1) % SAMPLE_PURCHASES.length);
-    setVisible(true);
-
-    // Keep visible for 5.5 seconds, then hide (unless user is hovering)
-    timerRef.current = setTimeout(() => {
-      if (!pauseRef.current) {
-        setVisible(false);
-        scheduleNext();
-      }
-    }, DISPLAY_DURATION_MS);
-  }, [dismissed]);
+  const showCountRef = useRef(getSessionShowCount());
 
   const scheduleNext = useCallback(() => {
-    if (dismissed) return;
-    // Calm, long interval: 40 to 65 seconds (not continuous)
+    if (dismissed || showCountRef.current >= MAX_SHOWS_PER_SESSION) return;
     const delay =
       Math.floor(Math.random() * RANDOM_INTERVAL_RANGE_MS) + MIN_INTERVAL_MS;
     timerRef.current = setTimeout(() => {
       handleNext();
     }, delay);
-  }, [dismissed, handleNext]);
+  }, [dismissed]);
 
-  // Initial trigger: Wait 20 seconds after website loads
-  useEffect(() => {
-    if (dismissed) return;
+  const handleNext = useCallback(() => {
+    if (dismissed || showCountRef.current >= MAX_SHOWS_PER_SESSION) return;
+
+    showCountRef.current = incrementSessionShowCount();
+
+    setIndex((prev) => {
+      // Pick a different item and avoid immediate consecutive repeats
+      let next = (prev + 1 + Math.floor(Math.random() * 3)) % SAMPLE_PURCHASES.length;
+      try {
+        sessionStorage.setItem("gharka_last_purchase_idx", String(next));
+      } catch {}
+      return next;
+    });
+
+    setVisible(true);
 
     timerRef.current = setTimeout(() => {
-      setVisible(true);
-      timerRef.current = setTimeout(() => {
-        if (!pauseRef.current) {
-          setVisible(false);
+      if (!pauseRef.current) {
+        setVisible(false);
+        if (showCountRef.current < MAX_SHOWS_PER_SESSION) {
           scheduleNext();
         }
-      }, DISPLAY_DURATION_MS);
-    }, INITIAL_DELAY_MS);
+      }
+    }, DISPLAY_DURATION_MS);
+  }, [dismissed, scheduleNext]);
+
+  // Initial trigger after natural user engagement
+  useEffect(() => {
+    if (dismissed || getSessionShowCount() >= MAX_SHOWS_PER_SESSION) return;
+
+    const initialDelay =
+      INITIAL_DELAY_MIN + Math.floor(Math.random() * INITIAL_DELAY_RANGE);
+
+    timerRef.current = setTimeout(() => {
+      handleNext();
+    }, initialDelay);
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [dismissed, scheduleNext]);
+  }, [dismissed, handleNext]);
 
-  // Handle mouse leave when paused
   const handleMouseLeave = () => {
     setPaused(false);
     timerRef.current = setTimeout(() => {
       setVisible(false);
-      scheduleNext();
-    }, 2500);
+      if (showCountRef.current < MAX_SHOWS_PER_SESSION) {
+        scheduleNext();
+      }
+    }, 2000);
   };
 
   const handleDismiss = (e) => {
@@ -336,11 +331,11 @@ const RecentPurchasePopup = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
     setVisible(false);
     setDismissed(true);
-    // Pause for 3 minutes if explicitly dismissed
-    setTimeout(() => {
-      setDismissed(false);
-      scheduleNext();
-    }, DISMISS_PAUSE_MS);
+    // User explicitly dismissed - don't show any more in this session
+    sessionStorage.setItem(
+      "gharka_purchase_popup_count",
+      String(MAX_SHOWS_PER_SESSION),
+    );
   };
 
   const currentItem = SAMPLE_PURCHASES[index];
@@ -355,8 +350,8 @@ const RecentPurchasePopup = () => {
           ? "opacity-100 translate-y-0 pointer-events-auto"
           : "opacity-0 translate-y-5 pointer-events-none"
       }`}>
-      <div className="relative flex items-stretch bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-100 overflow-hidden">
-        {/* Left: Square Product Thumbnail (Display only - NO redirect) */}
+      <div className="relative flex items-stretch bg-white rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-100 overflow-hidden hover:shadow-[0_12px_36px_rgba(0,0,0,0.16)] transition-shadow">
+        {/* Left: Square Product Thumbnail (Informational display only - no redirect) */}
         <div className="relative w-20 sm:w-22 aspect-square shrink-0 bg-[#faf9f5] overflow-hidden flex items-center justify-center p-1.5">
           <img
             src={currentItem.image}
@@ -366,9 +361,9 @@ const RecentPurchasePopup = () => {
           />
         </div>
 
-        {/* Right: Text Information (Display only - NO redirect) */}
+        {/* Right: Text Information (No redirect on click) */}
         <div className="flex-1 min-w-0 p-2.5 sm:p-3 flex flex-col justify-between pr-7">
-          {/* Top Line: Name and City */}
+          {/* Top Line: Customer Name and Location */}
           <div className="text-[11px] sm:text-xs text-gray-600 leading-tight">
             <span className="font-semibold text-gray-900">
               {currentItem.name}
@@ -377,15 +372,15 @@ const RecentPurchasePopup = () => {
             <span className="font-medium text-gray-800">
               {currentItem.city}
             </span>
-            <div className="text-[10px] sm:text-[11px] text-gray-500">
+            <div className="text-[10px] sm:text-[11px] text-gray-500 mt-0.5">
               purchased
             </div>
           </div>
 
-          {/* Product Name (Text only - NO redirect) */}
-          <p className="mt-1 text-xs sm:text-[13px] font-semibold text-gray-900 leading-snug line-clamp-2">
+          {/* Product Name (Plain text - does not redirect away) */}
+          <div className="mt-1 text-xs sm:text-[13px] font-semibold text-gray-900 leading-snug line-clamp-2">
             {currentItem.product}
-          </p>
+          </div>
 
           {/* Time & Verified Indicator */}
           <div className="mt-1 flex items-center gap-1.5 text-[10px] sm:text-[11px] text-gray-400 font-normal">
@@ -395,16 +390,16 @@ const RecentPurchasePopup = () => {
             />
             <span className="text-[#009762] font-medium">Verified Order</span>
             <span>•</span>
-            <span>{currentItem.timeAgo}</span>
+            <span>{formatTimeAgo(currentItem.minutesAgo)}</span>
           </div>
         </div>
 
-        {/* Dismiss Button (Top Right) */}
+        {/* Dismiss Close Button (Top Right) */}
         <button
           type="button"
           onClick={handleDismiss}
           aria-label="Dismiss purchase notification"
-          className="absolute top-1.5 right-1.5 p-1 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors">
+          className="absolute top-1.5 right-1.5 p-1 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors cursor-pointer">
           <XMarkIcon className="w-3.5 h-3.5" />
         </button>
       </div>

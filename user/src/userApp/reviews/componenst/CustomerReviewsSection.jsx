@@ -76,26 +76,26 @@ const CustomerReviewsSection = ({
         </p>
 
         <div className="text-sm text-gray-600 text-center max-w-4xl mx-auto mb-10 leading-relaxed">
-          <strong>Ghar Ka Organic</strong> is rooted in the Himalayan region of
-          Uttarakhand, where we work closely with{" "}
-          <strong>women-led rural communities</strong> and local farmers to
-          preserve traditional food practices and natural farming methods.
+          <strong>Ghar Ka Organic (GHAR KA)</strong> began in Mangoli,
+          Nainital, Uttarakhand with a simple thought: to bring the goodness,
+          authenticity, and familiar taste of homemade food (Ghar Ka Khana)
+          back into every household.
           <br />
           <br />
           Our range includes{" "}
           <strong>
-            A2 Bilona Desi Ghee, Raw Forest Honey, Pahadi Pickles (Achar),
-            Himalayan Spices, Haldi, and handcrafted village products
+            homemade pickles, pure ghee, natural honey, traditional pahadi dals,
+            spices, and pahadi salts
           </strong>
-          , all made in small batches without chemicals or preservatives.
+          , crafted with carefully selected ingredients and traditional recipes
+          without unnecessary chemicals or artificial preservatives.
           <br />
           <br />
-          We believe in <strong>
-            pure, honest food from the Himalayas
+          Because we believe that <strong>
+            the best food doesn't always come from a factory
           </strong>{" "}
-          that supports local livelihoods and brings authentic taste to urban
-          homes. Every purchase supports <strong>“Vocal for Local”</strong> and
-          sustainable rural empowerment.
+          — sometimes, it comes from the traditions we have carried in our homes
+          for generations.
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-4 items-center mb-8 sm:mb-10">

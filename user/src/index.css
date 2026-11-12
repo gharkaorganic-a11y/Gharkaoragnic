@@ -2,11 +2,17 @@
 
 @theme {
   --font-sans: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif;
   --color-brand-forest: #315c3c;
   --color-brand-leaf: #47724d;
   --color-brand-dark: #244b2e;
   --color-brand-cream: #f7f8f6;
   --color-brand-mist: #edf5ee;
+  --color-brand-brown-deep: #54270d;
+  --color-brand-brown-dark: #3d1d0b;
+  --color-brand-gold: #d99a36;
+  --color-brand-natural-green: #168a35;
+  --color-brand-natural-bg: #f8faf5;
 }
 
 .storefront-root {

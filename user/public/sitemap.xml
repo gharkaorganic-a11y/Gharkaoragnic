@@ -73,9 +73,14 @@
   <!-- Website Developer Attribution & Services -->
   <url>
     <loc>https://gharkaorganic.com/website-developer</loc>
-    <lastmod>2026-11-11T23:59:00+05:30</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
+    <lastmod>2026-11-12T09:15:00+05:30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/og-cover-gko.webp</image:loc>
+      <image:title>Ravi Sharma (RSDEV) – Website Developer in Nainital, Uttarakhand</image:title>
+      <image:caption>Website design, eCommerce development, and technical SEO by Ravi Sharma (RSDEV), creator of gharkaorganic.com</image:caption>
+    </image:image>
   </url>
 
   <!-- ┌─────────────────────────────────────────────────────────────┐ -->

@@ -80,6 +80,53 @@ const reviewsRef = (productId, collectionName = COLLECTION) =>
   collection(db, collectionName, productId, "reviews");
 
 /**
+ * Determine whether a review was created by a storefront customer ("user")
+ * or created manually in the admin panel ("admin").
+ */
+export const getReviewSource = (review = {}) => {
+  if (review.source === "admin" || review.createdBy === "admin") return "admin";
+  if (review.source === "user" || review.createdBy === "user") return "user";
+  if (review.userId && String(review.userId).trim().length > 0) return "user";
+  return "admin";
+};
+
+const getReviewSortTimestamp = (review = {}) => {
+  if (review.createdAt?.toMillis) return review.createdAt.toMillis();
+  if (review.createdAt?.seconds) return review.createdAt.seconds * 1000;
+  if (review.date) {
+    const parsed = Date.parse(review.date);
+    if (!Number.isNaN(parsed)) return parsed;
+  }
+  return 0;
+};
+
+const normalizeAdminReview = (docSnap, productMeta = null) => {
+  const data = docSnap.data();
+  const authorSource = getReviewSource(data);
+  return {
+    id: docSnap.id,
+    ...data,
+    name: data.name || "Anonymous",
+    rating: Math.min(5, Math.max(1, Number(data.rating) || 5)),
+    title: data.title || "",
+    comment: data.comment || "",
+    reply: data.reply || "",
+    imageUrl: data.imageUrl || "",
+    verified: Boolean(data.verified),
+    isApproved: data.isApproved !== false,
+    editedByAdmin: Boolean(data.editedByAdmin),
+    authorSource,
+    source: data.source || authorSource,
+    ...(productMeta && {
+      productId: productMeta.id,
+      productName: productMeta.name,
+      productBanner: productMeta.banner,
+      productSlug: productMeta.slug,
+    }),
+  };
+};
+
+/**
  * Splits a large array into smaller arrays to safely bypass Firestore limits.
  */
 const chunkArray = (arr, size) => {
@@ -103,6 +150,7 @@ const mapDoc = (snap) => {
     description: d.description ?? "",
     shortDescription: d.shortDescription ?? "",
     banner: d.banner ?? "",
+    detailsImage: d.detailsImage ?? "",
     material: d.material ?? "",
     brand: d.brand ?? "",
     categoryId: d.categoryId ?? "",
@@ -170,6 +218,15 @@ const sanitize = (data) => {
   const arrFields = ["images", "sizes", "colors", "collectionTypes", "tags", "certifications", "faq"];
   for (const f of arrFields) {
     if (clean[f] !== undefined && !Array.isArray(clean[f])) clean[f] = [];
+  }
+  if (Array.isArray(clean.images)) {
+    clean.images = clean.images
+      .filter((url) => typeof url === "string" && url.trim().length > 0)
+      .map((url) => url.trim());
+  }
+  if (typeof clean.banner === "string") clean.banner = clean.banner.trim();
+  if (typeof clean.detailsImage === "string") {
+    clean.detailsImage = clean.detailsImage.trim();
   }
 
   return clean;
@@ -573,31 +630,65 @@ export const productService = {
   },
 
   /* ──────────────────────────
-     REVIEWS: ADD (Customer & Admin Unified)
-     Uses transactions to keep product's total rating/count perfectly in sync.
+     REVIEWS: RECALCULATE AGGREGATES
+     Keeps totalReviews & ratingSum in sync with approved reviews.
+  ────────────────────────── */
+  async syncProductReviewTotals(productId) {
+    const snap = await getDocs(reviewsRef(productId));
+    let totalReviews = 0;
+    let ratingSum = 0;
+    snap.docs.forEach((d) => {
+      const data = d.data();
+      if (data.isApproved !== false) {
+        totalReviews += 1;
+        ratingSum += Math.min(5, Math.max(1, Number(data.rating) || 0));
+      }
+    });
+    await updateDoc(doc(db, COLLECTION, productId), {
+      totalReviews,
+      ratingSum,
+      updatedAt: serverTimestamp(),
+    });
+    cacheDelete(`product_${productId}`);
+    cacheClear();
+    return { totalReviews, ratingSum };
+  },
+
+  /* ──────────────────────────
+     REVIEWS: ADD (Admin Creation)
+     Uses transactions + marks review with source: "admin".
   ────────────────────────── */
   async addReview(productId, review) {
     try {
-      // Intelligently detect if an Admin submitted this (they pass verified/date fields)
-      const isAdminSubmission = review.verified !== undefined || review.date !== undefined;
+      const isApproved =
+        review.isApproved !== undefined ? Boolean(review.isApproved) : true;
+      const rating = Math.min(5, Math.max(1, Number(review.rating) || 5));
 
       const reviewData = {
         name: (review.name || "Anonymous").trim(),
-        rating: Math.min(5, Math.max(1, Number(review.rating) || 0)),
+        rating,
         comment: (review.comment || "").trim(),
-        
-        // Admin fields (saved if present, otherwise cleanly omitted)
-        ...(review.title && { title: review.title.trim() }),
-        ...(review.verified !== undefined && { verified: review.verified }),
-        
-        // Use custom date string if Admin provided it, otherwise rely on serverTimestamp
-        date: review.date ? review.date : null, 
+        title: (review.title || "").trim(),
+        verified: Boolean(review.verified),
+        isApproved,
+        reply: (review.reply || "").trim(),
+        imageUrl: review.imageUrl ? String(review.imageUrl).trim() : "",
+        date:
+          review.date && String(review.date).trim()
+            ? String(review.date).trim()
+            : new Date().toLocaleDateString("en-IN", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              }),
+        source: "admin",
+        createdBy: "admin",
+        editedByAdmin: false,
         createdAt: serverTimestamp(),
-        
-        // Admins bypass moderation. Customers must wait for manual approval.
-        isApproved: isAdminSubmission ? true : false, 
+        updatedAt: serverTimestamp(),
       };
 
+      let newId = "";
       await runTransaction(db, async (tx) => {
         const productRef = doc(db, COLLECTION, productId);
         const productSnap = await tx.get(productRef);
@@ -605,45 +696,58 @@ export const productService = {
         if (!productSnap.exists()) throw new Error("Product not found");
 
         const reviewRef = doc(reviewsRef(productId));
+        newId = reviewRef.id;
         tx.set(reviewRef, reviewData);
 
-        // Atomically bump the aggregated counts on the parent product
-        tx.update(productRef, {
-          totalReviews: increment(1),
-          ratingSum: increment(reviewData.rating),
-          updatedAt: serverTimestamp(),
-        });
+        if (isApproved) {
+          tx.update(productRef, {
+            totalReviews: increment(1),
+            ratingSum: increment(rating),
+            updatedAt: serverTimestamp(),
+          });
+        }
       });
 
-      cacheDelete(`product_${productId}`);
-      cacheClear();
-      return true;
+      await this.syncProductReviewTotals(productId);
+      return { id: newId, ...reviewData, authorSource: "admin" };
     } catch (err) {
       throw new Error(`addReview failed: ${err.message}`);
     }
   },
 
-  
   /* ──────────────────────────
-     REVIEWS: GET
+     REVIEWS: GET SINGLE PRODUCT
   ────────────────────────── */
   async getProductReviews(productId, {
-    pageSize = 10,
+    pageSize = 50,
     lastDoc = null,
-    approvedOnly = true,
+    approvedOnly = false,
   } = {}) {
     try {
-      const constraints = [orderBy("createdAt", "desc"), limit(pageSize)];
-      if (approvedOnly) constraints.unshift(where("isApproved", "==", true));
-      if (lastDoc) constraints.push(startAfter(lastDoc));
+      let snap;
+      if (approvedOnly) {
+        const constraints = [
+          where("isApproved", "==", true),
+          orderBy("createdAt", "desc"),
+          limit(pageSize),
+        ];
+        if (lastDoc) constraints.push(startAfter(lastDoc));
+        snap = await getDocs(query(reviewsRef(productId), ...constraints));
+      } else {
+        // Fetch without strict orderBy("createdAt") so older/manual reviews missing createdAt are never excluded
+        snap = await getDocs(reviewsRef(productId));
+      }
 
-      const snap = await getDocs(query(reviewsRef(productId), ...constraints));
+      const reviews = snap.docs
+        .map((d) => normalizeAdminReview(d))
+        .sort((a, b) => getReviewSortTimestamp(b) - getReviewSortTimestamp(a));
 
       return {
-        reviews: snap.docs.map((d) => ({ id: d.id, ...d.data() })),
+        reviews: approvedOnly ? reviews : reviews.slice(0, pageSize),
+        allReviewsCount: reviews.length,
         lastDoc: snap.docs.at(-1) ?? null,
-        hasMore: snap.docs.length === pageSize,
-        totalCount: snap.docs.length // Added for UI counters
+        hasMore: approvedOnly ? snap.docs.length === pageSize : reviews.length > pageSize,
+        totalCount: reviews.length,
       };
     } catch (err) {
       throw new Error(`getProductReviews failed: ${err.message}`);
@@ -651,13 +755,125 @@ export const productService = {
   },
 
   /* ──────────────────────────
-     REVIEWS: MODERATION
+     REVIEWS: GET ACROSS ALL PRODUCTS (or single product)
   ────────────────────────── */
-  async approveReview(productId, reviewId) {
+  async getAllReviews({ productId = null } = {}) {
+    try {
+      let products = [];
+      if (productId) {
+        const product = await this.getProduct(productId);
+        products = [product];
+      } else {
+        const snap = await getDocs(
+          query(
+            collection(db, COLLECTION),
+            where("isDeleted", "==", false),
+            orderBy("createdAt", "desc"),
+          ),
+        );
+        products = snap.docs.map(mapDoc);
+      }
+
+      const perProduct = await Promise.all(
+        products.map(async (p) => {
+          const revSnap = await getDocs(reviewsRef(p.id));
+          return revSnap.docs.map((d) => normalizeAdminReview(d, p));
+        }),
+      );
+
+      const reviews = perProduct
+        .flat()
+        .sort((a, b) => getReviewSortTimestamp(b) - getReviewSortTimestamp(a));
+
+      return { products, reviews };
+    } catch (err) {
+      throw new Error(`getAllReviews failed: ${err.message}`);
+    }
+  },
+
+  /* ──────────────────────────
+     REVIEWS: UPDATE ANY REVIEW (User-made or Admin-made)
+     Preserves original authorSource/userId while flagging editedByAdmin.
+  ────────────────────────── */
+  async updateReview(productId, reviewId, updates = {}) {
+    try {
+      const reviewRef = doc(db, COLLECTION, productId, "reviews", reviewId);
+      const snap = await getDoc(reviewRef);
+      if (!snap.exists()) throw new Error("Review not found");
+
+      const existing = snap.data();
+      const originalSource = getReviewSource(existing);
+      const nextRating =
+        updates.rating !== undefined
+          ? Math.min(5, Math.max(1, Number(updates.rating) || 1))
+          : Number(existing.rating || 5);
+
+      const patch = {
+        name:
+          updates.name !== undefined
+            ? (updates.name || "Anonymous").trim()
+            : existing.name || "Anonymous",
+        rating: nextRating,
+        title:
+          updates.title !== undefined
+            ? String(updates.title || "").trim()
+            : existing.title || "",
+        comment:
+          updates.comment !== undefined
+            ? String(updates.comment || "").trim()
+            : existing.comment || "",
+        verified:
+          updates.verified !== undefined
+            ? Boolean(updates.verified)
+            : Boolean(existing.verified),
+        isApproved:
+          updates.isApproved !== undefined
+            ? Boolean(updates.isApproved)
+            : existing.isApproved !== false,
+        date:
+          updates.date !== undefined
+            ? String(updates.date || "").trim() || null
+            : existing.date ?? null,
+        reply:
+          updates.reply !== undefined
+            ? String(updates.reply || "").trim()
+            : existing.reply || "",
+        imageUrl:
+          updates.imageUrl !== undefined
+            ? String(updates.imageUrl || "").trim()
+            : existing.imageUrl || "",
+        // Preserve original creator attribution ("user" vs "admin")
+        source: existing.source || originalSource,
+        createdBy: existing.createdBy || originalSource,
+        editedByAdmin: true,
+        updatedAt: serverTimestamp(),
+      };
+
+      await updateDoc(reviewRef, patch);
+      await this.syncProductReviewTotals(productId);
+
+      return {
+        id: reviewId,
+        ...existing,
+        ...patch,
+        authorSource: originalSource,
+      };
+    } catch (err) {
+      throw new Error(`updateReview failed: ${err.message}`);
+    }
+  },
+
+  /* ──────────────────────────
+     REVIEWS: MODERATION (Approve / Hide & Delete)
+  ────────────────────────── */
+  async approveReview(productId, reviewId, isApproved = true) {
     try {
       await updateDoc(doc(db, COLLECTION, productId, "reviews", reviewId), {
-        isApproved: true,
+        isApproved: Boolean(isApproved),
+        editedByAdmin: true,
+        updatedAt: serverTimestamp(),
       });
+      await this.syncProductReviewTotals(productId);
       return true;
     } catch (err) {
       throw new Error(`approveReview failed: ${err.message}`);
@@ -667,23 +883,11 @@ export const productService = {
   async deleteReview(productId, reviewId) {
     try {
       const reviewRef = doc(db, COLLECTION, productId, "reviews", reviewId);
+      const snap = await getDoc(reviewRef);
+      if (!snap.exists()) throw new Error("Review not found");
 
-      await runTransaction(db, async (tx) => {
-        const reviewSnap = await tx.get(reviewRef);
-        if (!reviewSnap.exists()) throw new Error("Review not found");
-
-        const { rating } = reviewSnap.data();
-        const productRef = doc(db, COLLECTION, productId);
-
-        tx.delete(reviewRef);
-        tx.update(productRef, {
-          totalReviews: increment(-1),
-          ratingSum: increment(-Number(rating || 0)),
-          updatedAt: serverTimestamp(),
-        });
-      });
-
-      cacheDelete(`product_${productId}`);
+      await deleteDoc(reviewRef);
+      await this.syncProductReviewTotals(productId);
       return true;
     } catch (err) {
       throw new Error(`deleteReview failed: ${err.message}`);

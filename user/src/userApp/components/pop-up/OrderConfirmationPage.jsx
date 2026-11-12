@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { CheckCircle2, CreditCard, MapPin, Package } from "lucide-react";
 import { orderService } from "../../features/orders/services/orderService";
+import BrandLogo from "../../../components/common/BrandLogo";
 
 const STATUS_STEPS = [
   "placed",
@@ -110,25 +111,21 @@ const OrderConfirmationPage = () => {
     <div className="min-h-screen bg-[#f7f8f6] flex flex-col items-center font-sans px-4 py-8 sm:py-12">
       <div className="w-full max-w-[680px] bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
         {/* Header */}
-        <div className="bg-[#edf5ee] p-5 sm:p-7 flex items-center gap-4 border-b border-[#d6e8d8]">
-          <Link to="/" aria-label="Ghar Ka Organic home" className="shrink-0">
-            <img
-              src="https://gharkaorganic.com/logo/gharka-logo.png"
-              alt="Ghar Ka Organic"
-              className="h-12 w-auto max-w-[120px] object-contain"
-            />
-          </Link>
-          <div className="w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-sm text-[#315c3c]">
-            <CheckCircle2 size={26} aria-hidden="true" />
+        <div className="bg-[#F8FAF5] p-5 sm:p-7 flex flex-wrap items-center justify-between gap-4 border-b border-[#D99A36]/25">
+          <div className="flex items-center gap-4">
+            <div className="w-11 h-11 flex items-center justify-center bg-white rounded-full border border-[#168A35]/20 text-[#168A35] shrink-0">
+              <CheckCircle2 size={24} aria-hidden="true" />
+            </div>
+            <div className="flex flex-col">
+              <h1 className="text-lg font-bold text-[#3D1D0B]">
+                Order Successful
+              </h1>
+              <p className="text-xs text-[#168A35] font-medium">
+                Order ID: <span className="font-semibold">{displayOrderId}</span>
+              </p>
+            </div>
           </div>
-          <div className="flex flex-col">
-            <h1 className="text-lg font-bold text-[#315c3c]">
-              Order Successful
-            </h1>
-            <p className="text-xs text-[#027a61]">
-              Order ID: <span className="font-semibold">{displayOrderId}</span>
-            </p>
-          </div>
+          <BrandLogo variant="horizontal" size="sm" to="/" />
         </div>
 
         {/* Order Progress — FIX 4 (connector line): use a relative wrapper +

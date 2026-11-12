@@ -157,32 +157,32 @@ const TestimonialsAdminPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F4F6F8] flex items-center justify-center">
-        <Loader2 className="w-12 h-12 animate-spin text-[#2874F0]" />
+      <div className="min-h-[70vh] bg-[#f1f2f4] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#2874F0]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F4F6F8] md:mt-5 font-sans text-gray-900 pb-20">
+    <div className="min-h-screen bg-[#f1f2f4] font-sans text-[#303030] pb-16">
       {/* Toast */}
       {toast && (
         <div
-          className={`fixed top-4 right-4 z-200 flex items-center gap-3 px-5 py-4 rounded-lg shadow-xl border text-sm font-bold max-w-sm animate-in slide-in-from-top-4 duration-300 ${
+          className={`fixed top-16 right-4 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg border text-xs font-semibold max-w-sm ${
             toast.type === "success"
-              ? "bg-green-50 border-green-200 text-green-800"
-              : "bg-red-50 border-red-200 text-red-800"
+              ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+              : "bg-rose-50 border-rose-200 text-rose-800"
           }`}>
           {toast.type === "success" ? (
-            <CheckCircle2 size={20} />
+            <CheckCircle2 size={16} />
           ) : (
-            <AlertCircle size={20} />
+            <AlertCircle size={16} />
           )}
           <span className="flex-1">{toast.msg}</span>
           <button
             onClick={() => setToast(null)}
             className="opacity-60 hover:opacity-100">
-            <X size={18} />
+            <X size={15} />
           </button>
         </div>
       )}
@@ -198,153 +198,164 @@ const TestimonialsAdminPage = () => {
         isEdit={Boolean(editingId)}
       />
 
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-30">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 pt-6 space-y-5">
+        {/* Shopify-Style Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-              Customer Reviews
-            </h1>
-            <p className="text-sm text-gray-500 mt-1">
-              Manage the testimonials shown on your store front.
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold text-[#212121] tracking-tight">
+                Customer Reviews
+              </h1>
+              <span className="px-2 py-0.5 rounded bg-[#FFE500] text-[#212121] text-[10px] font-bold uppercase tracking-wider">
+                Testimonials
+              </span>
+            </div>
+            <p className="text-xs text-[#616161] mt-0.5">
+              Manage the customer testimonials shown on your storefront.
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-            <button
-              onClick={openAdd}
-              className="flex items-center justify-center gap-2 bg-[#2874F0] text-white px-6 py-3.5 rounded-lg font-bold shadow-sm hover:bg-blue-700 active:scale-95 transition-all text-base">
-              <Plus size={20} /> Add New Review
-            </button>
-          </div>
+          <button
+            onClick={openAdd}
+            className="self-start sm:self-auto flex items-center justify-center gap-1.5 bg-[#2874F0] hover:bg-[#1c5fba] text-white px-4 py-2 rounded-lg font-semibold shadow-2xs active:scale-95 transition-all text-xs cursor-pointer">
+            <Plus size={15} /> Add New Review
+          </button>
         </div>
-      </div>
 
-      {/* Stats */}
-      <div className="max-w-350 mx-auto px-4 sm:px-6 py-8 space-y-8 grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <div className="bg-white border border-gray-200 rounded-xl p-5 flex items-center gap-4 shadow-sm">
-          <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#2874F0]">
-            <MessageCircle size={24} className="text-white" />
-          </div>
-          <div>
-            <p className="text-2xl font-black text-gray-900 leading-none mb-1">
-              {total}
-            </p>
-            <p className="text-sm text-gray-500 font-medium">Total Reviews</p>
-          </div>
-        </div>
-        <div className="bg-white border border-gray-200 rounded-xl p-5 flex items-center gap-4 shadow-sm">
-          <div className="w-12 h-12 rounded-full flex items-center justify-center bg-green-500">
-            <UserCheck size={24} className="text-white" />
-          </div>
-          <div>
-            <p className="text-2xl font-black text-gray-900 leading-none mb-1">
-              {live}
-            </p>
-            <p className="text-sm text-gray-500 font-medium">
-              Visible on Store
-            </p>
-          </div>
-        </div>
-        <div className="bg-white border border-gray-200 rounded-xl p-5 flex items-center gap-4 shadow-sm">
-          <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#FF9900]">
-            <Star size={24} className="text-white" />
-          </div>
-          <div>
-            <p className="text-2xl font-black text-gray-900 leading-none mb-1">
-              {avgRating}
-            </p>
-            <p className="text-sm text-gray-500 font-medium">Average Rating</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Reviews Grid */}
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {testimonials.length === 0 ? (
-          <p className="col-span-full rounded-xl border border-dashed border-gray-300 bg-white px-6 py-12 text-center text-gray-600">
-            No customer reviews yet. Add a customer-approved review to publish
-            it on your storefront.
-          </p>
-        ) : (
-          testimonials.map((t) => (
-          <div
-            key={t.id}
-            className="bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col">
-            <div className="p-6 flex-1">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-full overflow-hidden border border-gray-200 bg-gray-50 shrink-0">
-                    <img
-                      src={t.img || ""}
-                      alt={t.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div>
-                    <p className="text-base font-bold text-gray-900">
-                      {t.name}
-                    </p>
-                    <div className="mt-1 flex items-center gap-0.5">
-                      {Array.from({ length: 5 }, (_, i) => (
-                        <Star
-                          key={i}
-                          size={16}
-                          className={
-                            i < (t.rating || 5)
-                              ? "text-[#FF9900] fill-[#FF9900]"
-                              : "text-gray-200 fill-gray-200"
-                          }
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <p className="text-base text-gray-700 leading-relaxed italic">
-                "{t.message}"
+        {/* Compact Metric Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+          <div className="bg-white border border-[#e3e3e3] border-t-[3px] border-t-[#2874F0] rounded-xl p-4 flex items-center gap-3.5 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-[#eaf2ff] text-[#2874F0]">
+              <MessageCircle size={18} />
+            </div>
+            <div>
+              <p className="text-[11px] text-[#616161] font-semibold uppercase tracking-wider">
+                Total Reviews
+              </p>
+              <p className="text-xl font-bold text-[#212121] mt-0.5">
+                {total}
               </p>
             </div>
+          </div>
 
-            <div className="border-t border-gray-100 bg-gray-50/50 p-4 flex items-center justify-between gap-3 rounded-b-xl">
-              <button
-                onClick={() => handleToggle(t)}
-                disabled={toggling === t.id}
-                className="flex items-center gap-2.5 disabled:cursor-not-allowed disabled:opacity-60">
-                <div
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${t.isActive ? "bg-green-500" : "bg-gray-300"}`}>
-                  {toggling === t.id ? (
-                    <Loader2
-                      size={12}
-                      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white animate-spin"
-                    />
-                  ) : (
-                    <span
-                      className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${t.isActive ? "translate-x-5" : "translate-x-0.5"}`}
-                    />
-                  )}
-                </div>
-                <span
-                  className={`text-sm font-bold ${t.isActive ? "text-green-700" : "text-gray-500"}`}>
-                  {t.isActive ? "Visible" : "Hidden"}
-                </span>
-              </button>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => openEdit(t)}
-                  className="p-2.5 text-gray-600 hover:text-[#2874F0] hover:bg-blue-50 rounded-lg transition-colors">
-                  <Edit2 size={18} />
-                </button>
-                <button
-                  onClick={() => handleDelete(t)}
-                  className="p-2.5 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                  <Trash2 size={18} />
-                </button>
-              </div>
+          <div className="bg-white border border-[#e3e3e3] border-t-[3px] border-t-emerald-500 rounded-xl p-4 flex items-center gap-3.5 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-emerald-50 text-emerald-600">
+              <UserCheck size={18} />
+            </div>
+            <div>
+              <p className="text-[11px] text-[#616161] font-semibold uppercase tracking-wider">
+                Visible on Store
+              </p>
+              <p className="text-xl font-bold text-emerald-700 mt-0.5">
+                {live}
+              </p>
             </div>
           </div>
-          ))
-        )}
+
+          <div className="bg-white border border-[#e3e3e3] border-t-[3px] border-t-[#FFE500] rounded-xl p-4 flex items-center gap-3.5 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-[#FFF8D6] text-[#b27b00]">
+              <Star size={18} />
+            </div>
+            <div>
+              <p className="text-[11px] text-[#616161] font-semibold uppercase tracking-wider">
+                Average Rating
+              </p>
+              <p className="text-xl font-bold text-[#212121] mt-0.5">
+                {avgRating}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Reviews Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {testimonials.length === 0 ? (
+            <p className="col-span-full rounded-xl border border-dashed border-[#d4d4d4] bg-white px-6 py-10 text-center text-xs text-[#616161]">
+              No customer reviews yet. Add a review to publish it on your
+              storefront.
+            </p>
+          ) : (
+            testimonials.map((t) => (
+              <div
+                key={t.id}
+                className="bg-white border border-[#e3e3e3] hover:border-[#2874F0] rounded-xl shadow-[0_1px_0_rgba(0,0,0,0.03)] flex flex-col transition-colors">
+                <div className="p-4 flex-1">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full overflow-hidden border border-[#e3e3e3] bg-[#f7f7f7] shrink-0">
+                        <img
+                          src={t.img || ""}
+                          alt={t.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-[#212121]">
+                          {t.name}
+                        </p>
+                        <div className="mt-0.5 flex items-center gap-0.5">
+                          {Array.from({ length: 5 }, (_, i) => (
+                            <Star
+                              key={i}
+                              size={12}
+                              className={
+                                i < (t.rating || 5)
+                                  ? "text-[#e5a800] fill-[#FFE500]"
+                                  : "text-gray-200 fill-gray-200"
+                              }
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-xs text-[#4a4a4a] leading-relaxed italic">
+                    "{t.message}"
+                  </p>
+                </div>
+
+                <div className="border-t border-[#ebebeb] bg-[#fafafa] px-4 py-2.5 flex items-center justify-between gap-2 rounded-b-xl">
+                  <button
+                    onClick={() => handleToggle(t)}
+                    disabled={toggling === t.id}
+                    className="flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer">
+                    <div
+                      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${t.isActive ? "bg-[#2874F0]" : "bg-gray-300"}`}>
+                      {toggling === t.id ? (
+                        <Loader2
+                          size={10}
+                          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white animate-spin"
+                        />
+                      ) : (
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${t.isActive ? "translate-x-4" : "translate-x-0.5"}`}
+                        />
+                      )}
+                    </div>
+                    <span
+                      className={`text-[11px] font-semibold ${t.isActive ? "text-[#2874F0]" : "text-gray-500"}`}>
+                      {t.isActive ? "Visible" : "Hidden"}
+                    </span>
+                  </button>
+
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => openEdit(t)}
+                      title="Edit Review"
+                      className="p-1.5 text-[#616161] hover:text-[#2874F0] hover:bg-[#eaf2ff] rounded-md transition-colors cursor-pointer">
+                      <Edit2 size={14} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(t)}
+                      title="Delete Review"
+                      className="p-1.5 text-[#616161] hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors cursor-pointer">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

@@ -479,6 +479,16 @@ export default function CustomerReviewsSectionNew({ productId, product }) {
                   {rev.comment}
                 </p>
 
+                {rev.imageUrl && (
+                  <div className="pt-1">
+                    <img
+                      src={rev.imageUrl}
+                      alt={`Review by ${rev.name || "Customer"}`}
+                      className="w-20 h-20 object-cover rounded-lg border border-gray-200"
+                    />
+                  </div>
+                )}
+
                 {/* Reviewer Name & Verified Badge */}
                 <div className="flex items-center gap-2 text-xs text-gray-500 pt-1">
                   <span className="font-medium text-gray-900 capitalize">

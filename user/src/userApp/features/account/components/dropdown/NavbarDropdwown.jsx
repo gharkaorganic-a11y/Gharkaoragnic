@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { X, ChevronRight } from "lucide-react";
-import { IMAGES } from "../../../../../assets/images";
+import BrandLogo from "../../../../../components/common/BrandLogo";
 
 const MENU_ITEMS = [
   { label: "Home", path: "/" },
@@ -72,16 +72,13 @@ const NavbarDropdown = ({ isOpen, onClose }) => {
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}>
         {/* Header */}
-        <div className="flex items-center justify-between px-5 h-16 border-b border-[#eeeeea]">
+        <div className="flex items-center justify-between px-5 h-16 border-b border-[#eeeeea] bg-[#F8FAF5]/60">
           <button
+            type="button"
             onClick={() => handleNav("/")}
             aria-label="Ghar Ka Organic Home"
-            className="flex items-center">
-            <img
-              src={IMAGES.brand.logo}
-              alt="Ghar Ka Organic"
-              className="h-9 w-auto object-contain"
-            />
+            className="flex items-center cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D99A36] rounded-md">
+            <BrandLogo variant="horizontal" size="sm" />
           </button>
           <button
             onClick={onClose}

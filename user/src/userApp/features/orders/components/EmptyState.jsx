@@ -1,8 +1,10 @@
 import React from "react";
 import { ShoppingBag } from "lucide-react";
+import BrandLogo from "../../../../components/common/BrandLogo";
 
 const EmptyState = ({ navigate, isCancelled }) => (
   <div className="flex flex-col items-center justify-center py-20 text-center px-8 animate-in fade-in duration-500">
+    <BrandLogo symbolOnly size="sm" className="mb-4" />
     <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-6 border border-gray-100">
       <ShoppingBag size={22} className="text-gray-200" />
     </div>

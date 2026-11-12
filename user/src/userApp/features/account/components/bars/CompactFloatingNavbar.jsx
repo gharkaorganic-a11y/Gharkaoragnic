@@ -5,7 +5,7 @@ import {
   MagnifyingGlassIcon,
   BoltIcon,
 } from "@heroicons/react/24/outline";
-import { IMAGES } from "../../../../../assets/images";
+import BrandLogo from "../../../../../components/common/BrandLogo";
 
 const FarmStyleNavbar = ({ cartCount = 2 }) => {
   const navigate = useNavigate();
@@ -14,15 +14,7 @@ const FarmStyleNavbar = ({ cartCount = 2 }) => {
     <div className="w-full fixed top-0 z-50 hidden lg:block">
       <nav className="w-full h-[72px] bg-[#F6F3EA] border-b border-[#E6E1D3] px-10 flex items-center justify-between">
         {/* LEFT - LOGO */}
-        <div
-          onClick={() => navigate("/")}
-          className="flex items-center gap-3 cursor-pointer">
-          <img
-            src={IMAGES.brand.logo}
-            alt="logo"
-            className="h-10 object-contain"
-          />
-        </div>
+        <BrandLogo variant="default" size="sm" to="/" fetchPriority="high" />
 
         {/* CENTER - MENU */}
         <div className="flex items-center gap-10 text-[15px] font-medium text-[#A45A1C]">

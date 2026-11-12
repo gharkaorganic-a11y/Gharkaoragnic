@@ -167,10 +167,10 @@ const PrivacyPolicyPage = () => {
               customer service lines.
             </p>
             <p className="text-neutral-600">
-              When you purchase our authentic A2 Badri cow desi ghee, Bhimtal raw
-              forest honey, sun-dried Kumaoni pickles, or mountain spices, we
-              collect only the essential information needed to fulfill and deliver
-              your order securely to your doorstep across India.
+              When you purchase our homemade pickles, pure ghee, natural honey,
+              traditional pahadi dals, spices, or pahadi salts, we collect only
+              the essential information needed to fulfill and deliver your
+              order securely to your doorstep across India.
             </p>
           </section>
 
@@ -386,7 +386,7 @@ const PrivacyPolicyPage = () => {
             </h2>
             <p className="text-xs sm:text-sm text-neutral-500 mb-6 font-light">
               For any questions, data deletion requests, or privacy concerns,
-              please reach out directly to our team in Bhimtal:
+              please reach out directly to our team in Mangoli, Nainital:
             </p>
 
             <div className="grid sm:grid-cols-3 gap-4 mb-8">
@@ -398,7 +398,7 @@ const PrivacyPolicyPage = () => {
                   Mountain Kitchen
                 </h3>
                 <p className="text-xs text-neutral-600 mt-1 leading-snug">
-                  Ward No. 2, Nalni, Bhimtal, Nainital, Uttarakhand – 263136
+                  Ward No. 2, Nalni, Mangoli, Nainital, Uttarakhand – 263136
                 </p>
               </div>
 

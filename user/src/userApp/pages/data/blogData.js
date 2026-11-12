@@ -17,7 +17,8 @@ export const blogData = {
     slug: "desi-ghee-se-vajan-kaise-ghataye",
     title: "देसी घी खाने से वजन बढ़ता है या घटता है? जानिए आयुर्वेद और विज्ञान का सच",
     category: "Health",
-    image: "/images/blog-hindi-ghee-weightloss.jpg",
+    image:
+      "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779805222/uttarakhand-desi-ghee_mhth1n5nd_eluqhy.webp",
     author: "Dr. Anjali Mehta",
     author_bio: "Ayurvedic Dietitian",
     author_avatar: "/images/author-anjali.jpg",
@@ -63,7 +64,8 @@ export const blogData = {
     slug: "pahadi-lahsun-vs-chinese-garlic-pechan",
     title: "खतरे की घंटी: जहरीले चाइनीज़ लहसुन और असली पहाड़ी लहसुन की पहचान कैसे करें?",
     category: "Health",
-    image: "/images/blog-hindi-garlic.jpg",
+    image:
+      "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1776770687/Organic_Himalayan_food_from_Bhimtal_Uttarakhand_by_Ghar_Ka_Organic_wbolwx.webp",
     author: "Prakash Singh",
     author_bio: "Organic Farmer & Agriculture Expert",
     author_avatar: "/images/author-prakash.jpg",
@@ -114,7 +116,8 @@ export const blogData = {
     slug: "kachi-ghani-sarso-tel-ke-fayde",
     title: "रिफाइंड तेल को कहें 'ना': जानिए कच्ची घानी सरसों के तेल के 5 जादुई फायदे",
     category: "Health",
-    image: "/images/blog-hindi-mustard-oil.jpg",
+    image:
+      "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779806096/0f2bd60d-2817-4e02-b125-9ee966568267.png",
     author: "Nutritionist Priya",
     author_bio: "Dietitian & Wellness Expert",
     author_avatar: "/images/author-priya.jpg",
@@ -606,7 +609,8 @@ export const blogData = {
     slug: "asli-nakli-shahad-ki-pehchan",
     title: "असली और नकली शहद की पहचान कैसे करें? 10 आसान तरीके",
     category: "Health",
-    image: "images/blog-honey-test.jpg",
+    image:
+      "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779805631/b44580c5-a84c-4c0d-9c73-190f5af1bca3.png",
     author: "Rajesh Patel",
     author_bio: "Apiculture Expert & Organic Farmer",
     author_avatar: "images/author-rajesh.jpg",

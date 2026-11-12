@@ -16,13 +16,19 @@ const AdminOrdersPage = lazy(() => import("../pages/AdminOrdersPage"));
 const AdminInquiriesPage = lazy(
   () => import("../pages/AdminInquiriesPage"),
 );
+const AdminDiscountCodesPage = lazy(
+  () => import("../pages/AdminDiscountCodesPage"),
+);
+const AdminProductReviewsPage = lazy(
+  () => import("../pages/product/AdminProductReviewsPage"),
+);
 // ---------------- PROFESSIONAL LOADING SPINNER ----------------
-// Flipkart Seller Hub Style - Pure CSS (Zero Icon Dependencies for faster render)
+// Shopify Admin × Flipkart Blue & Yellow Loading Spinner
 const LoadingSpinner = ({ message = "Loading module..." }) => (
-  <div className="flex min-h-[70vh] w-full flex-col items-center justify-center bg-[#F1F3F6] p-4">
-    <div className="flex animate-in flex-col items-center gap-4 rounded-xl border border-gray-200 bg-white px-8 py-6 shadow-sm fade-in zoom-in-95 duration-300">
-      <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-[#e0e0e0] border-t-[#2874F0]" />
-      <p className="text-[13px] font-medium text-[#878787] tracking-wide">
+  <div className="flex min-h-[70vh] w-full flex-col items-center justify-center bg-[#f1f2f4] p-4">
+    <div className="flex animate-in flex-col items-center gap-3 rounded-xl border border-[#e3e3e3] bg-white px-7 py-5 shadow-[0_1px_0_rgba(0,0,0,0.03)] fade-in zoom-in-95 duration-300">
+      <div className="h-7 w-7 animate-spin rounded-full border-[3px] border-[#FFE500] border-t-[#2874F0]" />
+      <p className="text-xs font-medium text-[#616161] tracking-wide">
         {message}
       </p>
     </div>
@@ -122,6 +128,33 @@ const AdminLayoutRoutes = () => {
             <Suspense
               fallback={<LoadingSpinner message="Loading Testimonials..." />}>
               <TestimonialsAdminPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="discount-codes"
+          element={
+            <Suspense
+              fallback={<LoadingSpinner message="Loading Discount Codes..." />}>
+              <AdminDiscountCodesPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="reviews"
+          element={
+            <Suspense
+              fallback={<LoadingSpinner message="Loading Product Reviews..." />}>
+              <AdminProductReviewsPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="products/reviews/:productId"
+          element={
+            <Suspense
+              fallback={<LoadingSpinner message="Loading Product Reviews..." />}>
+              <AdminProductReviewsPage />
             </Suspense>
           }
         />

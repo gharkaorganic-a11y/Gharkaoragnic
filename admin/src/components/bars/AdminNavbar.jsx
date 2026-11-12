@@ -1,16 +1,49 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import {
-  FaBars,
-  FaTimes,
-  FaSignOutAlt,
-  FaBell,
-  FaChevronDown,
-  FaUserShield,
-  FaCircle,
-  FaExternalLinkAlt,
-} from "react-icons/fa";
-import { useAdminAuth } from "../../context/AdminAuthContext"; // <-- Use your context
+  Bell,
+  ChevronDown,
+  ExternalLink,
+  LogOut,
+  Menu,
+  MessageSquare,
+  MessageSquarePlus,
+  Package,
+  PlusCircle,
+  ShieldCheck,
+  ShoppingBag,
+  Star,
+  Store,
+  Tag,
+  X,
+} from "lucide-react";
+import { useAdminAuth } from "../../context/AdminAuthContext";
+import BrandLogo from "../common/BrandLogo";
+
+const NAV_GROUPS = [
+  {
+    section: "Store Management",
+    items: [
+      { title: "Orders", path: "/orders", icon: ShoppingBag },
+      { title: "Products", path: "/products", alsoMatch: ["/"], icon: Package },
+      { title: "Discounts", path: "/discount-codes", icon: Tag },
+    ],
+  },
+  {
+    section: "Customers & Content",
+    items: [
+      { title: "Product Reviews", path: "/reviews", icon: MessageSquarePlus },
+      { title: "Inquiries", path: "/inquiries", icon: MessageSquare },
+      { title: "Testimonials", path: "/testimonials", icon: Star },
+    ],
+  },
+  {
+    section: "Quick Actions",
+    items: [
+      { title: "Add Product", path: "/products/create", icon: PlusCircle },
+    ],
+  },
+];
 
 export default function AdminNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -20,16 +53,16 @@ export default function AdminNavbar() {
 
   const { logout, admin } = useAdminAuth();
 
-  const navLinks = useMemo(
-    () => [
-      { title: "Dashboard", path: "/" },
-      { title: "Inventory", path: "/products" },
-      { title: "Orders", path: "/orders" },
-      { title: "Inquiries", path: "/inquiries" },
-      { title: "Testimonials", path: "/testimonials" },
-    ],
-    [],
-  );
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setIsMenuOpen(false);
+        setIsProfileOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -40,175 +73,234 @@ export default function AdminNavbar() {
     }
   };
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (item) => {
+    const current = location.pathname;
+    if (item.path === "/products") {
+      return (
+        current === "/" ||
+        current === "/products" ||
+        current.startsWith("/products/edit")
+      );
+    }
+    if (item.path === "/reviews") {
+      return (
+        current === "/reviews" ||
+        current.startsWith("/reviews/") ||
+        current.startsWith("/products/reviews")
+      );
+    }
+    if (item.alsoMatch?.includes(current)) return true;
+    return (
+      current === item.path ||
+      (item.path !== "/" && current.startsWith(`${item.path}/`))
+    );
+  };
+
+  const renderSidebarContent = (onNavigate) => (
+    <div className="flex flex-col h-full justify-between bg-white">
+      <div className="p-3 space-y-5 overflow-y-auto">
+        {NAV_GROUPS.map((group) => (
+          <div key={group.section}>
+            <p className="px-2.5 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-[#616161]">
+              {group.section}
+            </p>
+            <div className="space-y-0.5">
+              {group.items.map((item) => {
+                const active = isActive(item);
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={onNavigate}
+                    className={`relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition-all ${
+                      active
+                        ? "bg-[#eaf2ff] text-[#2874F0] font-semibold"
+                        : "text-[#303030] font-medium hover:bg-[#f1f2f4]"
+                    }`}>
+                    {active && (
+                      <span className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r bg-[#FFE500] ring-1 ring-[#2874F0]/20" />
+                    )}
+                    <Icon
+                      size={16}
+                      className={active ? "text-[#2874F0]" : "text-[#616161]"}
+                    />
+                    <span>{item.title}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+
+        {/* Sales Channel Link */}
+        <div>
+          <p className="px-2.5 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-[#616161]">
+            Sales Channel
+          </p>
+          <a
+            href="https://gharkaorganic.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={onNavigate}
+            className="flex items-center justify-between px-3 py-2 rounded-lg text-[13px] font-medium text-[#303030] hover:bg-[#f1f2f4] transition">
+            <span className="flex items-center gap-2.5">
+              <Store size={16} className="text-[#2874F0]" />
+              <span>Online Store</span>
+            </span>
+            <ExternalLink size={12} className="text-[#616161]" />
+          </a>
+        </div>
+      </div>
+
+      {/* Sidebar Store Card */}
+      <div className="p-3 border-t border-[#ebebeb]">
+        <div className="rounded-xl border border-[#f5d000]/80 bg-[#fff8d6] p-3">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#2874F0] animate-pulse" />
+            <span className="text-[11px] font-bold text-[#212121]">
+              Ghar Ka Organic
+            </span>
+          </div>
+          <p className="text-[10px] text-[#6b4800] mt-1 font-medium">
+            Mangoli, Nainital • Live Storefront
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-100 flex flex-col font-sans">
-      {/* PRIMARY HUD */}
-      <div className="z-[105] bg-[#2874F0] text-white shadow-md">
-        <div className="max-w-[1800px] mx-auto px-4 h-14 flex items-center justify-between gap-6">
-          {/* Brand Section */}
-          <div className="flex items-center gap-4 shrink-0">
+    <>
+      {/* TOP BAR: SHOPIFY ADMIN STRUCTURE + FLIPKART BLUE & YELLOW COLORS */}
+      <header className="fixed top-0 left-0 right-0 z-[100] h-14 bg-[#2874F0] text-white border-b border-[#1c5fba] shadow-sm font-sans">
+        <div className="h-full px-3 sm:px-5 flex items-center justify-between gap-4">
+          {/* Left: Mobile Drawer Button + Brand + Store Yellow Pill */}
+          <div className="flex items-center gap-3 min-w-0">
             <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-2 text-white hover:bg-white/10 rounded transition-colors">
-              {isMenuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
+              type="button"
+              onClick={() => setIsMenuOpen(true)}
+              aria-label="Open navigation menu"
+              className="lg:hidden p-2 rounded-lg hover:bg-white/10 text-white transition">
+              <Menu size={19} />
             </button>
 
-            <Link to="/" className="flex items-center gap-2 group">
-              <img
-                src="https://gharkaorganic.com/logo/gharka-logo.png"
-                alt="Ghar Ka Organic"
-                className="h-10 w-auto max-w-[150px] rounded bg-white object-contain p-1 sm:max-w-[180px]"
-              />
-              <div className="hidden sm:flex flex-col">
-                <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-widest text-blue-100">
-                  Store admin
-                </span>
+            <Link to="/orders" className="flex items-center gap-2.5 shrink-0">
+              <div className="inline-flex items-center rounded-lg bg-white px-2.5 py-1 border border-[#D99A36]/40 shadow-2xs">
+                <BrandLogo variant="horizontal" size="sm" showTagline={false} />
               </div>
+              <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#FFE500] text-[#212121] text-[10px] font-extrabold uppercase tracking-wider shadow-2xs">
+                Admin
+              </span>
             </Link>
+
+            <div className="hidden md:flex items-center gap-2 pl-3 ml-1 border-l border-white/20 text-[11px] text-blue-100 font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FFE500]" />
+              <span>Store Active • Uttarakhand, India</span>
+            </div>
           </div>
 
-          {/* Center System Status */}
-          <div className="hidden md:flex items-center gap-8 px-8 h-full border-x border-white/20">
-            <div className="flex items-center gap-2">
-              <FaCircle className="text-[#FFE500] text-[8px] animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-wider text-blue-100">
-                System: Active
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-blue-100">
-                Uttarakhand, India
-              </span>
-            </div>
+          {/* Right: Yellow Storefront CTA + Notification Bell + Admin Profile */}
+          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0 relative">
+            <a
+              href="https://gharkaorganic.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-[#FFE500] hover:bg-[#ffeb3b] text-[#212121] text-xs font-bold shadow-2xs transition cursor-pointer">
+              <span>Visit Store</span>
+              <ExternalLink size={12} />
+            </a>
+
             <button
-              onClick={() =>
-                window.open(
-                  "https://gharkaorganic.com/",
-                  "_blank",
-                  "noopener,noreferrer",
-                )
-              }
-              className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-white transition-colors hover:text-blue-100 active:scale-95">
-              Visit Store <FaExternalLinkAlt size={10} />
-            </button>
-          </div>
-
-          {/* Profile HUD */}
-          <div className="flex items-center gap-2 md:gap-4 shrink-0 relative">
-            <button className="relative p-2 text-[#e2eee3] transition-colors hover:text-white active:scale-90">
-              <FaBell size={18} />
-              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full border-2 border-[#2874F0] bg-[#FFE500]" />
+              type="button"
+              onClick={() => navigate("/inquiries")}
+              title="View customer inquiries"
+              className="relative p-2 rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition cursor-pointer">
+              <Bell size={17} />
+              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full border border-[#2874F0] bg-[#FFE500]" />
             </button>
 
-            <div className="h-6 w-[1px] bg-white/20 hidden sm:block mx-1"></div>
+            <div className="h-5 w-[1px] bg-white/20 hidden sm:block" />
 
-            <div>
+            <div className="relative">
               <button
-                onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="flex items-center gap-3 p-1 rounded transition-colors hover:bg-white/10">
-                <div className="hidden sm:block text-right">
-                  <p className="text-[10px] font-bold uppercase leading-none text-blue-100">
+                type="button"
+                onClick={() => setIsProfileOpen((prev) => !prev)}
+                className="flex items-center gap-2 px-1.5 py-1 rounded-lg hover:bg-white/10 transition cursor-pointer">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#FFE500] text-[#212121] shadow-2xs">
+                  <ShieldCheck size={14} />
+                </div>
+                <div className="hidden sm:block text-left">
+                  <p className="text-[11px] font-bold leading-tight text-white max-w-[130px] truncate">
                     {admin?.email ?? "Admin"}
                   </p>
-                  <p className="text-xs font-bold text-white flex items-center gap-1 mt-1">
-                    Manage Account{" "}
-                    <FaChevronDown
-                      size={10}
-                      className="text-blue-100 opacity-80"
-                    />
+                  <p className="text-[10px] text-blue-100 leading-none mt-0.5">
+                    Store Owner
                   </p>
                 </div>
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#2874F0] shadow-sm">
-                  <FaUserShield size={14} />
-                </div>
+                <ChevronDown size={13} className="text-blue-100" />
               </button>
 
               {isProfileOpen && (
-                <div className="absolute right-0 top-12 z-[110] mt-2 w-56 animate-in rounded-xl border border-gray-200 bg-white py-2 text-gray-800 shadow-[0_8px_30px_rgb(0,0,0,0.12)] fade-in slide-in-from-top-2">
-                  <div className="px-4 py-3 border-b border-gray-100 mb-1">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                      Authorized Session
+                <div className="absolute right-0 top-11 z-[110] w-56 rounded-xl border border-[#e3e3e3] bg-white py-2 text-[#303030] shadow-xl">
+                  <div className="px-4 py-2.5 border-b border-[#ebebeb]">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#616161]">
+                      Signed in as
                     </p>
-                    <p className="text-sm font-bold text-gray-900 truncate mt-0.5">
+                    <p className="text-xs font-bold text-[#212121] truncate mt-0.5">
                       {admin?.email ?? "admin"}
                     </p>
                   </div>
                   <button
+                    type="button"
                     onClick={handleLogout}
-                    className="w-full flex items-center px-4 py-2.5 text-xs font-bold text-red-600 hover:bg-red-50 border-t border-gray-100 mt-1 transition-colors">
-                    <FaSignOutAlt className="mr-3 text-lg" /> Terminate Session
+                    className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition cursor-pointer">
+                    <LogOut size={14} />
+                    <span>Sign Out</span>
                   </button>
                 </div>
               )}
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Secondary Nav */}
-      <div className="bg-white border-b border-gray-200 hidden lg:block shadow-sm">
-        <div className="max-w-[1800px] mx-auto px-4 flex items-center gap-6">
-          {navLinks.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`relative px-1 py-3 text-[12px] font-bold uppercase tracking-wider transition-colors flex items-center gap-2 ${
-                isActive(link.path)
-                  ? "text-[#2874F0]"
-                  : "text-gray-500 hover:text-gray-900"
-              }`}>
-              {link.title}
-              {isActive(link.path) && (
-                <div className="absolute bottom-0 left-0 right-0 h-[3px] rounded-t-sm bg-[#2874F0]" />
-              )}
-            </Link>
-          ))}
-        </div>
-      </div>
+      {/* DESKTOP PERSISTENT SHOPIFY SIDEBAR */}
+      <aside className="hidden lg:block fixed top-14 left-0 bottom-0 w-60 z-40 border-r border-[#e3e3e3] bg-white">
+        {renderSidebarContent()}
+      </aside>
 
-      {/* Mobile Drawer */}
+      {/* MOBILE DRAWER */}
       {isMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-[120] bg-black/60 backdrop-blur-sm">
-          <div className="flex h-full w-72 animate-in flex-col bg-[#F1F3F6] shadow-2xl slide-in-from-left duration-300">
-            <div className="z-10 flex h-14 shrink-0 items-center justify-between bg-[#2874F0] px-6 text-white shadow-md">
-              <span className="font-bold uppercase tracking-wider text-sm flex items-center gap-2">
-                Main Menu
-              </span>
+        <div
+          onClick={() => setIsMenuOpen(false)}
+          className="lg:hidden fixed inset-0 z-[120] bg-black/50 backdrop-blur-[1px]">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="flex h-full w-64 flex-col bg-white shadow-2xl">
+            <div className="flex h-14 shrink-0 items-center justify-between bg-[#2874F0] px-4 text-white border-b border-[#1c5fba]">
+              <div className="flex items-center gap-2">
+                <div className="inline-flex items-center rounded-md bg-white px-2 py-0.5 border border-[#D99A36]/40 shadow-2xs">
+                  <BrandLogo variant="horizontal" size="sm" showTagline={false} />
+                </div>
+                <span className="px-1.5 py-0.5 rounded bg-[#FFE500] text-[#212121] text-[10px] font-extrabold uppercase tracking-wider">
+                  Admin
+                </span>
+              </div>
               <button
+                type="button"
                 onClick={() => setIsMenuOpen(false)}
-                className="text-white hover:bg-white/20 p-2 rounded transition-colors">
-                <FaTimes size={18} />
+                aria-label="Close navigation menu"
+                className="p-1.5 rounded-lg text-white hover:bg-white/15 transition">
+                <X size={17} />
               </button>
             </div>
-
-            <div className="flex-1 overflow-y-auto bg-white">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`block px-6 py-4 text-xs font-bold uppercase tracking-wider transition-all border-b border-gray-50 ${
-                    isActive(link.path)
-                      ? "border-l-4 border-l-[#2874F0] bg-blue-50 text-[#2874F0]"
-                      : "text-gray-600 hover:bg-gray-50 border-l-4 border-l-transparent"
-                  }`}>
-                  {link.title}
-                </Link>
-              ))}
-
-              <div className="p-6 mt-4">
-                <button
-                  onClick={handleLogout}
-                  className="w-full flex justify-center items-center gap-2 px-4 py-3 border border-red-200 text-red-600 text-xs font-bold uppercase tracking-wider rounded-sm hover:bg-red-50 transition-colors">
-                  <FaSignOutAlt /> Log Out
-                </button>
-              </div>
+            <div className="flex-1 overflow-hidden">
+              {renderSidebarContent(() => setIsMenuOpen(false))}
             </div>
           </div>
         </div>
       )}
-    </nav>
+    </>
   );
 }

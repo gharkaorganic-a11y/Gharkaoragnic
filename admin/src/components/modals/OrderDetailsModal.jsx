@@ -1,486 +1,803 @@
-import React from "react";
-import { ShoppingBag } from "lucide-react";
-
+import React, { useEffect, useMemo, useState } from "react";
 import {
-  FaXmark,
-  FaPrint,
-  FaWhatsapp,
-  FaCircleCheck,
-  FaTrashCan,
-  FaBox,
-  FaClock,
-  FaTruck,
-} from "react-icons/fa6";
+  Check,
+  CheckCircle2,
+  Clock,
+  Copy,
+  Mail,
+  MapPin,
+  Package,
+  Phone,
+  Printer,
+  ShoppingBag,
+  X,
+  XCircle,
+} from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa6";
+
+const STATUS_STEPS = [
+  { key: "placed", label: "Pending", icon: Clock },
+  { key: "confirmed", label: "Confirmed", icon: CheckCircle2 },
+  { key: "delivered", label: "Delivered", icon: CheckCircle2 },
+];
+
+const STATUS_ALIASES = {
+  pending: "placed",
+  placed: "placed",
+  confirmed: "confirmed",
+  packaging: "confirmed",
+  shipping: "confirmed",
+  delivered: "delivered",
+  cancelled: "cancelled",
+};
+
+const STATUS_OPTIONS = [
+  { value: "pending", label: "Pending" },
+  { value: "confirmed", label: "Confirmed" },
+  { value: "delivered", label: "Delivered" },
+  { value: "cancelled", label: "Cancelled" },
+];
+
+const parseDate = (value) => {
+  if (!value) return null;
+  if (typeof value?.toDate === "function") return value.toDate();
+  if (typeof value?.seconds === "number") {
+    return new Date(value.seconds * 1000);
+  }
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
+const formatDateTime = (value) => {
+  const dateObj = parseDate(value);
+  if (!dateObj) return "N/A";
+  return dateObj.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+const formatINR = (amount) =>
+  `₹${Number(amount || 0).toLocaleString("en-IN", {
+    maximumFractionDigits: 2,
+  })}`;
+
+const normalizePhoneDigits = (rawPhone = "") => {
+  const digits = String(rawPhone).replace(/\D/g, "");
+  if (!digits) return "";
+  return digits.length === 10 ? `91${digits}` : digits;
+};
 
 const OrderDetailsModal = ({
   selectedOrder,
   setSelectedOrder,
   handleAction,
-  handleDelete,
-  STATUS_FLOW,
+  STATUS_FLOW = {},
 }) => {
-  if (!selectedOrder) return null;
+  const [copiedField, setCopiedField] = useState("");
+  const [confirmCancelId, setConfirmCancelId] = useState("");
 
-  const STATUS_STEPS = [
-    { key: "placed", label: "Order Placed", icon: FaClock },
-    { key: "confirmed", label: "Confirmed", icon: FaCircleCheck },
-    { key: "packaging", label: "Packed", icon: FaBox },
-    { key: "shipping", label: "Shipping", icon: FaTruck },
-    { key: "delivered", label: "Delivered", icon: FaCircleCheck },
-  ];
+  useEffect(() => {
+    if (!selectedOrder) return undefined;
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setSelectedOrder(null);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [selectedOrder, setSelectedOrder]);
 
-  const statusMap = {
-    pending: "placed",
-    placed: "placed",
-    confirmed: "confirmed",
-    packaging: "packaging",
-    shipping: "shipping",
-    delivered: "delivered",
+  const orderData = useMemo(() => {
+    if (!selectedOrder) return null;
+
+    const rawStatus =
+      selectedOrder.orderStatus || selectedOrder.status || "placed";
+    const normalizedStatus = STATUS_ALIASES[rawStatus] || "placed";
+    const selectValue =
+      rawStatus === "placed"
+        ? "pending"
+        : ["packaging", "shipping"].includes(rawStatus)
+          ? "confirmed"
+          : rawStatus;
+
+    const address = selectedOrder.addressSnapshot || {};
+    const customerName =
+      address.name || selectedOrder.customerName || "Customer";
+    const customerPhone = address.phone || selectedOrder.phone || "";
+    const customerEmail = address.email || selectedOrder.email || "";
+
+    const items = Array.isArray(selectedOrder.items)
+      ? selectedOrder.items
+      : [];
+    const totalUnits = items.reduce(
+      (sum, item) =>
+        sum + (Number(item.quantity ?? item.selectedQuantity) || 1),
+      0,
+    );
+
+    const computedSubtotal = items.reduce((sum, item) => {
+      const qty = Number(item.quantity ?? item.selectedQuantity) || 1;
+      const price = Number(item.price) || 0;
+      return sum + price * qty;
+    }, 0);
+
+    const pricing = selectedOrder.pricing || {};
+    const subtotal =
+      Number(pricing.subtotal ?? selectedOrder.subtotal ?? computedSubtotal) ||
+      0;
+    const originalTotalPrice = Number(pricing.originalTotalPrice || 0);
+    const couponDiscount =
+      Number(
+        pricing.couponDiscount ??
+          pricing.discountAmount ??
+          selectedOrder.discount ??
+          0,
+      ) || 0;
+    const couponCode = pricing.couponCode || selectedOrder.couponCode || "";
+    const totalAmount =
+      Number(
+        selectedOrder.totalAmount ?? pricing.totalPayable ?? subtotal,
+      ) || 0;
+
+    const mrpSavings =
+      originalTotalPrice > subtotal
+        ? Math.round((originalTotalPrice - subtotal) * 100) / 100
+        : 0;
+
+    const fullOrderId = selectedOrder.orderId || selectedOrder.id || "N/A";
+    const shortOrderId =
+      selectedOrder.id?.slice(-6).toUpperCase() ||
+      fullOrderId.slice(-6).toUpperCase();
+
+    const formattedAddress = [
+      address.line1,
+      address.line2,
+      [address.city, address.state].filter(Boolean).join(", "),
+      address.pincode ? `PIN: ${address.pincode}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    return {
+      rawStatus,
+      normalizedStatus,
+      selectValue,
+      address,
+      customerName,
+      customerPhone,
+      customerEmail,
+      formattedAddress,
+      items,
+      totalUnits,
+      subtotal,
+      originalTotalPrice,
+      couponDiscount,
+      couponCode,
+      totalAmount,
+      mrpSavings,
+      fullOrderId,
+      shortOrderId,
+      timeline: Array.isArray(selectedOrder.timeline)
+        ? selectedOrder.timeline
+        : [],
+    };
+  }, [selectedOrder]);
+
+  if (!selectedOrder || !orderData) return null;
+
+  const {
+    rawStatus,
+    normalizedStatus,
+    selectValue,
+    address,
+    customerName,
+    customerPhone,
+    customerEmail,
+    formattedAddress,
+    items,
+    totalUnits,
+    subtotal,
+    originalTotalPrice,
+    couponDiscount,
+    couponCode,
+    totalAmount,
+    mrpSavings,
+    fullOrderId,
+    shortOrderId,
+    timeline,
+  } = orderData;
+
+  const currentOrderKey = selectedOrder.id || fullOrderId;
+  const confirmCancel = confirmCancelId === currentOrderKey;
+  const currentStepIndex = STATUS_STEPS.findIndex(
+    (step) => step.key === normalizedStatus,
+  );
+  const flowConfig =
+    STATUS_FLOW[rawStatus] ||
+    STATUS_FLOW[normalizedStatus] ||
+    STATUS_FLOW.pending;
+
+  const paymentStatus = (selectedOrder.paymentStatus || "pending").toLowerCase();
+
+  const handleCopy = async (text, key) => {
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(String(text));
+      setCopiedField(key);
+      setTimeout(() => setCopiedField(""), 1800);
+    } catch {
+      // Clipboard blocked in restricted origin
+    }
   };
 
-  const normalizedStatus = statusMap[selectedOrder.status] || "placed";
+  const openWhatsAppOrder = () => {
+    const waNumber = normalizePhoneDigits(customerPhone);
+    if (!waNumber) return;
 
-  const currentStatusIndex = STATUS_STEPS.findIndex(
-    (s) => s.key === normalizedStatus,
-  );
+    const itemSummary = items
+      .map((it) => {
+        const qty = Number(it.quantity ?? it.selectedQuantity) || 1;
+        const variant = it.selectedSize || it.size;
+        return `• ${it.name || "Product"}${variant ? ` (${variant})` : ""} × ${qty}`;
+      })
+      .join("\n");
 
-  const flowConfig =
-    STATUS_FLOW[selectedOrder.status] || STATUS_FLOW["pending"];
+    const message = [
+      `Hi ${customerName}, your Ghar Ka Organic order #${shortOrderId}:`,
+      itemSummary,
+      couponDiscount > 0
+        ? `Promo (${couponCode || "Applied"}): -${formatINR(couponDiscount)}`
+        : null,
+      `Total (${(selectedOrder.paymentMethod || "COD").toUpperCase()}): ${formatINR(totalAmount)}`,
+    ]
+      .filter(Boolean)
+      .join("\n");
 
-  const formatDate = (date) => {
-    if (!date) return "N/A";
-
-    return new Date(date).toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    window.open(
+      `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`,
+      "_blank",
+    );
   };
 
   return (
-    <div className="fixed inset-0 z-[200] bg-black/40 backdrop-blur-sm">
-      <div className="w-full h-full overflow-y-auto bg-[#f1f3f6]">
-        {/* HEADER */}
-        <div className="sticky top-0 z-30 bg-[#2874f0] text-white shadow-md">
-          <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-11 h-11 rounded-lg bg-white/10 flex items-center justify-center">
-                <ShoppingBag size={20} />
-              </div>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="shopify-order-title"
+      onClick={() => setSelectedOrder(null)}
+      className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-[1px] flex items-center justify-center p-2 sm:p-4 font-sans text-[#303030]">
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-5xl max-h-[92vh] bg-[#f1f2f4] border border-[#dcdcdc] rounded-2xl shadow-2xl flex flex-col overflow-hidden print:max-h-none print:border-0 print:shadow-none">
+        {/* SHOPIFY-STYLE TOP BAR IN FLIPKART BLUE & YELLOW ACCENTS */}
+        <header className="bg-white border-b border-[#e3e3e3] px-4 sm:px-5 py-3 flex flex-wrap items-center justify-between gap-3 shrink-0">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-8 h-8 rounded-lg bg-[#2874F0] text-white flex items-center justify-center shrink-0 relative">
+              <ShoppingBag size={14} />
+              <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#FFE500] border border-white" />
+            </div>
 
-              <div>
-                <h2 className="text-[18px] md:text-[20px] font-semibold tracking-tight">
-                  Order #{selectedOrder.id?.slice(-8).toUpperCase() || "N/A"}
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2
+                  id="shopify-order-title"
+                  className="text-sm sm:text-base font-bold text-[#212121] tracking-tight">
+                  #{shortOrderId}
                 </h2>
 
-                <div className="flex flex-wrap items-center gap-2 mt-1 text-[12px] text-blue-100">
-                  <span>Placed on {formatDate(selectedOrder.createdAt)}</span>
+                {/* Payment Pill */}
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold border ${
+                    paymentStatus === "paid"
+                      ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                      : paymentStatus === "cancelled"
+                        ? "bg-rose-50 border-rose-200 text-rose-700"
+                        : "bg-[#FFF8D6] border-[#FFE500] text-[#6b4800]"
+                  }`}>
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      paymentStatus === "paid"
+                        ? "bg-emerald-600"
+                        : paymentStatus === "cancelled"
+                          ? "bg-rose-600"
+                          : "bg-[#d99b00]"
+                    }`}
+                  />
+                  {paymentStatus === "paid"
+                    ? "Paid"
+                    : paymentStatus === "cancelled"
+                      ? "Cancelled"
+                      : "Payment pending"}
+                </span>
 
-                  <span className="w-1 h-1 rounded-full bg-blue-200" />
+                {/* Fulfillment / Status Pill */}
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold ${
+                    normalizedStatus === "delivered"
+                      ? "bg-emerald-50 text-emerald-700"
+                      : normalizedStatus === "confirmed"
+                        ? "bg-[#eaf2ff] text-[#2874F0]"
+                        : normalizedStatus === "cancelled"
+                          ? "bg-rose-50 text-rose-700"
+                          : "bg-[#FFE500]/50 text-[#594400]"
+                  }`}>
+                  {normalizedStatus === "delivered"
+                    ? "Delivered"
+                    : normalizedStatus === "confirmed"
+                      ? "Confirmed"
+                      : normalizedStatus === "cancelled"
+                        ? "Cancelled"
+                        : "Pending"}
+                </span>
+              </div>
 
-                  <span className="capitalize font-medium">
-                    {selectedOrder.status}
-                  </span>
-                </div>
+              <div className="flex flex-wrap items-center gap-1.5 mt-0.5 text-[11px] text-[#616161]">
+                <span>{formatDateTime(selectedOrder.createdAt)}</span>
+                <span>•</span>
+                <span>Online Store</span>
+                <span>•</span>
+                <button
+                  type="button"
+                  onClick={() => handleCopy(fullOrderId, "orderId")}
+                  title="Copy Order Reference"
+                  className="inline-flex items-center gap-1 font-mono text-[10px] text-[#2874F0] hover:underline transition">
+                  <span>{fullOrderId}</span>
+                  {copiedField === "orderId" ? (
+                    <Check size={10} className="text-emerald-600" />
+                  ) : (
+                    <Copy size={10} />
+                  )}
+                </button>
               </div>
             </div>
+          </div>
+
+          {/* COMPACT TOP ACTIONS */}
+          <div className="flex items-center gap-2 shrink-0 print:hidden">
+            {flowConfig?.next && normalizedStatus !== "cancelled" && (
+              <button
+                type="button"
+                onClick={() => handleAction(selectedOrder, flowConfig.next)}
+                className="h-8 px-3.5 rounded-lg bg-[#2874F0] hover:bg-[#1c5fba] text-white text-xs font-semibold shadow-2xs transition cursor-pointer">
+                {flowConfig.btn}
+              </button>
+            )}
+
+            <select
+              value={selectValue}
+              onChange={(e) => handleAction(selectedOrder, e.target.value)}
+              aria-label="Order status"
+              className="h-8 px-2.5 rounded-lg border border-[#d4d4d4] bg-white hover:border-[#8a8a8a] text-xs font-medium text-[#303030] cursor-pointer outline-none transition">
+              {STATUS_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
 
             <button
+              type="button"
+              onClick={() => window.print()}
+              title="Print order"
+              className="hidden sm:inline-flex h-8 px-2.5 rounded-lg border border-[#d4d4d4] bg-white hover:bg-[#f7f7f7] text-xs font-medium text-[#303030] items-center gap-1.5 transition cursor-pointer">
+              <Printer size={13} />
+              <span>Print</span>
+            </button>
+
+            <button
+              type="button"
               onClick={() => setSelectedOrder(null)}
-              className="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition">
-              <FaXmark size={18} />
+              aria-label="Close"
+              className="w-8 h-8 rounded-lg hover:bg-[#f1f2f4] flex items-center justify-center text-[#616161] hover:text-[#303030] transition cursor-pointer">
+              <X size={16} />
             </button>
           </div>
-        </div>
+        </header>
 
-        {/* STATUS TRACKER */}
-        <div className="bg-white border-b border-[#e0e0e0]">
-          <div className="max-w-7xl mx-auto px-4 md:px-6 py-6">
-            <div className="flex items-center justify-between overflow-x-auto">
-              {STATUS_STEPS.map((step, idx) => {
-                const isDone = idx <= currentStatusIndex;
-                const isActive = idx === currentStatusIndex;
-                const Icon = step.icon;
+        {/* SHOPIFY 2-COLUMN DASHBOARD CONTENT */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+            {/* LEFT PRIMARY COLUMN (ITEMS + PAYMENT SUMMARY + TIMELINE) */}
+            <div className="lg:col-span-8 space-y-3.5">
+              {/* 1. ORDER ITEMS CARD */}
+              <section className="bg-white border border-[#e3e3e3] rounded-xl shadow-[0_1px_0_rgba(0,0,0,0.03)] overflow-hidden">
+                <div className="px-4 py-3 border-b border-[#ebebeb] flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-[#303030]">
+                      Order Items ({items.length})
+                    </span>
+                    <span className="text-[11px] text-[#616161]">
+                      • {totalUnits} unit{totalUnits === 1 ? "" : "s"}
+                    </span>
+                  </div>
 
-                return (
-                  <React.Fragment key={step.key}>
-                    <div className="flex flex-col items-center min-w-[100px]">
-                      <div
-                        className={`
-                          w-11 h-11 rounded-full flex items-center justify-center
-                          border-[3px] transition-all duration-300
-                          ${
-                            isDone
-                              ? "bg-[#2874f0] border-blue-100 text-white"
-                              : "bg-[#f1f3f6] border-[#e0e0e0] text-[#878787]"
-                          }
-                        `}>
-                        <Icon size={15} />
-                      </div>
-
-                      <span
-                        className={`
-                          text-[11px] mt-2 font-medium text-center
-                          ${
-                            isActive
-                              ? "text-[#2874f0]"
-                              : isDone
-                                ? "text-[#212121]"
-                                : "text-[#878787]"
-                          }
-                        `}>
-                        {step.label}
-                      </span>
+                  {/* Slim 3-Step Inline Fulfillment Bar (Pending -> Confirmed -> Delivered) */}
+                  {normalizedStatus === "cancelled" ? (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#8e1f0b]">
+                      <XCircle size={12} /> Cancelled
+                    </span>
+                  ) : (
+                    <div className="flex items-center gap-1.5">
+                      {STATUS_STEPS.map((step, idx) => {
+                        const isDone = idx <= currentStepIndex;
+                        const StepIcon = step.icon;
+                        return (
+                          <React.Fragment key={step.key}>
+                            <span
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                                isDone
+                                  ? "bg-[#2874F0] text-white"
+                                  : "bg-[#f1f2f4] text-[#8a8a8a]"
+                              }`}>
+                              <StepIcon size={10} />
+                              {step.label}
+                            </span>
+                            {idx < STATUS_STEPS.length - 1 && (
+                              <span className="w-3 h-[1px] bg-[#d4d4d4]" />
+                            )}
+                          </React.Fragment>
+                        );
+                      })}
                     </div>
+                  )}
+                </div>
 
-                    {idx < STATUS_STEPS.length - 1 && (
-                      <div className="flex-1 h-[3px] mx-2 rounded-full bg-[#e0e0e0] overflow-hidden mb-6 min-w-[40px]">
+                {items.length === 0 ? (
+                  <p className="px-4 py-6 text-xs text-[#616161] text-center">
+                    No items recorded on this order.
+                  </p>
+                ) : (
+                  <div className="divide-y divide-[#ebebeb]">
+                    {items.map((item, idx) => {
+                      const qty =
+                        Number(item.quantity ?? item.selectedQuantity) || 1;
+                      const unitPrice = Number(item.price) || 0;
+                      const lineTotal =
+                        Math.round(unitPrice * qty * 100) / 100;
+                      const variant = item.selectedSize || item.size;
+
+                      return (
                         <div
-                          className={`
-                            h-full bg-[#2874f0] transition-all duration-500
-                            ${idx < currentStatusIndex ? "w-full" : "w-0"}
-                          `}
-                        />
-                      </div>
-                    )}
-                  </React.Fragment>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* MAIN */}
-        <div className="max-w-7xl mx-auto p-4 md:p-6">
-          {/* META CARDS */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            {[
-              {
-                label: "Payment",
-                value: selectedOrder.paymentMethod || "COD",
-              },
-              {
-                label: "Items",
-                value: selectedOrder.items?.length || 0,
-              },
-              {
-                label: "Order Value",
-                value: `₹${Number(
-                  selectedOrder.totalAmount || 0,
-                ).toLocaleString("en-IN")}`,
-              },
-              {
-                label: "Status",
-                value: selectedOrder.status,
-                color: "text-[#2874f0]",
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="bg-white border border-[#e0e0e0] rounded-xl p-4 shadow-sm">
-                <p className="text-[11px] text-[#878787] uppercase tracking-wider font-medium">
-                  {item.label}
-                </p>
-
-                <h4
-                  className={`text-[18px] font-semibold mt-2 capitalize ${
-                    item.color || "text-[#212121]"
-                  }`}>
-                  {item.value}
-                </h4>
-              </div>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-            {/* LEFT */}
-            <div className="xl:col-span-7 space-y-5">
-              {/* CUSTOMER */}
-              <div className="bg-white border border-[#e0e0e0] rounded-xl shadow-sm p-5">
-                <div className="flex items-center justify-between flex-wrap gap-5">
-                  <div>
-                    <p className="text-[11px] text-[#878787] uppercase tracking-wider font-medium">
-                      Customer
-                    </p>
-
-                    <h3 className="text-[22px] font-semibold text-[#212121] mt-1 tracking-tight">
-                      {selectedOrder.addressSnapshot?.name ||
-                        selectedOrder.customerName ||
-                        "Customer"}
-                    </h3>
-
-                    <p className="text-[13px] text-[#878787] mt-2">
-                      {selectedOrder.email || "No Email"}
-                    </p>
-                  </div>
-
-                  <div className="text-left md:text-right">
-                    <p className="text-[11px] text-[#878787] uppercase tracking-wider font-medium">
-                      Lifetime Value
-                    </p>
-
-                    <h3 className="text-[28px] font-bold text-[#2874f0] mt-2">
-                      ₹
-                      {Number(selectedOrder.totalAmount || 0).toLocaleString(
-                        "en-IN",
-                      )}
-                    </h3>
-                  </div>
-                </div>
-              </div>
-
-              {/* ADDRESS */}
-              <div className="bg-white border border-[#e0e0e0] rounded-xl shadow-sm overflow-hidden">
-                <div className="px-5 py-4 border-b border-[#f0f0f0]">
-                  <h3 className="text-[17px] font-semibold text-[#212121] tracking-tight">
-                    Delivery Address
-                  </h3>
-                </div>
-
-                <div className="p-5">
-                  <div className="flex justify-between items-start gap-5">
-                    <div>
-                      <p className="text-[15px] font-semibold text-[#212121]">
-                        {selectedOrder.addressSnapshot?.name ||
-                          selectedOrder.customerName ||
-                          "Customer"}
-                      </p>
-
-                      <p className="text-[14px] text-[#616161] mt-3 leading-7">
-                        {selectedOrder.addressSnapshot?.line1}
-                        {selectedOrder.addressSnapshot?.line2 &&
-                          `, ${selectedOrder.addressSnapshot.line2}`}
-                        <br />
-                        {selectedOrder.addressSnapshot?.city},{" "}
-                        {selectedOrder.addressSnapshot?.state} -
-                        <span className="font-semibold text-[#212121] ml-1">
-                          {selectedOrder.addressSnapshot?.pincode}
-                        </span>
-                      </p>
-
-                      <p className="text-[14px] font-medium text-[#212121] mt-4">
-                        {selectedOrder.addressSnapshot?.phone ||
-                          selectedOrder.phone ||
-                          "No phone"}
-                      </p>
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        const phoneNum = (
-                          selectedOrder.phone ||
-                          selectedOrder.addressSnapshot?.phone ||
-                          ""
-                        ).replace(/\D/g, "");
-
-                        if (phoneNum) {
-                          window.open(
-                            `https://wa.me/${
-                              phoneNum.length === 10
-                                ? "91" + phoneNum
-                                : phoneNum
-                            }`,
-                            "_blank",
-                          );
-                        }
-                      }}
-                      className="w-11 h-11 rounded-full bg-green-50 hover:bg-green-100 flex items-center justify-center transition">
-                      <FaWhatsapp size={18} className="text-[#25D366]" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* ITEMS */}
-              <div className="bg-white border border-[#e0e0e0] rounded-xl shadow-sm overflow-hidden">
-                <div className="px-5 py-4 border-b border-[#f0f0f0]">
-                  <h3 className="text-[17px] font-semibold text-[#212121] tracking-tight">
-                    Order Items ({selectedOrder.items?.length || 0})
-                  </h3>
-                </div>
-
-                <div className="divide-y divide-[#f3f3f3]">
-                  {selectedOrder.items?.map((item, i) => (
-                    <div key={i} className="p-5 hover:bg-[#fafcff] transition">
-                      <div className="flex gap-5">
-                        <img
-                          src={item.image || "/placeholder.png"}
-                          alt={item.name}
-                          className="w-24 h-24 object-contain bg-[#f8f8f8] rounded-xl p-2 border border-[#ececec]"
-                        />
-
-                        <div className="flex-1">
-                          <p className="text-[15px] md:text-[16px] font-semibold text-[#212121] hover:text-[#2874f0] cursor-pointer transition leading-6">
-                            {item.name}
-                          </p>
-
-                          <div className="flex gap-3 mt-3 flex-wrap">
-                            {item.selectedSize && (
-                              <span className="px-3 py-1 rounded-full bg-[#f5f5f5] text-[11px] font-medium text-[#616161]">
-                                Size: {item.selectedSize}
-                              </span>
+                          key={item.id || `${item.productId}-${idx}`}
+                          className="px-4 py-3 flex items-center justify-between gap-3 hover:bg-[#fafafa] transition-colors">
+                          <div className="flex items-center gap-3 min-w-0">
+                            {item.image ? (
+                              <img
+                                src={item.image}
+                                alt={item.name || "Product"}
+                                className="w-11 h-11 rounded-lg object-cover border border-[#e3e3e3] bg-[#f7f7f7] shrink-0"
+                              />
+                            ) : (
+                              <div className="w-11 h-11 rounded-lg bg-[#f7f7f7] border border-[#e3e3e3] flex items-center justify-center text-[#8a8a8a] shrink-0">
+                                <Package size={15} />
+                              </div>
                             )}
 
-                            <span className="px-3 py-1 rounded-full bg-[#f5f5f5] text-[11px] font-medium text-[#616161]">
-                              Qty: {item.quantity}
-                            </span>
+                            <div className="min-w-0">
+                              <p className="text-xs font-semibold text-[#303030] truncate">
+                                {item.name || "Ghar Ka Organic Product"}
+                              </p>
+                              <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                                {variant && (
+                                  <span className="px-1.5 py-0.5 rounded bg-[#f1f2f4] text-[10px] font-medium text-[#4a4a4a]">
+                                    {variant}
+                                  </span>
+                                )}
+                                {item.productId && (
+                                  <span className="text-[10px] font-mono text-[#8a8a8a]">
+                                    {item.productId}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
                           </div>
 
-                          <div className="flex gap-2 mt-4 flex-wrap">
-                            <span className="px-3 py-1 text-[11px] rounded-full bg-blue-50 text-[#2874f0] font-medium">
-                              SKU: {item.sku || "N/A"}
+                          <div className="flex items-center gap-4 shrink-0 text-right">
+                            <span className="text-[11px] text-[#616161]">
+                              {formatINR(unitPrice)} × {qty}
                             </span>
-
-                            <span className="px-3 py-1 text-[11px] rounded-full bg-green-50 text-green-700 font-medium">
-                              In Stock
+                            <span className="text-xs font-semibold text-[#303030] min-w-[58px]">
+                              {formatINR(lineTotal)}
                             </span>
                           </div>
-
-                          <p className="text-[22px] font-bold text-[#212121] mt-5">
-                            ₹{Number(item.price || 0).toLocaleString("en-IN")}
-                          </p>
                         </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </section>
+
+              {/* 2. SHOPIFY-STYLE PAYMENT BREAKDOWN CARD */}
+              <section className="bg-white border border-[#e3e3e3] rounded-xl shadow-[0_1px_0_rgba(0,0,0,0.03)] overflow-hidden">
+                <div className="px-4 py-3 border-b border-[#ebebeb] flex items-center justify-between gap-2">
+                  <span className="text-xs font-semibold text-[#303030]">
+                    Payment Summary
+                  </span>
+                  <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-[#f1f2f4] text-[#4a4a4a] uppercase">
+                    {selectedOrder.paymentMethod || "COD"}
+                  </span>
+                </div>
+
+                <div className="p-4">
+                  <div className="border border-[#ebebeb] rounded-lg overflow-hidden text-xs">
+                    <div className="divide-y divide-[#ebebeb]">
+                      {mrpSavings > 0 && (
+                        <div className="px-3.5 py-2 flex items-center justify-between text-[#616161]">
+                          <span>Total MRP</span>
+                          <span className="line-through">
+                            {formatINR(originalTotalPrice)}
+                          </span>
+                        </div>
+                      )}
+
+                      {mrpSavings > 0 && (
+                        <div className="px-3.5 py-2 flex items-center justify-between">
+                          <span className="text-[#616161]">Offer Savings</span>
+                          <span className="text-[#0c5132] font-medium">
+                            -{formatINR(mrpSavings)}
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="px-3.5 py-2 flex items-center justify-between">
+                        <span className="text-[#616161]">
+                          Subtotal ({totalUnits} item{totalUnits === 1 ? "" : "s"})
+                        </span>
+                        <span className="font-medium text-[#303030]">
+                          {formatINR(subtotal)}
+                        </span>
+                      </div>
+
+                      {couponDiscount > 0 && (
+                        <div className="px-3.5 py-2 flex items-center justify-between">
+                          <span className="text-[#616161] flex items-center gap-1.5">
+                            <span>Discount</span>
+                            {couponCode && (
+                              <span className="px-1.5 py-0.5 rounded bg-[#cdfee1]/60 text-[10px] font-mono font-semibold text-[#0c5132]">
+                                {couponCode}
+                              </span>
+                            )}
+                          </span>
+                          <span className="text-[#0c5132] font-medium">
+                            -{formatINR(couponDiscount)}
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="px-3.5 py-2 flex items-center justify-between">
+                        <span className="text-[#616161]">Delivery</span>
+                        <span className="font-medium text-[#303030]">
+                          {selectedOrder.shippingCost > 0
+                            ? formatINR(selectedOrder.shippingCost)
+                            : "Free"}
+                        </span>
+                      </div>
+
+                      <div className="px-3.5 py-2.5 flex items-center justify-between font-bold text-[#303030] bg-white">
+                        <span>Total</span>
+                        <span>{formatINR(totalAmount)}</span>
                       </div>
                     </div>
-                  ))}
+
+                    <div className="px-3.5 py-2 bg-[#f7f7f7] border-t border-[#ebebeb] flex items-center justify-between text-[11px] font-medium">
+                      <span className="text-[#616161]">
+                        {paymentStatus === "paid"
+                          ? "Paid by customer"
+                          : paymentStatus === "cancelled"
+                            ? "Order cancelled"
+                            : "Due on delivery (COD)"}
+                      </span>
+                      <span className="font-semibold text-[#303030]">
+                        {formatINR(totalAmount)}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </section>
 
-            {/* RIGHT */}
-            <div className="xl:col-span-5 space-y-5">
-              {/* PRICE */}
-              <div className="bg-white border border-[#e0e0e0] rounded-xl shadow-sm p-5">
-                <h4 className="text-[17px] font-semibold text-[#212121] tracking-tight mb-5 pb-4 border-b border-[#f0f0f0]">
-                  Price Details
-                </h4>
+              {/* 3. TIMELINE FEED CARD */}
+              <section className="bg-white border border-[#e3e3e3] rounded-xl shadow-[0_1px_0_rgba(0,0,0,0.03)] overflow-hidden">
+                <div className="px-4 py-2.5 border-b border-[#ebebeb] flex items-center justify-between">
+                  <span className="text-xs font-semibold text-[#303030]">
+                    Timeline
+                  </span>
+                  <span className="text-[11px] text-[#616161]">
+                    {timeline.length || 1} update
+                    {timeline.length > 1 ? "s" : ""}
+                  </span>
+                </div>
 
-                <div className="space-y-5 text-[14px]">
-                  <div className="flex justify-between">
-                    <span className="text-[#616161]">
-                      Price ({selectedOrder.items?.length || 0} items)
-                    </span>
-
-                    <span className="font-medium text-[#212121]">
-                      ₹
-                      {Number(
-                        selectedOrder.subtotal ||
-                          selectedOrder.totalAmount ||
-                          0,
-                      ).toLocaleString("en-IN")}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span className="text-[#616161]">Delivery Charges</span>
-
-                    <span className="font-semibold text-green-600">
-                      {selectedOrder.shippingCost
-                        ? `₹${selectedOrder.shippingCost}`
-                        : "FREE"}
-                    </span>
-                  </div>
-
-                  {selectedOrder.discount > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-[#616161]">Discount</span>
-
-                      <span className="font-semibold text-green-600">
-                        -₹
-                        {Number(selectedOrder.discount).toLocaleString("en-IN")}
+                <div className="divide-y divide-[#ebebeb]">
+                  {timeline.length > 0 ? (
+                    timeline.map((entry, idx) => (
+                      <div
+                        key={entry.id || idx}
+                        className="px-4 py-2.5 flex items-center justify-between gap-3 text-xs">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                              idx === 0 ? "bg-[#0c5132]" : "bg-[#c9cccf]"
+                            }`}
+                          />
+                          <div className="min-w-0">
+                            <span className="font-medium text-[#303030] capitalize">
+                              {entry.note || `Status: ${entry.status}`}
+                            </span>
+                            {entry.actor && (
+                              <span className="text-[11px] text-[#616161] ml-1.5">
+                                • {entry.actor}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <span className="text-[11px] text-[#616161] shrink-0">
+                          {formatDateTime(entry.timestamp)}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="px-4 py-2.5 flex items-center justify-between text-xs">
+                      <span className="text-[#303030]">Order placed</span>
+                      <span className="text-[11px] text-[#616161]">
+                        {formatDateTime(selectedOrder.createdAt)}
                       </span>
                     </div>
                   )}
+                </div>
+              </section>
+            </div>
 
-                  <div className="flex justify-between pt-5 border-t border-dashed border-[#dcdcdc]">
-                    <span className="text-[16px] font-semibold text-[#212121]">
-                      Total Amount
-                    </span>
+            {/* RIGHT SIDEBAR COLUMN (CUSTOMER + ADDRESS + COMPACT ACTIONS) */}
+            <div className="lg:col-span-4 space-y-3.5">
+              {/* 1. CUSTOMER CARD */}
+              <section className="bg-white border border-[#e3e3e3] rounded-xl shadow-[0_1px_0_rgba(0,0,0,0.03)] p-4">
+                <div className="flex items-center justify-between gap-2 mb-2.5">
+                  <h3 className="text-xs font-semibold text-[#303030]">
+                    Customer
+                  </h3>
+                  <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-[#f1f2f4] text-[#616161]">
+                    {selectedOrder.userOrderMirror === false
+                      ? "Guest checkout"
+                      : "Account"}
+                  </span>
+                </div>
 
-                    <span className="text-[22px] font-bold text-[#212121]">
-                      ₹
-                      {Number(selectedOrder.totalAmount || 0).toLocaleString(
-                        "en-IN",
+                <p className="text-xs font-semibold text-[#303030]">
+                  {customerName}
+                </p>
+
+                <div className="mt-3 pt-3 border-t border-[#ebebeb] space-y-2 text-xs">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[#616161] inline-flex items-center gap-1.5">
+                      <Phone size={12} />
+                      {customerPhone ? (
+                        <a
+                          href={`tel:${customerPhone}`}
+                          className="text-[#2874F0] hover:underline font-medium">
+                          {customerPhone}
+                        </a>
+                      ) : (
+                        <span>No phone</span>
                       )}
                     </span>
+
+                    {customerPhone && (
+                      <button
+                        type="button"
+                        onClick={openWhatsAppOrder}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#cdfee1]/60 hover:bg-[#cdfee1] text-[#0c5132] text-[10px] font-semibold transition cursor-pointer">
+                        <FaWhatsapp size={11} />
+                        <span>WhatsApp</span>
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-1.5 text-[#616161] truncate">
+                    <Mail size={12} className="shrink-0" />
+                    <span className="truncate">
+                      {customerEmail || "No email provided"}
+                    </span>
                   </div>
                 </div>
+              </section>
 
-                <div className="mt-5 pt-4 border-t border-[#f0f0f0]">
-                  <p className="text-[13px] text-green-600 font-medium">
-                    You saved ₹
-                    {(selectedOrder.discount || 0) +
-                      (selectedOrder.shippingCost ? 0 : 40)}{" "}
-                    on this order
+              {/* 2. SHIPPING / DELIVERY ADDRESS CARD */}
+              <section className="bg-white border border-[#e3e3e3] rounded-xl shadow-[0_1px_0_rgba(0,0,0,0.03)] p-4">
+                <div className="flex items-center justify-between gap-2 mb-2.5">
+                  <h3 className="text-xs font-semibold text-[#303030] flex items-center gap-1.5">
+                    <MapPin size={12} className="text-[#616161]" />
+                    Delivery address
+                  </h3>
+
+                  {formattedAddress && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleCopy(
+                          `${customerName}\n${customerPhone}\n${formattedAddress}`,
+                          "address",
+                        )
+                      }
+                      className="inline-flex items-center gap-1 text-[11px] font-medium text-[#2874F0] hover:underline cursor-pointer">
+                      {copiedField === "address" ? (
+                        <>
+                          <Check size={11} className="text-[#0c5132]" />
+                          <span className="text-[#0c5132]">Copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy size={11} />
+                          <span>Copy</span>
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+
+                <div className="text-xs text-[#303030] leading-relaxed space-y-0.5">
+                  <p className="font-medium">{customerName}</p>
+                  <p className="text-[#616161]">
+                    {address.line1 || "No address line"}
+                    {address.line2 ? `, ${address.line2}` : ""}
                   </p>
+                  <p className="text-[#616161]">
+                    {[address.city, address.state].filter(Boolean).join(", ")}
+                    {address.pincode ? ` - ${address.pincode}` : ""}
+                  </p>
+                  <p className="text-[#616161]">India</p>
                 </div>
-              </div>
+              </section>
 
-              {/* PAYMENT */}
-              <div className="bg-white border border-[#e0e0e0] rounded-xl shadow-sm p-5">
-                <h4 className="text-[17px] font-semibold text-[#212121] tracking-tight mb-5">
-                  Payment Details
-                </h4>
-
-                <div className="space-y-5 text-[14px]">
-                  <div className="flex justify-between">
-                    <span className="text-[#616161]">Payment Method</span>
-
-                    <span className="font-semibold uppercase text-[#212121]">
-                      {selectedOrder.paymentMethod || "COD"}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between items-center">
-                    <span className="text-[#616161]">Payment Status</span>
-
-                    <span
-                      className={`
-                        px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide
-                        ${
-                          selectedOrder.paymentStatus === "paid"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-orange-100 text-orange-700"
-                        }
-                      `}>
-                      {selectedOrder.paymentStatus?.toUpperCase() || "PENDING"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* ACTIONS */}
-              <div className="bg-white border border-[#e0e0e0] rounded-xl shadow-sm p-5 space-y-3">
-                {flowConfig?.next && (
-                  <button
-                    onClick={() => handleAction(selectedOrder, flowConfig.next)}
-                    className="w-full py-3.5 bg-[#2874f0] text-white rounded-lg text-[14px] font-semibold hover:bg-[#1f6fe5] transition">
-                    {flowConfig.btn}
-                  </button>
-                )}
+              {/* 3. REDUCED ORDER ACTIONS CARD */}
+              <section className="bg-white border border-[#e3e3e3] rounded-xl shadow-[0_1px_0_rgba(0,0,0,0.03)] p-4 space-y-2.5 print:hidden">
+                <h3 className="text-xs font-semibold text-[#303030]">
+                  Quick actions
+                </h3>
 
                 <button
-                  onClick={() => handleAction(selectedOrder, "cancelled")}
-                  className="w-full py-3.5 border border-red-200 text-red-600 bg-red-50 rounded-lg text-[14px] font-semibold hover:bg-red-100 transition">
-                  Cancel Order
+                  type="button"
+                  disabled={!customerPhone}
+                  onClick={openWhatsAppOrder}
+                  className="w-full h-8 rounded-lg border border-[#d4d4d4] bg-white hover:bg-[#f7f7f7] text-xs font-medium text-[#303030] flex items-center justify-center gap-1.5 transition disabled:opacity-40 cursor-pointer">
+                  <FaWhatsapp size={13} className="text-[#25D366]" />
+                  <span>Send summary on WhatsApp</span>
                 </button>
 
-                <button className="w-full py-3.5 bg-[#f5f5f5] text-[#212121] rounded-lg text-[14px] font-semibold hover:bg-[#ebebeb] transition flex items-center justify-center gap-2">
-                  <FaPrint size={13} />
-                  Download Invoice
-                </button>
-
-                {handleDelete && (
-                  <button
-                    onClick={() => handleDelete(selectedOrder.id)}
-                    className="w-full py-2 text-[#878787] hover:text-red-600 text-[13px] font-medium transition flex items-center justify-center gap-2">
-                    <FaTrashCan size={11} />
-                    Delete Order
-                  </button>
+                {normalizedStatus !== "cancelled" && (
+                  <div>
+                    {confirmCancel ? (
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleAction(selectedOrder, "cancelled");
+                            setConfirmCancelId("");
+                          }}
+                          className="flex-1 h-8 rounded-lg bg-[#d72c0d] hover:bg-[#b52208] text-white text-xs font-semibold transition cursor-pointer">
+                          Confirm cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setConfirmCancelId("")}
+                          className="h-8 px-3 rounded-lg border border-[#d4d4d4] bg-white hover:bg-[#f7f7f7] text-xs font-medium text-[#303030] cursor-pointer">
+                          Keep
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setConfirmCancelId(currentOrderKey)}
+                        className="w-full h-8 rounded-lg border border-[#f5c7c2] bg-[#fff5f4] hover:bg-[#fee9e8] text-xs font-medium text-[#8e1f0b] transition cursor-pointer">
+                        Cancel order
+                      </button>
+                    )}
+                  </div>
                 )}
-              </div>
+              </section>
             </div>
           </div>
         </div>

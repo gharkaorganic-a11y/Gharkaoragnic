@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   ChevronDown,
 } from "lucide-react";
+import BrandLogo from "../../components/common/BrandLogo";
 
 /* ─────────────────────────────────────────────
    CONSTANTS & SEO
@@ -59,7 +60,12 @@ const JSONLD = JSON.stringify({
       "@type": ["LocalBusiness", "OnlineStore", "FoodManufacturer"],
       name: "Ghar Ka Organic",
       image: [OG_IMAGE],
-      logo: `${BASE_URL}/logo/gharka-logo.png`,
+      logo: {
+        "@type": "ImageObject",
+        url: `${BASE_URL}/logo/gharka-logo-full.png`,
+        width: 2172,
+        height: 724,
+      },
       url: BASE_URL,
       telephone: CONTACT_PHONE,
       email: CONTACT_EMAIL,
@@ -164,7 +170,7 @@ const JSONLD = JSON.stringify({
           name: "Where are your products made and shipped from?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "All our products are handmade by local mountain women in Bhimtal, Nainital, Uttarakhand, and shipped directly across India.",
+            text: "GHAR KA began in Mangoli, Nainital, Uttarakhand. All our products — from homemade pickles and pure ghee to natural honey, pahadi dals, spices and pahadi salts — are made with carefully selected ingredients and traditional recipes without unnecessary chemicals or artificial preservatives, and shipped across India.",
           },
         },
       ],
@@ -179,15 +185,15 @@ const faqs = [
   },
   {
     q: "What are your working hours?",
-    a: "Our Bhimtal kitchen and customer support are active Monday to Saturday, from 10:00 AM to 7:00 PM IST. Online store orders can be placed 24/7.",
+    a: "Our Mangoli, Nainital kitchen and customer support are active Monday to Saturday, from 10:00 AM to 7:00 PM IST. Online store orders can be placed 24/7.",
   },
   {
     q: "Do you offer bulk orders or corporate gifting?",
-    a: "Yes! We work with corporate partners, organic stores, and events for customized gift hampers and wholesale shipments of our authentic Himalayan pickles, honey, and ghee.",
+    a: "Yes! We work with corporate partners, organic stores, and events for customized gift hampers and wholesale shipments of our homemade pickles, pure ghee, natural honey, pahadi dals, spices, and pahadi salts.",
   },
   {
     q: "Where are your products made and shipped from?",
-    a: "All Ghar Ka Organic foods are crafted in small batches by women farmer groups in Bhimtal, Nainital, Uttarakhand, using multi-generational Kumaoni recipes without chemicals or preservatives.",
+    a: "GHAR KA started in Mangoli, Nainital, Uttarakhand. We prepare our homemade pickles, pure ghee, natural honey, traditional pahadi dals, spices and pahadi salts using carefully selected ingredients and traditional recipes — without unnecessary chemicals or artificial preservatives.",
   },
 ];
 
@@ -319,8 +325,11 @@ const ContactUsPage = () => {
 
       {/* ───────────────── HERO HEADER ───────────────── */}
       <header className="py-12 sm:py-16 md:py-20 text-center px-4 max-w-3xl mx-auto">
+        <div className="mb-4 flex justify-center">
+          <BrandLogo symbolOnly size="sm" />
+        </div>
         <p className="text-[11px] sm:text-xs font-medium uppercase tracking-[0.22em] text-neutral-500 mb-4">
-          Bhimtal, Nainital • Uttarakhand
+          Mangoli, Nainital • Uttarakhand
         </p>
 
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-[#121212] leading-tight">
@@ -414,7 +423,7 @@ const ContactUsPage = () => {
                 Mountain Kitchen
               </h3>
               <p className="text-xs text-neutral-600 mt-1 leading-snug">
-                Ward No. 2, Nalni, Bhimtal, Uttarakhand – 263136
+                Ward No. 2, Nalni, Mangoli, Nainital, Uttarakhand – 263136
               </p>
             </div>
             <span className="mt-5 text-xs font-medium text-neutral-500">
@@ -451,7 +460,7 @@ const ContactUsPage = () => {
                 role="alert">
                 <Check size={18} className="text-[#121212] shrink-0" />
                 <span>
-                  Thank you! Your message has been sent to our Bhimtal team. We
+                  Thank you! Your message has been sent to our Mangoli, Nainital team. We
                   will get back to you shortly.
                 </span>
               </div>
@@ -610,10 +619,12 @@ const ContactUsPage = () => {
               </div>
 
               <p className="text-sm text-neutral-600 leading-relaxed font-light">
-                Ghar Ka Organic is based in Bhimtal, Nainital, Uttarakhand. Every
-                jar of pickle, bottle of raw honey, and jar of A2 bilona ghee is
-                prepared by mountain women using pure Himalayan ingredients and
-                age-old Kumaoni recipes without chemicals or preservatives.
+                GHAR KA began its journey in Mangoli, Nainital, Uttarakhand, to
+                bring the goodness, authenticity, and familiar taste of homemade
+                food back into every household. From homemade pickles and pure
+                ghee to natural honey, traditional pahadi dals, spices and pahadi
+                salts, every product is made with care using traditional recipes
+                — without unnecessary chemicals or artificial preservatives.
               </p>
 
               {/* Trust Badges */}
@@ -622,21 +633,21 @@ const ContactUsPage = () => {
                   <div className="w-8 h-8 rounded-full bg-neutral-100 text-[#121212] flex items-center justify-center shrink-0">
                     <Mountain size={16} />
                   </div>
-                  <span>Born in Bhimtal, Nainital (Uttarakhand)</span>
+                  <span>Born in Mangoli, Nainital (Uttarakhand)</span>
                 </div>
 
                 <div className="flex items-center gap-3 text-xs sm:text-sm text-neutral-700">
                   <div className="w-8 h-8 rounded-full bg-neutral-100 text-[#121212] flex items-center justify-center shrink-0">
                     <HeartHandshake size={16} />
                   </div>
-                  <span>Empowering Local Pahadi Women Artisans</span>
+                  <span>Traditions Carried for Generations</span>
                 </div>
 
                 <div className="flex items-center gap-3 text-xs sm:text-sm text-neutral-700">
                   <div className="w-8 h-8 rounded-full bg-neutral-100 text-[#121212] flex items-center justify-center shrink-0">
                     <ShieldCheck size={16} />
                   </div>
-                  <span>Zero Artificial Preservatives or Chemicals</span>
+                  <span>No Unnecessary Chemicals or Preservatives</span>
                 </div>
               </div>
 

@@ -143,7 +143,6 @@ export default function AdminInquiriesPage() {
 
   // ── Real-time Firestore Listener ──
   useEffect(() => {
-    setLoading(true);
     const q = query(
       collection(db, "inquiries"),
       orderBy("createdAt", "desc")
@@ -261,7 +260,7 @@ export default function AdminInquiriesPage() {
     try {
       await updateDoc(doc(db, "inquiries", inquiry.id), { read: newRead });
       showToast("success", newRead ? "Marked as read." : "Marked as unread.");
-    } catch (err) {
+    } catch {
       showToast("error", "Could not update read status.");
     }
   };
@@ -312,7 +311,7 @@ export default function AdminInquiriesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F1F3F6] font-sans text-[#212121] antialiased pb-20">
+    <div className="min-h-screen bg-[#f1f2f4] font-sans text-[#303030] antialiased pb-16">
       {/* ── TOAST NOTIFICATION ── */}
       {toast && (
         <div className="fixed top-20 right-6 z-50 animate-in fade-in slide-in-from-top-4 duration-200">
@@ -332,29 +331,29 @@ export default function AdminInquiriesPage() {
         </div>
       )}
 
-      <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-        {/* ── FLIPKART STYLE PAGE HEADER ── */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 pt-6">
+        {/* ── SHOPIFY STYLE HEADER IN FLIPKART BLUE & YELLOW ── */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[#2874F0] text-white flex items-center justify-center shadow-sm">
-              <MessageSquare size={20} />
+            <div className="w-9 h-9 rounded-lg bg-[#2874F0] text-white flex items-center justify-center shadow-2xs">
+              <MessageSquare size={18} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-bold text-[#212121] tracking-tight">
+                <h1 className="text-xl font-bold text-[#212121] tracking-tight">
                   Customer Inquiries
                 </h1>
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-sm bg-[#2874F0] text-white shadow-xs">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#eaf2ff] text-[#2874F0]">
                   {inquiries.length} Total
                 </span>
                 {stats.unread > 0 && (
-                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-sm bg-[#FB641B] text-white shadow-xs animate-pulse">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#FFE500] text-[#212121] animate-pulse">
                     {stats.unread} New
                   </span>
                 )}
               </div>
-              <p className="text-xs text-[#878787] font-medium mt-0.5">
-                Direct messages from your website contact form • Real-time sync
+              <p className="text-xs text-[#616161] font-medium mt-0.5">
+                Messages from your website contact form • Real-time sync
               </p>
             </div>
           </div>
@@ -364,9 +363,9 @@ export default function AdminInquiriesPage() {
               onClick={handleManualRefresh}
               disabled={loading || refreshing}
               title="Refresh Inquiries"
-              className="flex items-center gap-2 px-3.5 py-2 bg-white border border-[#E0E0E0] rounded-md text-xs font-bold text-[#2874F0] hover:bg-[#F4F8FF] hover:border-[#2874F0] transition shadow-xs cursor-pointer">
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#e3e3e3] rounded-lg text-xs font-semibold text-[#2874F0] hover:bg-[#eaf2ff] hover:border-[#2874F0] transition shadow-2xs cursor-pointer">
               <RefreshCw
-                size={14}
+                size={13}
                 className={loading || refreshing ? "animate-spin text-[#2874F0]" : "text-[#2874F0]"}
               />
               <span>Refresh</span>
@@ -374,22 +373,22 @@ export default function AdminInquiriesPage() {
           </div>
         </div>
 
-        {/* ── FLIPKART SELLER HUB FILTER & SEARCH TOOLBAR ── */}
-        <div className="bg-white border border-[#E0E0E0] rounded-lg p-3 sm:p-4 mb-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
-          {/* Status Tabs with Flipkart Blue & Orange Badges */}
+        {/* ── SHOPIFY FILTER & SEARCH TOOLBAR ── */}
+        <div className="bg-white border border-[#e3e3e3] rounded-xl p-3 mb-5 shadow-[0_1px_0_rgba(0,0,0,0.03)] flex flex-col md:flex-row md:items-center justify-between gap-3">
+          {/* Status Tabs with Flipkart Blue & Yellow Badges */}
           <div className="flex flex-wrap items-center gap-2">
             {[
               {
                 key: "all",
                 label: "All Active",
                 count: stats.total - stats.archived,
-                badgeBg: "bg-blue-100 text-[#2874F0]",
+                badgeBg: "bg-[#eaf2ff] text-[#2874F0]",
               },
               {
                 key: "unread",
                 label: "Unread",
                 count: stats.unread,
-                badgeBg: "bg-[#FB641B] text-white",
+                badgeBg: "bg-[#FFE500] text-[#212121]",
               },
               {
                 key: "resolved",

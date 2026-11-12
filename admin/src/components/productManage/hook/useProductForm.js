@@ -67,16 +67,34 @@ export const useProductForm = () => {
   const [pageLoading, setPageLoading] = useState(false);
   const [uploadingBanner, setUploadingBanner] = useState(false);
   const [uploadingGallery, setUploadingGallery] = useState(false);
+  const [uploadingDetailsImage, setUploadingDetailsImage] = useState(false);
+  const [imageErrors, setImageErrors] = useState({
+    banner: null,
+    gallery: null,
+    details: null,
+  });
 
   /* ───────── SIZE INPUT ───────── */
   const [customSizeInput, setCustomSizeInput] = useState("");
   const customSizeRef = useRef(null);
+  const prevIdRef = useRef(id);
 
   /* ─────────────────────────────
      LOAD EXISTING PRODUCT
   ───────────────────────────── */
   useEffect(() => {
-    if (!id) return;
+    const previousId = prevIdRef.current;
+    prevIdRef.current = id;
+
+    if (!id) {
+      if (previousId) {
+        setProduct(createEmptyProduct());
+        setErrors([]);
+        setFieldError(null);
+        setImageErrors({ banner: null, gallery: null, details: null });
+      }
+      return;
+    }
 
     let cancelled = false;
 
@@ -92,6 +110,7 @@ export const useProductForm = () => {
         setProduct({
           ...createEmptyProduct(),
           ...data,
+          images: Array.isArray(data.images) ? data.images.filter(Boolean) : [],
           // Keep as strings so controlled inputs don't flicker between "" and 0
           price: data.price != null ? String(data.price) : "",
           originalPrice:
@@ -142,17 +161,25 @@ export const useProductForm = () => {
     try {
       setUploadingBanner(true);
       setFieldError(null);
+      setImageErrors((prev) => ({ ...prev, banner: null }));
 
       const res = await uploadImageToCloudinary(file, cloudName, uploadPreset);
+      if (!res?.url) throw new Error("Upload completed without an image URL.");
       setProduct((p) => ({ ...p, banner: res.url }));
-    } catch {
-      setFieldError("Banner upload failed. Please try again.");
+    } catch (err) {
+      const msg = err?.message || "Banner upload failed. Please try again.";
+      setFieldError(msg);
+      setImageErrors((prev) => ({ ...prev, banner: msg }));
     } finally {
       setUploadingBanner(false);
-      // Reset input so same file can be re-uploaded after an error
       e.target.value = "";
     }
   };
+
+  const removeBannerImage = useCallback(() => {
+    setProduct((p) => ({ ...p, banner: "" }));
+    setImageErrors((prev) => ({ ...prev, banner: null }));
+  }, []);
 
   /* ─────────────────────────────
      GALLERY UPLOAD
@@ -164,14 +191,21 @@ export const useProductForm = () => {
     try {
       setUploadingGallery(true);
       setFieldError(null);
+      setImageErrors((prev) => ({ ...prev, gallery: null }));
 
       const results = await uploadMultipleImages(files, cloudName, uploadPreset);
+      const uploadedUrls = results.map((r) => r?.url).filter(Boolean);
+      if (!uploadedUrls.length) {
+        throw new Error("Gallery upload completed without any valid image URLs.");
+      }
       setProduct((p) => ({
         ...p,
-        images: [...p.images, ...results.map((r) => r.url)],
+        images: [...(Array.isArray(p.images) ? p.images : []), ...uploadedUrls].slice(0, 6),
       }));
-    } catch {
-      setFieldError("Gallery upload failed. Please try again.");
+    } catch (err) {
+      const msg = err?.message || "Gallery upload failed. Please try again.";
+      setFieldError(msg);
+      setImageErrors((prev) => ({ ...prev, gallery: msg }));
     } finally {
       setUploadingGallery(false);
       e.target.value = "";
@@ -182,8 +216,40 @@ export const useProductForm = () => {
   const removeGalleryImage = useCallback((index) => {
     setProduct((p) => ({
       ...p,
-      images: p.images.filter((_, i) => i !== index),
+      images: (Array.isArray(p.images) ? p.images : []).filter((_, i) => i !== index),
     }));
+    setImageErrors((prev) => ({ ...prev, gallery: null }));
+  }, []);
+
+  /* ─────────────────────────────
+     PRODUCT DETAILS FULL-WIDTH IMAGE UPLOAD
+  ───────────────────────────── */
+  const handleDetailsImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploadingDetailsImage(true);
+      setFieldError(null);
+      setImageErrors((prev) => ({ ...prev, details: null }));
+
+      const res = await uploadImageToCloudinary(file, cloudName, uploadPreset);
+      if (!res?.url) throw new Error("Details banner upload returned no image URL.");
+      setProduct((p) => ({ ...p, detailsImage: res.url }));
+    } catch (err) {
+      const msg =
+        err?.message || "Product details image upload failed. Please try again.";
+      setFieldError(msg);
+      setImageErrors((prev) => ({ ...prev, details: msg }));
+    } finally {
+      setUploadingDetailsImage(false);
+      e.target.value = "";
+    }
+  };
+
+  const removeDetailsImage = useCallback(() => {
+    setProduct((p) => ({ ...p, detailsImage: "" }));
+    setImageErrors((prev) => ({ ...prev, details: null }));
   }, []);
 
   /* ─────────────────────────────
@@ -336,6 +402,8 @@ export const useProductForm = () => {
     pageLoading,
     uploadingBanner,
     uploadingGallery,
+    uploadingDetailsImage,
+    imageErrors,
 
     // Size management
     customSizeInput,
@@ -353,7 +421,8 @@ export const useProductForm = () => {
     // Collection types
     toggleCollectionType,
 
-    // Gallery
+    // Gallery & Media
+    removeBannerImage,
     removeGalleryImage,
 
     // FAQ
@@ -366,6 +435,8 @@ export const useProductForm = () => {
     handleSubmit,
     handleBannerUpload,
     handleGalleryUpload,
+    handleDetailsImageUpload,
+    removeDetailsImage,
 
     // Meta
     isEditing,

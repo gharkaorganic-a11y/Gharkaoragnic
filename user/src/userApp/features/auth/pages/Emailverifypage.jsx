@@ -6,6 +6,7 @@ import {
   verifyPasswordResetCode,
 } from "firebase/auth";
 import { auth } from "../../../../config/firebaseDB";
+import BrandLogo from "../../../../components/common/BrandLogo";
 
 const STATUS = {
   LOADING: "loading",
@@ -109,13 +110,9 @@ export default function FirebaseActionPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-start pt-12 sm:pt-24 px-6 font-sans">
       <div className="w-full max-w-[360px] flex flex-col items-center relative">
-        <Link to="/" className="mb-8 inline-flex justify-center">
-          <img
-            src="https://gharkaorganic.com/logo/gharka-logo.png"
-            alt="Ghar Ka Organic"
-            className="h-16 w-auto max-w-[220px] object-contain"
-          />
-        </Link>
+        <div className="mb-8 flex justify-center">
+          <BrandLogo variant="default" size="lg" to="/" />
+        </div>
         {/* ── Top Back Button ── */}
         {(status === STATUS.RESET || status === STATUS.ERROR) && (
           <Link

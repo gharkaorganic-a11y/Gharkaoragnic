@@ -1,311 +1,117 @@
-import React from "react";
+import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
-  CheckCircle2,
   Code2,
-  Database,
+  ExternalLink,
   Globe,
-  Info,
   Instagram,
   Layers,
   Mail,
   MapPin,
   MessageCircle,
   Phone,
-  Rocket,
   Search,
-  ShieldCheck,
-  Smartphone,
+  ShoppingBag,
   Sparkles,
-  Zap,
+  ChevronDown,
 } from "lucide-react";
+import {
+  AREAS_SERVED,
+  CANONICAL,
+  CONTACT_CARDS,
+  DEV_BRAND,
+  DEV_EMAIL,
+  DEV_INSTAGRAM,
+  DEV_INSTAGRAM_HANDLE,
+  DEV_LOCATION,
+  DEV_NAME,
+  DEV_PHONE_DISPLAY,
+  DEV_PHONE_TEL,
+  DEV_TITLE_ROLE,
+  DEV_WHATSAPP,
+  DEVELOPER_FAQS,
+  OG_IMAGE,
+  SEO_META,
+  TECH_STACK,
+  WEBSITE_DEVELOPER_JSONLD,
+  WEBSITE_HIGHLIGHTS,
+} from "./websiteDeveloperSeo";
 
-const BASE_URL = "https://gharkaorganic.com";
-const CANONICAL = `${BASE_URL}/website-developer`;
-const OG_IMAGE =
-  "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/og-cover-gko.webp";
+const CONTACT_ICON_MAP = {
+  phone: Phone,
+  whatsapp: MessageCircle,
+  email: Mail,
+  instagram: Instagram,
+};
 
-const DEV_NAME = "Ravi Sharma";
-const DEV_BRAND = "RSDEV";
-const DEV_PHONE_DISPLAY = "+91 83928 56993";
-const DEV_PHONE_TEL = "+918392856993";
-const DEV_EMAIL = "ravisharmabhimtal@gmail.com";
-const DEV_INSTAGRAM = "https://www.instagram.com/raviiiiii._0/";
-const DEV_INSTAGRAM_HANDLE = "@raviiiiii._0";
-const DEV_WHATSAPP =
-  "https://wa.me/918392856993?text=Hi%20Ravi%20Sharma,%20I%20visited%20gharkaorganic.com%20and%20want%20a%20custom%20website";
-
-const TECH_STACK = [
-  {
-    icon: Code2,
-    name: "React.js + Vite",
-    role: "Frontend Architecture",
-    desc: "Component-driven storefront and admin panels with code-splitting, lazy route loading, and crisp client-side navigation.",
-  },
-  {
-    icon: Database,
-    name: "Google Firebase & Firestore",
-    role: "Real-Time Cloud Backend",
-    desc: "Live catalog sync, order management, authentication, and instant storefront configuration updates without server lag.",
-  },
-  {
-    icon: Layers,
-    name: "MERN Stack (MongoDB, Express, Node.js)",
-    role: "Scalable Full-Stack APIs",
-    desc: "Custom REST APIs, database modeling, payment integrations, and tailored business workflows engineered from scratch.",
-  },
-  {
-    icon: Smartphone,
-    name: "Tailwind CSS",
-    role: "Mobile-First UI Design",
-    desc: "Lightweight utility-first styling crafted for fast mobile browsing, clean typography, and smooth conversion journeys.",
-  },
-  {
-    icon: Search,
-    name: "Technical Google SEO & Schema",
-    role: "Search & AI Discoverability",
-    desc: "Dynamic React Helmet meta tags, Open Graph cards, JSON-LD rich schemas, canonical URLs, XML sitemaps, and llms.txt.",
-  },
-  {
-    icon: Zap,
-    name: "Core Web Vitals & Speed",
-    role: "Zero-Bloat Performance",
-    desc: "Built without heavy WordPress themes or bloated plugins—delivering fast load times, optimized assets, and clean HTML.",
-  },
-];
-
-const CUSTOM_ADVANTAGES = [
-  "100% custom-coded from scratch — no slow WordPress templates or generic drag-and-drop builders",
-  "Built for high Google search rankings with structured JSON-LD schema and clean URL routing",
-  "Direct WhatsApp, Phone Call, and Checkout funnels designed to turn visitors into real orders & leads",
-  "Mobile-first shopping & browsing experience tuned for Indian smartphone users and slower networks",
-  "Dedicated Admin Dashboard to manage products, banners, categories, orders, and storefront updates",
-  "Transparent, direct-from-developer pricing with ongoing support for domain, hosting, and SEO",
-];
-
-const SERVICE_OFFERINGS = [
-  {
-    icon: Rocket,
-    title: "Custom eCommerce & D2C Stores",
-    desc: "Complete online shopping platforms with product variants, cart, checkout, order tracking, and admin control.",
-  },
-  {
-    icon: Globe,
-    title: "Business, Real Estate & Brand Portals",
-    desc: "High-converting websites for real estate advisors, local businesses, agencies, hospitality, and startups.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Technical SEO & Speed Architecture",
-    desc: "Schema markup, automated sitemaps, clean canonical structure, and fast Core Web Vitals out of the box.",
-  },
-  {
-    icon: Sparkles,
-    title: "Direct WhatsApp & Lead Systems",
-    desc: "Frictionless inquiry forms, 1-click WhatsApp triggers, and mobile action bars built to maximize customer inquiries.",
-  },
-];
-
-const DEVELOPER_FAQS = [
-  {
-    q: "Who designed, built, and maintains gharkaorganic.com?",
-    a: "Ghar Ka Organic (gharkaorganic.com) is custom-designed, coded, and maintained by Ravi Sharma (RSDEV), an independent Full-Stack MERN Stack and Google Firebase Developer based in Nainital, Uttarakhand, India.",
-  },
-  {
-    q: "Is Ravi Sharma an owner or food seller at Ghar Ka Organic?",
-    a: "No. Ravi Sharma is strictly the independent software engineer and website developer who built and manages the web application. For product orders, shipping, pickles, ghee, honey, or store inquiries, please contact Ghar Ka Organic directly via the Contact page.",
-  },
-  {
-    q: "What technology stack powers the Ghar Ka Organic website?",
-    a: "The platform is custom-engineered using React.js, Vite, Tailwind CSS, React Router, Firebase Firestore, and technical SEO tooling (React Helmet, JSON-LD structured data, and XML sitemaps) rather than generic WordPress templates.",
-  },
-  {
-    q: "Can I hire Ravi Sharma to build a similar custom website or eCommerce store?",
-    a: "Yes. If you run a D2C brand, local shop, real estate consultancy, or startup and want a fast, SEO-ready custom website or online store, you can contact Ravi Sharma directly on WhatsApp or Call at +91 83928 56993 or email ravisharmabhimtal@gmail.com.",
-  },
-  {
-    q: "What types of websites does Ravi Sharma (RSDEV) build?",
-    a: "Ravi Sharma builds custom eCommerce stores, MERN stack web applications, Firebase-powered business portals, real estate websites, admin dashboards, and SEO-focused landing pages tailored to generate real leads and sales.",
-  },
-];
-
-const JSONLD = JSON.stringify({
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "WebPage",
-      "@id": `${CANONICAL}#webpage`,
-      url: CANONICAL,
-      name: "Website Developer – Ravi Sharma (RSDEV) | Ghar Ka Organic",
-      description:
-        "Learn about Ravi Sharma (RSDEV), the independent Full-Stack MERN & Google Firebase Developer from Nainital, Uttarakhand who designed, coded, and maintains gharkaorganic.com.",
-      inLanguage: "en-IN",
-      isPartOf: {
-        "@id": `${BASE_URL}/#website`,
-      },
-      about: {
-        "@id": `${CANONICAL}#developer`,
-      },
-      mainEntity: {
-        "@id": `${CANONICAL}#developer`,
-      },
-    },
-    {
-      "@type": "Person",
-      "@id": `${CANONICAL}#developer`,
-      name: DEV_NAME,
-      alternateName: DEV_BRAND,
-      jobTitle: "Full-Stack MERN & Google Firebase Website Developer",
-      description:
-        "Independent Full-Stack Web Developer (React.js, Node.js, MongoDB, Firebase Firestore, Tailwind CSS & Technical SEO) based in Nainital, Uttarakhand, India.",
-      telephone: "+91-8392856993",
-      email: DEV_EMAIL,
-      url: CANONICAL,
-      sameAs: [DEV_INSTAGRAM],
-      homeLocation: {
-        "@type": "Place",
-        name: "Nainital, Uttarakhand, India",
-      },
-      knowsAbout: [
-        "React.js",
-        "Node.js",
-        "MongoDB",
-        "Firebase Firestore",
-        "Tailwind CSS",
-        "MERN Stack Development",
-        "eCommerce Web Development",
-        "Technical SEO",
-        "JSON-LD Structured Data",
-      ],
-    },
-    {
-      "@type": "ProfessionalService",
-      "@id": `${CANONICAL}#service`,
-      name: "Ravi Sharma (RSDEV) – Custom Website & eCommerce Development",
-      description:
-        "Custom-coded React, MERN stack, and Firebase websites built from scratch for eCommerce stores, local businesses, startups, and real estate brands across India.",
-      url: CANONICAL,
-      telephone: "+91-8392856993",
-      email: DEV_EMAIL,
-      provider: {
-        "@id": `${CANONICAL}#developer`,
-      },
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: "Nainital",
-        addressRegion: "Uttarakhand",
-        addressCountry: "IN",
-      },
-      areaServed: {
-        "@type": "Country",
-        name: "India",
-      },
-      serviceType: [
-        "Custom Website Development",
-        "eCommerce Store Development",
-        "MERN Stack Development",
-        "Firebase Web Applications",
-        "Technical SEO Optimization",
-      ],
-    },
-    {
-      "@type": "BreadcrumbList",
-      "@id": `${CANONICAL}#breadcrumb`,
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: BASE_URL,
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "Website Developer",
-          item: CANONICAL,
-        },
-      ],
-    },
-    {
-      "@type": "FAQPage",
-      "@id": `${CANONICAL}#faq`,
-      mainEntity: DEVELOPER_FAQS.map((item) => ({
-        "@type": "Question",
-        name: item.q,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: item.a,
-        },
-      })),
-    },
-  ],
-});
+const SERVICE_ICON_MAP = {
+  ecommerce: ShoppingBag,
+  business: Globe,
+  seo: Search,
+  webapp: Layers,
+};
 
 const WebsiteDeveloperPage = () => {
+  const [openFaq, setOpenFaq] = useState(0);
+
+  const toggleFaq = (index) => {
+    setOpenFaq((prev) => (prev === index ? -1 : index));
+  };
+
   return (
     <>
       <Helmet>
-        <title>
-          Website Developer – Ravi Sharma (RSDEV) | Full-Stack MERN &amp;
-          Firebase Developer
-        </title>
-
-        <meta
-          name="description"
-          content="gharkaorganic.com is custom-designed and developed by Ravi Sharma (RSDEV), a Full-Stack MERN & Google Firebase Developer in Nainital, Uttarakhand. Want a fast, SEO-ready custom website or eCommerce store? Contact +91 83928 56993."
-        />
-
-        <meta
-          name="keywords"
-          content="Ravi Sharma website developer, RSDEV, Ghar Ka Organic website developer, Nainital web developer, Uttarakhand MERN stack developer, React Firebase eCommerce developer, custom website developer India"
-        />
-
+        <title>{SEO_META.title}</title>
+        <meta name="description" content={SEO_META.description} />
+        <meta name="keywords" content={SEO_META.keywords} />
         <meta
           name="robots"
           content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
         />
-        <meta name="author" content={DEV_NAME} />
+        <meta name="author" content={`${DEV_NAME} (${DEV_BRAND})`} />
+        <meta name="publisher" content={DEV_BRAND} />
         <meta name="geo.region" content="IN-UT" />
-        <meta name="geo.placename" content="Nainital, Uttarakhand, India" />
+        <meta name="geo.placename" content={DEV_LOCATION} />
+        <meta name="geo.position" content="29.3459;79.5618" />
+        <meta name="ICBM" content="29.3459, 79.5618" />
+
         <link rel="canonical" href={CANONICAL} />
+        <link rel="alternate" hrefLang="en-IN" href={CANONICAL} />
+        <link rel="alternate" hrefLang="x-default" href={CANONICAL} />
 
         {/* Open Graph */}
-        <meta property="og:type" content="website" />
-        <meta
-          property="og:title"
-          content="Website Developer – Ravi Sharma (RSDEV) | Ghar Ka Organic"
-        />
-        <meta
-          property="og:description"
-          content="Custom React, MERN Stack & Google Firebase engineering behind gharkaorganic.com by Ravi Sharma (RSDEV), Nainital, Uttarakhand."
-        />
+        <meta property="og:type" content="profile" />
+        <meta property="profile:first_name" content="Ravi" />
+        <meta property="profile:last_name" content="Sharma" />
+        <meta property="og:title" content={SEO_META.ogTitle} />
+        <meta property="og:description" content={SEO_META.ogDescription} />
         <meta property="og:url" content={CANONICAL} />
         <meta property="og:image" content={OG_IMAGE} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={SEO_META.imageAlt} />
         <meta property="og:site_name" content="Ghar Ka Organic" />
         <meta property="og:locale" content="en_IN" />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          name="twitter:title"
-          content="Website Developer – Ravi Sharma (RSDEV) | Ghar Ka Organic"
-        />
+        <meta name="twitter:title" content={SEO_META.twitterTitle} />
         <meta
           name="twitter:description"
-          content="Custom React, MERN Stack & Google Firebase developer in Nainital, Uttarakhand. Contact +91 83928 56993 for custom websites & eCommerce stores."
+          content={SEO_META.twitterDescription}
         />
         <meta name="twitter:image" content={OG_IMAGE} />
 
-        <script type="application/ld+json">{JSONLD}</script>
+        <script type="application/ld+json">{WEBSITE_DEVELOPER_JSONLD}</script>
       </Helmet>
 
-      <div className="bg-white text-[#222222] font-sans min-h-screen">
+      <div className="bg-[#fcfbf7] text-[#222222] font-sans min-h-screen pb-16">
         {/* BREADCRUMB */}
         <nav
           aria-label="Breadcrumb"
-          className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-xs tracking-wider text-neutral-400">
+          className="max-w-4xl mx-auto px-4 sm:px-6 py-4 text-xs tracking-wider text-neutral-500">
           <ol className="flex items-center gap-2">
             <li>
               <Link
@@ -314,375 +120,334 @@ const WebsiteDeveloperPage = () => {
                 Home
               </Link>
             </li>
-            <li className="text-neutral-300">/</li>
-            <li
-              className="text-neutral-800 font-medium uppercase"
-              aria-current="page">
-              Website Developer
+            <li className="text-neutral-300" aria-hidden="true">
+              /
+            </li>
+            <li className="text-neutral-900 font-medium uppercase" aria-current="page">
+              Website Developer – {DEV_NAME}
             </li>
           </ol>
         </nav>
 
-        {/* HERO */}
-        <header className="border-b border-[#e8e8e8] bg-[#FAF8F5]">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20">
-            <div className="max-w-3xl">
-              <span className="inline-flex items-center gap-2 rounded-full border border-[#EAE3D6] bg-white px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#315c3c] mb-5">
-                <Code2 size={14} aria-hidden="true" />
-                {DEV_BRAND} • Full-Stack MERN &amp; Firebase Developer
-              </span>
+        <main className="max-w-4xl mx-auto px-4 sm:px-6 space-y-6">
+          {/* ══════════════════════════════════════════════
+              1. HERO PROFILE CARD (COMPACT & MODERN)
+             ══════════════════════════════════════════════ */}
+          <header className="bg-white rounded-3xl border border-[#eae6dc] p-6 sm:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+              <div>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase bg-[#edf5ee] text-[#244d37] border border-[#d3e5d6]">
+                  <Sparkles size={12} /> {DEV_BRAND} • Developer Profile
+                </span>
+                <h1 className="text-2xl sm:text-3xl font-semibold text-[#121212] tracking-tight mt-2.5">
+                  {DEV_NAME}
+                </h1>
+                <p className="text-xs sm:text-sm font-medium text-[#244d37] mt-0.5">
+                  {DEV_TITLE_ROLE} • {DEV_LOCATION}
+                </p>
+              </div>
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-[#1a1a1a] leading-tight mb-5">
-                Website Designed &amp; Developed by{" "}
-                <span className="font-medium text-[#315c3c]">{DEV_NAME}</span>
-              </h1>
-
-              <p className="text-[15.5px] sm:text-[17px] text-[#4f4f4f] font-light leading-relaxed mb-8">
-                The official web platform for{" "}
-                <strong className="font-medium text-[#1a1a1a]">
-                  Ghar Ka Organic
-                </strong>{" "}
-                (<code>gharkaorganic.com</code>) is custom-engineered from
-                scratch by{" "}
-                <strong className="font-medium text-[#1a1a1a]">
-                  {DEV_NAME} ({DEV_BRAND})
-                </strong>{" "}
-                — an independent full-stack software developer based in{" "}
-                <strong className="font-medium text-[#1a1a1a]">
-                  Nainital, Uttarakhand, India
-                </strong>
-                . Built without slow WordPress builders or generic templates for
-                speed, mobile-first UX, and Google SEO performance.
-              </p>
-
-              <div className="flex flex-wrap items-center gap-3.5">
-                <a
-                  href={DEV_WHATSAPP}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2.5 bg-[#315c3c] hover:bg-[#244b2e] text-white text-sm font-medium px-5 py-3 rounded-lg shadow-sm transition">
-                  <MessageCircle size={17} aria-hidden="true" />
-                  WhatsApp {DEV_PHONE_DISPLAY}
-                </a>
-
-                <a
-                  href={`tel:${DEV_PHONE_TEL}`}
-                  className="inline-flex items-center gap-2 bg-white hover:bg-neutral-50 text-[#1a1a1a] border border-[#dcd6ca] text-sm font-medium px-5 py-3 rounded-lg transition">
-                  <Phone size={16} aria-hidden="true" />
-                  Call {DEV_PHONE_DISPLAY}
-                </a>
-
-                <a
-                  href={DEV_INSTAGRAM}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-white hover:bg-neutral-50 text-[#1a1a1a] border border-[#dcd6ca] text-sm font-medium px-5 py-3 rounded-lg transition">
-                  <Instagram size={16} aria-hidden="true" />
-                  {DEV_INSTAGRAM_HANDLE}
-                </a>
+              {/* Verified Badge */}
+              <div className="inline-flex items-center gap-1.5 text-xs text-[#008a54] font-semibold bg-[#eaf7f0] border border-[#c6edd7] px-3 py-1.5 rounded-xl self-start sm:self-auto">
+                <span className="w-2 h-2 rounded-full bg-[#008a54]" />
+                Built gharkaorganic.com
               </div>
             </div>
-          </div>
-        </header>
 
-        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-16 md:space-y-20">
-          {/* ROLE CLARIFICATION (ENTITY DISAMBIGUATION FOR USERS & SEARCH ENGINES) */}
-          <section aria-labelledby="role-clarification-heading">
-            <div className="rounded-2xl border border-[#EAE3D6] bg-[#FAF8F5] p-6 sm:p-8 md:p-10">
-              <div className="flex items-start gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-white border border-[#EAE3D6] flex items-center justify-center text-[#315c3c] shrink-0">
-                  <Info size={20} aria-hidden="true" />
-                </div>
-                <div>
-                  <h2
-                    id="role-clarification-heading"
-                    className="text-xl sm:text-2xl font-medium text-[#1a1a1a]">
-                    Role &amp; Business Clarification
-                  </h2>
-                  <p className="text-sm text-[#555555] font-light mt-1">
-                    Clear separation between the organic food brand and the
-                    independent technology developer.
-                  </p>
-                </div>
-              </div>
+            <p
+              id="developer-intro"
+              className="text-xs sm:text-[14px] text-[#4a4a4a] leading-relaxed mb-6 font-normal">
+              Creator and engineer of <strong className="text-gray-900">gharkaorganic.com</strong>.
+              Designing fast, mobile-first eCommerce stores and custom business websites engineered
+              for Google search rankings and direct client inquiries.
+            </p>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="rounded-xl bg-white border border-[#eae5dc] p-6">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-[#8F6646]">
-                    The Brand (Store &amp; Products)
-                  </span>
-                  <h3 className="text-lg font-medium text-[#1a1a1a] mt-1 mb-2">
-                    Ghar Ka Organic
-                  </h3>
-                  <p className="text-sm text-[#4f4f4f] font-light leading-relaxed mb-4">
-                    Ghar Ka Organic is an Uttarakhand-based food brand from
-                    Mangoli, Nainital offering homemade pickles, pure ghee,
-                    natural honey, traditional pahadi dals, spices, and pahadi
-                    salts. All food orders, shipping, and product queries are
-                    handled directly by the Ghar Ka Organic team.
-                  </p>
-                  <Link
-                    to="/contact"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#315c3c] hover:text-[#244b2e] underline underline-offset-4">
-                    Contact Ghar Ka Organic Store
-                    <ArrowRight size={14} aria-hidden="true" />
-                  </Link>
-                </div>
+            {/* Direct Action Buttons */}
+            <div className="flex flex-wrap items-center gap-2.5">
+              <a
+                href={DEV_WHATSAPP}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 bg-[#244d37] hover:bg-[#1a3828] text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl transition shadow-xs">
+                <MessageCircle size={15} />
+                WhatsApp ({DEV_PHONE_DISPLAY})
+              </a>
 
-                <div className="rounded-xl bg-white border border-[#eae5dc] p-6">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-[#315c3c]">
-                    Independent Software Engineer
-                  </span>
-                  <h3 className="text-lg font-medium text-[#1a1a1a] mt-1 mb-2">
-                    {DEV_NAME} ({DEV_BRAND})
-                  </h3>
-                  <p className="text-sm text-[#4f4f4f] font-light leading-relaxed mb-4">
-                    {DEV_NAME} is the independent Full-Stack MERN &amp; Google
-                    Firebase Website Developer who designed, coded, and
-                    maintains <code>gharkaorganic.com</code>. He is{" "}
-                    <strong className="font-medium text-[#1a1a1a]">not</strong>{" "}
-                    an owner, partner, or seller of food products for Ghar Ka
-                    Organic.
-                  </p>
-                  <a
-                    href={DEV_WHATSAPP}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#315c3c] hover:text-[#244b2e] underline underline-offset-4">
-                    Contact {DEV_NAME} for Website Projects
-                    <ArrowRight size={14} aria-hidden="true" />
-                  </a>
-                </div>
-              </div>
+              <a
+                href={`tel:${DEV_PHONE_TEL}`}
+                className="inline-flex items-center gap-1.5 bg-white hover:bg-neutral-50 text-gray-800 border border-gray-300 text-xs sm:text-sm font-medium px-4 py-2.5 rounded-xl transition">
+                <Phone size={14} />
+                Call Now
+              </a>
+
+              <a
+                href={`mailto:${DEV_EMAIL}?subject=Website%20Inquiry`}
+                className="inline-flex items-center gap-1.5 bg-white hover:bg-neutral-50 text-gray-800 border border-gray-300 text-xs sm:text-sm font-medium px-4 py-2.5 rounded-xl transition">
+                <Mail size={14} />
+                Email
+              </a>
+
+              <a
+                href={DEV_INSTAGRAM}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 bg-white hover:bg-neutral-50 text-gray-700 border border-gray-300 text-xs sm:text-sm font-medium px-3.5 py-2.5 rounded-xl transition">
+                <Instagram size={14} />
+                {DEV_INSTAGRAM_HANDLE}
+              </a>
             </div>
-          </section>
+          </header>
 
-          {/* ARCHITECTURE & TECH STACK */}
-          <section aria-labelledby="tech-stack-heading">
-            <div className="max-w-2xl mb-10">
-              <span className="text-[11px] uppercase tracking-[0.2em] font-semibold text-[#315c3c] block mb-2">
-                Website Engineering
+          {/* ══════════════════════════════════════════════
+              2. SERVICES (CONCISE BENTO GRID)
+             ══════════════════════════════════════════════ */}
+          <section
+            id="services"
+            aria-labelledby="websites-heading"
+            className="bg-white rounded-3xl border border-[#eae6dc] p-6 sm:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+            <div className="mb-5">
+              <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.18em] font-bold text-[#7B4627] block mb-1">
+                Capabilities
               </span>
               <h2
-                id="tech-stack-heading"
-                className="text-2xl sm:text-3xl font-light text-[#1a1a1a] tracking-tight mb-3">
-                Technologies Powering Ghar Ka Organic
+                id="websites-heading"
+                className="text-lg sm:text-xl font-semibold text-[#121212] tracking-tight">
+                Websites &amp; Online Stores Built to Rank
               </h2>
-              <p className="text-sm sm:text-base text-[#555555] font-light leading-relaxed">
-                Instead of slow, template-heavy WordPress setups, this platform
-                is engineered with modern JavaScript, real-time cloud
-                databases, and structured SEO architecture.
-              </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {TECH_STACK.map((item) => {
-                const Icon = item.icon;
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              {WEBSITE_HIGHLIGHTS.map((item) => {
+                const Icon = SERVICE_ICON_MAP[item.key] || Globe;
                 return (
                   <div
-                    key={item.name}
-                    className="p-6 rounded-xl border border-[#e5e5e5] bg-white hover:border-[#315c3c] transition-colors flex flex-col">
-                    <div className="w-11 h-11 rounded-lg bg-[#FAF8F5] border border-[#EAE3D6] text-[#315c3c] flex items-center justify-center mb-4">
-                      <Icon size={20} aria-hidden="true" />
+                    key={item.title}
+                    className="p-4 rounded-2xl bg-[#faf9f5] border border-[#f0ece2] flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white border border-[#eae3d4] text-[#244d37] flex items-center justify-center shrink-0 mt-0.5">
+                      <Icon size={16} />
                     </div>
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-[#8F6646] mb-1">
-                      {item.role}
-                    </span>
-                    <h3 className="text-base font-semibold text-[#1a1a1a] mb-2">
-                      {item.name}
-                    </h3>
-                    <p className="text-sm text-[#555555] font-light leading-relaxed">
-                      {item.desc}
-                    </p>
+                    <div>
+                      <h3 className="text-xs sm:text-[13px] font-bold text-gray-900 mb-1">
+                        {item.title}
+                      </h3>
+                      <p className="text-xs text-gray-600 leading-relaxed font-light">
+                        {item.desc}
+                      </p>
+                    </div>
                   </div>
                 );
               })}
             </div>
           </section>
 
-          {/* WHY CUSTOM CODE + SERVICES */}
+          {/* ══════════════════════════════════════════════
+              3. LIVE PORTFOLIO WORK (GHAR KA ORGANIC)
+             ══════════════════════════════════════════════ */}
           <section
-            aria-labelledby="services-heading"
-            className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start border-t border-[#e8e8e8] pt-14">
-            <div className="lg:col-span-6 space-y-6">
-              <span className="text-[11px] uppercase tracking-[0.2em] font-semibold text-[#315c3c] block">
-                Want a Website Like This?
-              </span>
-              <h2
-                id="services-heading"
-                className="text-2xl sm:text-3xl font-light text-[#1a1a1a] leading-snug">
-                Custom Websites Built for Speed, SEO &amp; Real Leads
-              </h2>
-              <p className="text-sm sm:text-base text-[#4f4f4f] font-light leading-relaxed">
-                Whether you run a D2C food brand, real estate advisory, local
-                business, or growing startup, {DEV_NAME} ({DEV_BRAND}) builds
-                clean, fast, conversion-focused web applications with zero
-                agency bloat.
-              </p>
-
-              <ul className="space-y-3 pt-1">
-                {CUSTOM_ADVANTAGES.map((point) => (
-                  <li
-                    key={point}
-                    className="flex items-start gap-3 text-sm text-[#3f3f3f] font-light leading-relaxed">
-                    <CheckCircle2
-                      size={18}
-                      className="text-[#315c3c] shrink-0 mt-0.5"
-                      aria-hidden="true"
-                    />
-                    <span>{point}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {SERVICE_OFFERINGS.map((service) => {
-                const Icon = service.icon;
-                return (
-                  <div
-                    key={service.title}
-                    className="p-6 rounded-xl bg-[#FAF8F5] border border-[#EAE3D6]">
-                    <div className="w-10 h-10 rounded-lg bg-white border border-[#EAE3D6] text-[#315c3c] flex items-center justify-center mb-4">
-                      <Icon size={19} aria-hidden="true" />
-                    </div>
-                    <h3 className="text-base font-medium text-[#1a1a1a] mb-2">
-                      {service.title}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-[#555555] font-light leading-relaxed">
-                      {service.desc}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-
-          {/* DEVELOPER CONTACT CARD */}
-          <section
-            aria-labelledby="developer-contact-heading"
-            className="rounded-2xl bg-[#1f3a27] text-white p-7 sm:p-10 md:p-12">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-7 space-y-4">
-                <span className="text-[11px] uppercase tracking-[0.2em] font-semibold text-[#FFE3B3] block">
-                  Direct Developer Contact
+            id="featured-project"
+            aria-labelledby="featured-project-heading"
+            className="bg-white rounded-3xl border border-[#eae6dc] p-6 sm:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+              <div>
+                <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] uppercase tracking-[0.18em] font-bold text-[#244d37] mb-1">
+                  <Code2 size={13} /> Live Production Example
                 </span>
                 <h2
-                  id="developer-contact-heading"
-                  className="text-2xl sm:text-3xl font-light leading-snug">
-                  Start Your Custom Website with {DEV_NAME} ({DEV_BRAND})
+                  id="featured-project-heading"
+                  className="text-lg sm:text-xl font-semibold text-[#121212] tracking-tight">
+                  Featured Project: Ghar Ka Organic
                 </h2>
-                <p className="text-sm sm:text-base text-white/80 font-light leading-relaxed max-w-2xl">
-                  Speak directly with the developer who built this platform. Get
-                  transparent pricing, fast delivery, custom SEO setup, and
-                  ongoing technical support.
-                </p>
-
-                <div className="flex flex-wrap gap-x-6 gap-y-2 pt-2 text-xs sm:text-sm text-white/85">
-                  <span className="inline-flex items-center gap-1.5">
-                    <MapPin size={15} className="text-[#FFE3B3]" aria-hidden="true" />
-                    Nainital, Uttarakhand, India
-                  </span>
-                  <a
-                    href={`mailto:${DEV_EMAIL}?subject=Website%20Development%20Inquiry`}
-                    className="inline-flex items-center gap-1.5 hover:text-[#FFE3B3] transition-colors">
-                    <Mail size={15} className="text-[#FFE3B3]" aria-hidden="true" />
-                    {DEV_EMAIL}
-                  </a>
-                </div>
               </div>
-
-              <div className="lg:col-span-5 flex flex-col sm:flex-row lg:flex-col gap-3">
-                <a
-                  href={DEV_WHATSAPP}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 bg-[#FFE3B3] hover:bg-white text-[#1a1a1a] font-semibold text-sm px-6 py-3.5 rounded-lg transition">
-                  <MessageCircle size={18} aria-hidden="true" />
-                  Chat on WhatsApp ({DEV_PHONE_DISPLAY})
-                </a>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <a
-                    href={`tel:${DEV_PHONE_TEL}`}
-                    className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs sm:text-sm font-medium px-4 py-3 rounded-lg transition">
-                    <Phone size={15} aria-hidden="true" />
-                    Call Now
-                  </a>
-                  <a
-                    href={DEV_INSTAGRAM}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs sm:text-sm font-medium px-4 py-3 rounded-lg transition">
-                    <Instagram size={15} aria-hidden="true" />
-                    Instagram
-                  </a>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* FAQ SECTION */}
-          <section
-            aria-labelledby="developer-faq-heading"
-            className="max-w-3xl mx-auto pt-4 pb-6">
-            <div className="text-center mb-10">
-              <h2
-                id="developer-faq-heading"
-                className="text-xl sm:text-2xl md:text-3xl font-light tracking-[0.16em] text-[#121212] uppercase">
-                Frequently Asked Questions
-              </h2>
-              <div
-                className="w-8 h-[1px] bg-[#121212]/20 mx-auto mt-3"
-                aria-hidden="true"
-              />
+              <Link
+                to="/all-products"
+                className="inline-flex items-center gap-1.5 bg-[#edf5ee] hover:bg-[#244d37] text-[#244d37] hover:text-white border border-[#cde2d2] text-xs font-semibold px-3.5 py-2 rounded-xl transition-all self-start sm:self-auto">
+                Explore Storefront
+                <ExternalLink size={13} />
+              </Link>
             </div>
 
-            <div className="divide-y divide-[#ebebeb] border-y border-[#ebebeb]">
-              {DEVELOPER_FAQS.map((item, idx) => (
-                <details key={idx} className="group py-5 transition-all">
-                  <summary className="font-medium text-[16px] md:text-[17px] text-[#121212] flex items-center justify-between cursor-pointer list-none hover:text-[#315c3c] transition-colors py-1">
-                    <span>{item.q}</span>
-                    <span
-                      className="ml-4 shrink-0 text-[#888888] transition-transform duration-200 group-open:rotate-180"
-                      aria-hidden="true">
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.75"
-                        viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </span>
-                  </summary>
-                  <p className="text-[#555555] font-light text-[15px] leading-relaxed pt-3 pb-1">
-                    {item.a}
-                  </p>
-                </details>
+            <p className="text-xs sm:text-sm text-gray-600 font-light leading-relaxed mb-4">
+              This entire website (<strong className="text-gray-900 font-medium">gharkaorganic.com</strong>)
+              is built from scratch with custom React 18 SPA architecture, Firebase real-time data,
+              shopping cart &amp; checkout, and comprehensive Schema.org JSON-LD SEO.
+            </p>
+
+            {/* Tech Stack Pills */}
+            <div className="flex flex-wrap gap-1.5">
+              {TECH_STACK.map((tech) => (
+                <span
+                  key={tech}
+                  className="text-[11px] font-medium text-[#244d37] bg-[#edf5ee] border border-[#d6e7d8] px-2.5 py-0.5 rounded-full">
+                  {tech}
+                </span>
               ))}
             </div>
           </section>
 
-          {/* INTERNAL NAVIGATION BACK TO STORE */}
-          <section className="border-t border-[#e8e8e8] pt-10 flex flex-wrap items-center justify-center gap-6 text-xs sm:text-sm font-medium text-[#315c3c]">
-            <Link to="/" className="hover:underline underline-offset-4">
-              ← Back to Ghar Ka Organic Home
-            </Link>
-            <Link to="/all-products" className="hover:underline underline-offset-4">
-              Explore All Products
-            </Link>
-            <Link to="/our-story" className="hover:underline underline-offset-4">
-              Read Our Story
-            </Link>
-            <Link to="/contact" className="hover:underline underline-offset-4">
-              Store Contact &amp; Support
-            </Link>
+          {/* ══════════════════════════════════════════════
+              4. AREAS SERVED (SHORT, CLEAN PILLS)
+             ══════════════════════════════════════════════ */}
+          <section
+            id="areas-served"
+            aria-labelledby="areas-served-heading"
+            className="bg-white rounded-3xl border border-[#eae6dc] p-6 sm:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+            <div className="mb-4">
+              <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.18em] font-bold text-[#7B4627] block mb-1">
+                Location &amp; Reach
+              </span>
+              <h2
+                id="areas-served-heading"
+                className="text-lg sm:text-xl font-semibold text-[#121212] tracking-tight">
+                Areas Served
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-600 font-light mt-0.5">
+                Based in <strong className="text-gray-900 font-medium">Nainital &amp; Bhimtal, Uttarakhand</strong>.
+                Serving businesses locally across Kumaon &amp; Garhwal, and remotely across India.
+              </p>
+            </div>
+
+            <ul className="flex flex-wrap gap-2">
+              {AREAS_SERVED.map((area) => (
+                <li
+                  key={area}
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-800 bg-[#faf9f5] border border-[#e5e1d5] px-3 py-1.5 rounded-xl">
+                  <MapPin size={12} className="text-[#244d37]" />
+                  {area}
+                </li>
+              ))}
+            </ul>
           </section>
+
+          {/* ══════════════════════════════════════════════
+              5. DIRECT CONTACT CARDS
+             ══════════════════════════════════════════════ */}
+          <section
+            id="contact-details"
+            aria-labelledby="developer-contact-heading"
+            className="bg-white rounded-3xl border border-[#eae6dc] p-6 sm:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+            <div className="mb-4">
+              <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.18em] font-bold text-[#7B4627] block mb-1">
+                Get In Touch
+              </span>
+              <h2
+                id="developer-contact-heading"
+                className="text-lg sm:text-xl font-semibold text-[#121212] tracking-tight">
+                Direct Contact Details
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {CONTACT_CARDS.map((card) => {
+                const Icon = CONTACT_ICON_MAP[card.key] || Phone;
+                return (
+                  <a
+                    key={card.label}
+                    href={card.href}
+                    target={card.external ? "_blank" : undefined}
+                    rel={card.external ? "noopener noreferrer" : undefined}
+                    className="flex items-center gap-3.5 rounded-2xl border border-[#e8e4da] bg-[#faf9f5] hover:border-[#244d37] p-3.5 transition-colors group">
+                    <div className="w-9 h-9 rounded-xl bg-white border border-[#e2dcd0] text-[#244d37] flex items-center justify-center shrink-0">
+                      <Icon size={17} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                        {card.label}
+                      </span>
+                      <p className="text-xs sm:text-sm font-semibold text-gray-900 group-hover:text-[#244d37] transition-colors truncate">
+                        {card.value}
+                      </p>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+
+            {/* Role Clarification Note */}
+            <div className="mt-5 p-3.5 rounded-2xl bg-[#f4f7f4] border border-[#d6e5d8] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-gray-700">
+              <p>
+                <strong>Role Note:</strong> {DEV_NAME} handles website engineering &amp; SEO for gharkaorganic.com.
+                For organic food orders &amp; product inquiries, please contact the store directly.
+              </p>
+              <Link
+                to="/contact"
+                className="font-bold text-[#244d37] hover:underline whitespace-nowrap">
+                Store Contact →
+              </Link>
+            </div>
+          </section>
+
+          {/* ══════════════════════════════════════════════
+              6. FREQUENTLY ASKED QUESTIONS (ACCORDION)
+             ══════════════════════════════════════════════ */}
+          <section
+            id="faq"
+            aria-labelledby="developer-faq-heading"
+            className="bg-white rounded-3xl border border-[#eae6dc] p-6 sm:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+            <div className="mb-4">
+              <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.18em] font-bold text-[#7B4627] block mb-1">
+                FAQs
+              </span>
+              <h2
+                id="developer-faq-heading"
+                className="text-lg sm:text-xl font-semibold text-[#121212] tracking-tight">
+                Frequently Asked Questions
+              </h2>
+            </div>
+
+            <div className="divide-y divide-[#ece7dc]">
+              {DEVELOPER_FAQS.slice(0, 5).map((item, idx) => {
+                const isOpen = openFaq === idx;
+                return (
+                  <div key={item.q} className="py-3.5 first:pt-0 last:pb-0">
+                    <button
+                      type="button"
+                      onClick={() => toggleFaq(idx)}
+                      className="w-full flex items-center justify-between gap-3 text-left py-1 group focus:outline-none"
+                      aria-expanded={isOpen}>
+                      <span
+                        className={`text-xs sm:text-sm font-medium leading-snug transition-colors ${
+                          isOpen ? "text-[#244d37] font-semibold" : "text-gray-900 group-hover:text-[#244d37]"
+                        }`}>
+                        {item.q}
+                      </span>
+                      <ChevronDown
+                        size={15}
+                        className={`shrink-0 text-gray-500 transition-transform duration-300 ${
+                          isOpen ? "rotate-180 text-[#244d37]" : ""
+                        }`}
+                      />
+                    </button>
+                    {isOpen && (
+                      <p className="text-xs sm:text-[13px] text-gray-600 font-light leading-relaxed pt-2 pb-1 pr-3">
+                        {item.a}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* ══════════════════════════════════════════════
+              7. FOOTER STORE LINKS
+             ══════════════════════════════════════════════ */}
+          <footer className="pt-2 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs font-medium text-[#244d37]">
+            <Link to="/" className="hover:underline">
+              ← Ghar Ka Organic Home
+            </Link>
+            <Link to="/all-products" className="hover:underline">
+              All Products
+            </Link>
+            <Link to="/shop/best-sellers" className="hover:underline">
+              Best Sellers
+            </Link>
+            <Link to="/our-story" className="hover:underline">
+              Our Story
+            </Link>
+            <Link to="/contact" className="hover:underline">
+              Store Support
+            </Link>
+          </footer>
         </main>
       </div>
     </>
@@ -690,4 +455,3 @@ const WebsiteDeveloperPage = () => {
 };
 
 export default WebsiteDeveloperPage;
-

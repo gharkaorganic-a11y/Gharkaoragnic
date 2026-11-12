@@ -7,10 +7,21 @@ const MAX_GALLERY_FILES = 10;           // max parallel uploads
 const ALLOWED_TYPES = [
   "image/jpeg",
   "image/jpg",   // some browsers send this instead of image/jpeg
+  "image/pjpeg",
+  "image/jfif",
   "image/png",
   "image/webp",
-  "image/avif"
+  "image/avif",
+  "image/gif",
 ];
+const ALLOWED_EXT_RE = /\.(jpe?g|jfif|png|webp|avif|gif)$/i;
+
+const isSupportedImageFile = (file) => {
+  if (!file) return false;
+  if (file.type && ALLOWED_TYPES.includes(file.type.toLowerCase())) return true;
+  if (file.type && file.type.toLowerCase().startsWith("image/")) return true;
+  return ALLOWED_EXT_RE.test(file.name || "");
+};
 
 /* ─────────────────────────────────────────────
    IMAGE COMPRESSION
@@ -94,9 +105,9 @@ export const uploadImageToCloudinary = async (
   }
 
   // --- Type check ---
-  if (!ALLOWED_TYPES.includes(file.type)) {
+  if (!isSupportedImageFile(file)) {
     throw new Error(
-      `Invalid file type: "${file.type}". Only JPG, PNG, and WEBP are allowed.`
+      `Invalid file type: "${file.type || file.name}". Only JPG, PNG, WEBP, AVIF, and GIF images are allowed.`
     );
   }
 
@@ -108,11 +119,15 @@ export const uploadImageToCloudinary = async (
   }
 
   try {
-    // --- Compress if > 1MB ---
-    const shouldCompress = file.size > 1 * 1024 * 1024;
-    const uploadFile = shouldCompress
-      ? await compressImage(file)
-      : file;
+    // --- Compress if > 1MB (fall back safely to original if under 10MB) ---
+    let uploadFile = file;
+    if (file.size > 1 * 1024 * 1024) {
+      try {
+        uploadFile = await compressImage(file);
+      } catch {
+        uploadFile = file;
+      }
+    }
 
     // --- Build FormData ---
     const formData = new FormData();

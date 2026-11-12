@@ -66,7 +66,7 @@ const CURATED_REVIEWS = [
     location: "Haldwani, Uttarakhand",
     rating: 5,
     message:
-      "Proud to support women-led farmer initiatives from Bhimtal while getting top notch Himalayan food. Everything arrived fresh and tightly sealed in glass jars.",
+      "Proud to support local makers from Mangoli, Nainital while getting top notch Himalayan food. Everything arrived fresh and tightly sealed in glass jars.",
     date: "19 Sep 2026",
     verified: true,
   },
@@ -263,7 +263,7 @@ const CustomerReviewsPage = () => {
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-base shrink-0">🏔️</span>
-                <span>Crafted in Bhimtal, Uttarakhand</span>
+                <span>Crafted in Mangoli, Nainital, Uttarakhand</span>
               </div>
             </div>
           </div>
@@ -339,7 +339,9 @@ const CustomerReviewsPage = () => {
             Experience the Taste of the Himalayas
           </h2>
           <p className="text-sm text-neutral-600 leading-relaxed font-light mb-6 max-w-lg mx-auto">
-            Order pure, preservative-free pahadi pickles, raw honey, and A2 ghee directly from Bhimtal, Uttarakhand.
+            Order pure, preservative-free homemade pickles, pure ghee, natural
+            honey, traditional pahadi dals, spices, and pahadi salts directly
+            from Mangoli, Nainital, Uttarakhand.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link

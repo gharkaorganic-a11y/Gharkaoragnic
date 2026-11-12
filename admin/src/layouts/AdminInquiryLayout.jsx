@@ -9,6 +9,7 @@ import {
   X,
   Store,
 } from "lucide-react";
+import BrandLogo from "../components/common/BrandLogo";
 
 const AdminInquiryLayout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -37,11 +38,9 @@ const AdminInquiryLayout = () => {
             aria-label="Open Menu">
             <Menu size={24} />
           </button>
-            <img
-              src="https://gharkaorganic.com/logo/gharka-logo.png"
-              alt="Ghar Ka Organic"
-              className="h-9 w-auto max-w-[150px] rounded bg-white object-contain p-1"
-            />
+          <div className="inline-flex items-center rounded-md bg-white px-2 py-0.5 border border-[#D99A36]/40">
+            <BrandLogo variant="horizontal" size="sm" showTagline={false} />
+          </div>
         </div>
       </header>
 
@@ -63,15 +62,11 @@ const AdminInquiryLayout = () => {
         `}>
         <div className="flex flex-col h-full overflow-hidden">
           {/* Brand identity */}
-          <div className="h-16 flex items-center justify-between px-6 border-b border-gray-100 shrink-0 bg-white">
-            <div className="flex items-center gap-3 overflow-hidden">
-              <img
-                src="https://gharkaorganic.com/logo/gharka-logo.png"
-                alt="Ghar Ka Organic"
-                className="h-10 w-auto max-w-[155px] shrink-0 object-contain"
-              />
-              <div className="overflow-hidden">
-                <span className="text-[11px] font-bold text-[#878787] uppercase tracking-wider block mt-0.5">
+          <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100 shrink-0 bg-white">
+            <div className="flex items-center gap-2.5 overflow-hidden">
+              <BrandLogo variant="horizontal" size="sm" showTagline={false} />
+              <div className="overflow-hidden border-l border-gray-200 pl-2">
+                <span className="text-[10px] font-bold text-[#878787] uppercase tracking-wider block whitespace-nowrap">
                   Seller Hub
                 </span>
               </div>

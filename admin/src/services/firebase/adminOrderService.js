@@ -107,19 +107,23 @@ export const adminOrderService = {
 
       const data = orderSnap.data();
       const status = data.orderStatus || data.status || "placed";
+      const subItems = itemsSnap.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+      }));
 
       return {
         id: orderSnap.id,
         ...data,
 
-        // 🔥 NORMALIZED STATUS
+        // 🔥 NORMALIZED STATUS & CONTACT FALLBACKS
         status,
         orderStatus: status,
+        customerName: data.addressSnapshot?.name || data.customerName || "Guest",
+        phone: data.addressSnapshot?.phone || data.phone || "",
+        totalAmount: Number(data.totalAmount || 0),
 
-        items: itemsSnap.docs.map((d) => ({
-          id: d.id,
-          ...d.data(),
-        })),
+        items: subItems.length > 0 ? subItems : data.items || [],
 
         timeline: timelineSnap.docs.map((d) => ({
           id: d.id,

@@ -8,6 +8,7 @@ import {
   Image as ImageIcon,
   PackageOpen,
   Loader2,
+  Star,
 } from "lucide-react";
 
 import StockBadge from "./StockBadge";
@@ -75,29 +76,29 @@ const ProductTable = ({
     selectedProducts?.length > 0 && selectedProducts.length === products.length;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+    <div className="bg-white border border-[#e3e3e3] rounded-xl shadow-[0_1px_0_rgba(0,0,0,0.03)] overflow-hidden flex flex-col">
       {/* ---------------- BULK ACTION BAR ---------------- */}
       {selectedProducts?.length > 0 && (
-        <div className="flex items-center justify-between px-6 py-3.5 bg-indigo-50/80 border-b border-indigo-100 animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="flex items-center gap-3">
-            <span className="flex items-center justify-center w-6 h-6 bg-indigo-600 text-white text-xs font-bold rounded-full">
+        <div className="flex items-center justify-between px-5 py-3 bg-[#eaf2ff] border-b border-[#c5dcff]">
+          <div className="flex items-center gap-2.5">
+            <span className="flex items-center justify-center w-6 h-6 bg-[#FFE500] text-[#212121] text-xs font-bold rounded-full">
               {selectedProducts.length}
             </span>
-            <span className="text-sm font-medium text-indigo-900">
+            <span className="text-xs font-semibold text-[#1c5fba]">
               Products selected
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <button
               onClick={toggleSelectAll}
-              className="px-4 py-1.5 text-sm font-medium text-indigo-700 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-50 transition-colors shadow-sm">
+              className="px-3 py-1.5 text-xs font-semibold text-[#2874F0] bg-white border border-[#c5dcff] rounded-lg hover:bg-blue-50 transition-colors cursor-pointer">
               {allSelected ? "Clear Selection" : "Select All"}
             </button>
 
             <button
               onClick={handleBulkDelete}
-              className="px-4 py-1.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm focus:ring-2 focus:ring-offset-1 focus:ring-red-500">
+              className="px-3 py-1.5 text-xs font-semibold text-white bg-rose-600 rounded-lg hover:bg-rose-700 transition-colors cursor-pointer">
               Delete Selected
             </button>
           </div>
@@ -106,15 +107,15 @@ const ProductTable = ({
 
       {/* ---------------- TABLE CONTAINER ---------------- */}
       <div className="overflow-x-auto">
-        <div className="min-w-[1000px]">
+        <div className="min-w-[960px]">
           {/* ---------------- HEADER ---------------- */}
-          <div className="grid grid-cols-[48px_64px_1fr_140px_120px_100px_160px] items-center gap-4 px-6 py-3.5 bg-gray-50/50 border-b border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider">
+          <div className="grid grid-cols-[44px_56px_1fr_130px_120px_96px_185px] items-center gap-3 px-5 py-3 bg-[#fafafa] border-b border-[#ebebeb] text-[11px] font-bold text-[#616161] uppercase tracking-wider">
             <div className="flex items-center h-full">
               <input
                 type="checkbox"
                 checked={allSelected}
                 onChange={toggleSelectAll}
-                className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                className="w-4 h-4 rounded border-gray-300 accent-[#2874F0] cursor-pointer"
               />
             </div>
             <div>Image</div>
@@ -126,7 +127,7 @@ const ProductTable = ({
           </div>
 
           {/* ---------------- ROWS ---------------- */}
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-[#ebebeb]">
             {products.map((product) => {
               const disc = getDiscount(product.price, product.originalPrice);
               const isSelected = selectedProducts?.includes(product.id);
@@ -134,8 +135,8 @@ const ProductTable = ({
               return (
                 <div
                   key={product.id}
-                  className={`grid grid-cols-[48px_64px_1fr_140px_120px_100px_160px] items-center gap-4 px-6 py-4 transition-colors group ${
-                    isSelected ? "bg-indigo-50/30" : "hover:bg-gray-50/80"
+                  className={`grid grid-cols-[44px_56px_1fr_130px_120px_96px_185px] items-center gap-3 px-5 py-3.5 transition-colors group ${
+                    isSelected ? "bg-[#eaf2ff]/40" : "hover:bg-[#fafafa]"
                   }`}>
                   {/* Checkbox */}
                   <div className="flex items-center h-full">
@@ -143,12 +144,12 @@ const ProductTable = ({
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => toggleSelectProduct(product.id)}
-                      className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer transition-all"
+                      className="w-4 h-4 rounded border-gray-300 accent-[#2874F0] cursor-pointer transition-all"
                     />
                   </div>
 
                   {/* Image */}
-                  <div className="w-12 h-12 bg-gray-50 border border-gray-100 rounded-lg overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
+                  <div className="w-11 h-11 bg-[#f7f7f7] border border-[#e3e3e3] rounded-lg overflow-hidden flex items-center justify-center shrink-0">
                     {product.banner ? (
                       <img
                         src={product.banner}
@@ -156,31 +157,40 @@ const ProductTable = ({
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <ImageIcon size={20} className="text-gray-300" />
+                      <ImageIcon size={18} className="text-gray-300" />
                     )}
                   </div>
 
                   {/* Name & ID */}
-                  <div className="min-w-0 pr-4">
-                    <p className="text-sm font-semibold text-gray-900 truncate mb-0.5 group-hover:text-indigo-600 transition-colors">
-                      {product.name}
-                    </p>
-                    <p className="text-[11px] font-medium text-gray-400 truncate">
+                  <div className="min-w-0 pr-3">
+                    <div className="flex items-center gap-2">
+                      <p className="text-xs sm:text-[13px] font-semibold text-[#303030] truncate group-hover:text-[#2874F0] transition-colors">
+                        {product.name}
+                      </p>
+                      {product.detailsImage && (
+                        <span
+                          className="shrink-0 text-[10px] font-semibold bg-[#FFF8D6] text-[#6b4800] px-1.5 py-0.5 rounded border border-[#FFE500]"
+                          title="Has Full-Width Story Banner">
+                          Story
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] font-mono text-[#8a8a8a] truncate mt-0.5">
                       ID: {product.id}
                     </p>
                   </div>
 
                   {/* Price */}
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">
+                    <p className="text-xs font-bold text-[#303030]">
                       {formatPKR(product.price)}
                     </p>
                     {disc > 0 && (
                       <div className="flex items-center gap-1.5 mt-0.5">
-                        <p className="text-[11px] text-gray-400 line-through">
+                        <p className="text-[10px] text-gray-400 line-through">
                           {formatPKR(product.originalPrice)}
                         </p>
-                        <p className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
+                        <p className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
                           {disc}% OFF
                         </p>
                       </div>
@@ -198,41 +208,48 @@ const ProductTable = ({
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center justify-end gap-1 opacity-100 lg:opacity-60 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center justify-end gap-1 opacity-100 lg:opacity-75 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => handleToggleVisibility(product)}
                       title={product.isActive ? "Hide Product" : "Show Product"}
-                      className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-all">
+                      className="p-1.5 text-[#616161] hover:text-[#303030] hover:bg-[#f1f2f4] rounded-md transition-all cursor-pointer">
                       {product.isActive ? (
-                        <Eye size={18} />
+                        <Eye size={16} />
                       ) : (
-                        <EyeOff size={18} />
+                        <EyeOff size={16} />
                       )}
                     </button>
 
                     <a
-                      href={`/product/${product.slug}`}
+                      href={`https://gharkaorganic.com/product/${product.slug}`}
                       target="_blank"
                       rel="noreferrer"
                       title="View on Store"
-                      className="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-all">
-                      <ExternalLink size={18} />
+                      className="p-1.5 text-[#616161] hover:text-emerald-700 hover:bg-emerald-50 rounded-md transition-all">
+                      <ExternalLink size={16} />
                     </a>
 
-                    <div className="w-[1px] h-4 bg-gray-200 mx-1" />
+                    <div className="w-[1px] h-4 bg-gray-200 mx-0.5" />
+
+                    <button
+                      onClick={() => navigate(`/products/reviews/${product.id}`)}
+                      title={`Manage Product Reviews (${product.totalReviews || 0})`}
+                      className="p-1.5 text-[#616161] hover:text-[#b45309] hover:bg-[#FFF8D6] rounded-md transition-all cursor-pointer">
+                      <Star size={16} />
+                    </button>
 
                     <button
                       onClick={() => navigate(`/products/edit/${product.id}`)}
                       title="Edit Product"
-                      className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-all">
-                      <Edit2 size={18} />
+                      className="p-1.5 text-[#616161] hover:text-[#2874F0] hover:bg-[#eaf2ff] rounded-md transition-all cursor-pointer">
+                      <Edit2 size={16} />
                     </button>
 
                     <button
                       onClick={() => setDeleteTarget(product)}
                       title="Delete Product"
-                      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-all">
-                      <Trash2 size={18} />
+                      className="p-1.5 text-[#616161] hover:text-rose-600 hover:bg-rose-50 rounded-md transition-all cursor-pointer">
+                      <Trash2 size={16} />
                     </button>
                   </div>
                 </div>

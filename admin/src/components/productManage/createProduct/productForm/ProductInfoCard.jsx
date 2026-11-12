@@ -22,6 +22,19 @@ const ProductInfoCard = ({ product, handleChange }) => {
         />
       </div>
 
+      {/* Short Description */}
+      <div>
+        <FieldLabel subtitle="1-2 sentences summarizing the product for quick view & below title.">
+          Short Description
+        </FieldLabel>
+        <Input
+          name="shortDescription"
+          value={product.shortDescription || ""}
+          onChange={handleChange}
+          placeholder="e.g. Traditional sun-cured Kumaoni mango pickle crafted with cold-pressed mustard oil."
+        />
+      </div>
+
       {/* Description */}
       <div>
         <div className="flex items-center justify-between">
@@ -49,56 +62,68 @@ const ProductInfoCard = ({ product, handleChange }) => {
         />
       </div>
 
-      {/* NEW: Ingredients */}
+      {/* Ingredients */}
       <div>
-        <FieldLabel subtitle="List all ingredients used.">
+        <FieldLabel subtitle="List all authentic ingredients used.">
           Ingredients
         </FieldLabel>
         <Textarea
           name="ingredients"
           rows={3}
-          value={product.ingredients}
+          value={product.ingredients || ""}
           onChange={handleChange}
-          placeholder="e.g. Raw mango, mustard oil, spices..."
+          placeholder="e.g. Fresh green chillies, wood-pressed mustard oil, fenugreek, fennel, rock salt..."
         />
       </div>
 
-      {/* NEW: Shelf Life */}
+      {/* Shelf Life */}
       <div>
-        <FieldLabel subtitle="How long the product lasts.">
+        <FieldLabel subtitle="Product shelf life (e.g. 12 Months).">
           Shelf Life
         </FieldLabel>
         <Input
           name="shelfLife"
-          value={product.shelfLife}
+          value={product.shelfLife || ""}
           onChange={handleChange}
-          placeholder="e.g. 6 months"
+          placeholder="e.g. 12 Months"
         />
       </div>
 
+      {/* Certifications */}
       <div>
-        <FieldLabel subtitle="Serving suggestions or preparation notes.">
-          How to Use
+        <FieldLabel subtitle="Comma-separated badges (e.g. 100% Himalayan Organic, Chemical-Free, Lab Tested).">
+          Organic Certifications &amp; Badges
         </FieldLabel>
-        <Textarea
-          name="usageInstructions"
-          rows={3}
-          value={product.usageInstructions}
-          onChange={handleChange}
-          placeholder="Add serving suggestions..."
+        <Input
+          name="certifications"
+          value={
+            Array.isArray(product.certifications)
+              ? product.certifications.join(", ")
+              : product.certifications || ""
+          }
+          onChange={(e) => {
+            const raw = e.target.value;
+            handleChange({
+              target: {
+                name: "certifications",
+                value: raw.split(",").map((s) => s.trim()).filter(Boolean),
+              },
+            });
+          }}
+          placeholder="e.g. 100% Himalayan Organic, Chemical-Free, Lab Tested"
         />
       </div>
 
+      {/* Brand */}
       <div>
-        <FieldLabel subtitle="Use the storage guidance from the product label.">
-          Storage Instructions
+        <FieldLabel subtitle="Brand name (defaults to Ghar Ka Organic).">
+          Brand Name
         </FieldLabel>
-        <Textarea
-          name="storageInstructions"
-          rows={2}
-          value={product.storageInstructions}
+        <Input
+          name="brand"
+          value={product.brand || ""}
           onChange={handleChange}
-          placeholder="Enter the package storage instructions..."
+          placeholder="e.g. Ghar Ka Organic"
         />
       </div>
     </Card>

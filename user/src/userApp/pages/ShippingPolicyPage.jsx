@@ -111,7 +111,7 @@ const ShippingPage = () => {
           </h1>
           <p className="text-sm sm:text-base text-neutral-500 font-light max-w-2xl mx-auto leading-relaxed">
             Reliable, secure, and bubble-wrapped dispatch direct from our
-            mountain kitchen in Bhimtal, Nainital to your home anywhere in India.
+            mountain kitchen in Mangoli, Nainital to your home anywhere in India.
           </p>
           <div className="mt-5 inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neutral-200 text-xs text-neutral-500">
             <Clock size={13} className="text-neutral-400" />
@@ -187,9 +187,9 @@ const ShippingPage = () => {
                 Delivery Timelines by Region
               </h2>
               <p className="text-neutral-600 mb-5">
-                All packages originate from our central dispatch facility in
-                Nalni, Bhimtal (Nainital District, Uttarakhand). Depending on
-                your geographic zone:
+                All packages originate from our dispatch kitchen in Mangoli &amp;
+                Nalni (Nainital District, Uttarakhand). Depending on your
+                geographic zone:
               </p>
 
               <div className="space-y-3">
@@ -315,7 +315,7 @@ const ShippingPage = () => {
                 Need Dispatch Support?
               </h3>
               <p className="text-xs text-neutral-500 mb-5 leading-relaxed">
-                Connect with our Bhimtal kitchen logistics team directly:
+                Connect with our Mangoli, Nainital logistics team directly:
               </p>
 
               <div className="space-y-3 text-xs mb-6">

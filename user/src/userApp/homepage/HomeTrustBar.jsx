@@ -5,23 +5,23 @@ const HomeTrustBar = () => {
   const pillars = [
     {
       icon: Mountain,
-      title: "Born in Bhimtal, Nainital",
-      desc: "Grown & crafted at 4,500+ ft in the pristine valleys of Kumaon",
+      title: "Born in Mangoli, Nainital",
+      desc: "Started in the hills of Uttarakhand, preserving the authentic taste of Ghar Ka Khana",
     },
     {
       icon: Sun,
-      title: "Sun-Fermented in Barnis",
-      desc: "Traditional ceramic jar curing with zero artificial vinegar or acids",
+      title: "Traditional Home Recipes",
+      desc: "Carefully selected ingredients made with methods passed down in homes for generations",
     },
     {
       icon: Sparkles,
-      title: "100% Pure & Unprocessed",
-      desc: "Hand-churned A2 bilona ghee & raw wildflower forest honey",
+      title: "Honest & Natural Kitchen",
+      desc: "Homemade pickles, pure ghee, natural honey, pahadi dals, spices & pahadi salts",
     },
     {
       icon: HeartHandshake,
-      title: "Empowering Pahadi Women",
-      desc: "Direct livelihood for women-led hill farming self-help groups",
+      title: "No Unnecessary Chemicals",
+      desc: "Zero artificial ingredients or preservatives — simple, honest food from our home to yours",
     },
   ];
 

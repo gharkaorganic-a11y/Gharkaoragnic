@@ -1,7 +1,7 @@
-import { Loader2 } from "lucide-react";
+import { Loader2, ShieldCheck, Star } from "lucide-react";
 
 /* ─────────────────────────────
-   ADMIN REVIEW CARD (Sidebar Component)
+   ADMIN REVIEW CARD (Sidebar Quick-Add Component)
 ───────────────────────────── */
 const AdminReviewCard = ({
   review,
@@ -13,63 +13,81 @@ const AdminReviewCard = ({
   onSubmit,
   isEditing,
 }) => {
-  // If creating a brand new product, tell the admin they must save it first.
   if (!isEditing) {
     return (
-      <div className="bg-white border border-[#e0e0e0] rounded-sm p-4 space-y-2 opacity-70">
-        <h2 className="text-[14px] font-semibold text-[#212121]">Add Review</h2>
-        <p className="text-[13px] text-[#878787]">
-          Save this product first before adding manual reviews.
+      <div className="bg-white border border-[#e3e3e3] rounded-xl p-4 space-y-1.5 opacity-80 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="text-xs font-bold text-[#212121] uppercase tracking-wider">
+            Add Admin Review
+          </h2>
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FFF8D6] text-[#594400] border border-[#FFE500]">
+            Admin Made
+          </span>
+        </div>
+        <p className="text-xs text-[#616161]">
+          Save this product first before adding manual admin reviews.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white border border-[#e0e0e0] rounded-sm p-4 space-y-4">
-      <h2 className="text-[14px] font-semibold text-[#212121]">
-        Add Manual Review
-      </h2>
+    <div className="bg-white border border-[#e3e3e3] border-t-[3px] border-t-[#FFE500] rounded-xl p-4 space-y-3.5 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="text-sm font-bold text-[#212121]">Quick Add Review</h2>
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FFF8D6] text-[#594400] border border-[#FFE500]">
+          <ShieldCheck size={10} />
+          Admin Made
+        </span>
+      </div>
 
-      {/* Success/Error Alerts */}
       {success && (
-        <div className="p-2 bg-[#f2f8f5] border border-[#388e3c] text-[#388e3c] text-[12px] font-medium rounded-sm">
-          Review added successfully!
+        <div className="p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium rounded-lg">
+          Admin review added successfully!
         </div>
       )}
       {error && (
-        <div className="p-2 bg-[#ffebee] border border-[#ffcdd2] text-[#c62828] text-[12px] font-medium rounded-sm">
+        <div className="p-2.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium rounded-lg">
           {error}
         </div>
       )}
 
-      {/* Form Fields */}
       <div className="space-y-3">
         {/* Rating Stars */}
         <div>
-          <label className="block text-[12px] font-medium text-[#878787] mb-1">
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-[#616161] mb-1">
             Rating *
           </label>
           <div className="flex gap-1">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                type="button"
-                onClick={() => handleRatingChange(star)}
-                className={`w-6 h-6 rounded-sm border ${
-                  review.rating >= star
-                    ? "bg-[#2874F0] border-[#2874F0] text-white"
-                    : "bg-white border-[#ddd] text-[#878787]"
-                }`}>
-                ★
-              </button>
-            ))}
+            {[1, 2, 3, 4, 5].map((star) => {
+              const active = review.rating >= star;
+              return (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => handleRatingChange(star)}
+                  className={`w-7 h-7 rounded-lg border flex items-center justify-center transition cursor-pointer ${
+                    active
+                      ? "bg-[#FFF8D6] border-[#f5d000] text-[#b45309]"
+                      : "bg-white border-[#d1d5db] text-[#9ca3af] hover:border-[#2874F0]"
+                  }`}>
+                  <Star
+                    size={13}
+                    className={
+                      active
+                        ? "fill-[#FFE500] text-[#d97706]"
+                        : "text-[#9ca3af]"
+                    }
+                  />
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Name Input */}
         <div>
-          <label className="block text-[12px] font-medium text-[#878787] mb-1">
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-[#616161] mb-1">
             Reviewer Name *
           </label>
           <input
@@ -77,14 +95,14 @@ const AdminReviewCard = ({
             name="name"
             value={review.name}
             onChange={handleChange}
-            placeholder="e.g. John Doe"
-            className="w-full border border-[#ddd] px-3 py-1.5 text-[13px] rounded-sm focus:outline-none focus:border-[#2874F0]"
+            placeholder="e.g. Priya Rawat"
+            className="w-full border border-[#d1d5db] px-3 py-1.5 text-xs rounded-lg focus:outline-none focus:border-[#2874F0]"
           />
         </div>
 
         {/* Title Input */}
         <div>
-          <label className="block text-[12px] font-medium text-[#878787] mb-1">
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-[#616161] mb-1">
             Review Title
           </label>
           <input
@@ -92,15 +110,15 @@ const AdminReviewCard = ({
             name="title"
             value={review.title}
             onChange={handleChange}
-            placeholder="e.g. Great Product!"
-            className="w-full border border-[#ddd] px-3 py-1.5 text-[13px] rounded-sm focus:outline-none focus:border-[#2874F0]"
+            placeholder="e.g. Authentic Pahadi taste!"
+            className="w-full border border-[#d1d5db] px-3 py-1.5 text-xs rounded-lg focus:outline-none focus:border-[#2874F0]"
           />
         </div>
 
         {/* Comment Textarea */}
         <div>
-          <label className="block text-[12px] font-medium text-[#878787] mb-1">
-            Comment
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-[#616161] mb-1">
+            Comment *
           </label>
           <textarea
             name="comment"
@@ -108,13 +126,28 @@ const AdminReviewCard = ({
             onChange={handleChange}
             placeholder="Write the review..."
             rows={3}
-            className="w-full border border-[#ddd] px-3 py-1.5 text-[13px] rounded-sm focus:outline-none focus:border-[#2874F0] resize-none"
+            className="w-full border border-[#d1d5db] px-3 py-1.5 text-xs rounded-lg focus:outline-none focus:border-[#2874F0] resize-none"
+          />
+        </div>
+
+        {/* Store Owner Reply */}
+        <div>
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-[#616161] mb-1">
+            Store Reply (Optional)
+          </label>
+          <textarea
+            name="reply"
+            value={review.reply || ""}
+            onChange={handleChange}
+            placeholder="Reply from Ghar Ka Organic..."
+            rows={2}
+            className="w-full border border-[#d1d5db] px-3 py-1.5 text-xs rounded-lg focus:outline-none focus:border-[#2874F0] resize-none bg-[#fafafa]"
           />
         </div>
 
         {/* Date Override */}
         <div>
-          <label className="block text-[12px] font-medium text-[#878787] mb-1">
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-[#616161] mb-1">
             Custom Date (Optional)
           </label>
           <input
@@ -122,25 +155,32 @@ const AdminReviewCard = ({
             name="date"
             value={review.date}
             onChange={handleChange}
-            placeholder="e.g. May 25, 2026"
-            className="w-full border border-[#ddd] px-3 py-1.5 text-[13px] rounded-sm focus:outline-none focus:border-[#2874F0]"
+            placeholder="e.g. Nov 12, 2026"
+            className="w-full border border-[#d1d5db] px-3 py-1.5 text-xs rounded-lg focus:outline-none focus:border-[#2874F0]"
           />
         </div>
 
-        {/* Verified Checkbox */}
-        <div className="flex items-center gap-2 pt-1">
-          <input
-            type="checkbox"
-            name="verified"
-            id="verified_check"
-            checked={review.verified}
-            onChange={handleChange}
-            className="w-4 h-4 text-[#2874F0] rounded border-gray-300 focus:ring-[#2874F0]"
-          />
-          <label
-            htmlFor="verified_check"
-            className="text-[13px] text-[#212121] cursor-pointer">
-            Mark as Verified Buyer
+        {/* Toggles */}
+        <div className="space-y-1.5 pt-1">
+          <label className="flex items-center gap-2 text-xs text-[#212121] cursor-pointer">
+            <input
+              type="checkbox"
+              name="verified"
+              checked={review.verified}
+              onChange={handleChange}
+              className="w-4 h-4 accent-[#2874F0] rounded"
+            />
+            <span>Mark as Verified Buyer</span>
+          </label>
+          <label className="flex items-center gap-2 text-xs text-[#212121] cursor-pointer">
+            <input
+              type="checkbox"
+              name="isApproved"
+              checked={review.isApproved !== false}
+              onChange={handleChange}
+              className="w-4 h-4 accent-[#2874F0] rounded"
+            />
+            <span>Visible on Storefront</span>
           </label>
         </div>
 
@@ -149,9 +189,9 @@ const AdminReviewCard = ({
           type="button"
           onClick={onSubmit}
           disabled={loading}
-          className="w-full bg-[#f1f3f6] hover:bg-[#e0e0e0] text-[#212121] font-medium py-2 rounded-sm text-[13px] transition-colors flex justify-center items-center gap-2 mt-2">
-          {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-          {loading ? "Saving Review..." : "Publish Review"}
+          className="w-full bg-[#2874F0] hover:bg-[#1c5fba] text-white font-bold py-2 rounded-lg text-xs transition-colors flex justify-center items-center gap-2 mt-1 cursor-pointer disabled:opacity-60">
+          {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+          {loading ? "Saving Review..." : "Publish Admin Review"}
         </button>
       </div>
     </div>

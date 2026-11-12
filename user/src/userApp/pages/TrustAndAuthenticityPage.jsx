@@ -16,7 +16,7 @@ const TrustAndAuthenticityPage = () => {
       description: "Verified authentic Himalayan organic food brand.",
       foundingLocation: {
         "@type": "Place",
-        name: "Nalni, Nainital, Uttarakhand",
+        name: "Mangoli, Nainital, Uttarakhand",
       },
       award: "FSSAI Licensed Food Business",
       knowsAbout: [
@@ -96,11 +96,13 @@ const TrustAndAuthenticityPage = () => {
             2. 100% Transparent Sourcing
           </h2>
           <p className="text-gray-600 text-[15px] leading-relaxed">
-            Our products do not come from anonymous factories. We source
-            directly from women-led farmer cooperatives in{" "}
-            <strong>Nalni, Nainital, Uttarakhand</strong>. Our honey is wildly
-            foraged, and our pickles are naturally sun-fermented using
-            cold-pressed mustard oil. Zero hidden chemicals.
+            Our products don't come from factories — they come from the
+            traditions carried in our homes for generations. Rooted in{" "}
+            <strong>Mangoli &amp; Nalni, Nainital, Uttarakhand</strong>, we
+            choose ingredients carefully and follow traditional recipes to bring
+            homemade pickles, pure ghee, natural honey, pahadi dals, spices and
+            pahadi salts without unnecessary chemicals or artificial
+            preservatives.
           </p>
         </section>
 

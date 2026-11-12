@@ -1,5 +1,16 @@
 export const STORY_LOCATION = "Mangoli, Nainital, Uttarakhand, India";
 
+export const STORY_SHORT_LOCATION = "Mangoli, Nainital, Uttarakhand";
+
+export const STORY_HEADING =
+  "Every Home Has a Taste of Its Own – Where the Story of GHAR KA Begins";
+
+export const STORY_SHORT_SUMMARY =
+  "GHAR KA began in Mangoli, Nainital, Uttarakhand with a simple thought: to bring the goodness, authenticity and familiar taste of homemade food back into every household — without unnecessary chemicals or artificial preservatives.";
+
+export const STORY_META_DESCRIPTION =
+  "GHAR KA began its journey in Mangoli, Nainital, Uttarakhand — bringing homemade pickles, pure ghee, natural honey, traditional pahadi dals, spices and pahadi salts back into every household without unnecessary chemicals or artificial preservatives.";
+
 export const STORY_INTRO_PARAGRAPHS = [
   "Every home has a taste of its own. A taste that reminds us of childhood, our mothers' kitchens, homemade pickles, freshly prepared meals and the simple joy of eating food made with love.",
   "That is where the story of GHAR KA begins.",

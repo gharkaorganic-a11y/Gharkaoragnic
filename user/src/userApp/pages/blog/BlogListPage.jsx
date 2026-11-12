@@ -10,7 +10,7 @@ import {
 } from "../data/blogData";
 
 const SITE_URL = "https://gharkaorganic.com";
-const LOGO_URL = "https://gharkaorganic.com/logo/gharka-logo.png";
+const LOGO_URL = "https://gharkaorganic.com/logo/gharka-logo-full.png";
 const DEFAULT_BLOG_IMAGE =
   "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776768403/Local_women_in_Bhimtal_Uttarakhand_preparing_traditional_Himalayan_organic_food_tbpvgk.webp";
 
@@ -108,10 +108,13 @@ const BlogListPage = () => {
     url: `${SITE_URL}/blogs`,
     publisher: {
       "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
       name: "Ghar Ka Organic",
       logo: {
         "@type": "ImageObject",
         url: LOGO_URL,
+        width: 2172,
+        height: 724,
       },
       url: SITE_URL,
     },
@@ -144,21 +147,6 @@ const BlogListPage = () => {
         item: `${SITE_URL}/blogs`,
       },
     ],
-  };
-
-  const websiteSchema = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: "Ghar Ka Organic",
-    url: SITE_URL,
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${SITE_URL}/blogs?search={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
-    },
   };
 
   const isFiltered = selectedCategory || debouncedSearch;
@@ -239,9 +227,6 @@ const BlogListPage = () => {
         </script>
         <script type="application/ld+json">
           {JSON.stringify(breadcrumbSchema)}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify(websiteSchema)}
         </script>
       </Helmet>
 

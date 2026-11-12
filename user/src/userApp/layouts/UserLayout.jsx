@@ -16,6 +16,7 @@ import { StorefrontDesignProvider } from "../features/storefront/StorefrontDesig
 
 const UserLayout = () => {
   const location = useLocation();
+  const isProductDetailsPage = /^\/products?\/[^/]+/i.test(location.pathname);
 
   // Scroll to top instantly on route change
   useEffect(() => {
@@ -44,8 +45,12 @@ const UserLayout = () => {
           <Footer />
         </div>
 
-        <WhatsAppButton />
-        <WhatsAppFooterBar />
+        {!isProductDetailsPage && (
+          <>
+            <WhatsAppButton />
+            <WhatsAppFooterBar />
+          </>
+        )}
         <RecentPurchasePopup />
         <CartDrawer />
       </div>

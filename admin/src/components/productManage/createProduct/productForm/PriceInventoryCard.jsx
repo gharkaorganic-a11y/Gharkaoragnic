@@ -15,11 +15,11 @@ const PriceInventoryCard = ({ product, handleChange, discount }) => {
         {/* Selling Price */}
         <div>
           <FieldLabel required subtitle="Final price for the customer.">
-            Selling Price (PKR)
+            Selling Price (₹)
           </FieldLabel>
           <div className="relative mt-1">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#878787] font-medium text-[14px]">
-              ₨
+              ₹
             </span>
             {/* Note: Assuming your `<Input>` component accepts and appends the `className` prop properly */}
             <Input
@@ -28,7 +28,7 @@ const PriceInventoryCard = ({ product, handleChange, discount }) => {
               min="0"
               value={product.price}
               onChange={handleChange}
-              placeholder="1999"
+              placeholder="199"
               className={`${inputClasses} pl-8 font-medium`}
             />
           </div>
@@ -37,11 +37,11 @@ const PriceInventoryCard = ({ product, handleChange, discount }) => {
         {/* Original Price */}
         <div>
           <FieldLabel subtitle="Leave blank if no discount.">
-            MRP / Original Price (PKR)
+            MRP / Original Price (₹)
           </FieldLabel>
           <div className="relative mt-1">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#878787] font-medium text-[14px]">
-              ₨
+              ₹
             </span>
             <Input
               name="originalPrice"
@@ -49,7 +49,7 @@ const PriceInventoryCard = ({ product, handleChange, discount }) => {
               min="0"
               value={product.originalPrice}
               onChange={handleChange}
-              placeholder="2999"
+              placeholder="249"
               className={`${inputClasses} pl-8`}
             />
           </div>

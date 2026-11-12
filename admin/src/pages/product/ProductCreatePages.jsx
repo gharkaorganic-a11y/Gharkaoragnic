@@ -3,7 +3,7 @@
  * Admin page for creating and editing organic e-commerce products.
  */
 
-import React, { useMemo, useEffect, useState } from "react";
+import React, { useMemo, useEffect, useState, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -14,6 +14,12 @@ import {
   CheckCircle2,
   Star,
   MessageSquare,
+  Edit2,
+  Eye,
+  EyeOff,
+  Plus,
+  Tag,
+  Trash2,
 } from "lucide-react";
 
 import { CATEGORIES } from "../../constants/categories";
@@ -26,11 +32,14 @@ import PriceInventoryCard from "../../components/productManage/createProduct/pro
 import SizesCard from "../../components/productManage/createProduct/productForm/SizesCard";
 import ProductImageCard from "../../components/productManage/createProduct/productForm/ProductImageCard";
 import ProductGalleryCard from "../../components/productManage/createProduct/productForm/ProductGalleryCard";
+import ProductDetailsImageCard from "../../components/productManage/createProduct/productForm/ProductDetailsImageCard";
 import ProductOrganizationCard from "../../components/productManage/createProduct/productForm/ProductOrganizationCard";
 import ProductStatusCard from "../../components/productManage/createProduct/productForm/ProductStatusCard";
 import MobileStickySaveButton from "../../components/productManage/createProduct/ui/MobileStickySaveButton";
 import { useReviewForm } from "../../components/productManage/hook/useReviewForm";
 import AdminReviewCard from "../../components/productManage/createProduct/productForm/AdminReviewCard";
+import ProductReviewModal from "../../components/modals/ProductReviewModal";
+import ReviewAuthorBadges from "../../components/productManage/ReviewAuthorBadges";
 
 // Import your product service to fetch existing reviews
 import { productService } from "../../services/firebase/product/productService";
@@ -56,13 +65,18 @@ const ProductCreatePage = () => {
     pageLoading,
     uploadingBanner,
     uploadingGallery,
+    uploadingDetailsImage,
+    imageErrors,
 
     handleChange,
     handleSubmit,
 
     handleBannerUpload,
     handleGalleryUpload,
+    handleDetailsImageUpload,
+    removeBannerImage,
     removeGalleryImage,
+    removeDetailsImage,
 
     togglePresetSize,
     addCustomSize,
@@ -96,11 +110,31 @@ const ProductCreatePage = () => {
     handleAdminSubmit,
   } = useReviewForm(isEditing ? product?.id : null);
 
+  const [newCollection, setNewCollection] = useState("");
   const [existingReviews, setExistingReviews] = useState([]);
   const [fetchingReviews, setFetchingReviews] = useState(false);
   const [totalReviewsCount, setTotalReviewsCount] = useState(0);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [editingReviewItem, setEditingReviewItem] = useState(null);
 
-  // Fetch up to 4 reviews when the component mounts (if editing)
+  const reloadExistingReviews = useCallback(async () => {
+    if (!isEditing || !product?.id) return;
+    try {
+      setFetchingReviews(true);
+      const res = await productService.getProductReviews(product.id, {
+        pageSize: 6,
+        approvedOnly: false,
+      });
+      setExistingReviews(res.reviews.slice(0, 6));
+      setTotalReviewsCount(res.totalCount ?? res.reviews.length);
+    } catch (err) {
+      console.error("Failed to fetch existing reviews:", err);
+    } finally {
+      setFetchingReviews(false);
+    }
+  }, [isEditing, product?.id]);
+
+  // Fetch up to 6 reviews when the component mounts (if editing)
   useEffect(() => {
     let isMounted = true; // <-- Safety flag
 
@@ -110,14 +144,13 @@ const ProductCreatePage = () => {
           setFetchingReviews(true);
 
           const res = await productService.getProductReviews(product.id, {
-            pageSize: 5,
+            pageSize: 6,
             approvedOnly: false,
           });
 
           if (isMounted) {
-            // <-- Only update state if the user hasn't left the page
-            setExistingReviews(res.reviews.slice(0, 4));
-            setTotalReviewsCount(res.totalCount || res.reviews.length);
+            setExistingReviews(res.reviews.slice(0, 6));
+            setTotalReviewsCount(res.totalCount ?? res.reviews.length);
           }
         } catch (err) {
           if (isMounted)
@@ -130,18 +163,43 @@ const ProductCreatePage = () => {
 
     fetchReviews();
 
-    // Cleanup function runs if the component unmounts
     return () => {
       isMounted = false;
     };
   }, [isEditing, product?.id, reviewSuccess]);
 
+  const handleDeleteInlineReview = async (rev) => {
+    if (!product?.id || !rev?.id) return;
+    if (!window.confirm(`Delete review by ${rev.name || "Customer"}?`)) return;
+    try {
+      await productService.deleteReview(product.id, rev.id);
+      await reloadExistingReviews();
+    } catch (err) {
+      console.error("Delete review error:", err);
+    }
+  };
+
+  const handleToggleInlineReviewVisibility = async (rev) => {
+    if (!product?.id || !rev?.id) return;
+    try {
+      await productService.approveReview(
+        product.id,
+        rev.id,
+        rev.isApproved === false,
+      );
+      await reloadExistingReviews();
+    } catch (err) {
+      console.error("Toggle review visibility error:", err);
+    }
+  };
+
   /* ─────────────────────────────
      DERIVED
   ───────────────────────────── */
   const isBusy = useMemo(
-    () => loading || uploadingBanner || uploadingGallery,
-    [loading, uploadingBanner, uploadingGallery],
+    () =>
+      loading || uploadingBanner || uploadingGallery || uploadingDetailsImage,
+    [loading, uploadingBanner, uploadingGallery, uploadingDetailsImage],
   );
 
   const price = Number(product?.price) || 0;
@@ -170,25 +228,30 @@ const ProductCreatePage = () => {
      RENDER
   ───────────────────────────── */
   return (
-    <div className="min-h-screen bg-[#F1F3F6] font-sans text-[#212121] pb-24">
+    <div className="min-h-screen bg-[#f1f2f4] font-sans text-[#303030] pb-24">
       {/* ── STICKY HEADER ── */}
-      <header className="bg-white border-b border-[#e0e0e0] sticky top-0 z-40 shadow-sm">
+      <header className="bg-white border-b border-[#e3e3e3] sticky top-14 z-30 shadow-2xs">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
           {/* Back + title */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => navigate("/products")}
               aria-label="Go back to products"
-              className="p-2 rounded-sm hover:bg-[#f1f3f6] text-[#878787] hover:text-[#212121] transition-colors">
-              <ArrowLeft size={22} />
+              className="p-2 rounded-lg hover:bg-[#f1f2f4] text-[#616161] hover:text-[#212121] transition-colors">
+              <ArrowLeft size={19} />
             </button>
 
             <div>
-              <h1 className="text-[20px] font-semibold">
-                {isEditing ? "Edit Product Listing" : "Add New Product"}
-              </h1>
-              <p className="text-[#878787] text-[13px] hidden sm:block mt-0.5">
+              <div className="flex items-center gap-2">
+                <h1 className="text-base sm:text-lg font-bold text-[#212121]">
+                  {isEditing ? "Edit Product Listing" : "Add New Product"}
+                </h1>
+                <span className="px-2 py-0.5 rounded bg-[#FFE500] text-[#212121] text-[10px] font-bold uppercase">
+                  {isEditing ? "Edit" : "New"}
+                </span>
+              </div>
+              <p className="text-[#616161] text-xs hidden sm:block mt-0.5">
                 {isEditing
                   ? `Editing ID: ${product?.id || "N/A"}`
                   : "Fill in the details below to publish."}
@@ -202,7 +265,7 @@ const ProductCreatePage = () => {
             onClick={handleSubmit}
             disabled={isBusy}
             aria-label={isEditing ? "Save product changes" : "Publish product"}
-            className="hidden sm:flex items-center justify-center gap-2 bg-[#2874F0] text-white px-8 py-2.5 rounded-sm font-medium text-[15px] shadow-sm hover:bg-[#1d5ed8] active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed min-w-[200px]">
+            className="hidden sm:flex items-center justify-center gap-2 bg-[#2874F0] text-white px-6 py-2 rounded-lg font-semibold text-xs sm:text-sm shadow-xs hover:bg-[#1c5fba] active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
             {loading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : showSuccess ? (
@@ -300,6 +363,16 @@ const ProductCreatePage = () => {
                 reviews={existingReviews}
                 loading={fetchingReviews}
                 totalCount={totalReviewsCount}
+                onAddReview={() => {
+                  setEditingReviewItem(null);
+                  setReviewModalOpen(true);
+                }}
+                onEditReview={(rev) => {
+                  setEditingReviewItem({ ...rev, productId: product.id });
+                  setReviewModalOpen(true);
+                }}
+                onToggleVisibility={handleToggleInlineReviewVisibility}
+                onDeleteReview={handleDeleteInlineReview}
               />
             )}
           </div>
@@ -317,11 +390,16 @@ const ProductCreatePage = () => {
               removeTag={removeTag}
               toggleCollectionType={toggleCollectionType}
               patchProduct={patchProduct}
+              newCollection={newCollection}
+              setNewCollection={setNewCollection}
+              FolderTree={Tag}
             />
             <ProductImageCard
               product={product}
               uploadingBanner={uploadingBanner}
               handleBannerUpload={handleBannerUpload}
+              removeBannerImage={removeBannerImage}
+              uploadError={imageErrors?.banner}
             />
             <ProductGalleryCard
               product={product}
@@ -329,6 +407,14 @@ const ProductCreatePage = () => {
               uploadingGallery={uploadingGallery}
               handleGalleryUpload={handleGalleryUpload}
               removeGalleryImage={removeGalleryImage}
+              uploadError={imageErrors?.gallery}
+            />
+            <ProductDetailsImageCard
+              product={product}
+              uploadingDetailsImage={uploadingDetailsImage}
+              handleDetailsImageUpload={handleDetailsImageUpload}
+              removeDetailsImage={removeDetailsImage}
+              uploadError={imageErrors?.details}
             />
             <FaqCard
               faq={product.faq || []}
@@ -360,6 +446,19 @@ const ProductCreatePage = () => {
         loading={loading}
         success={success}
       />
+
+      {isEditing && product?.id && (
+        <ProductReviewModal
+          isOpen={reviewModalOpen}
+          onClose={() => {
+            setReviewModalOpen(false);
+            setEditingReviewItem(null);
+          }}
+          initialReview={editingReviewItem}
+          fixedProductId={product.id}
+          onSaved={reloadExistingReviews}
+        />
+      )}
     </div>
   );
 };
@@ -367,18 +466,24 @@ const ProductCreatePage = () => {
 /* ─────────────────────────────
    EXISTING REVIEWS CARD (Inline Component)
 ───────────────────────────── */
-/* ─────────────────────────────
-   EXISTING REVIEWS CARD (Inline Component)
-───────────────────────────── */
-const ExistingReviewsCard = ({ productId, reviews, loading, totalCount }) => {
+const ExistingReviewsCard = ({
+  productId,
+  reviews,
+  loading,
+  totalCount,
+  onAddReview,
+  onEditReview,
+  onToggleVisibility,
+  onDeleteReview,
+}) => {
   // Helper to format Firestore timestamps for customer reviews
   const formatReviewDate = (r) => {
     if (r.date) return r.date; // Admin custom date
     if (r.createdAt?.toDate) {
       // Convert Firestore timestamp to readable string
-      return r.createdAt.toDate().toLocaleDateString("en-US", {
+      return r.createdAt.toDate().toLocaleDateString("en-IN", {
         year: "numeric",
-        month: "long",
+        month: "short",
         day: "numeric",
       });
     }
@@ -386,98 +491,145 @@ const ExistingReviewsCard = ({ productId, reviews, loading, totalCount }) => {
   };
 
   return (
-    <div className="bg-white border border-[#e0e0e0] rounded-sm p-5 space-y-4 shadow-sm">
-      <div className="flex items-center justify-between border-b border-[#f0f0f0] pb-3">
+    <div className="bg-white border border-[#e3e3e3] rounded-xl p-5 space-y-4 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#ebebeb] pb-3">
         <div className="flex items-center gap-2">
-          <MessageSquare size={18} className="text-[#878787]" />
-          <h2 className="text-[16px] font-semibold text-[#212121]">
-            Customer Reviews
+          <MessageSquare size={17} className="text-[#2874F0]" />
+          <h2 className="text-sm font-bold text-[#212121]">
+            Product Reviews (User &amp; Admin)
           </h2>
           {!loading && (
-            <span className="bg-[#f1f3f6] text-[#878787] text-[12px] px-2 py-0.5 rounded-full font-medium">
+            <span className="bg-[#FFF8D6] text-[#594400] border border-[#FFE500] text-[11px] px-2 py-0.5 rounded-full font-bold">
               {totalCount}
             </span>
           )}
         </div>
-        {totalCount > 4 && (
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onAddReview}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#2874F0] hover:bg-[#1c5fba] text-white text-xs font-semibold transition cursor-pointer">
+            <Plus size={13} />
+            Add Review
+          </button>
           <Link
             to={`/products/reviews/${productId}`}
-            className="text-[13px] text-[#2874F0] font-medium hover:underline">
+            className="text-xs text-[#2874F0] font-semibold hover:underline">
             Manage All
           </Link>
-        )}
+        </div>
       </div>
 
       {loading ? (
-        <div className="flex items-center gap-2 text-[#878787] text-[13px] py-4">
-          <Loader2 className="w-4 h-4 animate-spin" /> Fetching reviews...
+        <div className="flex items-center gap-2 text-[#616161] text-xs py-4">
+          <Loader2 className="w-4 h-4 animate-spin text-[#2874F0]" /> Fetching reviews...
         </div>
       ) : reviews.length === 0 ? (
-        <p className="text-[13px] text-[#878787] py-2">
-          No reviews for this product yet.
+        <p className="text-xs text-[#616161] py-2">
+          No reviews for this product yet. Add an admin review or wait for customer reviews.
         </p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {reviews.map((r, i) => (
-            <div
-              key={i}
-              className="border border-[#e0e0e0] rounded-sm p-3 bg-[#fafafa]">
-              <div className="flex items-start justify-between mb-2">
-                <div>
-                  <h4 className="text-[13px] font-semibold text-[#212121]">
-                    {r.name}
-                  </h4>
-                  <div className="flex gap-0.5 mt-0.5">
-                    {[1, 2, 3, 4, 5].map((s) => (
-                      <Star
-                        key={s}
-                        size={12}
-                        className={
-                          s <= r.rating
-                            ? "fill-[#2874F0] text-[#2874F0]"
-                            : "fill-gray-200 text-gray-200"
-                        }
-                      />
-                    ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+          {reviews.map((r) => {
+            const isApproved = r.isApproved !== false;
+            return (
+              <div
+                key={r.id}
+                className={`border rounded-xl p-3.5 space-y-2 transition ${
+                  isApproved
+                    ? "border-[#e3e3e3] bg-[#fafafa]"
+                    : "border-rose-200 bg-rose-50/40"
+                }`}>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 space-y-1">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <h4 className="text-xs font-bold text-[#212121] truncate">
+                        {r.name}
+                      </h4>
+                      <span className="text-[10px] text-[#616161]">
+                        • {formatReviewDate(r)}
+                      </span>
+                    </div>
+                    <ReviewAuthorBadges review={r} compact />
+                  </div>
+
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => onEditReview(r)}
+                      title="Edit review"
+                      className="p-1.5 rounded-md text-[#2874F0] hover:bg-[#eaf2ff] transition cursor-pointer">
+                      <Edit2 size={13} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onToggleVisibility(r)}
+                      title={isApproved ? "Hide review" : "Approve review"}
+                      className="p-1.5 rounded-md text-[#616161] hover:bg-white transition cursor-pointer">
+                      {isApproved ? <EyeOff size={13} /> : <Eye size={13} />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onDeleteReview(r)}
+                      title="Delete review"
+                      className="p-1.5 rounded-md text-rose-600 hover:bg-rose-50 transition cursor-pointer">
+                      <Trash2 size={13} />
+                    </button>
                   </div>
                 </div>
-                <span className="text-[11px] text-[#878787]">
-                  {formatReviewDate(r)}
-                </span>
-              </div>
 
-              {r.title && (
-                <p className="text-[12px] font-semibold text-[#212121] mb-1">
-                  {r.title}
-                </p>
-              )}
-
-              <p className="text-[12px] text-[#555] line-clamp-3 mb-2">
-                {r.comment}
-              </p>
-
-              {/* Render the image if the review has one */}
-              {r.imageUrl && (
-                <div className="mt-2 w-16 h-16 rounded-sm overflow-hidden border border-[#ddd]">
-                  <img
-                    src={r.imageUrl}
-                    alt="Review attachment"
-                    className="w-full h-full object-cover"
-                  />
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star
+                      key={s}
+                      size={11}
+                      className={
+                        s <= r.rating
+                          ? "fill-[#FFE500] text-[#d97706]"
+                          : "fill-gray-200 text-gray-200"
+                      }
+                    />
+                  ))}
                 </div>
-              )}
-            </div>
-          ))}
+
+                {r.title && (
+                  <p className="text-xs font-semibold text-[#212121]">
+                    {r.title}
+                  </p>
+                )}
+
+                <p className="text-xs text-[#4b5563] line-clamp-3">
+                  {r.comment}
+                </p>
+
+                {r.reply && (
+                  <p className="text-[11px] text-[#2874F0] bg-[#eaf2ff] px-2 py-1 rounded-md line-clamp-2">
+                    <span className="font-bold">Store Reply:</span> {r.reply}
+                  </p>
+                )}
+
+                {r.imageUrl && (
+                  <div className="mt-1.5 w-14 h-14 rounded-lg overflow-hidden border border-[#e3e3e3] bg-white">
+                    <img
+                      src={r.imageUrl}
+                      alt="Review attachment"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
 
-      {/* NEW: "Check more reviews" link at the bottom */}
-      {totalCount > 4 && (
-        <div className="mt-4 pt-3 border-t border-[#f0f0f0] text-center">
+      {totalCount > 0 && (
+        <div className="pt-2 border-t border-[#ebebeb] text-center">
           <Link
             to={`/products/reviews/${productId}`}
-            className="text-[13px] font-medium text-[#2874F0] hover:text-[#1d5ed8] hover:underline">
-            Check all {totalCount} reviews →
+            className="text-xs font-semibold text-[#2874F0] hover:text-[#1c5fba] hover:underline">
+            Open full reviews manager ({totalCount}) →
           </Link>
         </div>
       )}

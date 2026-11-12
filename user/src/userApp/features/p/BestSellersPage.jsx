@@ -254,10 +254,10 @@ const BestSellersPage = () => {
 
           {/* SEO Description paragraph - Simple, clean font */}
           <p className="mt-2 text-sm sm:text-base text-gray-500 font-normal max-w-3xl leading-relaxed">
-            Hand-picked by thousands of families — pure A2 Badri ghee, raw
-            forest honey, traditional pahadi pickles, and Himalayan spices.
-            Sourced directly from women-led farms in Uttarakhand, delivered
-            fresh to your door.
+            Hand-picked by thousands of families — pure ghee, natural honey,
+            homemade pickles, traditional pahadi dals, spices, and pahadi
+            salts. Crafted with traditional recipes in Mangoli, Nainital,
+            Uttarakhand without unnecessary chemicals or artificial preservatives.
           </p>
 
           {/* Trust points - Simple, clean inline strip */}
@@ -394,14 +394,13 @@ const BestSellersPage = () => {
               vinegar.
             </p>
             <p>
-              Every item is{" "}
+              Every item is rooted in our{" "}
               <strong>
-                sourced directly from women-led farmer groups in Uttarakhand
+                home kitchen in Mangoli, Nainital, Uttarakhand
               </strong>
-              across Kumaon and Garhwal regions. We work with communities in
-              Bhimtal, Almora, and Pithoragarh who use chemical-free,
-              small-batch methods passed down generations. No middlemen, no cold
-              storage — just fresh produce from the Himalayas to your kitchen.
+              — made using carefully selected ingredients and traditional
+              recipes without unnecessary chemicals or artificial preservatives.
+              Simple, honest food from our home to yours.
             </p>
             <h3 className="text-lg font-semibold text-gray-900!mb-2">
               Freshness & Quality Promise

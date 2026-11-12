@@ -16,6 +16,11 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import SITE_CONFIG from "../../../config/siteConfig";
+import BrandLogo from "../../../components/common/BrandLogo";
+import {
+  STORY_META_DESCRIPTION,
+  STORY_SHORT_SUMMARY,
+} from "../../homepage/ourStoryContent";
 
 // Sharp, crisp WhatsApp SVG Icon matching official styling
 const WhatsAppIcon = ({ size = 16, className = "" }) => (
@@ -40,7 +45,7 @@ const Footer = () => {
       title: "Himalayan Pantry",
       links: [
         { name: "Best Selling Products", url: "/shop/best-sellers" },
-        { name: "Bhimtal Raw Forest Honey", url: "/pages/raw-honey-uttarakhand" },
+        { name: "Natural Forest Honey", url: "/raw-honey-uttarakhand" },
         { name: "Authentic Kumaoni Pickles", url: "/pahadi-achar-online" },
         { name: "Sun-Dried Mango Achar", url: "/buy-mango-pickle-online" },
         { name: "A2 Bilona Desi Ghee", url: "/buy-desi-ghee-online" },
@@ -74,17 +79,14 @@ const Footer = () => {
         itemProp="logo"
         content={SITE_CONFIG.logo}
       />
-      <meta
-        itemProp="description"
-        content="Authentic organic food brand from Bhimtal, Nainital, Uttarakhand offering homemade Himalayan pickles, raw forest honey, A2 bilona desi ghee and traditional Kumaoni products prepared naturally without preservatives."
-      />
+      <meta itemProp="description" content={STORY_META_DESCRIPTION} />
 
       {/* ── 1. ARTWORK BANNER (Mountain Soil Seam) ── */}
       <div className="w-full bg-white overflow-hidden leading-none border-b border-[#8F6646]">
         <picture>
           <img
             src="/nainital-uttarakhand-footer.jpg"
-            alt="Traditional Kumaoni women in Pichora harvesting organic red chillies and mustard amidst the hills of Nainital and Bhimtal, Uttarakhand"
+            alt="Traditional Himalayan harvest and food heritage amidst the hills of Mangoli and Nainital, Uttarakhand for Ghar Ka Organic"
             className="w-full h-auto max-h-[170px] sm:max-h-[220px] md:max-h-[290px] lg:max-h-[340px] object-cover object-center block"
             loading="lazy"
             width="1376"
@@ -104,10 +106,10 @@ const Footer = () => {
               </div>
               <div>
                 <h4 className="text-xs sm:text-sm font-semibold text-white tracking-wide">
-                  Born in Bhimtal, Nainital
+                  Born in Mangoli, Nainital
                 </h4>
                 <p className="text-[11px] text-[#F7EFE6]/75 font-light">
-                  Direct from the pristine Kumaon hills
+                  Preserving the taste of Ghar Ka Khana
                 </p>
               </div>
             </div>
@@ -118,10 +120,10 @@ const Footer = () => {
               </div>
               <div>
                 <h4 className="text-xs sm:text-sm font-semibold text-white tracking-wide">
-                  Empowering Pahadi Women
+                  Traditional Home Recipes
                 </h4>
                 <p className="text-[11px] text-[#F7EFE6]/75 font-light">
-                  Supporting local Uttarakhand farmer groups
+                  Simple, honest food from generations of care
                 </p>
               </div>
             </div>
@@ -132,10 +134,10 @@ const Footer = () => {
               </div>
               <div>
                 <h4 className="text-xs sm:text-sm font-semibold text-white tracking-wide">
-                  Zero Preservatives
+                  No Artificial Preservatives
                 </h4>
                 <p className="text-[11px] text-[#F7EFE6]/75 font-light">
-                  100% natural, sun-fermented recipes
+                  Free from unnecessary chemicals &amp; additives
                 </p>
               </div>
             </div>
@@ -147,13 +149,11 @@ const Footer = () => {
           <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-10 py-7 sm:py-9">
             <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
               {/* Top Underlined Heading */}
-              <a
-                href="https://wa.me/918392856993?text=Hi%20Ravi%20Sharma,%20I%20want%20a%20website%20like%20Ghar%20Ka%20Organic"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                to="/website-developer"
                 className="text-base sm:text-lg text-white hover:text-[#FFE3B3] font-medium underline underline-offset-4 decoration-white/50 hover:decoration-[#FFE3B3] transition-colors mb-2 inline-block">
-                Want a Website Like This? Contact Us
-              </a>
+                Want a Website Like This? Hire Website Developer Ravi Sharma (RSDEV)
+              </Link>
 
               {/* Subtitle */}
               <p className="text-xs sm:text-sm text-[#F7EFE6]/85 font-light max-w-lg mb-6 leading-relaxed">
@@ -161,9 +161,9 @@ const Footer = () => {
                 <Link
                   to="/website-developer"
                   className="font-semibold text-[#FFE3B3] hover:underline">
-                  Ravi Sharma
+                  Website Developer Ravi Sharma (RSDEV) – Nainital, Uttarakhand
                 </Link>
-                . Get a premium, blazing-fast eCommerce store or custom website. Call or WhatsApp:{" "}
+                . Get a custom eCommerce store or SEO-ready business website. Call or WhatsApp:{" "}
                 <a
                   href="https://wa.me/918392856993?text=Hi%20Ravi%20Sharma,%20I%20want%20a%20website%20like%20Ghar%20Ka%20Organic"
                   target="_blank"
@@ -246,13 +246,8 @@ const Footer = () => {
                 <Link
                   to="/"
                   aria-label="Ghar Ka Organic home"
-                  className="mb-3 inline-flex rounded-lg bg-white p-2">
-                  <img
-                    src={SITE_CONFIG.logo}
-                    alt="Ghar Ka Organic"
-                    className="h-14 w-auto max-w-[220px] object-contain"
-                    loading="lazy"
-                  />
+                  className="mb-3 inline-flex rounded-xl bg-[#F8FAF5] px-4 py-2.5 border border-[#D99A36]/40 shadow-2xs transition-opacity hover:opacity-95">
+                  <BrandLogo variant="default" size="md" />
                 </Link>
                 <h2
                   style={{ color: "#ffffff" }}
@@ -262,15 +257,12 @@ const Footer = () => {
                 <p
                   style={{ color: "#FFE3B3" }}
                   className="!text-[#FFE3B3] text-[11px] mt-1 uppercase tracking-[0.2em] font-semibold">
-                  Bhimtal, Nainital (Uttarakhand)
+                  Mangoli, Nainital (Uttarakhand)
                 </p>
               </div>
 
               <p className="text-xs sm:text-[13px] leading-relaxed text-[#F7EFE6]/80 font-light">
-                Rooted in the serene hills of Nainital, Uttarakhand. We craft
-                authentic Kumaoni pickles, pure A2 bilona desi ghee, raw forest
-                honey, and traditional Himalayan foods made by mountain women
-                with zero artificial preservatives.
+                {STORY_SHORT_SUMMARY}
               </p>
 
               {/* TRUST BADGE (Compact) */}
@@ -413,7 +405,7 @@ const Footer = () => {
                       Kitchen &amp; HQ
                     </p>
                     <address className="not-italic text-[12px] leading-relaxed text-[#F7EFE6]/80 font-light mt-0.5">
-                      Ward No. 2, Nalni, Bhimtal,
+                      Ward No. 2, Nalni, Mangoli,
                       <br />
                       <span itemProp="addressLocality">Nainital</span>,{" "}
                       <span itemProp="addressRegion">Uttarakhand</span> – 263136
@@ -432,20 +424,20 @@ const Footer = () => {
               <h2
                 style={{ color: "#FFE3B3" }}
                 className="!text-[#FFE3B3] text-xs font-semibold mb-2 uppercase tracking-wider">
-                About Ghar Ka Organic • Nainital, Uttarakhand
+                About Ghar Ka Organic (GHAR KA) • Mangoli, Nainital, Uttarakhand
               </h2>
               <p
                 className={`text-xs leading-relaxed text-[#F7EFE6]/75 font-light ${
                   !showFullSeo ? "line-clamp-2 md:line-clamp-none" : ""
                 }`}>
-                Buy authentic Himalayan organic food online from Ghar Ka Organic,
-                based in Bhimtal, Nainital, Uttarakhand. We offer handmade pickles
-                (aam achar, nimbu achar, bhang chutney), raw forest honey gathered
-                from wild mountain flora, A2 bilona desi ghee, and traditional
-                Uttarakhand organic food products delivered across India with free
-                shipping. All our products are prepared naturally by local women
-                using multi-generational Kumaoni recipes without chemicals or
-                artificial preservatives.
+                GHAR KA began its journey in Mangoli, Nainital, Uttarakhand, to
+                bring the goodness, authenticity, and familiar taste of
+                homemade food (Ghar Ka Khana) back into every household. From
+                homemade pickles and pure ghee to natural honey, traditional
+                pahadi dals, spices, and pahadi salts, every product is made the
+                way it belongs in our homes — with carefully selected
+                ingredients, traditional recipes, and zero unnecessary chemicals
+                or artificial preservatives.
               </p>
               {/* Mobile Read More Toggle for Short Clean Display */}
               <button
@@ -468,7 +460,7 @@ const Footer = () => {
           {/* ── 6. BOTTOM - COPYRIGHT & FOOTER POLICIES (Compact) ── */}
           <div className="border-t border-white/15 mt-5 pt-4 flex flex-col md:flex-row items-center justify-between gap-3 text-[11px] text-[#F7EFE6]/70">
             <p className="text-center md:text-left">
-              © {currentYear}, Ghar Ka Organic. Handcrafted in Bhimtal, Nainital, Uttarakhand.
+              © {currentYear}, Ghar Ka Organic (GHAR KA). From our home in Mangoli, Nainital, Uttarakhand to yours.
             </p>
 
             <nav
@@ -514,7 +506,7 @@ const Footer = () => {
             <Link
               to="/website-developer"
               className="font-semibold text-[#FFE3B3] hover:underline">
-              Ravi Sharma
+              Ravi Sharma (RSDEV) – Website Developer Uttarakhand
             </Link>
             <span className="hidden sm:inline text-white/30">•</span>
             <span>

@@ -12,49 +12,35 @@ import { adminOrderService } from "../services/firebase/adminOrderService";
 const STATUS_CONFIG = {
   pending: {
     label: "Pending",
-    badge: "bg-amber-50 text-amber-700 border-amber-200",
-    dot: "bg-amber-500",
+    badge: "bg-[#FFF8D6] text-[#6b4800] border-[#FFE500]",
+    dot: "bg-[#e5a800]",
     next: "confirmed",
     btn: "Confirm Order",
   },
   placed: {
     label: "Pending",
-    badge: "bg-amber-50 text-amber-700 border-amber-200",
-    dot: "bg-amber-500",
+    badge: "bg-[#FFF8D6] text-[#6b4800] border-[#FFE500]",
+    dot: "bg-[#e5a800]",
     next: "confirmed",
     btn: "Confirm Order",
   },
   confirmed: {
     label: "Confirmed",
-    badge: "bg-blue-50 text-blue-700 border-blue-200",
-    dot: "bg-blue-500",
-    next: "delivered",
-    btn: "Mark Delivered",
-  },
-  packaging: {
-    label: "Packaging",
-    badge: "bg-purple-50 text-purple-700 border-purple-200",
-    dot: "bg-purple-500",
-    next: "shipping",
-    btn: "Ship Order",
-  },
-  shipping: {
-    label: "Shipping",
-    badge: "bg-indigo-50 text-indigo-700 border-indigo-200",
-    dot: "bg-indigo-500",
+    badge: "bg-[#eaf2ff] text-[#2874F0] border-[#c5dcff]",
+    dot: "bg-[#2874F0]",
     next: "delivered",
     btn: "Mark Delivered",
   },
   delivered: {
     label: "Delivered",
-    badge: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    badge: "bg-emerald-50 text-emerald-800 border-emerald-200",
     dot: "bg-emerald-500",
     next: null,
     btn: null,
   },
   cancelled: {
     label: "Cancelled",
-    badge: "bg-rose-50 text-rose-700 border-rose-200",
+    badge: "bg-rose-50 text-rose-800 border-rose-200",
     dot: "bg-rose-500",
     next: null,
     btn: null,
@@ -64,8 +50,6 @@ const STATUS_CONFIG = {
 const STATUS_OPTIONS = [
   { value: "pending", label: "Pending" },
   { value: "confirmed", label: "Confirmed" },
-  { value: "packaging", label: "Packaging" },
-  { value: "shipping", label: "Shipping" },
   { value: "delivered", label: "Delivered" },
   { value: "cancelled", label: "Cancelled" },
 ];
@@ -195,6 +179,17 @@ const AdminOrdersPage = () => {
           status: newStatus,
           orderStatus: newStatus,
           paymentStatus: updatedPaymentStatus,
+          timeline: [
+            {
+              id: `local-${Date.now()}`,
+              status: newStatus,
+              paymentStatus: updatedPaymentStatus,
+              note: `Order moved to ${newStatus}`,
+              actor: "Admin Dashboard",
+              timestamp: new Date(),
+            },
+            ...(prev.timeline || []),
+          ],
         }));
       }
     } catch (err) {
@@ -252,6 +247,10 @@ const AdminOrdersPage = () => {
       // Status filter
       if (statusFilter === "pending") {
         if (!["pending", "placed"].includes(currentStatus)) return false;
+      } else if (statusFilter === "confirmed") {
+        if (!["confirmed", "packaging", "shipping"].includes(currentStatus)) {
+          return false;
+        }
       } else if (statusFilter !== "all" && currentStatus !== statusFilter) {
         return false;
       }
@@ -276,24 +275,32 @@ const AdminOrdersPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#fafafa] px-4 py-8 md:px-8 font-sans text-[#121212]">
+    <div className="min-h-screen bg-[#f1f2f4] px-4 py-6 md:px-6 font-sans text-[#303030]">
       <div className="max-w-[1400px] mx-auto">
         {/* ── HEADER ── */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
           <div>
-            <h1 className="text-2xl font-bold text-[#121212] tracking-tight">
-              Orders
-            </h1>
-            <p className="text-xs sm:text-sm text-neutral-500 mt-0.5">
-              Manage and fulfill customer orders in a clean grid view.
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold text-[#212121] tracking-tight">
+                Orders
+              </h1>
+              <span className="px-2 py-0.5 rounded bg-[#FFE500] text-[#212121] text-[10px] font-bold uppercase tracking-wider">
+                Live
+              </span>
+            </div>
+            <p className="text-xs text-[#616161] mt-0.5">
+              Manage and fulfill customer orders from your storefront.
             </p>
           </div>
 
           <button
             onClick={() => loadOrders(false)}
             aria-label="Refresh orders"
-            className="self-start sm:self-auto inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-[#e5e5e5] hover:border-[#121212] text-xs font-medium text-neutral-700 rounded-lg transition-all shadow-2xs cursor-pointer active:scale-95">
-            <FaRotate size={12} className={loading ? "animate-spin" : ""} />
+            className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#e3e3e3] hover:border-[#2874F0] hover:text-[#2874F0] text-xs font-semibold text-[#303030] rounded-lg transition-all shadow-2xs cursor-pointer active:scale-95">
+            <FaRotate
+              size={12}
+              className={loading ? "animate-spin text-[#2874F0]" : "text-[#2874F0]"}
+            />
             <span>Refresh</span>
           </button>
         </div>
@@ -304,40 +311,40 @@ const AdminOrdersPage = () => {
           </div>
         )}
 
-        {/* ── 4 CLEAN METRIC STATS ── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-4 mb-6">
-          <div className="bg-white border border-[#e5e5e5] rounded-xl p-4 shadow-2xs">
-            <p className="text-[11px] font-medium text-neutral-500 uppercase tracking-wider">
+        {/* ── 4 SHOPIFY-CLEAN METRIC STATS ── */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 mb-5">
+          <div className="bg-white border border-[#e3e3e3] border-t-[3px] border-t-[#2874F0] rounded-xl p-3.5 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+            <p className="text-[11px] font-semibold text-[#616161] uppercase tracking-wider">
               Total Orders
             </p>
-            <p className="text-2xl font-bold text-[#121212] mt-1">
+            <p className="text-xl font-bold text-[#212121] mt-1">
               {stats.totalOrders}
             </p>
           </div>
 
-          <div className="bg-white border border-[#e5e5e5] rounded-xl p-4 shadow-2xs">
-            <p className="text-[11px] font-medium text-amber-600 uppercase tracking-wider">
+          <div className="bg-white border border-[#e3e3e3] border-t-[3px] border-t-[#FFE500] rounded-xl p-3.5 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+            <p className="text-[11px] font-semibold text-[#7a5200] uppercase tracking-wider">
               Pending Orders
             </p>
-            <p className="text-2xl font-bold text-amber-600 mt-1">
+            <p className="text-xl font-bold text-[#b27b00] mt-1">
               {stats.pendingOrders}
             </p>
           </div>
 
-          <div className="bg-white border border-[#e5e5e5] rounded-xl p-4 shadow-2xs">
-            <p className="text-[11px] font-medium text-emerald-600 uppercase tracking-wider">
+          <div className="bg-white border border-[#e3e3e3] border-t-[3px] border-t-emerald-500 rounded-xl p-3.5 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+            <p className="text-[11px] font-semibold text-emerald-700 uppercase tracking-wider">
               Delivered
             </p>
-            <p className="text-2xl font-bold text-emerald-600 mt-1">
+            <p className="text-xl font-bold text-emerald-600 mt-1">
               {stats.deliveredOrders}
             </p>
           </div>
 
-          <div className="bg-white border border-[#e5e5e5] rounded-xl p-4 shadow-2xs">
-            <p className="text-[11px] font-medium text-neutral-500 uppercase tracking-wider">
+          <div className="bg-white border border-[#e3e3e3] border-t-[3px] border-t-[#2874F0] rounded-xl p-3.5 shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+            <p className="text-[11px] font-semibold text-[#616161] uppercase tracking-wider">
               Total Revenue
             </p>
-            <p className="text-2xl font-bold text-[#121212] mt-1">
+            <p className="text-xl font-bold text-[#2874F0] mt-1">
               ₹
               {stats.totalRevenue.toLocaleString("en-IN", {
                 maximumFractionDigits: 0,
@@ -347,7 +354,7 @@ const AdminOrdersPage = () => {
         </div>
 
         {/* ── FILTER TABS & SEARCH BAR ── */}
-        <div className="bg-white border border-[#e5e5e5] rounded-xl p-3 sm:p-4 mb-6 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="bg-white border border-[#e3e3e3] rounded-xl p-3 mb-5 shadow-[0_1px_0_rgba(0,0,0,0.03)] flex flex-col md:flex-row md:items-center justify-between gap-3">
           {/* Status Tabs */}
           <div className="flex flex-wrap items-center gap-1.5">
             {[
@@ -360,10 +367,10 @@ const AdminOrdersPage = () => {
               <button
                 key={tab.key}
                 onClick={() => setStatusFilter(tab.key)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                   statusFilter === tab.key
-                    ? "bg-[#121212] text-white shadow-xs"
-                    : "text-neutral-600 hover:bg-neutral-100"
+                    ? "bg-[#2874F0] text-white shadow-xs"
+                    : "text-[#616161] hover:bg-[#eaf2ff] hover:text-[#2874F0]"
                 }`}>
                 {tab.label}
               </button>
@@ -373,15 +380,15 @@ const AdminOrdersPage = () => {
           {/* Search Box */}
           <div className="relative w-full md:w-72">
             <BiSearch
-              size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+              size={15}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#616161]"
             />
             <input
               type="text"
               placeholder="Search by ID, name, phone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[#fafafa] border border-[#e5e5e5] rounded-lg pl-9 pr-3 py-1.5 text-xs text-[#121212] placeholder-neutral-400 focus:outline-none focus:border-[#121212] transition"
+              className="w-full bg-[#fafafa] border border-[#d9d9d9] rounded-lg pl-9 pr-3 py-1.5 text-xs text-[#303030] placeholder-[#878787] focus:outline-none focus:border-[#2874F0] focus:bg-white transition"
             />
           </div>
         </div>
@@ -410,20 +417,20 @@ const AdminOrdersPage = () => {
               return (
                 <div
                   key={order.id}
-                  className="bg-white border border-[#e5e5e5] hover:border-[#121212] rounded-2xl p-5 shadow-2xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group">
+                  className="bg-white border border-[#e3e3e3] hover:border-[#2874F0] rounded-xl p-4 shadow-[0_1px_0_rgba(0,0,0,0.03)] hover:shadow-md transition-all duration-200 flex flex-col justify-between group">
                   <div>
                     {/* 1. CARD TOP: ORDER ID + DATE + STATUS SELECTOR */}
-                    <div className="flex items-start justify-between gap-3 pb-3.5 border-b border-[#f0f0f0]">
+                    <div className="flex items-start justify-between gap-3 pb-3 border-b border-[#ebebeb]">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-bold text-[#121212] tracking-wide">
+                          <span className="text-xs font-bold text-[#212121] tracking-wide">
                             #{order.id.slice(-6).toUpperCase()}
                           </span>
                           <span
                             className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full ${
                               order.paymentStatus === "paid"
                                 ? "bg-emerald-50 text-emerald-700"
-                                : "bg-neutral-100 text-neutral-600"
+                                : "bg-[#FFF8D6] text-[#6b4800]"
                             }`}>
                             {order.paymentMethod || "COD"} •{" "}
                             {order.paymentStatus === "paid" ? "Paid" : "Pending"}
@@ -439,7 +446,11 @@ const AdminOrdersPage = () => {
                       {/* In-Card Status Dropdown */}
                       <select
                         value={
-                          currentStatus === "placed" ? "pending" : currentStatus
+                          currentStatus === "placed"
+                            ? "pending"
+                            : ["packaging", "shipping"].includes(currentStatus)
+                              ? "confirmed"
+                              : currentStatus
                         }
                         onChange={(e) =>
                           handleStatusChange(order, e.target.value)
@@ -553,7 +564,7 @@ const AdminOrdersPage = () => {
 
                     <button
                       onClick={() => openOrderDetails(order.id)}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#121212] hover:bg-black text-white text-xs font-medium rounded-lg transition-all cursor-pointer shadow-xs active:scale-95">
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#2874F0] hover:bg-[#1e5fd0] text-white text-xs font-semibold rounded-lg transition-all cursor-pointer shadow-xs active:scale-95">
                       <FaEye size={12} />
                       <span>View Details</span>
                     </button>
@@ -570,7 +581,7 @@ const AdminOrdersPage = () => {
             <button
               onClick={() => loadOrders(true)}
               disabled={loadingMore}
-              className="px-6 py-2.5 bg-white border border-[#e5e5e5] hover:border-[#121212] text-xs font-medium text-neutral-700 rounded-lg shadow-2xs transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 cursor-pointer">
+              className="px-6 py-2 bg-white border border-[#e3e3e3] hover:border-[#2874F0] hover:text-[#2874F0] text-xs font-semibold text-[#303030] rounded-lg shadow-2xs transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 cursor-pointer">
               {loadingMore && <BiLoaderAlt className="animate-spin" size={14} />}
               <span>{loadingMore ? "Loading..." : "Load Older Orders"}</span>
             </button>
@@ -581,6 +592,7 @@ const AdminOrdersPage = () => {
       {/* ── ORDER DETAILS MODAL ── */}
       {selectedOrder && (
         <OrderDetailsModal
+          key={selectedOrder.id}
           selectedOrder={selectedOrder}
           setSelectedOrder={setSelectedOrder}
           handleAction={handleStatusChange}

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../../../../config/firebaseDB";
 import { Link } from "react-router-dom"; // Assuming you use react-router for navigation
+import BrandLogo from "../../../../components/common/BrandLogo";
 
 const ForgotPasswordPage = () => {
   const [isSent, setIsSent] = useState(false);
@@ -40,13 +41,9 @@ const ForgotPasswordPage = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-start pt-12 sm:pt-20 px-6 font-sans">
       <div className="w-full max-w-[360px] flex flex-col items-center">
-        <Link to="/" className="mb-8 inline-flex justify-center">
-          <img
-            src="https://gharkaorganic.com/logo/gharka-logo.png"
-            alt="Ghar Ka Organic"
-            className="h-16 w-auto max-w-[220px] object-contain"
-          />
-        </Link>
+        <div className="mb-8 flex justify-center">
+          <BrandLogo variant="default" size="lg" to="/" />
+        </div>
         {!isSent ? (
           <div className="w-full flex flex-col items-center animate-fade-in">
             {/* ── Illustration with Orange Base Line ── */}

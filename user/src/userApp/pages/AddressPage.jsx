@@ -20,10 +20,12 @@ import { auth } from "../../config/firebaseDB";
 import { useAuth } from "../features/auth/context/UserContext";
 import { useCart } from "../features/cart/context/CartContext";
 import { calculatePricing } from "../services/pricingEngine";
+import { validateDiscountCode } from "../services/discountCodeService";
 import {
   createOrder,
   makeOrderId,
 } from "../features/orders/services/orderService";
+import BrandLogo from "../../components/common/BrandLogo";
 import SITE_CONFIG from "../../config/siteConfig";
 
 const EMPTY_FORM = {
@@ -69,6 +71,63 @@ const formatPrice = (value) =>
     maximumFractionDigits: 2,
   })}`;
 
+const DiscountCodeForm = ({
+  discountCode,
+  onCodeChange,
+  onSubmit,
+  onRemove,
+  appliedDiscount,
+  discountAmount,
+  discountError,
+  validatingDiscount,
+  inputClassName,
+}) => (
+  <form onSubmit={onSubmit}>
+    <div className="flex gap-2">
+      <div className="relative flex-1">
+        <input
+          type="text"
+          value={discountCode}
+          onChange={(e) => onCodeChange(e.target.value)}
+          disabled={Boolean(appliedDiscount)}
+          placeholder="Discount code"
+          autoComplete="off"
+          className={inputClassName}
+        />
+        <Tag
+          size={12}
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+        />
+      </div>
+      <button
+        type="submit"
+        disabled={
+          !discountCode.trim() || validatingDiscount || Boolean(appliedDiscount)
+        }
+        className="px-3.5 h-10 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-medium transition-colors disabled:opacity-40">
+        {validatingDiscount ? "Checking..." : appliedDiscount ? "Applied" : "Apply"}
+      </button>
+    </div>
+    {appliedDiscount && (
+      <div className="mt-1.5 flex items-center justify-between gap-2 text-xs text-emerald-700 font-medium">
+        <span className="flex items-center gap-1">
+          <Check size={12} />
+          <span>Discount applied (- ₹{discountAmount})</span>
+        </span>
+        <button
+          type="button"
+          onClick={onRemove}
+          className="text-[11px] text-neutral-500 hover:text-neutral-900 underline">
+          Remove
+        </button>
+      </div>
+    )}
+    {discountError && (
+      <p className="text-xs text-red-600 mt-1.5">{discountError}</p>
+    )}
+  </form>
+);
+
 const AddressPage = () => {
   const { user, address, saveAddress } = useAuth();
   const { cart, remove, setCartOpen } = useCart();
@@ -88,10 +147,11 @@ const AddressPage = () => {
   const [newsOffersOptIn, setNewsOffersOptIn] = useState(true);
   const [showMobileSummary, setShowMobileSummary] = useState(false);
 
-  // Discount code state (Shopify hallmark)
+  // Private discount code state
   const [discountCode, setDiscountCode] = useState("");
-  const [discountApplied, setDiscountApplied] = useState(false);
+  const [appliedDiscount, setAppliedDiscount] = useState(null);
   const [discountError, setDiscountError] = useState("");
+  const [validatingDiscount, setValidatingDiscount] = useState(false);
 
   // Fallback ladder: location.state -> sessionStorage -> CartContext -> Demo item
   const sourceItems = useMemo(() => {
@@ -124,20 +184,25 @@ const AddressPage = () => {
   // Base pricing
   const rawPricing = useMemo(() => calculatePricing(items), [items]);
 
-  // Discount computation (e.g. 10% off if code "GHARKA10" or "WELCOME")
+  // Flat rupee discount computation (₹10, ₹20, ₹30, ₹40)
   const discountAmount = useMemo(() => {
-    if (!discountApplied) return 0;
-    return Math.round(rawPricing.subtotal * 0.1);
-  }, [discountApplied, rawPricing.subtotal]);
+    if (!appliedDiscount?.amount) return 0;
+    return Math.min(rawPricing.subtotal, Number(appliedDiscount.amount) || 0);
+  }, [appliedDiscount, rawPricing.subtotal]);
 
   const pricing = useMemo(() => {
-    const finalTotal = Math.max(0, rawPricing.subtotal - discountAmount);
+    const finalTotal = Math.max(
+      0,
+      Math.round((rawPricing.subtotal - discountAmount) * 100) / 100,
+    );
     return {
       ...rawPricing,
       discountAmount,
+      couponDiscount: discountAmount,
+      couponCode: appliedDiscount?.code || "",
       totalPayable: finalTotal,
     };
-  }, [rawPricing, discountAmount]);
+  }, [rawPricing, discountAmount, appliedDiscount]);
 
   // Split name helper
   const parseFullName = (fullName = "") => {
@@ -215,22 +280,39 @@ const AddressPage = () => {
     });
   };
 
-  const handleApplyDiscount = (e) => {
+  const handleDiscountCodeChange = (value) => {
+    setDiscountCode(value);
+    if (discountError) setDiscountError("");
+  };
+
+  const handleApplyDiscount = async (e) => {
     e.preventDefault();
+    if (validatingDiscount || appliedDiscount) return;
+
     const clean = discountCode.trim().toUpperCase();
     if (!clean) return;
 
-    if (
-      clean === "GHARKA10" ||
-      clean === "WELCOME" ||
-      clean === "PAHADI" ||
-      clean === "ORGANIC"
-    ) {
-      setDiscountApplied(true);
-      setDiscountError("");
-    } else {
-      setDiscountError("Enter a valid discount code (Try: GHARKA10)");
+    setValidatingDiscount(true);
+    setDiscountError("");
+    try {
+      const result = await validateDiscountCode(clean);
+      if (result.valid) {
+        setAppliedDiscount({ code: result.code, amount: result.amount });
+        setDiscountCode(result.code);
+      } else {
+        setDiscountError("Invalid discount code.");
+      }
+    } catch {
+      setDiscountError("Invalid discount code.");
+    } finally {
+      setValidatingDiscount(false);
     }
+  };
+
+  const handleRemoveDiscount = () => {
+    setAppliedDiscount(null);
+    setDiscountCode("");
+    setDiscountError("");
   };
 
   const handlePlaceOrder = async (e) => {
@@ -337,31 +419,12 @@ const AddressPage = () => {
       {/* ── TOP HEADER: CLEAN LOGO & SECURE BADGE ── */}
       <header className="border-b border-neutral-200/80 bg-white sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-24 flex items-center justify-between">
-          <Link
+          <BrandLogo
+            variant="default"
+            size="md"
             to="/"
-            className="flex items-center transition-opacity hover:opacity-90"
-            aria-label="Ghar Ka Organic Home">
-            <img
-              src={SITE_CONFIG.logo}
-              alt="Ghar Ka Organic"
-              className="h-14 sm:h-16 w-auto object-contain"
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-                if (e.currentTarget.nextSibling) {
-                  e.currentTarget.nextSibling.style.display = "flex";
-                }
-              }}
-            />
-            {/* Fallback only if image fails */}
-            <div className="hidden flex-col leading-tight">
-              <span className="text-lg font-bold tracking-wide text-[#121212]">
-                GHAR KA
-              </span>
-              <span className="text-[10px] tracking-[3px] text-[#475569]">
-                ORGANIC
-              </span>
-            </div>
-          </Link>
+            fetchPriority="high"
+          />
 
           {/* Right side: Single secure badge + Cart */}
           <div className="flex items-center gap-2 sm:gap-3">
@@ -460,44 +523,28 @@ const AddressPage = () => {
             </ul>
 
             {/* Mobile Discount Form */}
-            <form onSubmit={handleApplyDiscount} className="py-3">
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <input
-                    type="text"
-                    value={discountCode}
-                    onChange={(e) => setDiscountCode(e.target.value)}
-                    placeholder="Discount code (e.g. GHARKA10)"
-                    className="w-full h-10 px-3 bg-white border border-neutral-300 rounded-lg text-xs text-gray-900 placeholder:text-neutral-400 focus:outline-none focus:border-[#315c3c] uppercase"
-                  />
-                  <Tag size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                </div>
-                <button
-                  type="submit"
-                  disabled={!discountCode.trim() || discountApplied}
-                  className="px-3.5 h-10 rounded-lg bg-neutral-900 text-white text-xs font-medium transition-colors disabled:opacity-40">
-                  {discountApplied ? "Applied" : "Apply"}
-                </button>
-              </div>
-              {discountApplied && (
-                <p className="text-xs text-emerald-700 font-medium mt-1.5 flex items-center gap-1">
-                  <Check size={12} />
-                  <span>Promo code applied! 10% discount subtracted.</span>
-                </p>
-              )}
-              {discountError && (
-                <p className="text-xs text-red-600 mt-1.5">{discountError}</p>
-              )}
-            </form>
+            <div className="py-3">
+              <DiscountCodeForm
+                discountCode={discountCode}
+                onCodeChange={handleDiscountCodeChange}
+                onSubmit={handleApplyDiscount}
+                onRemove={handleRemoveDiscount}
+                appliedDiscount={appliedDiscount}
+                discountAmount={discountAmount}
+                discountError={discountError}
+                validatingDiscount={validatingDiscount}
+                inputClassName="w-full h-10 px-3 bg-white border border-neutral-300 rounded-lg text-xs text-gray-900 placeholder:text-neutral-400 focus:outline-none focus:border-[#315c3c] uppercase disabled:bg-neutral-50"
+              />
+            </div>
 
             <div className="pt-3 space-y-2 text-xs">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
                 <span className="font-medium text-gray-900">{formatPrice(pricing.subtotal)}</span>
               </div>
-              {discountApplied && (
+              {appliedDiscount && (
                 <div className="flex justify-between text-emerald-700 font-medium">
-                  <span>Discount</span>
+                  <span>Discount ({appliedDiscount.code})</span>
                   <span>- {formatPrice(discountAmount)}</span>
                 </div>
               )}
@@ -760,7 +807,7 @@ const AddressPage = () => {
 
                 <div className="p-3.5 sm:p-4 bg-white text-xs text-neutral-600 leading-relaxed">
                   <p>
-                    Pay with cash or UPI upon delivery. Our Bhimtal kitchen team will
+                    Pay with cash or UPI upon delivery. Our Mangoli, Nainital kitchen team will
                     contact you on WhatsApp to confirm your package dispatch and
                     delivery window.
                   </p>
@@ -866,35 +913,19 @@ const AddressPage = () => {
             </ul>
 
             {/* DISCOUNT CODE FORM */}
-            <form onSubmit={handleApplyDiscount} className="pt-1">
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <input
-                    type="text"
-                    value={discountCode}
-                    onChange={(e) => setDiscountCode(e.target.value)}
-                    placeholder="Discount code (e.g. GHARKA10)"
-                    className="w-full h-10 px-3 bg-white border border-gray-300 rounded-lg text-xs text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-[#315c3c] focus:ring-1 focus:ring-[#315c3c] uppercase"
-                  />
-                  <Tag size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                </div>
-                <button
-                  type="submit"
-                  disabled={!discountCode.trim() || discountApplied}
-                  className="px-3.5 h-10 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-medium transition-colors disabled:opacity-40">
-                  {discountApplied ? "Applied" : "Apply"}
-                </button>
-              </div>
-              {discountApplied && (
-                <p className="text-xs text-emerald-700 font-medium mt-1.5 flex items-center gap-1">
-                  <Check size={12} />
-                  <span>Promo code applied! 10% discount subtracted.</span>
-                </p>
-              )}
-              {discountError && (
-                <p className="text-xs text-red-600 mt-1.5">{discountError}</p>
-              )}
-            </form>
+            <div className="pt-1">
+              <DiscountCodeForm
+                discountCode={discountCode}
+                onCodeChange={handleDiscountCodeChange}
+                onSubmit={handleApplyDiscount}
+                onRemove={handleRemoveDiscount}
+                appliedDiscount={appliedDiscount}
+                discountAmount={discountAmount}
+                discountError={discountError}
+                validatingDiscount={validatingDiscount}
+                inputClassName="w-full h-10 px-3 bg-white border border-gray-300 rounded-lg text-xs text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-[#315c3c] focus:ring-1 focus:ring-[#315c3c] uppercase disabled:bg-neutral-50"
+              />
+            </div>
 
             {/* PRICE BREAKDOWN */}
             <div className="border-t border-gray-200 pt-3.5 space-y-2 text-xs text-neutral-600">
@@ -903,9 +934,9 @@ const AddressPage = () => {
                 <span className="font-medium text-neutral-900">{formatPrice(pricing.subtotal)}</span>
               </div>
 
-              {discountApplied && (
+              {appliedDiscount && (
                 <div className="flex justify-between text-emerald-700 font-medium">
-                  <span>Discount</span>
+                  <span>Discount ({appliedDiscount.code})</span>
                   <span>- {formatPrice(discountAmount)}</span>
                 </div>
               )}
@@ -935,7 +966,7 @@ const AddressPage = () => {
                 <span>100% Himalayan Purity Guarantee</span>
               </div>
               <p className="text-[11px] leading-relaxed text-neutral-500">
-                Direct from Bhimtal, Nainital. Carefully bubble-wrapped food-grade glass jars. Free replacement if damaged in transit.
+                Direct from Mangoli, Nainital. Carefully bubble-wrapped food-grade glass jars. Free replacement if damaged in transit.
               </p>
             </div>
           </div>
@@ -968,7 +999,7 @@ const AddressPage = () => {
               Thank you for your order!
             </h2>
             <p className="mt-2 text-xs sm:text-sm text-neutral-600 leading-relaxed">
-              We’ve received your order and our Bhimtal kitchen team will contact
+              We’ve received your order and our Mangoli, Nainital kitchen team will contact
               you on WhatsApp to confirm delivery schedule.
             </p>
 

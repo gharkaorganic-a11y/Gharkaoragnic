@@ -9,7 +9,7 @@ Ghar Ka Organic operates under strict food safety guidelines. We are fully regis
 
 ## 2. 100% Transparent Sourcing
 
-Our products do not come from anonymous factories. We source directly from women-led farmer cooperatives in **Nalni, Nainital, Uttarakhand**. Our honey is wildly foraged, and our pickles are naturally sun-fermented using cold-pressed mustard oil. There are zero hidden chemicals or artificial preservatives.
+Our products don't come from factories — they come from the traditions we have carried in our homes for generations. Rooted in **Mangoli and Nalni, Nainital, Uttarakhand**, we choose ingredients carefully and follow traditional preparation methods to bring homemade pickles, pure ghee, natural honey, traditional pahadi dals, spices, and pahadi salts to your table without unnecessary chemicals or artificial preservatives.
 
 ## 3. Safe & Secure Transactions
 

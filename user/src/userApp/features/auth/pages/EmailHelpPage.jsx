@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import BrandLogo from "../../../../components/common/BrandLogo";
 
 const EmailVerificationHelp = () => {
   return (
@@ -7,13 +8,9 @@ const EmailVerificationHelp = () => {
       <div className="w-full max-w-3xl   p-6 sm:p-8">
         {/* Header */}
         <div className="text-center">
-          <Link to="/" className="mb-6 inline-flex justify-center">
-            <img
-              src="https://gharkaorganic.com/logo/gharka-logo.png"
-              alt="Ghar Ka Organic"
-              className="h-16 w-auto max-w-[220px] object-contain"
-            />
-          </Link>
+          <div className="mb-6 flex justify-center">
+            <BrandLogo variant="default" size="lg" to="/" />
+          </div>
           <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
             Email Verification Help
           </h1>

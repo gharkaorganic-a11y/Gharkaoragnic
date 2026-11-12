@@ -189,12 +189,15 @@ const normalize = (id, data) => ({
   name: data.name ?? "",
   slug: data.slug ?? "",
   description: data.description ?? "",
+  shortDescription: data.shortDescription ?? "",
   banner: data.banner ?? "",
   images: Array.isArray(data.images) ? data.images : [],
+  detailsImage: data.detailsImage ?? "",
   price: Number(data.price ?? 0),
   originalPrice: Number(data.originalPrice ?? data.price ?? 0),
   stock: Number(data.stock ?? 0),
   sizes: Array.isArray(data.sizes) ? data.sizes : [],
+  colors: Array.isArray(data.colors) ? data.colors : [],
   collectionTypes: Array.isArray(data.collectionTypes) ? data.collectionTypes : [],
   isActive: data.isDeleted !== true && (data.isActive ?? true),
   createdAt: data.createdAt ?? null,
@@ -204,8 +207,26 @@ const normalize = (id, data) => ({
     Number(data.totalReviews ?? 0) > 0
       ? Number(data.ratingSum ?? 0) / Number(data.totalReviews)
       : 0,
-
   tags: Array.isArray(data.tags) ? data.tags : [],
+  ingredients: data.ingredients ?? "",
+  shelfLife: data.shelfLife ?? "",
+  benefits: data.benefits ?? "",
+  usageInstructions: data.usageInstructions ?? "",
+  storageInstructions: data.storageInstructions ?? "",
+  certifications: Array.isArray(data.certifications)
+    ? data.certifications
+    : typeof data.certifications === "string" && data.certifications.trim()
+      ? data.certifications.split(",").map((s) => s.trim()).filter(Boolean)
+      : [],
+  faq: Array.isArray(data.faq) ? data.faq : [],
+  material: data.material ?? "",
+  brand: data.brand ?? "",
+  categoryId: data.categoryId ?? "",
+  category: data.category ?? data.categoryId ?? "",
+  metaTitle: data.metaTitle ?? "",
+  metaDescription: data.metaDescription ?? "",
+  canonicalUrl: data.canonicalUrl ?? "",
+  ogImage: data.ogImage ?? "",
 });
 
 /**
@@ -217,6 +238,8 @@ const normalizeReview = (id, data) => ({
   rating: Number(data.rating ?? 0),
   comment: data.comment ?? "",
   title: data.title ?? "",
+  reply: data.reply ?? "",
+  imageUrl: data.imageUrl ?? "",
   verified: data.verified ?? false,
   isApproved: data.isApproved ?? false,
   date: data.date ?? null,
@@ -546,7 +569,7 @@ export const productService = {
         const { signInAnonymously } = await import("firebase/auth");
         const cred = await signInAnonymously(auth);
         user = cred.user;
-      } catch (e) {
+      } catch {
         // Continue with guest fallback identifier
       }
     }

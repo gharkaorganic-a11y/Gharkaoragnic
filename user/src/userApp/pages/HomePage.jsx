@@ -27,6 +27,9 @@ import ProductSectionTabs from "../features/p/components/ProductSectionTabs";
 const ProductSection = React.lazy(
   () => import("../components/section/ProductSection"),
 );
+const LatestBlogSection = React.lazy(
+  () => import("../homepage/LatestBlogSection"),
+);
 
 // ────────────────────────────────────────────────────────────────────────────
 // COMPREHENSIVE SEO & AI CRAWLER OPTIMIZATION
@@ -359,34 +362,8 @@ const HOMEPAGE_PRODUCT_SCHEMAS = [
 const MASTER_SCHEMA = {
   "@context": "https://schema.org",
   "@graph": [
-    // ┌─────────────────────────────────────────────────────┐
-    // │ ORGANIZATION - Brand Entity                         │
-    // └─────────────────────────────────────────────────────┘
-    {
-      "@type": "Organization",
-      "@id": "https://gharkaorganic.com/#organization",
-      name: "Ghar Ka Organic",
-      alternateName: [
-        "Ghar Ka Organic Uttarakhand",
-        "Ghar Ka Organic Pickles",
-        "GKO",
-      ],
-      url: "https://gharkaorganic.com/",
-      logo: "https://gharkaorganic.com/logo/gharka-logo.png",
-      description:
-        "Authentic Himalayan organic food brand from Uttarakhand offering homemade pickles, natural honey, chutneys, and bilona desi ghee.",
-      telephone: "+91-9897447525",
-      contactPoint: {
-        "@type": "ContactPoint",
-        telephone: "+91-9897447525",
-        contactType: "customer service",
-        availableLanguage: ["English", "Hindi"],
-      },
-      sameAs: [
-        "https://www.instagram.com/gharkaorganic/",
-        "https://www.facebook.com/gharkaorganic",
-      ],
-    },
+    // Organization (#organization) and WebSite (#website) JSON-LD live globally in user/index.html
+    // to avoid duplicate Organization/WebSite structured data nodes.
 
     // ┌─────────────────────────────────────────────────────┐
     // │ LOCAL BUSINESS - Physical Location Details          │
@@ -420,23 +397,6 @@ const MASTER_SCHEMA = {
         ],
         opens: "09:00",
         closes: "18:00",
-      },
-    },
-
-    // ┌─────────────────────────────────────────────────────┐
-    // │ WEBSITE - Domain Entity                             │
-    // └─────────────────────────────────────────────────────┘
-    {
-      "@type": "WebSite",
-      "@id": "https://gharkaorganic.com/#website",
-      url: "https://gharkaorganic.com/",
-      name: "Ghar Ka Organic",
-      publisher: { "@id": "https://gharkaorganic.com/#organization" },
-      potentialAction: {
-        "@type": "SearchAction",
-        target:
-          "https://gharkaorganic.com/collections?search={search_term_string}",
-        "query-input": "required name=search_term_string",
       },
     },
 
@@ -683,6 +643,9 @@ const HomePage = () => {
   const isMobile = useIsMobile();
   const {
     products: homeProducts = {},
+    categories = [],
+    collections = [],
+    loading = false,
     loadingKeys = [],
     errors = {},
     refetchProducts,
@@ -829,7 +792,7 @@ const HomePage = () => {
         <HeroSection />
       </section>
 
-      <ProductSectionTabs />
+      <ProductSectionTabs title="New to Ghar Ka Organic? Start Here" />
 
       {/* ── 2. NEW ARRIVALS / BEST SELLERS ── */}
       {renderSection("new")}
@@ -838,6 +801,7 @@ const HomePage = () => {
       <ViewportLoader>
         <OurStoryComponent />
       </ViewportLoader>
+
 
       {/* ── 4. SIGNATURE PAHADI PICKLES & ACHAR ── */}
       {renderSection("pickle")}
@@ -853,6 +817,12 @@ const HomePage = () => {
       {/* └─────────────────────────────────────────────────────────────┘ */}
       <ViewportLoader rootMargin="300px">
         <ReviewsGrid showSchema={false} />
+      </ViewportLoader>
+
+      <ViewportLoader rootMargin="300px">
+        <Suspense fallback={null}>
+          <LatestBlogSection />
+        </Suspense>
       </ViewportLoader>
 
       {/* ┌─────────────────────────────────────────────────────────────┐ */}

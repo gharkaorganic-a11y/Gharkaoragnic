@@ -47,10 +47,10 @@ import { productService } from "../../services/firebase/product/productService";
 /* ─────────────────────────────
    HELPERS
 ───────────────────────────── */
-const formatPKR = (n) =>
-  new Intl.NumberFormat("en-PK", {
+const formatINR = (n) =>
+  new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "PKR",
+    currency: "INR",
     maximumFractionDigits: 0,
   }).format(n ?? 0);
 
@@ -349,7 +349,7 @@ const ProductsManagementPage = () => {
      RENDER
   ───────────────────────────── */
   return (
-    <div className="min-h-screen bg-gray-50/50 text-gray-900 pb-20 font-sans">
+    <div className="min-h-screen bg-[#f1f2f4] text-[#303030] pb-16 font-sans">
       {/* Toast */}
       {toast && (
         <Toast
@@ -369,56 +369,62 @@ const ProductsManagementPage = () => {
         />
       )}
 
-      {/* ── STICKY HEADER ── */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-30 shadow-sm">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-4">
+      {/* ── MAIN ── */}
+      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 pt-6 space-y-5">
+        {/* ── SHOPIFY-STYLE PAGE HEADER ── */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h1 className="text-xl font-bold text-gray-900 tracking-tight">
-              Product Catalogue
-            </h1>
-            <p className="text-sm font-medium text-gray-500 mt-0.5">
-              Manage inventory &amp; visibility
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold text-[#212121] tracking-tight">
+                Products
+              </h1>
+              <span className="px-2 py-0.5 rounded bg-[#FFE500] text-[#212121] text-[10px] font-bold uppercase tracking-wider">
+                Catalogue
+              </span>
+            </div>
+            <p className="text-xs text-[#616161] mt-0.5">
+              Manage store inventory, prices, and storefront visibility.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <button
               onClick={handleRefresh}
               disabled={loading}
               aria-label="Refresh product list"
-              className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors border border-transparent hover:border-gray-200 disabled:opacity-40">
-              <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
+              className="h-9 px-3 bg-white border border-[#e3e3e3] hover:border-[#2874F0] text-xs font-semibold text-[#303030] hover:text-[#2874F0] rounded-lg transition-colors flex items-center gap-1.5 disabled:opacity-40 cursor-pointer">
+              <RefreshCw
+                size={14}
+                className={loading ? "animate-spin text-[#2874F0]" : "text-[#2874F0]"}
+              />
+              <span className="hidden sm:inline">Refresh</span>
             </button>
 
             <button
               onClick={() => navigate("/products/create")}
-              className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg shadow-sm hover:shadow transition-all">
-              <Plus size={18} strokeWidth={2.5} />
-              <span className="hidden sm:inline">Add Product</span>
-              <span className="sm:hidden">Add</span>
+              className="h-9 flex items-center gap-1.5 px-4 bg-[#2874F0] hover:bg-[#1c5fba] text-white text-xs font-semibold rounded-lg shadow-2xs transition-all cursor-pointer">
+              <Plus size={15} strokeWidth={2.5} />
+              <span>Add Product</span>
             </button>
           </div>
         </div>
-      </header>
 
-      {/* ── MAIN ── */}
-      <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         {/* Guide banner */}
         {showGuide && (
-          <div className="flex items-start gap-3 p-4 bg-indigo-50 border border-indigo-200 rounded-xl text-indigo-800 text-sm">
+          <div className="flex items-start gap-2.5 px-4 py-3 bg-[#FFF8D6] border border-[#f5d000] rounded-xl text-[#594400] text-xs">
             <AlertCircle
-              size={18}
-              className="shrink-0 mt-0.5 text-indigo-500"
+              size={16}
+              className="shrink-0 mt-0.5 text-[#b27b00]"
             />
-            <p className="flex-1">
-              Use filters to browse by category, collection, or status. Select
-              multiple products with the checkboxes for bulk actions.
+            <p className="flex-1 leading-relaxed">
+              Use filters to browse by section or status. Select products with
+              checkboxes for quick bulk actions.
             </p>
             <button
               onClick={dismissGuide}
               aria-label="Dismiss guide"
-              className="text-indigo-400 hover:text-indigo-700">
-              <X size={16} />
+              className="text-[#7a5200] hover:text-[#212121]">
+              <X size={15} />
             </button>
           </div>
         )}
@@ -427,79 +433,87 @@ const ProductsManagementPage = () => {
         {error && (
           <div
             role="alert"
-            className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm font-medium">
-            <AlertCircle size={18} className="shrink-0" />
+            className="flex items-center gap-3 p-3.5 bg-red-50 border border-red-200 text-red-600 rounded-xl text-xs font-medium">
+            <AlertCircle size={16} className="shrink-0" />
             <span className="flex-1">{error}</span>
             <button
               onClick={() => setError(null)}
               aria-label="Dismiss error"
               className="text-red-400 hover:text-red-700">
-              <X size={16} />
+              <X size={15} />
             </button>
           </div>
         )}
 
         {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-          <StatCard icon={Package} label="Total Products" value={stats.total} />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+          <StatCard
+            icon={Package}
+            label="Total Products"
+            value={stats.total}
+            iconBg="bg-[#eaf2ff] text-[#2874F0]"
+            accentBorder="border-t-[#2874F0]"
+          />
           <StatCard
             icon={BarChart2}
             label="Active Listings"
             value={stats.active}
+            iconBg="bg-emerald-50 text-emerald-600"
+            accentBorder="border-t-emerald-500"
           />
           <StatCard
             icon={TrendingDown}
             label="Low Stock"
             value={stats.lowStock}
+            iconBg="bg-[#FFF8D6] text-[#996b00]"
+            accentBorder="border-t-[#FFE500]"
           />
           <StatCard
             icon={AlertCircle}
             label="Out of Stock"
             value={stats.outOfStock}
+            iconBg="bg-rose-50 text-rose-600"
+            accentBorder="border-t-rose-500"
           />
         </div>
 
         {/* Bulk action banner */}
         {selectedProducts.length > 0 && (
-          <div className="bg-indigo-600 rounded-xl shadow-md p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3 text-white">
-              <span className="flex items-center justify-center w-7 h-7 bg-white/20 rounded-full font-bold text-sm">
+          <div className="bg-[#2874F0] rounded-xl shadow-md p-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 text-white">
+              <span className="flex items-center justify-center w-6 h-6 bg-[#FFE500] text-[#212121] rounded-full font-bold text-xs">
                 {selectedProducts.length}
               </span>
-              <span className="text-sm font-medium tracking-wide">
+              <span className="text-xs font-semibold tracking-wide">
                 product{selectedProducts.length !== 1 ? "s" : ""} selected
               </span>
             </div>
 
             <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-              {/* Activate */}
               <button
                 onClick={() => handleBulkSetActive(true)}
                 disabled={bulkActionLoading}
-                className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold bg-white/20 hover:bg-white/30 text-white rounded-lg transition-colors disabled:opacity-50">
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white/15 hover:bg-white/25 text-white rounded-lg transition-colors disabled:opacity-50 cursor-pointer">
                 <Eye size={13} /> Activate
               </button>
 
-              {/* Deactivate */}
               <button
                 onClick={() => handleBulkSetActive(false)}
                 disabled={bulkActionLoading}
-                className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold bg-white/20 hover:bg-white/30 text-white rounded-lg transition-colors disabled:opacity-50">
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white/15 hover:bg-white/25 text-white rounded-lg transition-colors disabled:opacity-50 cursor-pointer">
                 <EyeOff size={13} /> Deactivate
               </button>
 
-              {/* Delete */}
               <button
                 onClick={handleBulkDelete}
                 disabled={bulkActionLoading}
-                className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold bg-red-500 hover:bg-red-400 text-white rounded-lg transition-colors disabled:opacity-50">
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-[#FFE500] hover:bg-[#ffeb3b] text-[#212121] rounded-lg transition-colors disabled:opacity-50 cursor-pointer">
                 {bulkActionLoading ? "Working…" : "Delete"}
               </button>
 
-              {/* Clear */}
               <button
                 onClick={clearSelection}
-                className="px-3 py-2 text-xs font-semibold text-white border border-white/30 hover:bg-white/10 rounded-lg transition-colors">
+                className="px-3 py-1.5 text-xs font-semibold text-white border border-white/30 hover:bg-white/10 rounded-lg transition-colors cursor-pointer">
                 Clear
               </button>
             </div>
@@ -507,20 +521,18 @@ const ProductsManagementPage = () => {
         )}
 
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          <Filters
-            categoryFilter={categoryFilter}
-            setCategoryFilter={setCategoryFilter}
-            collectionFilter={collectionFilter}
-            setCollectionFilter={setCollectionFilter}
-            statusFilter={statusFilter}
-            setStatusFilter={setStatusFilter}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            clearFilters={clearFilters}
-            hasActiveFilters={hasActiveFilters}
-          />
-        </div>
+        <Filters
+          categoryFilter={categoryFilter}
+          setCategoryFilter={setCategoryFilter}
+          collectionFilter={collectionFilter}
+          setCollectionFilter={setCollectionFilter}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          clearFilters={clearFilters}
+          hasActiveFilters={hasActiveFilters}
+        />
 
         {/* Table */}
         <ProductTable
@@ -534,7 +546,7 @@ const ProductsManagementPage = () => {
           setDeleteTarget={setDeleteTarget}
           navigate={navigate}
           getDiscount={getDiscount}
-          formatPKR={formatPKR}
+          formatPKR={formatINR}
           selectedProducts={selectedProducts}
           toggleSelectProduct={toggleSelectProduct}
           toggleSelectAll={toggleSelectAll}

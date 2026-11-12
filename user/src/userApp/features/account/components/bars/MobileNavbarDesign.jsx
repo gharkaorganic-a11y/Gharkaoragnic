@@ -9,6 +9,7 @@ import {
 import NavbarDropdown from "../dropdown/NavbarDropdwown";
 import { productSections } from "../../../homepage/config/productCollection";
 import { useCart } from "../../../../features/cart/context/CartContext";
+import BrandLogo from "../../../../../components/common/BrandLogo";
 
 // Compact black dot badge matching screenshot
 const BadgeCount = ({ count }) => {
@@ -50,24 +51,14 @@ const MobileNavbar = ({ cartCount = 0 }) => {
               <Bars3Icon className="h-6 w-6 stroke-[1.75]" />
             </button>
 
-            {/* CENTER: BRAND LOGO */}
-            <button
-              onClick={() => navigate("/")}
-              aria-label="Ghar Ka Organic - Go to homepage"
-              className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center active:scale-95 transition-transform duration-150">
-              <span className="relative flex flex-col items-center pt-1 text-[#292521]">
-                <span
-                  aria-hidden="true"
-                  className="absolute top-0 h-1.5 w-1.5 rounded-full bg-[#df3939]"
-                />
-                <span className="mt-1 text-[13px] font-black uppercase leading-[14px] tracking-[0.04em]">
-                  GHAR KA
-                </span>
-                <span className="text-[19px] font-semibold leading-[19px] tracking-[-0.045em]">
-                  organic
-                </span>
-              </span>
-            </button>
+            {/* CENTER: COMPACT RECONSTRUCTED BRAND LOGO */}
+            <BrandLogo
+              variant="compact"
+              size="sm"
+              to="/"
+              fetchPriority="high"
+              className="absolute left-1/2 -translate-x-1/2"
+            />
 
             {/* RIGHT: SEARCH & CART (NO PROFILE ICON) */}
             <div className="flex items-center gap-1 sm:gap-1.5">

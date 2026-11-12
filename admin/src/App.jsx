@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
+import BrandLogo from "./components/common/BrandLogo";
 
 /* ---------------- LAZY ROUTES ---------------- */
 // Lazy loading splits your code into smaller chunks, speeding up initial load
@@ -14,28 +15,20 @@ const AdminAuthPage = lazy(() => import("./pages/AdminAuthPage"));
 const InitializingSystem = () => (
   <div className="fixed inset-0 z-[9999] flex min-h-screen flex-col items-center justify-center bg-[#F1F3F6] antialiased">
     <div className="flex flex-col items-center animate-in fade-in zoom-in-95 duration-300 ease-out">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-[#2874F0] shadow-sm">
-          <span className="pr-1 text-2xl font-bold tracking-tighter text-white">
-            G
-          </span>
-          <div className="absolute bottom-2 right-2 h-1.5 w-1.5 rounded-full bg-[#FFE500]" />
+      <div className="flex flex-col items-center gap-2 mb-8">
+        <div className="rounded-2xl bg-white px-5 py-3 border border-[#D99A36]/40 shadow-2xs">
+          <BrandLogo variant="default" size="md" />
         </div>
-        <div className="flex flex-col">
-          <span className="text-xl font-semibold tracking-tight text-[#202124] leading-none">
-            Ghar Ka Organic
-          </span>
-          <span className="mt-1 text-[10px] font-semibold uppercase tracking-widest text-[#2874F0]">
-            Store management
-          </span>
-        </div>
+        <span className="mt-1 text-[10px] font-semibold uppercase tracking-widest text-[#2874F0]">
+          Store management
+        </span>
       </div>
 
       {/* Pure CSS Loading Indicator (Zero Dependencies) */}
-      <div className="flex flex-col items-center gap-4 bg-white px-8 py-5 rounded-sm border border-gray-200 shadow-[0_1px_2px_0_rgba(0,0,0,0.05)]">
+      <div className="flex flex-col items-center gap-4 bg-white px-8 py-5 rounded-xl border border-[#e3e3e3] shadow-[0_1px_0_rgba(0,0,0,0.04)]">
         {/* Tailwind CSS Spinner */}
-        <div className="h-7 w-7 animate-spin rounded-full border-[3px] border-[#e0e0e0] border-t-[#2874F0]" />
-        <span className="text-[13px] font-medium text-[#878787] tracking-wide">
+        <div className="h-7 w-7 animate-spin rounded-full border-[3px] border-[#FFE500] border-t-[#2874F0]" />
+        <span className="text-xs font-medium text-[#616161] tracking-wide">
           Securely connecting to workspace...
         </span>
       </div>
@@ -46,7 +39,7 @@ const InitializingSystem = () => (
 /* ---------------- APP ENTRY POINT ---------------- */
 const App = () => {
   return (
-    <div className="min-h-screen bg-[#F1F3F6] font-sans text-[#202124] selection:bg-[#2874F0] selection:text-white antialiased">
+    <div className="min-h-screen bg-[#f1f2f4] font-sans text-[#303030] selection:bg-[#2874F0] selection:text-white antialiased">
       <main>
         <Suspense fallback={<InitializingSystem />}>
           <Routes>

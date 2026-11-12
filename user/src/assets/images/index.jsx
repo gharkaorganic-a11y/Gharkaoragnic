@@ -9,13 +9,19 @@ const GOOGLE_ICON_BASE64 =
 // ==========================================
 // 5. MAIN EXPORT
 // ==========================================
-const appLogo = "https://gharkaorganic.com/logo/gharka-logo.png";
+const symbolLogo = "/logo/gharka-logo-symbol.png";
+const fullLogo = "/logo/gharka-logo-full.png";
+
 export const IMAGES = {
   /**
    * Brand Identity & Logos
    */
   brand: {
-    logo: appLogo,
+    logo: symbolLogo,
+    symbol: symbolLogo,
+    fullLogo,
+    seoFullLogo: "https://gharkaorganic.com/logo/gharka-logo-full.png",
+    seoSymbolLogo: "https://gharkaorganic.com/logo/gharka-logo-symbol.png",
     googleIcon: GOOGLE_ICON_BASE64,
   },
 };

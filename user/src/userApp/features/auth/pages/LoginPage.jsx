@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/UserContext";
+import BrandLogo from "../../../../components/common/BrandLogo";
 
 const BASE_URL = "https://gharkaorganic.com";
 const CANONICAL = `${BASE_URL}/auth/login`;
@@ -30,55 +31,6 @@ const JSONLD = JSON.stringify({
 
       breadcrumb: {
         "@id": `${CANONICAL}#breadcrumb`,
-      },
-    },
-
-    {
-      "@type": "WebSite",
-
-      "@id": `${BASE_URL}/#website`,
-
-      url: BASE_URL,
-
-      name: "Ghar Ka Organic",
-
-      potentialAction: {
-        "@type": "SearchAction",
-
-        target: `${BASE_URL}/search?q={search_term_string}`,
-
-        "query-input": "required name=search_term_string",
-      },
-    },
-
-    {
-      "@type": "Organization",
-
-      "@id": `${BASE_URL}/#organization`,
-
-      name: "Ghar Ka Organic",
-
-      url: BASE_URL,
-
-      logo: `${BASE_URL}/logo/gharka-logo.png`,
-
-      image:
-        "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776768403/Local_women_in_Bhimtal_Uttarakhand_preparing_traditional_Himalayan_organic_food_tbpvgk.webp",
-
-      telephone: "+91-7983990550",
-
-      email: "gharkaorganic@gmail.com",
-
-      sameAs: ["https://www.instagram.com/gharkaorganic/"],
-
-      address: {
-        "@type": "PostalAddress",
-
-        addressRegion: "Uttarakhand",
-
-        postalCode: "263136",
-
-        addressCountry: "IN",
       },
     },
 
@@ -249,13 +201,9 @@ export default function LoginPage() {
         <section className="max-w-[32rem] mx-auto px-6 py-20">
           {/* Intro */}
           <div className="text-center mb-14">
-            <Link to="/" className="mb-8 inline-flex justify-center">
-              <img
-                src={`${BASE_URL}/logo/gharka-logo.png`}
-                alt="Ghar Ka Organic"
-                className="h-20 w-auto max-w-[260px] object-contain"
-              />
-            </Link>
+            <div className="mb-8 flex justify-center">
+              <BrandLogo variant="default" size="lg" to="/" />
+            </div>
             <h2 className="text-3xl md:text-4xl font-light tracking-wide text-[#333] mb-5">
               Login To Your Account
             </h2>

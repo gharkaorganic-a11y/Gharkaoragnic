@@ -3,9 +3,10 @@ import { Helmet } from "react-helmet-async";
 import { Link, useParams } from "react-router-dom";
 import { Facebook, Twitter, Linkedin, Mail } from "lucide-react";
 import { getBlogBySlug, getRecentBlogs } from "../data/blogData";
+import BrandLogo from "../../../components/common/BrandLogo";
 
 const SITE_URL = "https://gharkaorganic.com";
-const LOGO_URL = "https://gharkaorganic.com/logo/gharka-logo.png";
+const LOGO_URL = "https://gharkaorganic.com/logo/gharka-logo-full.png";
 const AUTHOR_PAGE = "https://gharkaorganic.com/pages/authors";
 const DEFAULT_BLOG_IMAGE =
   "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776768403/Local_women_in_Bhimtal_Uttarakhand_preparing_traditional_Himalayan_organic_food_tbpvgk.webp";
@@ -75,8 +76,8 @@ const BlogDetailPage = () => {
             logo: {
               "@type": "ImageObject",
               url: LOGO_URL,
-              width: 600,
-              height: 240,
+              width: 2172,
+              height: 724,
             },
             url: SITE_URL,
           },
@@ -121,26 +122,6 @@ const BlogDetailPage = () => {
             },
           ],
         },
-        {
-          "@type": "Organization",
-          "@id": `${SITE_URL}/#organization`,
-          name: "Ghar Ka Organic",
-          url: SITE_URL,
-          logo: LOGO_URL,
-          description:
-            "Pure, natural, and organic products from Uttarakhand delivered across India.",
-          sameAs: [
-            "https://facebook.com/gharkaorganic",
-            "https://instagram.com/gharkaorganic",
-            "https://twitter.com/gharkaorganic",
-          ],
-          contactPoint: {
-            "@type": "ContactPoint",
-            contactType: "Customer Support",
-            telephone: "+91-9897447525",
-            email: "gharkaorganic@gmail.com",
-          },
-        },
       ],
     };
   }, [blog, slug]);
@@ -150,11 +131,9 @@ const BlogDetailPage = () => {
     return (
       <section className="min-h-screen flex items-center justify-center bg-white px-4">
         <div className="text-center max-w-md">
-          <img
-            src={LOGO_URL}
-            alt="Ghar Ka Organic"
-            className="w-24 mx-auto mb-6 opacity-80"
-          />
+          <div className="mb-6 flex justify-center">
+            <BrandLogo variant="default" size="lg" to="/" />
+          </div>
           <h1 className="text-3xl font-light text-[#121212] mb-3">
             Article Not Found
           </h1>
