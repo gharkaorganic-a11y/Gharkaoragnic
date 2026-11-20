@@ -11,7 +11,7 @@
       <g:description>Add a bold, chilli-forward accompaniment to everyday meals with Ghar Ka Mirch Ka Achar. Serve a small portion alongside dal, rice, roti, or paratha, and adjust the serving to your taste.</g:description>
       <g:link>https://gharkaorganic.com/product/ghar-ka-mirch-ka-achar-green-chilly-pickle</g:link>
       <g:image_link>https://res.cloudinary.com/dwgro3zo7/image/upload/v1790511602/gharka-organic/products/oqkqmdl1gul3fapq2vvc.jpg</g:image_link>
-      <!-- Replace with real additional Cloudinary image URLs (up to 10 per item) -->
+      <!-- Replace with real additional Cloudinary image URLs (up to 10 per item) or delete this line if unused -->
       <g:additional_image_link>https://res.cloudinary.com/dwgro3zo7/image/upload/v1790511602/gharka-organic/products/REPLACE_WITH_EXTRA_IMAGE_1.jpg</g:additional_image_link>
       <g:condition>new</g:condition>
       <g:availability>in_stock</g:availability>
@@ -20,6 +20,7 @@
       <g:identifier_exists>false</g:identifier_exists>
       <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Condiments &amp; Sauces &gt; Pickles</g:google_product_category>
       <g:product_type>Organic Food Products &gt; Pickles &gt; Green Chilli Pickle</g:product_type>
+      <g:custom_label_0>himalayan</g:custom_label_0>
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
@@ -32,7 +33,7 @@
       <g:description>Enjoy the natural sweetness, delicate floral notes, and rich aroma of Ghar Ka Honey. Drizzle it over toast or breakfast, stir it into a warm drink, or use it to add sweetness to desserts.</g:description>
       <g:link>https://gharkaorganic.com/product/ghar-ka-honey</g:link>
       <g:image_link>https://res.cloudinary.com/dwgro3zo7/image/upload/v1790510595/gharka-organic/products/e6qmitnpen0qsgfimte0.jpg</g:image_link>
-      <!-- Replace with real additional Cloudinary image URLs (up to 10 per item) -->
+      <!-- Replace with real additional Cloudinary image URLs (up to 10 per item) or delete this line if unused -->
       <g:additional_image_link>https://res.cloudinary.com/dwgro3zo7/image/upload/v1790510595/gharka-organic/products/REPLACE_WITH_EXTRA_IMAGE_2.jpg</g:additional_image_link>
       <g:condition>new</g:condition>
       <g:availability>in_stock</g:availability>
@@ -41,6 +42,7 @@
       <g:identifier_exists>false</g:identifier_exists>
       <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Condiments &amp; Sauces &gt; Honey</g:google_product_category>
       <g:product_type>Organic Food Products &gt; Honey &gt; Raw Honey</g:product_type>
+      <g:custom_label_0>himalayan</g:custom_label_0>
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
@@ -53,7 +55,7 @@
       <g:description>Bring an aromatic Pahadi-style seasoning to everyday meals. Himalayan salt is combined with coriander, garlic, and green chilli for savory, herby flavor with a gentle chilli kick.</g:description>
       <g:link>https://gharkaorganic.com/product/pahadi-salt-with-dhaniya-garlic-and-green-chillies</g:link>
       <g:image_link>https://res.cloudinary.com/dwgro3zo7/image/upload/v1790512823/gharka-organic/products/fttrz26ukuxngr2knc7f.jpg</g:image_link>
-      <!-- Replace with real additional Cloudinary image URLs (up to 10 per item) -->
+      <!-- Replace with real additional Cloudinary image URLs (up to 10 per item) or delete this line if unused -->
       <g:additional_image_link>https://res.cloudinary.com/dwgro3zo7/image/upload/v1790512823/gharka-organic/products/REPLACE_WITH_EXTRA_IMAGE_3.jpg</g:additional_image_link>
       <g:condition>new</g:condition>
       <g:availability>in_stock</g:availability>
@@ -62,6 +64,7 @@
       <g:identifier_exists>false</g:identifier_exists>
       <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Seasonings &amp; Spices</g:google_product_category>
       <g:product_type>Organic Food Products &gt; Seasonings &gt; Pahadi Salt</g:product_type>
+      <g:custom_label_0>himalayan</g:custom_label_0>
       <g:shipping>
         <g:country>IN</g:country>
         <g:price>0.00 INR</g:price>
