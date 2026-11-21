@@ -211,7 +211,11 @@ const CollectionPage = () => {
       if (priceFilter === "above_600" && p <= 600) return false;
 
       // Product/category filter (when active on client)
-      if (productFilter && productFilter !== "all" && productFilter !== section?.key) {
+      if (
+        productFilter &&
+        productFilter !== "all" &&
+        productFilter !== section?.key
+      ) {
         const cat = String(
           product.category || product.collectionType || "",
         ).toLowerCase();
@@ -226,7 +230,13 @@ const CollectionPage = () => {
 
       return true;
     });
-  }, [displayProducts, availabilityFilter, priceFilter, productFilter, section?.key]);
+  }, [
+    displayProducts,
+    availabilityFilter,
+    priceFilter,
+    productFilter,
+    section?.key,
+  ]);
 
   const handleProductFilterSelect = useCallback(
     (key) => {
@@ -518,20 +528,20 @@ const CollectionPage = () => {
           {/* Trust points - Simple, clean inline strip */}
           <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-gray-500 font-normal">
             <span className="inline-flex items-center gap-1">
-              <span className="text-[#008060] font-semibold">✓</span> 100% natural &
-              chemical-free
+              <span className="text-[#008060] font-semibold">✓</span> 100%
+              natural & chemical-free
             </span>
             <span className="inline-flex items-center gap-1">
-              <span className="text-[#008060] font-semibold">✓</span> Directly from
-              Uttarakhand farmers
+              <span className="text-[#008060] font-semibold">✓</span> Directly
+              from Uttarakhand farmers
             </span>
             <span className="inline-flex items-center gap-1">
-              <span className="text-[#008060] font-semibold">✓</span> 48hr dispatch,
-              15-day guarantee
+              <span className="text-[#008060] font-semibold">✓</span> 48hr
+              dispatch, 15-day guarantee
             </span>
             <span className="inline-flex items-center gap-1">
-              <span className="text-[#008060] font-semibold">✓</span> Free shipping on
-              orders ₹499+
+              <span className="text-[#008060] font-semibold">✓</span> Free
+              shipping on orders ₹499+
             </span>
           </div>
         </div>
@@ -651,12 +661,12 @@ const CollectionPage = () => {
             </p>
             <p>
               Every item carries the authentic taste of{" "}
-              <strong>Ghar Ka Khana</strong> from Mangoli, Nainital,
-              Uttarakhand — made using carefully selected ingredients and
-              traditional recipes without unnecessary chemicals or artificial
-              preservatives. We pack within 48 hours of your order and ship
-              with our <strong>15-day freshness guarantee</strong>. Free
-              shipping across India on orders above ₹499.
+              <strong>Ghar Ka Khana</strong> from Mangoli, Nainital, Uttarakhand
+              — made using carefully selected ingredients and traditional
+              recipes without unnecessary chemicals or artificial preservatives.
+              We pack within 48 hours of your order and ship with our{" "}
+              <strong>15-day freshness guarantee</strong>. Free shipping across
+              India on orders above ₹499.
             </p>
             <h3 className="text-lg font-semibold text-gray-900 !mb-2 !mt-6">
               Related Categories

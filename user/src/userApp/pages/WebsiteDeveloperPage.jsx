@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import {
-  ArrowRight,
+  Briefcase,
   Code2,
   ExternalLink,
   Globe,
   Instagram,
   Layers,
+  Linkedin,
   Mail,
   MapPin,
   MessageCircle,
@@ -39,11 +40,15 @@ import {
   WEBSITE_HIGHLIGHTS,
 } from "./websiteDeveloperSeo";
 
+const DEV_LINKEDIN = "https://www.linkedin.com/in/ravi-sharma-13031b312";
+const DEV_LINKEDIN_LABEL = "linkedin.com/in/ravi-sharma-13031b312";
+
 const CONTACT_ICON_MAP = {
   phone: Phone,
   whatsapp: MessageCircle,
   email: Mail,
   instagram: Instagram,
+  linkedin: Linkedin,
 };
 
 const SERVICE_ICON_MAP = {
@@ -59,6 +64,38 @@ const WebsiteDeveloperPage = () => {
   const toggleFaq = (index) => {
     setOpenFaq((prev) => (prev === index ? -1 : index));
   };
+
+  const contactCardsWithLinkedin = useMemo(() => {
+    const baseCards = Array.isArray(CONTACT_CARDS) ? CONTACT_CARDS : [];
+    const hasLinkedin = baseCards.some(
+      (c) => c.key === "linkedin" || c.href?.includes("linkedin.com"),
+    );
+    if (hasLinkedin) return baseCards;
+    return [
+      ...baseCards,
+      {
+        key: "linkedin",
+        label: "LinkedIn",
+        value: DEV_LINKEDIN_LABEL,
+        href: DEV_LINKEDIN,
+        external: true,
+      },
+    ];
+  }, []);
+
+  const personProfileSchema = useMemo(
+    () =>
+      JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "@id": `${CANONICAL}#developer`,
+        name: DEV_NAME,
+        url: CANONICAL,
+        jobTitle: DEV_TITLE_ROLE,
+        sameAs: [DEV_INSTAGRAM, DEV_LINKEDIN].filter(Boolean),
+      }),
+    [],
+  );
 
   return (
     <>
@@ -105,6 +142,7 @@ const WebsiteDeveloperPage = () => {
         <meta name="twitter:image" content={OG_IMAGE} />
 
         <script type="application/ld+json">{WEBSITE_DEVELOPER_JSONLD}</script>
+        <script type="application/ld+json">{personProfileSchema}</script>
       </Helmet>
 
       <div className="bg-[#fcfbf7] text-[#222222] font-sans min-h-screen pb-16">
@@ -123,7 +161,9 @@ const WebsiteDeveloperPage = () => {
             <li className="text-neutral-300" aria-hidden="true">
               /
             </li>
-            <li className="text-neutral-900 font-medium uppercase" aria-current="page">
+            <li
+              className="text-neutral-900 font-medium uppercase"
+              aria-current="page">
               Website Developer – {DEV_NAME}
             </li>
           </ol>
@@ -157,9 +197,11 @@ const WebsiteDeveloperPage = () => {
             <p
               id="developer-intro"
               className="text-xs sm:text-[14px] text-[#4a4a4a] leading-relaxed mb-6 font-normal">
-              Creator and engineer of <strong className="text-gray-900">gharkaorganic.com</strong>.
-              Designing fast, mobile-first eCommerce stores and custom business websites engineered
-              for Google search rankings and direct client inquiries.
+              Creator and engineer of{" "}
+              <strong className="text-gray-900">gharkaorganic.com</strong>.
+              Designing fast, mobile-first eCommerce stores and custom business
+              websites engineered for Google search rankings and direct client
+              inquiries.
             </p>
 
             {/* Direct Action Buttons */}
@@ -185,6 +227,15 @@ const WebsiteDeveloperPage = () => {
                 className="inline-flex items-center gap-1.5 bg-white hover:bg-neutral-50 text-gray-800 border border-gray-300 text-xs sm:text-sm font-medium px-4 py-2.5 rounded-xl transition">
                 <Mail size={14} />
                 Email
+              </a>
+
+              <a
+                href={DEV_LINKEDIN}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 bg-white hover:bg-neutral-50 text-gray-800 border border-gray-300 text-xs sm:text-sm font-medium px-3.5 py-2.5 rounded-xl transition">
+                <Briefcase size={14} />
+                LinkedIn
               </a>
 
               <a
@@ -259,7 +310,7 @@ const WebsiteDeveloperPage = () => {
                 </h2>
               </div>
               <Link
-                to="/all-products"
+                to="/collections"
                 className="inline-flex items-center gap-1.5 bg-[#edf5ee] hover:bg-[#244d37] text-[#244d37] hover:text-white border border-[#cde2d2] text-xs font-semibold px-3.5 py-2 rounded-xl transition-all self-start sm:self-auto">
                 Explore Storefront
                 <ExternalLink size={13} />
@@ -267,9 +318,13 @@ const WebsiteDeveloperPage = () => {
             </div>
 
             <p className="text-xs sm:text-sm text-gray-600 font-light leading-relaxed mb-4">
-              This entire website (<strong className="text-gray-900 font-medium">gharkaorganic.com</strong>)
-              is built from scratch with custom React 18 SPA architecture, Firebase real-time data,
-              shopping cart &amp; checkout, and comprehensive Schema.org JSON-LD SEO.
+              This entire website (
+              <strong className="text-gray-900 font-medium">
+                gharkaorganic.com
+              </strong>
+              ) is built from scratch with custom React 18 SPA architecture,
+              Firebase real-time data, shopping cart &amp; checkout, and
+              comprehensive Schema.org JSON-LD SEO.
             </p>
 
             {/* Tech Stack Pills */}
@@ -301,8 +356,12 @@ const WebsiteDeveloperPage = () => {
                 Areas Served
               </h2>
               <p className="text-xs sm:text-sm text-gray-600 font-light mt-0.5">
-                Based in <strong className="text-gray-900 font-medium">Nainital &amp; Bhimtal, Uttarakhand</strong>.
-                Serving businesses locally across Kumaon &amp; Garhwal, and remotely across India.
+                Based in{" "}
+                <strong className="text-gray-900 font-medium">
+                  Nainital &amp; Bhimtal, Uttarakhand
+                </strong>
+                . Serving businesses locally across Kumaon &amp; Garhwal, and
+                remotely across India.
               </p>
             </div>
 
@@ -337,7 +396,7 @@ const WebsiteDeveloperPage = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {CONTACT_CARDS.map((card) => {
+              {contactCardsWithLinkedin.map((card) => {
                 const Icon = CONTACT_ICON_MAP[card.key] || Phone;
                 return (
                   <a
@@ -365,13 +424,15 @@ const WebsiteDeveloperPage = () => {
             {/* Role Clarification Note */}
             <div className="mt-5 p-3.5 rounded-2xl bg-[#f4f7f4] border border-[#d6e5d8] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-gray-700">
               <p>
-                <strong>Role Note:</strong> {DEV_NAME} handles website engineering &amp; SEO for gharkaorganic.com.
-                For organic food orders &amp; product inquiries, please contact the store directly.
+                <strong>Role Note:</strong> {DEV_NAME} handles website
+                engineering &amp; SEO for gharkaorganic.com. For organic food
+                orders &amp; product inquiries, please contact the store
+                directly.
               </p>
               <Link
                 to="/contact"
                 className="font-bold text-[#244d37] hover:underline whitespace-nowrap">
-                Store Contact →
+                Store Contact &rarr;
               </Link>
             </div>
           </section>
@@ -406,7 +467,9 @@ const WebsiteDeveloperPage = () => {
                       aria-expanded={isOpen}>
                       <span
                         className={`text-xs sm:text-sm font-medium leading-snug transition-colors ${
-                          isOpen ? "text-[#244d37] font-semibold" : "text-gray-900 group-hover:text-[#244d37]"
+                          isOpen
+                            ? "text-[#244d37] font-semibold"
+                            : "text-gray-900 group-hover:text-[#244d37]"
                         }`}>
                         {item.q}
                       </span>
@@ -433,9 +496,9 @@ const WebsiteDeveloperPage = () => {
              ══════════════════════════════════════════════ */}
           <footer className="pt-2 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs font-medium text-[#244d37]">
             <Link to="/" className="hover:underline">
-              ← Ghar Ka Organic Home
+              &larr; Ghar Ka Organic Home
             </Link>
-            <Link to="/all-products" className="hover:underline">
+            <Link to="/collections" className="hover:underline">
               All Products
             </Link>
             <Link to="/shop/best-sellers" className="hover:underline">

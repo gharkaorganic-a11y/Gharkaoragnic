@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { Helmet } from "react-helmet-async";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Search, X } from "lucide-react";
 import {
   allBlogs,
@@ -10,9 +10,15 @@ import {
 } from "../data/blogData";
 
 const SITE_URL = "https://gharkaorganic.com";
-const LOGO_URL = "https://gharkaorganic.com/logo/gharka-logo-full.png";
+const LOGO_URL = `${SITE_URL}/logo/gharka-logo-full.png`;
 const DEFAULT_BLOG_IMAGE =
   "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776768403/Local_women_in_Bhimtal_Uttarakhand_preparing_traditional_Himalayan_organic_food_tbpvgk.webp";
+
+const resolveImageUrl = (img) => {
+  if (!img) return DEFAULT_BLOG_IMAGE;
+  if (/^https?:\/\//i.test(img)) return img;
+  return `${SITE_URL}${img.startsWith("/") ? "" : "/"}${img}`;
+};
 
 const formatDate = (dateStr) =>
   new Date(dateStr).toLocaleDateString("en-IN", {
@@ -21,7 +27,6 @@ const formatDate = (dateStr) =>
     year: "numeric",
   });
 
-// Debounce utility for search
 const useDebounce = (value, delay = 300) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
   useEffect(() => {
@@ -32,124 +37,146 @@ const useDebounce = (value, delay = 300) => {
 };
 
 const BlogListPage = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categories = useMemo(() => getAllCategories(), []);
+
+  const urlCategory = searchParams.get("category");
+  const urlSearch = searchParams.get("search") || "";
+
+  const [selectedCategory, setSelectedCategory] = useState(
+    urlCategory && categories.includes(urlCategory) ? urlCategory : null,
+  );
+  const [searchQuery, setSearchQuery] = useState(urlSearch);
   const [currentPage, setCurrentPage] = useState(1);
-  const postsPerPage = 10; // Balanced 2-column layout like Namakwali
+  const postsPerPage = 10;
 
   const debouncedSearch = useDebounce(searchQuery, 300);
 
-  // Parse URL query params on mount
+  // Sync state if browser back/forward changes searchParams
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const category = params.get("category");
-    const search = params.get("search");
-    if (category && getAllCategories().includes(category)) {
-      setSelectedCategory(category);
-    }
-    if (search) {
-      setSearchQuery(search);
-    }
-  }, [location.search]);
+    const nextCat =
+      urlCategory && categories.includes(urlCategory) ? urlCategory : null;
+    setSelectedCategory((prev) => (prev === nextCat ? prev : nextCat));
+    setSearchQuery((prev) => (prev === urlSearch ? prev : urlSearch));
+  }, [urlCategory, urlSearch, categories]);
 
-  // Update URL when filters change
+  // Keep URL query params in sync with active filters
   useEffect(() => {
-    const params = new URLSearchParams();
-    if (selectedCategory) params.set("category", selectedCategory);
-    if (debouncedSearch) params.set("search", debouncedSearch);
-    const newUrl = `${location.pathname}${params.toString() ? `?${params.toString()}` : ""}`;
-    navigate(newUrl, { replace: true });
-    setCurrentPage(1); // Reset pagination on filter change
-  }, [selectedCategory, debouncedSearch, navigate, location.pathname]);
+    const nextParams = new URLSearchParams();
+    if (selectedCategory) nextParams.set("category", selectedCategory);
+    if (debouncedSearch.trim())
+      nextParams.set("search", debouncedSearch.trim());
+
+    const currentStr = searchParams.toString();
+    const nextStr = nextParams.toString();
+    if (currentStr !== nextStr) {
+      setSearchParams(nextParams, { replace: true });
+    }
+    setCurrentPage(1);
+  }, [selectedCategory, debouncedSearch, searchParams, setSearchParams]);
 
   // Filter blogs based on category and search
   const filteredBlogs = useMemo(() => {
-    let result = [...allBlogs];
+    let result = selectedCategory
+      ? [...getBlogsByCategory(selectedCategory)]
+      : [...allBlogs];
 
-    if (selectedCategory) {
-      result = getBlogsByCategory(selectedCategory);
-    }
-
-    if (debouncedSearch.trim()) {
-      result = result.filter((blog) =>
-        searchBlogs(debouncedSearch).some((b) => b.slug === blog.slug),
+    const trimmedQuery = debouncedSearch.trim();
+    if (trimmedQuery) {
+      const matchedSlugs = new Set(
+        searchBlogs(trimmedQuery).map((b) => b.slug),
       );
+      result = result.filter((blog) => matchedSlugs.has(blog.slug));
     }
 
     return result.sort((a, b) => new Date(b.date) - new Date(a.date));
   }, [selectedCategory, debouncedSearch]);
 
   // Pagination
-  const totalPages = Math.ceil(filteredBlogs.length / postsPerPage);
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredBlogs.length / postsPerPage),
+  );
   const paginatedBlogs = useMemo(() => {
-    const start = (currentPage - 1) * postsPerPage;
+    const safePage = Math.min(currentPage, totalPages);
+    const start = (safePage - 1) * postsPerPage;
     return filteredBlogs.slice(start, start + postsPerPage);
-  }, [filteredBlogs, currentPage, postsPerPage]);
+  }, [filteredBlogs, currentPage, postsPerPage, totalPages]);
 
-  const featuredPost = allBlogs.find((b) => b.featured) || allBlogs[0];
-  const categories = getAllCategories();
+  const featuredPost = allBlogs.find((b) => b.featured) || allBlogs[0] || null;
+  const ogImage = resolveImageUrl(featuredPost?.image);
 
-  // Clear all filters
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setSelectedCategory(null);
     setSearchQuery("");
     setCurrentPage(1);
-  };
+    setSearchParams(new URLSearchParams(), { replace: true });
+  }, [setSearchParams]);
 
-  // SEO Schema with ItemList for search visibility
-  const blogListSchema = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    name: "Organic Food Blogs & Recipes | Ghar Ka Organic",
-    description:
-      "100+ organic food blogs, pahadi recipes, desi ghee benefits, health tips, and sustainable farming insights.",
-    url: `${SITE_URL}/blogs`,
-    publisher: {
-      "@type": "Organization",
-      "@id": `${SITE_URL}/#organization`,
-      name: "Ghar Ka Organic",
-      logo: {
-        "@type": "ImageObject",
-        url: LOGO_URL,
-        width: 2172,
-        height: 724,
+  // SEO Schemas
+  const blogListSchema = useMemo(() => {
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "@id": `${SITE_URL}/blogs#webpage`,
+      name: "Organic Food Blogs & Himalayan Stories | Ghar Ka Organic",
+      description:
+        "Himalayan organic food blogs, Uttarakhand kitchen stories, Mirch Ka Achar, natural raw honey, and Pahadi Salt guides from Ghar Ka Organic.",
+      url: `${SITE_URL}/blogs`,
+      isPartOf: { "@id": `${SITE_URL}/#website` },
+      publisher: {
+        "@type": "Organization",
+        "@id": `${SITE_URL}/#organization`,
+        name: "Ghar Ka Organic",
+        logo: {
+          "@type": "ImageObject",
+          url: LOGO_URL,
+          width: 2172,
+          height: 724,
+        },
+        url: `${SITE_URL}/`,
       },
-      url: SITE_URL,
-    },
-    mainEntity: {
-      "@type": "ItemList",
-      itemListElement: filteredBlogs.slice(0, 10).map((post, index) => ({
-        "@type": "ListItem",
-        position: index + 1,
-        url: `${SITE_URL}/blogs/${post.slug}`,
-        name: post.title,
-        description: post.excerpt,
-      })),
-    },
-  };
+    };
 
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: SITE_URL,
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Blog",
-        item: `${SITE_URL}/blogs`,
-      },
-    ],
-  };
+    if (filteredBlogs.length > 0) {
+      schema.mainEntity = {
+        "@type": "ItemList",
+        itemListElement: filteredBlogs.slice(0, 10).map((post, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          url: `${SITE_URL}/blogs/${post.slug}`,
+          name: post.title,
+        })),
+      };
+    }
 
-  const isFiltered = selectedCategory || debouncedSearch;
+    return schema;
+  }, [filteredBlogs]);
+
+  const breadcrumbSchema = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "@id": `${SITE_URL}/blogs#breadcrumb`,
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: `${SITE_URL}/`,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Blog",
+          item: `${SITE_URL}/blogs`,
+        },
+      ],
+    }),
+    [],
+  );
+
+  const isFiltered = Boolean(selectedCategory || debouncedSearch.trim());
   const showNoResults = filteredBlogs.length === 0 && isFiltered;
 
   return (
@@ -157,19 +184,19 @@ const BlogListPage = () => {
       <Helmet>
         <title>
           {selectedCategory
-            ? `${selectedCategory} Articles | Organic Food Blogs`
-            : debouncedSearch
-              ? `Search Results for "${debouncedSearch}" | Organic Food Blogs`
-              : "Organic Food Blogs, Recipes & Health Tips | Ghar Ka Organic"}
+            ? `${selectedCategory} Articles | Ghar Ka Organic Blog`
+            : debouncedSearch.trim()
+              ? `Search Results for "${debouncedSearch.trim()}" | Ghar Ka Organic Blog`
+              : "Himalayan Organic Food Blogs & Guides | Ghar Ka Organic"}
         </title>
         <meta
           name="description"
           content={
             selectedCategory
-              ? `Explore our ${selectedCategory} articles. ${categories.length}+ categories of organic food blogs, recipes, and health tips.`
-              : debouncedSearch
-                ? `Search results for "${debouncedSearch}". Find organic food blogs, recipes, and health tips at Ghar Ka Organic.`
-                : "100+ organic food blogs: pahadi recipes, A2 ghee benefits, desi cow farming, sustainable agriculture, and health tips from rural entrepreneurs."
+              ? `Explore our ${selectedCategory} articles on Himalayan organic food, Mirch Ka Achar, natural raw honey, and Pahadi Salt from Ghar Ka Organic.`
+              : debouncedSearch.trim()
+                ? `Search results for "${debouncedSearch.trim()}". Read organic food articles and guides from Ghar Ka Organic.`
+                : "Read Uttarakhand organic food stories and guides covering homemade Mirch Ka Achar (Green Chilly Pickle), natural raw honey, and Pahadi Salt."
           }
         />
         <link rel="canonical" href={`${SITE_URL}/blogs`} />
@@ -185,23 +212,20 @@ const BlogListPage = () => {
           content={
             selectedCategory
               ? `${selectedCategory} | Ghar Ka Organic Blog`
-              : "Organic Food Blogs & Recipes | Ghar Ka Organic"
+              : "Himalayan Organic Food Blogs | Ghar Ka Organic"
           }
         />
         <meta
           property="og:description"
           content={
             selectedCategory
-              ? `Browse our ${selectedCategory} collection of organic food articles.`
-              : "100+ articles on organic food, recipes, health, farming, and sustainability."
+              ? `Browse our ${selectedCategory} collection of Himalayan organic food articles.`
+              : "Articles on Uttarakhand organic food, Mirch Ka Achar, natural raw honey, and Pahadi Salt."
           }
         />
         <meta property="og:url" content={`${SITE_URL}/blogs`} />
         <meta property="og:site_name" content="Ghar Ka Organic" />
-        <meta
-          property="og:image"
-          content={`${SITE_URL}${featuredPost.image}`}
-        />
+        <meta property="og:image" content={ogImage} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:locale" content="en_IN" />
@@ -210,16 +234,13 @@ const BlogListPage = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta
           name="twitter:title"
-          content="Organic Food Blogs & Recipes | Ghar Ka Organic"
+          content="Himalayan Organic Food Blogs | Ghar Ka Organic"
         />
         <meta
           name="twitter:description"
-          content="100+ articles on organic food, recipes, health, and sustainable farming."
+          content="Articles on Uttarakhand organic food, Mirch Ka Achar, natural raw honey, and Pahadi Salt."
         />
-        <meta
-          name="twitter:image"
-          content={`${SITE_URL}${featuredPost.image}`}
-        />
+        <meta name="twitter:image" content={ogImage} />
 
         {/* JSON-LD */}
         <script type="application/ld+json">
@@ -257,7 +278,7 @@ const BlogListPage = () => {
           </ol>
         </nav>
 
-        {/* MAIN BLOG SECTION (NAMAKWALI BLOGS STYLE) */}
+        {/* MAIN BLOG SECTION */}
         <main
           id="main-content"
           className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-20 md:pb-28">
@@ -268,15 +289,15 @@ const BlogListPage = () => {
                 <h1 className="text-3xl sm:text-4xl md:text-[42px] font-normal tracking-tight text-[#121212] leading-tight">
                   {selectedCategory
                     ? `${selectedCategory} Articles`
-                    : debouncedSearch
-                      ? `Search: "${debouncedSearch}"`
+                    : debouncedSearch.trim()
+                      ? `Search: "${debouncedSearch.trim()}"`
                       : "Ghar Ka Organic Blogs"}
                 </h1>
-                {!selectedCategory && !debouncedSearch && (
+                {!selectedCategory && !debouncedSearch.trim() && (
                   <p className="text-neutral-600 text-sm md:text-base font-light max-w-2xl mt-3 leading-relaxed">
-                    Discover authentic Himalayan ingredients, traditional
-                    Uttarakhand recipes, A2 ghee benefits, organic farming
-                    wisdom, and wholesome living from the mountains.
+                    Discover authentic Himalayan ingredients, homemade Mirch Ka
+                    Achar, natural raw honey, and Pahadi Salt traditions from
+                    Uttarakhand.
                   </p>
                 )}
               </div>
@@ -298,6 +319,7 @@ const BlogListPage = () => {
                 />
                 {searchQuery && (
                   <button
+                    type="button"
                     onClick={() => setSearchQuery("")}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
                     aria-label="Clear search">
@@ -310,6 +332,7 @@ const BlogListPage = () => {
             {/* CATEGORY FILTER PILLS */}
             <div className="flex items-center gap-2 overflow-x-auto py-4 scrollbar-none no-scrollbar text-xs md:text-sm">
               <button
+                type="button"
                 onClick={() => setSelectedCategory(null)}
                 className={`px-4 py-1.5 rounded-full transition-all shrink-0 font-medium ${
                   !selectedCategory
@@ -321,6 +344,7 @@ const BlogListPage = () => {
               {categories.map((cat) => (
                 <button
                   key={cat}
+                  type="button"
                   onClick={() =>
                     setSelectedCategory(cat === selectedCategory ? null : cat)
                   }
@@ -342,6 +366,7 @@ const BlogListPage = () => {
                   {filteredBlogs.length === 1 ? "article" : "articles"}
                 </span>
                 <button
+                  type="button"
                   onClick={clearFilters}
                   className="text-neutral-900 font-medium hover:underline">
                   Clear all filters
@@ -350,25 +375,19 @@ const BlogListPage = () => {
             )}
           </header>
 
-          {/* 2-COLUMN ARTICLE GRID (MATCHING NAMAKWALI BLOG-ARTICLES) */}
+          {/* 2-COLUMN ARTICLE GRID */}
           {filteredBlogs.length > 0 ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 lg:gap-x-12 gap-y-12 lg:gap-y-16">
-                {paginatedBlogs.map((post) => (
-                  <article
-                    key={post.slug}
-                    className="group flex flex-col cursor-pointer">
-                    {/* ARTICLE IMAGE CONTAINER (16:9 RATIO LIKE NAMAKWALI) */}
-                    <Link
-                      to={`/blogs/${post.slug}`}
-                      className="relative block w-full aspect-[16/9] overflow-hidden bg-neutral-100 rounded-sm">
-                      <picture>
-                        <source
-                          srcSet={post.image.replace(/\.(jpg|png)$/, ".webp")}
-                          type="image/webp"
-                        />
+                {paginatedBlogs.map((post) => {
+                  const postImg = resolveImageUrl(post.image);
+                  return (
+                    <article key={post.slug} className="group flex flex-col">
+                      <Link
+                        to={`/blogs/${post.slug}`}
+                        className="relative block w-full aspect-[16/9] overflow-hidden bg-neutral-100 rounded-sm">
                         <img
-                          src={post.image || DEFAULT_BLOG_IMAGE}
+                          src={postImg}
                           alt={post.title}
                           loading="lazy"
                           width="720"
@@ -379,50 +398,48 @@ const BlogListPage = () => {
                           }}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                         />
-                      </picture>
-                      {post.category && (
-                        <span className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-[#121212] text-[10px] sm:text-[11px] font-medium uppercase tracking-wider px-2.5 py-1 rounded-sm shadow-xs">
-                          {post.category}
-                        </span>
-                      )}
-                    </Link>
+                        {post.category && (
+                          <span className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-[#121212] text-[10px] sm:text-[11px] font-medium uppercase tracking-wider px-2.5 py-1 rounded-sm shadow-xs">
+                            {post.category}
+                          </span>
+                        )}
+                      </Link>
 
-                    {/* ARTICLE CONTENT MATCHING NAMAKWALI */}
-                    <div className="pt-5 sm:pt-6 flex flex-col flex-1">
-                      <h2 className="text-xl sm:text-2xl font-normal text-[#121212] leading-snug tracking-tight mb-2 group-hover:underline underline-offset-4 decoration-1 transition-all">
-                        <Link to={`/blogs/${post.slug}`}>
-                          {post.title}
-                        </Link>
-                      </h2>
+                      <div className="pt-5 sm:pt-6 flex flex-col flex-1">
+                        <h2 className="text-xl sm:text-2xl font-normal text-[#121212] leading-snug tracking-tight mb-2 group-hover:underline underline-offset-4 decoration-1 transition-all">
+                          <Link to={`/blogs/${post.slug}`}>{post.title}</Link>
+                        </h2>
 
-                      <div className="text-xs sm:text-[13px] tracking-wider uppercase text-neutral-500 font-light mb-3">
-                        <time dateTime={post.date}>
-                          {formatDate(post.date)}
-                        </time>
+                        <div className="text-xs sm:text-[13px] tracking-wider uppercase text-neutral-500 font-light mb-3">
+                          <time dateTime={post.date}>
+                            {formatDate(post.date)}
+                          </time>
+                        </div>
+
+                        <p className="text-neutral-600 font-light text-[14.5px] sm:text-[15.5px] leading-relaxed line-clamp-3 mb-4">
+                          {post.excerpt}
+                        </p>
+
+                        <div className="mt-auto pt-1">
+                          <Link
+                            to={`/blogs/${post.slug}`}
+                            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-[#121212] group-hover:gap-2.5 transition-all">
+                            Read article <span aria-hidden="true">&rarr;</span>
+                          </Link>
+                        </div>
                       </div>
-
-                      <p className="text-neutral-600 font-light text-[14.5px] sm:text-[15.5px] leading-relaxed line-clamp-3 mb-4">
-                        {post.excerpt}
-                      </p>
-
-                      <div className="mt-auto pt-1">
-                        <Link
-                          to={`/blogs/${post.slug}`}
-                          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-[#121212] group-hover:gap-2.5 transition-all">
-                          Read article <span aria-hidden="true">→</span>
-                        </Link>
-                      </div>
-                    </div>
-                  </article>
-                ))}
+                    </article>
+                  );
+                })}
               </div>
 
-              {/* NAMAKWALI-STYLE MINIMALIST PAGINATION */}
+              {/* PAGINATION */}
               {totalPages > 1 && (
                 <nav
                   className="flex justify-center items-center gap-1 sm:gap-2 mt-16 pt-10 border-t border-neutral-100"
                   aria-label="Pagination">
                   <button
+                    type="button"
                     onClick={() => {
                       setCurrentPage((p) => Math.max(1, p - 1));
                       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -444,13 +461,12 @@ const BlogListPage = () => {
                   </button>
 
                   {Array.from({ length: totalPages }, (_, i) => i + 1)
-                    .filter((pageNum) => {
-                      return (
+                    .filter(
+                      (pageNum) =>
                         pageNum === 1 ||
                         pageNum === totalPages ||
-                        Math.abs(pageNum - currentPage) <= 1
-                      );
-                    })
+                        Math.abs(pageNum - currentPage) <= 1,
+                    )
                     .reduce((acc, pageNum, idx, arr) => {
                       if (idx > 0 && pageNum - arr[idx - 1] > 1) {
                         acc.push({
@@ -464,11 +480,12 @@ const BlogListPage = () => {
                     .map((item) =>
                       item.type === "ellipsis" ? (
                         <span key={item.key} className="px-2 text-neutral-400">
-                          …
+                          &hellip;
                         </span>
                       ) : (
                         <button
                           key={item.key}
+                          type="button"
                           onClick={() => {
                             setCurrentPage(item.pageNum);
                             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -487,6 +504,7 @@ const BlogListPage = () => {
                     )}
 
                   <button
+                    type="button"
                     onClick={() => {
                       setCurrentPage((p) => Math.min(totalPages, p + 1));
                       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -515,6 +533,7 @@ const BlogListPage = () => {
                 No articles found matching your criteria.
               </p>
               <button
+                type="button"
                 onClick={clearFilters}
                 className="text-[#121212] font-medium underline underline-offset-4 hover:text-neutral-600 transition">
                 Clear all filters

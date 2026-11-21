@@ -40,23 +40,24 @@ const JSONLD = JSON.stringify({
       url: CANONICAL,
       name: "Contact Ghar Ka Organic",
       description:
-        "Contact Ghar Ka Organic for Himalayan homemade pickles, raw forest honey, bilona desi ghee, chutneys and organic food support across India.",
+        "Contact Ghar Ka Organic for homemade Mirch Ka Achar (Green Chilly Pickle), natural raw honey, and Pahadi Salt from Uttarakhand with free shipping across India.",
       inLanguage: "en-IN",
       isPartOf: {
-        "@type": "WebSite",
-        name: "Ghar Ka Organic",
-        url: BASE_URL,
+        "@id": `${BASE_URL}/#website`,
+      },
+      about: {
+        "@id": `${BASE_URL}/#organization`,
       },
       primaryImageOfPage: {
         "@type": "ImageObject",
         url: OG_IMAGE,
       },
       mainEntity: {
-        "@id": `${BASE_URL}/#business`,
+        "@id": `${BASE_URL}/#localbusiness`,
       },
     },
     {
-      "@id": `${BASE_URL}/#business`,
+      "@id": `${BASE_URL}/#localbusiness`,
       "@type": ["LocalBusiness", "OnlineStore", "FoodManufacturer"],
       name: "Ghar Ka Organic",
       image: [OG_IMAGE],
@@ -66,18 +67,18 @@ const JSONLD = JSON.stringify({
         width: 2172,
         height: 724,
       },
-      url: BASE_URL,
+      url: `${BASE_URL}/`,
       telephone: CONTACT_PHONE,
       email: CONTACT_EMAIL,
-      priceRange: "₹₹",
+      priceRange: "₹99 – ₹499",
       description:
-        "Traditional Himalayan organic food brand from Uttarakhand offering homemade pickles, chutneys, raw forest honey and bilona desi ghee.",
+        "Traditional Himalayan organic food brand from Nainital, Uttarakhand offering homemade Mirch Ka Achar (Green Chilly Pickle), natural raw honey, and Pahadi Salt.",
       address: {
         "@type": "PostalAddress",
         streetAddress: "Ward No. 2, Nalni",
         addressLocality: "Nainital",
         addressRegion: "Uttarakhand",
-        postalCode: "263136",
+        postalCode: "263002",
         addressCountry: "IN",
       },
       geo: {
@@ -96,15 +97,24 @@ const JSONLD = JSON.stringify({
             "Friday",
             "Saturday",
           ],
+          opens: "09:00",
+          closes: "18:00",
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: "Sunday",
           opens: "10:00",
-          closes: "19:00",
+          closes: "16:00",
         },
       ],
       areaServed: {
         "@type": "Country",
         name: "India",
       },
-      sameAs: ["https://www.instagram.com/gharkaorganic/"],
+      sameAs: [
+        "https://www.instagram.com/gharkaorganic/",
+        "https://www.facebook.com/gharkaorganic",
+      ],
       contactPoint: {
         "@type": "ContactPoint",
         telephone: CONTACT_PHONE,
@@ -113,22 +123,23 @@ const JSONLD = JSON.stringify({
         availableLanguage: ["English", "Hindi"],
       },
       knowsAbout: [
-        "Pahadi Pickles",
-        "Kumaoni Chutney",
-        "Raw Forest Honey",
-        "Bilona Desi Ghee",
+        "Mirch Ka Achar",
+        "Green Chilly Pickle",
+        "Natural Raw Honey",
+        "Pahadi Salt",
         "Himalayan Organic Products",
         "Traditional Uttarakhand Food",
       ],
     },
     {
       "@type": "BreadcrumbList",
+      "@id": `${CANONICAL}#breadcrumb`,
       itemListElement: [
         {
           "@type": "ListItem",
           position: 1,
           name: "Home",
-          item: BASE_URL,
+          item: `${BASE_URL}/`,
         },
         {
           "@type": "ListItem",
@@ -140,6 +151,7 @@ const JSONLD = JSON.stringify({
     },
     {
       "@type": "FAQPage",
+      "@id": `${CANONICAL}#faq`,
       mainEntity: [
         {
           "@type": "Question",
@@ -154,7 +166,7 @@ const JSONLD = JSON.stringify({
           name: "What are your working hours?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "We are open Monday to Saturday, 10:00 AM to 7:00 PM IST.",
+            text: "We are open Monday to Saturday from 9:00 AM to 6:00 PM IST and Sunday from 10:00 AM to 4:00 PM IST.",
           },
         },
         {
@@ -162,7 +174,7 @@ const JSONLD = JSON.stringify({
           name: "Do you offer bulk orders or wholesale?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yes, we offer bulk orders and wholesale prices. Contact us for bulk inquiry details and customized packages.",
+            text: "Yes, we offer bulk orders and wholesale inquiries. Contact us for bulk inquiry details and customized packages.",
           },
         },
         {
@@ -170,7 +182,7 @@ const JSONLD = JSON.stringify({
           name: "Where are your products made and shipped from?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "GHAR KA began in Mangoli, Nainital, Uttarakhand. All our products — from homemade pickles and pure ghee to natural honey, pahadi dals, spices and pahadi salts — are made with carefully selected ingredients and traditional recipes without unnecessary chemicals or artificial preservatives, and shipped across India.",
+            text: "GHAR KA began in Mangoli, Nainital, Uttarakhand. Our Mirch Ka Achar, natural raw honey, and Pahadi Salt are prepared using simple, traditional ingredients without unnecessary chemicals or artificial preservatives, with free shipping across India.",
           },
         },
       ],
@@ -185,15 +197,15 @@ const faqs = [
   },
   {
     q: "What are your working hours?",
-    a: "Our Mangoli, Nainital kitchen and customer support are active Monday to Saturday, from 10:00 AM to 7:00 PM IST. Online store orders can be placed 24/7.",
+    a: "Our support team is available Monday to Saturday from 9:00 AM to 6:00 PM IST and Sunday from 10:00 AM to 4:00 PM IST. Online store orders can be placed 24/7.",
   },
   {
     q: "Do you offer bulk orders or corporate gifting?",
-    a: "Yes! We work with corporate partners, organic stores, and events for customized gift hampers and wholesale shipments of our homemade pickles, pure ghee, natural honey, pahadi dals, spices, and pahadi salts.",
+    a: "Yes! We work with corporate partners, organic stores, and events for customized gift hampers and wholesale shipments of our Mirch Ka Achar, natural raw honey, and Pahadi Salt.",
   },
   {
     q: "Where are your products made and shipped from?",
-    a: "GHAR KA started in Mangoli, Nainital, Uttarakhand. We prepare our homemade pickles, pure ghee, natural honey, traditional pahadi dals, spices and pahadi salts using carefully selected ingredients and traditional recipes — without unnecessary chemicals or artificial preservatives.",
+    a: "GHAR KA started in Mangoli, Nainital, Uttarakhand. We prepare our Mirch Ka Achar (Green Chilly Pickle), natural raw honey, and Pahadi Salt using traditional recipes without unnecessary chemicals or artificial preservatives, with free shipping across India.",
   },
 ];
 
@@ -254,15 +266,15 @@ const ContactUsPage = () => {
       {/* ───────────────── SEO ───────────────── */}
       <Helmet>
         <title>
-          Contact Ghar Ka Organic | Himalayan Pickles, Honey & Organic Products
+          Contact Ghar Ka Organic | Mirch Ka Achar, Raw Honey &amp; Pahadi Salt
         </title>
         <meta
           name="description"
-          content="Contact Ghar Ka Organic for homemade Himalayan pickles, raw forest honey, bilona desi ghee, organic chutneys and Uttarakhand food products delivered across India."
+          content="Contact Ghar Ka Organic for homemade Mirch Ka Achar (Green Chilly Pickle), natural raw honey, and Pahadi Salt from Uttarakhand with free shipping across India."
         />
         <meta
           name="keywords"
-          content="contact Ghar Ka Organic, Himalayan organic products, pahadi pickles, raw honey Uttarakhand, bilona ghee India, organic food support, customer service"
+          content="contact Ghar Ka Organic, mirch ka achar, green chilly pickle, natural raw honey, pahadi salt, Uttarakhand organic food, customer support"
         />
         <meta
           name="robots"
@@ -280,7 +292,7 @@ const ContactUsPage = () => {
         <meta property="og:title" content="Contact Ghar Ka Organic" />
         <meta
           property="og:description"
-          content="Get support for Himalayan homemade pickles, raw honey, bilona desi ghee and organic food products from Uttarakhand."
+          content="Get support for homemade Mirch Ka Achar, natural raw honey, and Pahadi Salt from Uttarakhand."
         />
         <meta property="og:url" content={CANONICAL} />
         <meta property="og:image" content={OG_IMAGE} />
@@ -296,10 +308,7 @@ const ContactUsPage = () => {
         <meta name="twitter:image" content={OG_IMAGE} />
 
         {/* JSON-LD */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSONLD }}
-        />
+        <script type="application/ld+json">{JSONLD}</script>
       </Helmet>
 
       {/* ───────────────── SUBTLE BREADCRUMB ───────────────── */}
@@ -329,11 +338,11 @@ const ContactUsPage = () => {
           <BrandLogo symbolOnly size="sm" />
         </div>
         <p className="text-[11px] sm:text-xs font-medium uppercase tracking-[0.22em] text-neutral-500 mb-4">
-          Mangoli, Nainital • Uttarakhand
+          Nalni, Nainital • Uttarakhand
         </p>
 
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-[#121212] leading-tight">
-          We'd Love to Hear From You
+          We&apos;d Love to Hear From You
         </h1>
 
         <div
@@ -342,9 +351,9 @@ const ContactUsPage = () => {
         />
 
         <p className="text-sm sm:text-base text-neutral-600 leading-relaxed font-light max-w-2xl mx-auto">
-          Have questions about our authentic Himalayan pickles, wild forest
-          honey, or A2 bilona desi ghee? Want to discuss wholesale or custom
-          orders? Reach out to our hill kitchen team directly.
+          Have questions about our homemade Mirch Ka Achar (Green Chilly
+          Pickle), natural raw honey, or Pahadi Salt? Want to discuss bulk or
+          custom orders? Reach out to our team directly.
         </p>
       </header>
 
@@ -369,7 +378,7 @@ const ContactUsPage = () => {
               </p>
             </div>
             <span className="mt-5 text-xs font-medium text-[#121212] inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-              Chat on WhatsApp →
+              Chat on WhatsApp &rarr;
             </span>
           </a>
 
@@ -389,7 +398,7 @@ const ContactUsPage = () => {
               </p>
             </div>
             <span className="mt-5 text-xs text-neutral-500">
-              Mon–Sat, 10 AM – 7 PM
+              Mon–Sat, 9 AM – 6 PM
             </span>
           </a>
 
@@ -423,7 +432,7 @@ const ContactUsPage = () => {
                 Mountain Kitchen
               </h3>
               <p className="text-xs text-neutral-600 mt-1 leading-snug">
-                Ward No. 2, Nalni, Mangoli, Nainital, Uttarakhand – 263136
+                Ward No. 2, Nalni, Nainital, Uttarakhand – 263002
               </p>
             </div>
             <span className="mt-5 text-xs font-medium text-neutral-500">
@@ -460,8 +469,8 @@ const ContactUsPage = () => {
                 role="alert">
                 <Check size={18} className="text-[#121212] shrink-0" />
                 <span>
-                  Thank you! Your message has been sent to our Mangoli, Nainital team. We
-                  will get back to you shortly.
+                  Thank you! Your message has been sent to our Nalni, Nainital
+                  team. We will get back to you shortly.
                 </span>
               </div>
             )}
@@ -556,7 +565,7 @@ const ContactUsPage = () => {
                       Bulk Order / Wholesale Inquiry
                     </option>
                     <option value="Partnership">
-                      Partnership & Distribution
+                      Partnership &amp; Distribution
                     </option>
                     <option value="Order Issue">
                       Order Issue / Shipping Status
@@ -621,10 +630,10 @@ const ContactUsPage = () => {
               <p className="text-sm text-neutral-600 leading-relaxed font-light">
                 GHAR KA began its journey in Mangoli, Nainital, Uttarakhand, to
                 bring the goodness, authenticity, and familiar taste of homemade
-                food back into every household. From homemade pickles and pure
-                ghee to natural honey, traditional pahadi dals, spices and pahadi
-                salts, every product is made with care using traditional recipes
-                — without unnecessary chemicals or artificial preservatives.
+                food back into every household. Our Mirch Ka Achar (Green Chilly
+                Pickle), natural raw honey, and Pahadi Salt are made with care
+                using traditional recipes — without unnecessary chemicals or
+                artificial preservatives.
               </p>
 
               {/* Trust Badges */}
@@ -685,7 +694,7 @@ const ContactUsPage = () => {
 
             {/* Instagram Follow */}
             <a
-              href="https://instagram.com/gharkaorganic"
+              href="https://www.instagram.com/gharkaorganic/"
               target="_blank"
               rel="noopener noreferrer"
               className="p-5 bg-white rounded-2xl border border-[#e5e5e5] hover:border-[#121212] flex items-center justify-between transition group shadow-2xs">
@@ -766,27 +775,29 @@ const ContactUsPage = () => {
 
           <nav className="flex flex-wrap justify-center gap-2.5 sm:gap-3">
             {[
-              { name: "All Products", url: "/all-products" },
-              { name: "Best Sellers", url: "/shop/best-sellers" },
-              { name: "Raw Forest Honey", url: "/all-products?category=honey" },
+              { name: "All Products", to: "/collections" },
               {
-                name: "A2 Bilona Desi Ghee",
-                url: "/all-products?category=ghee",
+                name: "Mirch Ka Achar (Green Chilly Pickle)",
+                to: "/product/ghar-ka-mirch-ka-achar-green-chilly-pickle",
               },
               {
-                name: "Sun-Dried Mango Achar",
-                url: "/all-products?category=pickles",
+                name: "GHAR KA HONEY",
+                to: "/product/ghar-ka-honey",
               },
               {
-                name: "Authentic Pahadi Pickles",
-                url: "/all-products?category=pickles",
+                name: "Pahadi Salt",
+                to: "/product/pahadi-salt-with-dhaniya-garlic-and-green-chillies",
               },
-            ].map((link, i) => (
+              {
+                name: "Customer Reviews",
+                to: "/reviews",
+              },
+            ].map((item, i) => (
               <Link
                 key={i}
-                to={link.url}
+                to={item.to}
                 className="px-4 py-2 rounded-full text-xs font-medium bg-white text-[#121212] border border-[#e5e5e5] hover:border-[#121212] hover:bg-[#121212] hover:text-white transition-all duration-200">
-                {link.name}
+                {item.name}
               </Link>
             ))}
           </nav>

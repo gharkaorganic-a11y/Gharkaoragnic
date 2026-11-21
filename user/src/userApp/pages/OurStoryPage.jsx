@@ -23,38 +23,28 @@ const JSONLD = JSON.stringify({
       url: CANONICAL,
       name: "Our Story | Ghar Ka Organic",
       description:
-        "Story of Ghar Ka Organic from Mangoli, Nainital, Uttarakhand – homemade pickles, pure ghee, natural honey, traditional pahadi dals, spices and pahadi salts.",
+        "Learn how GHAR KA began in Mangoli, Nainital, Uttarakhand — bringing the goodness, authenticity, and familiar taste of homemade Mirch Ka Achar, natural raw honey, and Pahadi Salt to households across India.",
       inLanguage: "en-IN",
       isPartOf: {
         "@id": `${BASE_URL}/#website`,
       },
+      about: {
+        "@id": `${BASE_URL}/#organization`,
+      },
       mainEntity: {
         "@id": `${BASE_URL}/#organization`,
       },
-      image: {
+      primaryImageOfPage: {
         "@type": "ImageObject",
         url: OG_IMAGE,
         width: 1200,
         height: 630,
       },
-    },
-
-    {
-      "@type": "WebPage",
-      "@id": `${CANONICAL}#webpage`,
-      url: CANONICAL,
-      name: "Our Story",
-      description:
-        "Learn how GHAR KA started in Mangoli, Nainital, Uttarakhand — bringing the goodness, authenticity and familiar taste of homemade food to households everywhere.",
-      isPartOf: {
-        "@id": `${BASE_URL}/#website`,
-      },
-      primaryImageOfPage: {
-        "@type": "ImageObject",
-        url: OG_IMAGE,
+      speakable: {
+        "@type": "SpeakableSpecification",
+        cssSelector: ["h1", "h2", "article p"],
       },
     },
-
     {
       "@type": "BreadcrumbList",
       "@id": `${CANONICAL}#breadcrumb`,
@@ -63,7 +53,7 @@ const JSONLD = JSON.stringify({
           "@type": "ListItem",
           position: 1,
           name: "Home",
-          item: BASE_URL,
+          item: `${BASE_URL}/`,
         },
         {
           "@type": "ListItem",
@@ -73,7 +63,6 @@ const JSONLD = JSON.stringify({
         },
       ],
     },
-
     {
       "@type": "FAQPage",
       "@id": `${CANONICAL}#faq`,
@@ -103,12 +92,12 @@ const OurStoryPage = () => {
 
         <meta
           name="description"
-          content="Learn how GHAR KA began in Mangoli, Nainital, Uttarakhand. Homemade pickles, pure ghee, natural honey, traditional pahadi dals, spices and pahadi salts made without unnecessary chemicals or artificial preservatives."
+          content="Learn how GHAR KA began in Mangoli, Nainital, Uttarakhand. Homemade Mirch Ka Achar (Green Chilly Pickle), natural raw honey, and Pahadi Salt made without unnecessary chemicals or artificial preservatives."
         />
 
         <meta
           name="keywords"
-          content="Ghar Ka Organic, GHAR KA, Mangoli Nainital, Uttarakhand organic food, homemade pickles, pure ghee, natural honey, pahadi dals, pahadi salts, traditional Indian food"
+          content="Ghar Ka Organic, GHAR KA, Mangoli Nainital, Uttarakhand organic food, mirch ka achar, green chilly pickle, natural raw honey, pahadi salt, traditional Indian food"
         />
 
         <meta
@@ -122,11 +111,11 @@ const OurStoryPage = () => {
         <link rel="canonical" href={CANONICAL} />
 
         {/* OPEN GRAPH */}
-        <meta property="og:type" content="article" />
+        <meta property="og:type" content="website" />
         <meta property="og:title" content="Our Story | Ghar Ka Organic" />
         <meta
           property="og:description"
-          content="From Mangoli, Nainital, Uttarakhand — discover the story behind GHAR KA and the familiar taste of homemade food."
+          content="From Mangoli, Nainital, Uttarakhand — discover the story behind GHAR KA and the familiar taste of homemade Himalayan food."
         />
         <meta property="og:image" content={OG_IMAGE} />
         <meta property="og:image:width" content="1200" />
@@ -144,22 +133,12 @@ const OurStoryPage = () => {
         <meta name="twitter:title" content="Our Story | Ghar Ka Organic" />
         <meta
           name="twitter:description"
-          content="From Mangoli, Nainital, Uttarakhand — homemade pickles, pure ghee, natural honey, traditional pahadi dals, spices and pahadi salts."
+          content="From Mangoli, Nainital, Uttarakhand — homemade Mirch Ka Achar, natural raw honey, and traditional Pahadi Salt."
         />
         <meta name="twitter:image" content={OG_IMAGE} />
         <meta name="twitter:site" content="@gharkaorganic" />
 
-        {/* ARTICLE META */}
-        <meta
-          property="article:published_time"
-          content="2020-01-01T00:00:00Z"
-        />
-        <meta property="article:section" content="Company" />
-        <meta property="article:tag" content="Organic" />
-        <meta property="article:tag" content="Uttarakhand" />
-        <meta property="article:tag" content="Food" />
-
-        {/* JSON-LD with FAQ schema */}
+        {/* JSON-LD */}
         <script type="application/ld+json">{JSONLD}</script>
 
         {/* Preload image */}
@@ -196,7 +175,9 @@ const OurStoryPage = () => {
         </nav>
 
         {/* MAIN OUR STORY SECTION - 2-COLUMN UNIFIED SIGNATURE DESIGN */}
-        <main id="main-content" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16">
+        <main
+          id="main-content"
+          className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 lg:gap-20 items-center">
             {/* ILLUSTRATION (LEFT COLUMN) */}
             <figure className="w-full m-0 order-1 md:order-1">
@@ -219,30 +200,29 @@ const OurStoryPage = () => {
             </figure>
 
             {/* STORY NARRATIVE INTRO (RIGHT COLUMN) */}
-            <article
-              className="text-left flex flex-col justify-center order-2 md:order-2"
-              itemScope
-              itemType="https://schema.org/Organization">
-              <meta itemProp="name" content="Ghar Ka Organic" />
-              <meta itemProp="location" content={STORY_LOCATION} />
-
+            <article className="text-left flex flex-col justify-center order-2 md:order-2">
               <BrandLogo variant="horizontal" size="sm" className="mb-4" />
 
-              <h1
-                className="text-2xl sm:text-3xl md:text-4xl font-light tracking-widest text-[#2a2a2a] mb-6 uppercase leading-snug font-sans"
-                itemProp="slogan">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-widest text-[#2a2a2a] mb-6 uppercase leading-snug font-sans">
                 Our Story – Pure Pahadi Taste from the Heart of Uttarakhand
               </h1>
 
-              <div className="w-12 h-[1.5px] bg-gray-300 mb-8" aria-hidden="true" />
-
               <div
-                className="font-light text-[15px] md:text-[15.5px] leading-[2.2] text-[#4f4f4f] space-y-5 md:space-y-6 antialiased"
-                itemProp="description">
+                className="w-12 h-[1.5px] bg-gray-300 mb-8"
+                aria-hidden="true"
+              />
+
+              <div className="font-light text-[15px] md:text-[15.5px] leading-[2.2] text-[#4f4f4f] space-y-5 md:space-y-6 antialiased">
                 {STORY_INTRO_PARAGRAPHS.map((paragraph, idx) => (
                   <p key={idx}>{paragraph}</p>
                 ))}
               </div>
+
+              {STORY_LOCATION && (
+                <p className="mt-6 text-xs uppercase tracking-widest text-neutral-400">
+                  {STORY_LOCATION}
+                </p>
+              )}
             </article>
           </div>
 
@@ -267,7 +247,7 @@ const OurStoryPage = () => {
         <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 md:pt-20 pb-16 border-t border-[#e8e8e8]">
           <div className="text-center mb-10 md:mb-12">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-light tracking-[0.18em] text-[#121212] uppercase">
-              Explore Our Products
+              Explore Ghar Ka Organic
             </h2>
             <div
               className="w-8 h-[1px] bg-[#121212]/20 mx-auto mt-3"
@@ -276,7 +256,7 @@ const OurStoryPage = () => {
           </div>
 
           <nav
-            aria-label="Product categories"
+            aria-label="Explore site sections"
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
             <Link
               to="/all-products"
@@ -289,7 +269,7 @@ const OurStoryPage = () => {
                   <span
                     className="text-[#999999] group-hover:text-[#121212] group-hover:translate-x-1 transition-all duration-200"
                     aria-hidden="true">
-                    →
+                    &rarr;
                   </span>
                 </div>
                 <p className="text-sm text-[#666666] mt-2 font-light leading-relaxed">
@@ -299,21 +279,82 @@ const OurStoryPage = () => {
             </Link>
 
             <Link
-              to="/shop/best-sellers"
+              to="/product/ghar-ka-mirch-ka-achar-green-chilly-pickle"
               className="group p-6 md:p-7 border border-[#e5e5e5] hover:border-[#121212] bg-white transition-all duration-300 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between">
                   <h3 className="font-medium text-[16px] text-[#121212] group-hover:text-black tracking-wide">
-                    Best Sellers
+                    Mirch Ka Achar
                   </h3>
                   <span
                     className="text-[#999999] group-hover:text-[#121212] group-hover:translate-x-1 transition-all duration-200"
                     aria-hidden="true">
-                    →
+                    &rarr;
                   </span>
                 </div>
                 <p className="text-sm text-[#666666] mt-2 font-light leading-relaxed">
-                  Discover our most loved products
+                  Traditional green chilli pickle in mustard oil &amp; spices
+                </p>
+              </div>
+            </Link>
+
+            <Link
+              to="/product/ghar-ka-honey"
+              className="group p-6 md:p-7 border border-[#e5e5e5] hover:border-[#121212] bg-white transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-medium text-[16px] text-[#121212] group-hover:text-black tracking-wide">
+                    Ghar Ka Honey
+                  </h3>
+                  <span
+                    className="text-[#999999] group-hover:text-[#121212] group-hover:translate-x-1 transition-all duration-200"
+                    aria-hidden="true">
+                    &rarr;
+                  </span>
+                </div>
+                <p className="text-sm text-[#666666] mt-2 font-light leading-relaxed">
+                  Natural raw Himalayan honey with delicate floral notes
+                </p>
+              </div>
+            </Link>
+
+            <Link
+              to="/product/pahadi-salt-with-dhaniya-garlic-and-green-chillies"
+              className="group p-6 md:p-7 border border-[#e5e5e5] hover:border-[#121212] bg-white transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-medium text-[16px] text-[#121212] group-hover:text-black tracking-wide">
+                    Pahadi Salt
+                  </h3>
+                  <span
+                    className="text-[#999999] group-hover:text-[#121212] group-hover:translate-x-1 transition-all duration-200"
+                    aria-hidden="true">
+                    &rarr;
+                  </span>
+                </div>
+                <p className="text-sm text-[#666666] mt-2 font-light leading-relaxed">
+                  Himalayan salt blended with dhaniya, garlic &amp; green
+                  chillies
+                </p>
+              </div>
+            </Link>
+
+            <Link
+              to="/reviews"
+              className="group p-6 md:p-7 border border-[#e5e5e5] hover:border-[#121212] bg-white transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-medium text-[16px] text-[#121212] group-hover:text-black tracking-wide">
+                    Customer Reviews
+                  </h3>
+                  <span
+                    className="text-[#999999] group-hover:text-[#121212] group-hover:translate-x-1 transition-all duration-200"
+                    aria-hidden="true">
+                    &rarr;
+                  </span>
+                </div>
+                <p className="text-sm text-[#666666] mt-2 font-light leading-relaxed">
+                  See what verified customers say about our products
                 </p>
               </div>
             </Link>
@@ -329,71 +370,11 @@ const OurStoryPage = () => {
                   <span
                     className="text-[#999999] group-hover:text-[#121212] group-hover:translate-x-1 transition-all duration-200"
                     aria-hidden="true">
-                    →
+                    &rarr;
                   </span>
                 </div>
                 <p className="text-sm text-[#666666] mt-2 font-light leading-relaxed">
-                  Contact us for bulk orders or inquiries
-                </p>
-              </div>
-            </Link>
-
-            <Link
-              to="/blogs"
-              className="group p-6 md:p-7 border border-[#e5e5e5] hover:border-[#121212] bg-white transition-all duration-300 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between">
-                  <h3 className="font-medium text-[16px] text-[#121212] group-hover:text-black tracking-wide">
-                    Blog & Stories
-                  </h3>
-                  <span
-                    className="text-[#999999] group-hover:text-[#121212] group-hover:translate-x-1 transition-all duration-200"
-                    aria-hidden="true">
-                    →
-                  </span>
-                </div>
-                <p className="text-sm text-[#666666] mt-2 font-light leading-relaxed">
-                  Learn about organic living and food culture
-                </p>
-              </div>
-            </Link>
-
-            <Link
-              to="/reviews"
-              className="group p-6 md:p-7 border border-[#e5e5e5] hover:border-[#121212] bg-white transition-all duration-300 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between">
-                  <h3 className="font-medium text-[16px] text-[#121212] group-hover:text-black tracking-wide">
-                    Reviews
-                  </h3>
-                  <span
-                    className="text-[#999999] group-hover:text-[#121212] group-hover:translate-x-1 transition-all duration-200"
-                    aria-hidden="true">
-                    →
-                  </span>
-                </div>
-                <p className="text-sm text-[#666666] mt-2 font-light leading-relaxed">
-                  See what our customers say
-                </p>
-              </div>
-            </Link>
-
-            <Link
-              to="/contact"
-              className="group p-6 md:p-7 border border-[#e5e5e5] hover:border-[#121212] bg-white transition-all duration-300 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between">
-                  <h3 className="font-medium text-[16px] text-[#121212] group-hover:text-black tracking-wide">
-                    Support
-                  </h3>
-                  <span
-                    className="text-[#999999] group-hover:text-[#121212] group-hover:translate-x-1 transition-all duration-200"
-                    aria-hidden="true">
-                    →
-                  </span>
-                </div>
-                <p className="text-sm text-[#666666] mt-2 font-light leading-relaxed">
-                  Need help? Reach out to our team
+                  Contact us for bulk orders, gifting, or support
                 </p>
               </div>
             </Link>
@@ -414,9 +395,7 @@ const OurStoryPage = () => {
 
           <div className="divide-y divide-[#ebebeb] border-y border-[#ebebeb]">
             {STORY_FAQS.map((item, idx) => (
-              <details
-                key={idx}
-                className="group py-5 transition-all">
+              <details key={idx} className="group py-5 transition-all">
                 <summary className="font-medium text-[16px] md:text-[17px] text-[#121212] flex items-center justify-between cursor-pointer list-none hover:text-[#315c3c] transition-colors py-1">
                   <span>{item.q}</span>
                   <span

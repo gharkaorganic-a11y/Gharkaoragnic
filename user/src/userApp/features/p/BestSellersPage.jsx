@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
 
 import { productSections } from "../homepage/config/productCollection";
@@ -13,7 +14,10 @@ import ProductGrid from "./components/ProductGrid";
 const BASE_URL = "https://gharkaorganic.com";
 const BRAND_GREEN = "#0B8A52";
 const INFINITE_SCROLL_MARGIN = "500px";
-const CANONICAL = "https://gharkaorganic.com/shop/best-sellers";
+const CANONICAL = `${BASE_URL}/shop/best-sellers`;
+const HERO_IMAGE =
+  "https://res.cloudinary.com/dwgro3zo7/image/upload/v1790511602/gharka-organic/products/oqkqmdl1gul3fapq2vvc.jpg";
+
 const SORT_OPTIONS = [
   { value: "createdAt_desc", label: "Newest First" },
   { value: "price_asc", label: "Price: Low to High" },
@@ -21,6 +25,43 @@ const SORT_OPTIONS = [
   { value: "name_asc", label: "Name: A–Z" },
   { value: "popularity_desc", label: "Most Popular" },
 ];
+
+const MERCHANT_RETURN_POLICY = {
+  "@type": "MerchantReturnPolicy",
+  applicableCountry: "IN",
+  returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+  merchantReturnDays: 7,
+  returnMethod: "https://schema.org/ReturnByMail",
+  returnFees: "https://schema.org/FreeReturn",
+};
+
+const OFFER_SHIPPING_DETAILS = {
+  "@type": "OfferShippingDetails",
+  shippingRate: {
+    "@type": "MonetaryAmount",
+    value: "0.00",
+    currency: "INR",
+  },
+  shippingDestination: {
+    "@type": "DefinedRegion",
+    addressCountry: "IN",
+  },
+  deliveryTime: {
+    "@type": "ShippingDeliveryTime",
+    handlingTime: {
+      "@type": "QuantitativeValue",
+      minValue: 0,
+      maxValue: 1,
+      unitCode: "DAY",
+    },
+    transitTime: {
+      "@type": "QuantitativeValue",
+      minValue: 4,
+      maxValue: 7,
+      unitCode: "DAY",
+    },
+  },
+};
 
 /* ───────── SKELETON ───────── */
 const ProductSkeleton = () => (
@@ -67,16 +108,11 @@ const useSentinel = (
 /* ───────── COMPONENT ───────── */
 const BestSellersPage = () => {
   const [sort, setSort] = useState("createdAt_desc");
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [, setMobileFiltersOpen] = useState(false);
   const handleSortChange = useCallback((v) => setSort(v), []);
 
-  /* ── 1. Correct section key ── */
-  const section = useMemo(
-    () => productSections.find((s) => s.key === "new"),
-    [],
-  );
+  useMemo(() => productSections.find((s) => s.key === "new"), []);
 
-  /* ── 2. Data fetching ── */
   const {
     displayProducts,
     fetchNextPage,
@@ -90,7 +126,6 @@ const BestSellersPage = () => {
     enabled: true,
   });
 
-  /* ── 3. Infinite scroll ── */
   const handleSentinelIntersect = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
@@ -102,34 +137,38 @@ const BestSellersPage = () => {
 
   const productCount = displayProducts?.length ?? 0;
 
-  /* ── 4. JSON-LD with ItemList for products ── */
   const jsonLd = useMemo(
     () => ({
       "@context": "https://schema.org",
       "@graph": [
         {
           "@type": "CollectionPage",
-          "@id": CANONICAL,
+          "@id": `${CANONICAL}#webpage`,
           name: "Best Selling Organic Products | Ghar Ka Organic",
           description:
-            "Shop our most loved organic products from Uttarakhand Himalayas — A2 desi ghee, raw pahadi honey, pahadi pickles, and more. Trusted by thousands across India.",
+            "Shop Ghar Ka Organic products from Uttarakhand — Mirch Ka Achar (Green Chilly Pickle), natural raw honey, and Pahadi Salt with free shipping across India.",
           url: CANONICAL,
-          image:
-            "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp",
+          image: HERO_IMAGE,
           inLanguage: "en-IN",
           isPartOf: {
             "@type": "WebSite",
+            "@id": `${BASE_URL}/#website`,
             name: "Ghar Ka Organic",
-            url: BASE_URL,
+            url: `${BASE_URL}/`,
+          },
+          about: {
+            "@type": "Organization",
+            "@id": `${BASE_URL}/#organization`,
           },
           breadcrumb: {
             "@type": "BreadcrumbList",
+            "@id": `${CANONICAL}#breadcrumb`,
             itemListElement: [
               {
                 "@type": "ListItem",
                 position: 1,
                 name: "Home",
-                item: BASE_URL,
+                item: `${BASE_URL}/`,
               },
               {
                 "@type": "ListItem",
@@ -142,14 +181,46 @@ const BestSellersPage = () => {
         },
         {
           "@type": "ItemList",
-          name: "Best Selling Organic Products",
+          "@id": `${CANONICAL}#itemlist`,
+          name: "Ghar Ka Organic Best Sellers",
           itemListElement:
-            displayProducts?.slice(0, 10).map((p, i) => ({
-              "@type": "ListItem",
-              position: i + 1,
-              url: `${BASE_URL}/products/${p.slug}`,
-              name: p.name,
-            })) || [],
+            displayProducts?.slice(0, 10).map((p, i) => {
+              const productUrl = `${BASE_URL}/product/${p.slug || p.id}`;
+              const itemNode = {
+                "@type": "Product",
+                name: p.name,
+                url: productUrl,
+                image: p.banner || p.images?.[0] || HERO_IMAGE,
+                brand: {
+                  "@type": "Brand",
+                  name: "Ghar Ka Organic",
+                },
+              };
+
+              if (Number(p.price) > 0) {
+                itemNode.offers = {
+                  "@type": "Offer",
+                  url: productUrl,
+                  priceCurrency: "INR",
+                  price: Number(p.price).toFixed(2),
+                  availability:
+                    Number(p.stock ?? 1) > 0
+                      ? "https://schema.org/InStock"
+                      : "https://schema.org/OutOfStock",
+                  itemCondition: "https://schema.org/NewCondition",
+                  hasMerchantReturnPolicy: MERCHANT_RETURN_POLICY,
+                  shippingDetails: OFFER_SHIPPING_DETAILS,
+                };
+              }
+
+              return {
+                "@type": "ListItem",
+                position: i + 1,
+                url: productUrl,
+                name: p.name,
+                item: itemNode,
+              };
+            }) || [],
         },
       ],
     }),
@@ -158,16 +229,13 @@ const BestSellersPage = () => {
 
   return (
     <main className="min-h-screen bg-white">
-      {/* ═══════════════════════════════════════════
-          SEO — INDEXING SIGNALS
-      ═══════════════════════════════════════════ */}
       <Helmet>
         <title>
           Best Selling Organic Products from Uttarakhand | Ghar Ka Organic
         </title>
         <meta
           name="description"
-          content="Shop Ghar Ka Organic's best sellers — A2 desi ghee, raw pahadi honey, pickles & more from Uttarakhand Himalayas. 100% natural, farm-sourced. Free shipping ₹499+."
+          content="Shop Ghar Ka Organic products from Uttarakhand — Mirch Ka Achar (Green Chilly Pickle), natural raw honey, and Pahadi Salt. Free shipping across India."
         />
         <link rel="canonical" href={CANONICAL} />
         <meta
@@ -175,12 +243,13 @@ const BestSellersPage = () => {
           content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
         />
 
-        {/* Geo + Language */}
         <meta name="geo.region" content="IN-UT" />
-        <meta name="geo.placename" content="Uttarakhand, India" />
+        <meta
+          name="geo.placename"
+          content="Nalni, Nainital, Uttarakhand, India"
+        />
         <meta name="language" content="en-IN" />
 
-        {/* Open Graph */}
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Ghar Ka Organic" />
         <meta
@@ -189,22 +258,18 @@ const BestSellersPage = () => {
         />
         <meta
           property="og:description"
-          content="Our most loved organic products — A2 desi ghee, raw honey, pahadi pickles and more. Sourced directly from Uttarakhand Himalayas."
+          content="Shop homemade Mirch Ka Achar, natural raw honey, and Pahadi Salt from Uttarakhand with free shipping across India."
         />
         <meta property="og:url" content={CANONICAL} />
-        <meta
-          property="og:image"
-          content="https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp"
-        />
+        <meta property="og:image" content={HERO_IMAGE} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta
           property="og:image:alt"
-          content="Best selling organic products from Uttarakhand — Ghar Ka Organic"
+          content="Ghar Ka Organic products from Uttarakhand"
         />
         <meta property="og:locale" content="en_IN" />
 
-        {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta
           name="twitter:title"
@@ -212,27 +277,16 @@ const BestSellersPage = () => {
         />
         <meta
           name="twitter:description"
-          content="Shop our most loved organic products from the Uttarakhand Himalayas."
+          content="Shop homemade Mirch Ka Achar, natural raw honey, and Pahadi Salt from Uttarakhand."
         />
-        <meta
-          name="twitter:image"
-          content="https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp"
-        />
+        <meta name="twitter:image" content={HERO_IMAGE} />
 
-        {/* Preload LCP image */}
-        <link
-          rel="preload"
-          as="image"
-          href="https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/uttarakhand-desi-ghee_mhth1n.webp"
-        />
+        <link rel="preload" as="image" href={HERO_IMAGE} />
 
-        {/* JSON-LD: CollectionPage + ItemList + Breadcrumb */}
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
 
-      {/* ═══════════════════════════════════════════
-          1. PAGE TITLE & PRESERVED SEO CONTENT (TEXT FIRST)
-      ═══════════════════════════════════════════ */}
+      {/* 1. PAGE TITLE & SEO CONTENT */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
         <Breadcrumb
           items={[
@@ -242,49 +296,43 @@ const BestSellersPage = () => {
         />
 
         <div className="mt-4 sm:mt-5">
-          {/* Authentic Himalayan Badge */}
           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium uppercase tracking-wider bg-emerald-50 text-[#008060] mb-2.5">
-            ★ Customer Favourites
+            &#9733; Customer Favourites
           </span>
 
-          {/* Primary H1 Heading - Simple, clean, elegant font */}
           <h1 className="text-2xl sm:text-3xl font-medium text-gray-900 tracking-tight leading-snug">
             Best Selling Organic Products from Uttarakhand
           </h1>
 
-          {/* SEO Description paragraph - Simple, clean font */}
           <p className="mt-2 text-sm sm:text-base text-gray-500 font-normal max-w-3xl leading-relaxed">
-            Hand-picked by thousands of families — pure ghee, natural honey,
-            homemade pickles, traditional pahadi dals, spices, and pahadi
-            salts. Crafted with traditional recipes in Mangoli, Nainital,
-            Uttarakhand without unnecessary chemicals or artificial preservatives.
+            Hand-picked for everyday meals — homemade Mirch Ka Achar (Green
+            Chilly Pickle), natural raw honey, and Pahadi Salt with dhaniya,
+            garlic, and green chillies crafted in Nalni, Nainital, Uttarakhand
+            without unnecessary chemicals or artificial preservatives.
           </p>
 
-          {/* Trust points - Simple, clean inline strip */}
           <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-gray-500 font-normal">
             <span className="inline-flex items-center gap-1">
-              <span className="text-[#008060] font-semibold">✓</span> 100% natural &
-              chemical-free
+              <span className="text-[#008060] font-semibold">&#10003;</span>{" "}
+              100% natural ingredients
             </span>
             <span className="inline-flex items-center gap-1">
-              <span className="text-[#008060] font-semibold">✓</span> No preservatives
-              or additives
+              <span className="text-[#008060] font-semibold">&#10003;</span> No
+              unnecessary preservatives
             </span>
             <span className="inline-flex items-center gap-1">
-              <span className="text-[#008060] font-semibold">✓</span> Directly from
-              Uttarakhand farms
+              <span className="text-[#008060] font-semibold">&#10003;</span>{" "}
+              From Nainital, Uttarakhand
             </span>
             <span className="inline-flex items-center gap-1">
-              <span className="text-[#008060] font-semibold">✓</span> 15-day freshness
-              guarantee
+              <span className="text-[#008060] font-semibold">&#10003;</span>{" "}
+              Free shipping across India
             </span>
           </div>
         </div>
       </div>
 
-      {/* ═══════════════════════════════════════════
-          2. CATEGORY NAVIGATION (SHOP BY CATEGORY)
-      ═══════════════════════════════════════════ */}
+      {/* 2. CATEGORY NAVIGATION */}
       <div className="mt-6">
         <ProductSectionTabs
           productSections={productSections}
@@ -292,9 +340,8 @@ const BestSellersPage = () => {
         />
       </div>
 
-      {/* ───────── PRODUCT GRID ───────── */}
+      {/* 3. PRODUCT GRID */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {/* Toolbar */}
         <div className="flex items-center justify-between gap-4 pb-6 mb-6 border-b border-gray-200">
           <div className="flex items-center gap-4">
             <h2 className="sr-only">Products</h2>
@@ -305,6 +352,7 @@ const BestSellersPage = () => {
               {productCount === 1 ? "product" : "products"}
             </p>
             <button
+              type="button"
               onClick={() => setMobileFiltersOpen(true)}
               className="lg:hidden flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-gray-900"
               aria-label="Open filters">
@@ -319,7 +367,6 @@ const BestSellersPage = () => {
           />
         </div>
 
-        {/* States */}
         {isLoading && productCount === 0 ? (
           <GridSkeleton />
         ) : isError ? (
@@ -335,24 +382,24 @@ const BestSellersPage = () => {
               Best Selling Organic Products
             </h2>
             <p className="mt-3 text-gray-600">
-              Our most loved organic products from the Uttarakhand Himalayas.
+              Our Himalayan organic food products from Uttarakhand.
             </p>
             <p className="mt-4 text-sm text-gray-500">
-              We're updating our best sellers inventory. Explore our full range
-              of authentic organic products sourced directly from Uttarakhand.
+              Explore our full collection of Mirch Ka Achar, natural raw honey,
+              and Pahadi Salt.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3 text-sm">
-              <a
-                href="/all-products"
+              <Link
+                to="/collections"
                 className="text-green-700 hover:underline font-medium">
                 View All Collections
-              </a>
-              <span className="text-gray-300">•</span>
-              <a
-                href="/"
+              </Link>
+              <span className="text-gray-300">&bull;</span>
+              <Link
+                to="/"
                 className="text-green-700 hover:underline font-medium">
                 Go to Homepage
-              </a>
+              </Link>
             </div>
           </div>
         ) : (
@@ -374,10 +421,7 @@ const BestSellersPage = () => {
         )}
       </div>
 
-      {/* ═══════════════════════════════════════════
-          EDITORIAL SEO BLOCK - CRITICAL FOR INDEXING
-          Google needs crawlable text, not just tiles
-      ═══════════════════════════════════════════ */}
+      {/* 4. EDITORIAL SEO BLOCK */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-gray-100">
         <div className="max-w-4xl">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -385,39 +429,37 @@ const BestSellersPage = () => {
           </h2>
           <div className="prose prose-sm text-gray-600 max-w-none space-y-4">
             <p>
-              <strong>Ghar Ka Organic’s best sellers</strong> represent the
-              products our customers trust and reorder most — pure{" "}
-              <strong>A2 Badri Desi Ghee</strong> churned using the traditional
-              bilona method, <strong>raw forest honey</strong> harvested from
-              Himalayan wildflowers, and <strong>pahadi pickles</strong> made
-              with age-old Kumaoni recipes without preservatives or artificial
-              vinegar.
+              <strong>Ghar Ka Organic&rsquo;s products</strong> bring
+              traditional Uttarakhand flavors to everyday tables —{" "}
+              <strong>GHAR KA Mirch Ka Achar (Green Chilly Pickle)</strong> made
+              with green chillies, mustard oil, salt, and spices;{" "}
+              <strong>GHAR KA HONEY</strong> with natural sweetness, delicate
+              floral notes, and rich aroma; and{" "}
+              <strong>
+                Pahadi Salt with Dhaniya, Garlic and Green Chillies
+              </strong>{" "}
+              for seasoning fruit, curd, salads, chaas, vegetables, and snacks.
             </p>
             <p>
               Every item is rooted in our{" "}
-              <strong>
-                home kitchen in Mangoli, Nainital, Uttarakhand
-              </strong>
-              — made using carefully selected ingredients and traditional
+              <strong>home kitchen in Nalni, Nainital, Uttarakhand</strong> —
+              prepared using carefully selected ingredients and traditional
               recipes without unnecessary chemicals or artificial preservatives.
-              Simple, honest food from our home to yours.
             </p>
-            <h3 className="text-lg font-semibold text-gray-900!mb-2">
-              Freshness & Quality Promise
+            <h3 className="text-lg font-semibold text-gray-900 !mb-2">
+              Shipping &amp; Return Promise
             </h3>
             <p>
-              All best seller orders are packed within 48 hours of your order
-              and ship with our
-              <strong> 15-day freshness guarantee</strong>. If you’re not
-              satisfied with the aroma, taste, or quality, we’ll replace it or
-              refund you — no questions asked. Free shipping across India on
-              orders above ₹499.
+              Orders ship across India with <strong>free shipping (₹0)</strong>{" "}
+              and typical delivery in <strong>4–7 business days</strong>, backed
+              by our <strong>7-day return policy</strong> with free mail-in
+              returns.
             </p>
           </div>
         </div>
       </section>
 
-      {/* ───────── TRUST BAR ───────── */}
+      {/* 5. TRUST BAR */}
       <section
         className="py-8 text-white"
         style={{ backgroundColor: BRAND_GREEN }}>
@@ -426,25 +468,25 @@ const BestSellersPage = () => {
             <div>
               <div className="text-2xl font-bold">100%</div>
               <div className="text-xs uppercase tracking-wider text-green-100 mt-1">
-                Organic Certified
+                Natural Ingredients
               </div>
             </div>
             <div>
-              <div className="text-2xl font-bold">48hr</div>
+              <div className="text-2xl font-bold">4–7 Days</div>
               <div className="text-xs uppercase tracking-wider text-green-100 mt-1">
-                Dispatch Time
+                India Delivery
               </div>
             </div>
             <div>
-              <div className="text-2xl font-bold">15 Days</div>
+              <div className="text-2xl font-bold">7 Days</div>
               <div className="text-xs uppercase tracking-wider text-green-100 mt-1">
-                Guarantee
+                Easy Returns
               </div>
             </div>
             <div>
               <div className="text-2xl font-bold">Free</div>
               <div className="text-xs uppercase tracking-wider text-green-100 mt-1">
-                Shipping ₹499+
+                Shipping Across India
               </div>
             </div>
           </div>

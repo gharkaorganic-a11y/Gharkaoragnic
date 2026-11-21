@@ -20,8 +20,6 @@ import ReviewsGrid from "../reviews/componenst/ReviewsGrid";
 import FAQSection from "../homepage/FAQSection";
 import HeroSection from "../homepage/HeroSection";
 import OurStoryComponent from "../homepage/OurStoryComponent";
-import HomeTrustBar from "../homepage/HomeTrustBar";
-import HomeHeritagePromise from "../homepage/HomeHeritagePromise";
 import ProductSectionTabs from "../features/p/components/ProductSectionTabs";
 
 const ProductSection = React.lazy(
@@ -32,11 +30,14 @@ const LatestBlogSection = React.lazy(
 );
 
 // ────────────────────────────────────────────────────────────────────────────
-// COMPREHENSIVE SEO & AI CRAWLER OPTIMIZATION
+// SITE & CATALOG CONSTANTS (SYNCED WITH products.xml)
 // ────────────────────────────────────────────────────────────────────────────
 
 const SITE_URL = "https://gharkaorganic.com";
 const SITE_NAME = "Ghar Ka Organic";
+const OG_COVER =
+  "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/og-cover-gko.webp";
+
 const HOMEPAGE_KEYS = [
   "new",
   "pickle",
@@ -52,542 +53,266 @@ const homepageSections = productSections
   .filter((s) => HOMEPAGE_KEYS.includes(s.key))
   .sort((a, b) => HOMEPAGE_KEYS.indexOf(a.key) - HOMEPAGE_KEYS.indexOf(b.key));
 
-// ────────────────────────────────────────────────────────────────────────────
-// PRODUCT IMAGES - OPTIMIZED FOR ALL CONTEXTS
-// ────────────────────────────────────────────────────────────────────────────
-
 const PRODUCT_IMAGES = {
-  GHEE: {
-    "1x1":
-      "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779804926/uttarakhand-desi-ghee_mhth1n_kwdmv9.webp",
-    "4x3":
-      "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779805154/uttarakhand-desi-ghee_mhth1n2nd_lepmtt.webp",
-    "16x9":
-      "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779805222/uttarakhand-desi-ghee_mhth1n5nd_eluqhy.webp",
-  },
-  HONEY: {
-    "1x1":
-      "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779805346/6b28f8bd-630a-4ad8-99c2-38a0fb306d15.png",
-    "4x3":
-      "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779805494/64314e95-3424-4dec-b811-3707065f6882.png",
-    "16x9":
-      "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779805631/b44580c5-a84c-4c0d-9c73-190f5af1bca3.png",
-  },
-  AAM_ACHAR: {
-    "1x1":
-      "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779805758/a332c4ef-1765-4f47-b4d4-4012140de26e.png",
-    "4x3":
-      "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779806010/f9e71e6e-8685-46a6-b571-1c09f3ca6a84.png",
-    "16x9":
-      "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779806096/0f2bd60d-2817-4e02-b125-9ee966568267.png",
-  },
-  NIMBU_ACHAR: {
-    "1x1":
-      "https://res.cloudinary.com/dwgro3zo7/image/upload/w_1200,h_1200,c_fill,q_auto,f_auto/v1779806656/c2153e88-16ac-498e-a526-1976f375a691_un6xul.png",
-    "4x3":
-      "https://res.cloudinary.com/dwgro3zo7/image/upload/w_1200,h_900,c_fill,q_auto,f_auto/v1779806656/c2153e88-16ac-498e-a526-1976f375a691_un6xul.png",
-    "16x9":
-      "https://res.cloudinary.com/dwgro3zo7/image/upload/w_1200,h_675,c_fill,q_auto,f_auto/v1779806656/c2153e88-16ac-498e-a526-1976f375a691_un6xul.png",
-  },
-  BHANG_CHUTNEY: {
-    "1x1":
-      "https://res.cloudinary.com/dwgro3zo7/image/upload/w_1200,h_1200,c_fill,q_auto,f_auto/v1779806954/5fbff796-8d70-4624-931e-f7d36a5ec9a9_leazcc.png",
-    "4x3":
-      "https://res.cloudinary.com/dwgro3zo7/image/upload/w_1200,h_900,c_fill,q_auto,f_auto/v1779806954/5fbff796-8d70-4624-931e-f7d36a5ec9a9_leazcc.png",
-    "16x9":
-      "https://res.cloudinary.com/dwgro3zo7/image/upload/w_1200,h_675,c_fill,q_auto,f_auto/v1779806954/5fbff796-8d70-4624-931e-f7d36a5ec9a9_leazcc.png",
-  },
-};
-
-// ────────────────────────────────────────────────────────────────────────────
-// Product schemas include catalog and offer details; customer reviews load separately.
-// ────────────────────────────────────────────────────────────────────────────
-
-const HOMEPAGE_PRODUCT_SCHEMAS = [
-  {
-    "@type": "Product",
-    "@id": "https://gharkaorganic.com/buy-desi-ghee-online#product",
-    name: "Bilona Desi Ghee from Uttarakhand – A2 Cow Milk Ghee",
-    description:
-      "Traditional Bilona Desi Ghee made using the ancient hand-churning method from A2 cow milk in Uttarakhand. Pure, chemical-free, rich in natural nutrients, and full of authentic aroma.",
-    image: [
-      PRODUCT_IMAGES.GHEE["1x1"],
-      PRODUCT_IMAGES.GHEE["4x3"],
-      PRODUCT_IMAGES.GHEE["16x9"],
-    ],
-    sku: "GKO-GHEE-001",
-    brand: { "@type": "Brand", name: "Ghar Ka Organic" },
-    category: "Organic Food Products > Dairy > Ghee",
-    offers: {
-      "@type": "Offer",
-      url: `${SITE_URL}/buy-desi-ghee-online`,
-      priceCurrency: "INR",
-      price: "1299",
-      priceLowerBound: "999",
-      priceUpperBound: "1499",
-      availability: "https://schema.org/InStock",
-      itemCondition: "https://schema.org/NewCondition",
-      hasMerchantReturnPolicy: {
-        "@type": "MerchantReturnPolicy",
-        returnsAccepted: true,
-        returnDays: 7,
-        returnMethod: "ReturnMailIn",
-        restockingFee: false,
-      },
-      shippingDetails: {
-        "@type": "ShippingDeliveryTime",
-        shippingRate: {
-          "@type": "PriceSpecification",
-          priceCurrency: "INR",
-          price: "0",
-        },
-        shippingDestination: {
-          "@type": "DeliveryAddress",
-          addressCountry: "IN",
-        },
-        deliveryTime: {
-          "@type": "ShippingDeliveryTime",
-          businessDays: 4,
-          cutoffTime: "17:00",
-          handlingTime: 1,
-        },
-      },
-    },
-  },
-  {
-    "@type": "Product",
-    "@id": "https://gharkaorganic.com/raw-honey-uttarakhand#product",
-    name: "Raw Pahadi Honey from Uttarakhand – Pure Forest Honey",
-    description:
-      "Natural Himalayan Pahadi Honey collected from wild forest bees in Uttarakhand mountains. Raw, unfiltered, unprocessed and free from any additives or refined sugar.",
-    image: [
-      PRODUCT_IMAGES.HONEY["1x1"],
-      PRODUCT_IMAGES.HONEY["4x3"],
-      PRODUCT_IMAGES.HONEY["16x9"],
-    ],
-    sku: "GKO-HONEY-001",
-    brand: { "@type": "Brand", name: "Ghar Ka Organic" },
-    category: "Organic Food Products > Honey > Raw Honey",
-    offers: {
-      "@type": "Offer",
-      url: `${SITE_URL}/raw-honey-uttarakhand`,
-      priceCurrency: "INR",
-      price: "699",
-      availability: "https://schema.org/InStock",
-      itemCondition: "https://schema.org/NewCondition",
-      hasMerchantReturnPolicy: {
-        "@type": "MerchantReturnPolicy",
-        returnsAccepted: true,
-        returnDays: 7,
-        returnMethod: "ReturnMailIn",
-        restockingFee: false,
-      },
-      shippingDetails: {
-        "@type": "ShippingDeliveryTime",
-        shippingRate: {
-          "@type": "PriceSpecification",
-          priceCurrency: "INR",
-          price: "0",
-        },
-        shippingDestination: {
-          "@type": "DeliveryAddress",
-          addressCountry: "IN",
-        },
-        deliveryTime: {
-          "@type": "ShippingDeliveryTime",
-          businessDays: 4,
-          cutoffTime: "17:00",
-          handlingTime: 1,
-        },
-      },
-    },
-  },
-  {
-    "@type": "Product",
-    "@id": "https://gharkaorganic.com/pahadi-achar-online#product",
-    name: "Kumaoni Aam Achar – Traditional Mango Pickle",
-    description:
-      "Traditional Kumaoni mango pickle prepared with pahadi raw mangoes, Himalayan spices and homemade mountain mustard oil. Authentic taste of Uttarakhand.",
-    image: [
-      PRODUCT_IMAGES.AAM_ACHAR["1x1"],
-      PRODUCT_IMAGES.AAM_ACHAR["4x3"],
-      PRODUCT_IMAGES.AAM_ACHAR["16x9"],
-    ],
-    sku: "GKO-PICKLE-AAM-001",
-    brand: { "@type": "Brand", name: "Ghar Ka Organic" },
-    category: "Organic Food Products > Pickles > Mango Pickle",
-    offers: {
-      "@type": "Offer",
-      url: `${SITE_URL}/pahadi-achar-online`,
-      priceCurrency: "INR",
-      price: "349",
-      availability: "https://schema.org/InStock",
-      itemCondition: "https://schema.org/NewCondition",
-      hasMerchantReturnPolicy: {
-        "@type": "MerchantReturnPolicy",
-        returnsAccepted: true,
-        returnDays: 7,
-        returnMethod: "ReturnMailIn",
-        restockingFee: false,
-      },
-      shippingDetails: {
-        "@type": "ShippingDeliveryTime",
-        shippingRate: {
-          "@type": "PriceSpecification",
-          priceCurrency: "INR",
-          price: "0",
-        },
-        shippingDestination: {
-          "@type": "DeliveryAddress",
-          addressCountry: "IN",
-        },
-        deliveryTime: {
-          "@type": "ShippingDeliveryTime",
-          businessDays: 4,
-          cutoffTime: "17:00",
-          handlingTime: 1,
-        },
-      },
-    },
-  },
-  // ✅ NEW: LEMON PICKLE (NIMBU ACHAR)
-  {
-    "@type": "Product",
-    "@id": "https://gharkaorganic.com/nimbu-achar-online#product",
-    name: "Nimbu Achar – Lemon Pickle",
-    description:
-      "Traditional Kumaoni lemon pickle with fresh lemons, Himalayan spices, and pure mustard oil. Tangy, spicy, and aromatic with authentic mountain flavor.",
-    image: [
-      PRODUCT_IMAGES.NIMBU_ACHAR["1x1"],
-      PRODUCT_IMAGES.NIMBU_ACHAR["4x3"],
-      PRODUCT_IMAGES.NIMBU_ACHAR["16x9"],
-    ],
-    sku: "GKO-PICKLE-NIMBU-001",
-    brand: { "@type": "Brand", name: "Ghar Ka Organic" },
-    category: "Organic Food Products > Pickles > Lemon Pickle",
-    offers: {
-      "@type": "Offer",
-      url: `${SITE_URL}/nimbu-achar-online`,
-      priceCurrency: "INR",
-      price: "299",
-      availability: "https://schema.org/InStock",
-      itemCondition: "https://schema.org/NewCondition",
-      hasMerchantReturnPolicy: {
-        "@type": "MerchantReturnPolicy",
-        returnsAccepted: true,
-        returnDays: 7,
-        returnMethod: "ReturnMailIn",
-        restockingFee: false,
-      },
-      shippingDetails: {
-        "@type": "ShippingDeliveryTime",
-        shippingRate: {
-          "@type": "PriceSpecification",
-          priceCurrency: "INR",
-          price: "0",
-        },
-        shippingDestination: {
-          "@type": "DeliveryAddress",
-          addressCountry: "IN",
-        },
-        deliveryTime: {
-          "@type": "ShippingDeliveryTime",
-          businessDays: 4,
-          cutoffTime: "17:00",
-          handlingTime: 1,
-        },
-      },
-    },
-  },
-  // ✅ NEW: BHANG CHUTNEY
-  {
-    "@type": "Product",
-    "@id": "https://gharkaorganic.com/pahadi-products-online#product",
-    name: "Bhang Chutney – Traditional Kumaoni Recipe",
-    description:
-      "Authentic Kumaoni Bhang Chutney made with hemp seeds and Himalayan spices. A unique traditional recipe from Uttarakhand with authentic mountain flavors.",
-    image: [
-      PRODUCT_IMAGES.BHANG_CHUTNEY["1x1"],
-      PRODUCT_IMAGES.BHANG_CHUTNEY["4x3"],
-      PRODUCT_IMAGES.BHANG_CHUTNEY["16x9"],
-    ],
-    sku: "GKO-CHUTNEY-BHANG-001",
-    brand: { "@type": "Brand", name: "Ghar Ka Organic" },
-    category: "Organic Food Products > Chutneys > Traditional Chutney",
-    offers: {
-      "@type": "Offer",
-      url: `${SITE_URL}/pahadi-products-online`,
-      priceCurrency: "INR",
-      price: "249",
-      availability: "https://schema.org/InStock",
-      itemCondition: "https://schema.org/NewCondition",
-      hasMerchantReturnPolicy: {
-        "@type": "MerchantReturnPolicy",
-        returnsAccepted: true,
-        returnDays: 7,
-        returnMethod: "ReturnMailIn",
-        restockingFee: false,
-      },
-      shippingDetails: {
-        "@type": "ShippingDeliveryTime",
-        shippingRate: {
-          "@type": "PriceSpecification",
-          priceCurrency: "INR",
-          price: "0",
-        },
-        shippingDestination: {
-          "@type": "DeliveryAddress",
-          addressCountry: "IN",
-        },
-        deliveryTime: {
-          "@type": "ShippingDeliveryTime",
-          businessDays: 4,
-          cutoffTime: "17:00",
-          handlingTime: 1,
-        },
-      },
-    },
-  },
-];
-
-// ────────────────────────────────────────────────────────────────────────────
-// ✅ FIXED MASTER SCHEMA WITH:
-// - All 5 products included
-// - AggregateOffer for price range
-// - Improved ItemList with proper sitelinks
-// - Better FAQPage with product-specific questions
-// - Proper entity hierarchy (Organization → WebSite → WebPage → Products)
-// ────────────────────────────────────────────────────────────────────────────
-
-const MASTER_SCHEMA = {
-  "@context": "https://schema.org",
-  "@graph": [
-    // Organization (#organization) and WebSite (#website) JSON-LD live globally in user/index.html
-    // to avoid duplicate Organization/WebSite structured data nodes.
-
-    // ┌─────────────────────────────────────────────────────┐
-    // │ LOCAL BUSINESS - Physical Location Details          │
-    // └─────────────────────────────────────────────────────┘
-    {
-      "@type": "LocalBusiness",
-      "@id": "https://gharkaorganic.com/#localbusiness",
-      name: "Ghar Ka Organic",
-      image:
-        "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/og-cover-gko.webp",
-      telephone: "+91-9897447525",
-      url: "https://gharkaorganic.com/",
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: "Nalni",
-        addressLocality: "Nainital",
-        addressRegion: "Uttarakhand",
-        postalCode: "263002",
-        addressCountry: "IN",
-      },
-      priceRange: "₹₹",
-      openingHoursSpecification: {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-        ],
-        opens: "09:00",
-        closes: "18:00",
-      },
-    },
-
-    // ┌─────────────────────────────────────────────────────┐
-    // │ WEBPAGE - Homepage Entity                           │
-    // └─────────────────────────────────────────────────────┘
-    {
-      "@type": "WebPage",
-      "@id": "https://gharkaorganic.com/#webpage",
-      url: "https://gharkaorganic.com/",
-      name: "Ghar Ka Organic – Himalayan Homemade Pickles, Kumaoni Chutney & Uttarakhand Organic Products",
-      isPartOf: { "@id": "https://gharkaorganic.com/#website" },
-      about: { "@id": "https://gharkaorganic.com/#organization" },
-      primaryImageOfPage: {
-        "@type": "ImageObject",
-        url: "https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/og-cover-gko.webp",
-      },
-      speakable: {
-        "@type": "SpeakableSpecification",
-        cssSelector: [
-          "h1",
-          "h2",
-          ".our-story",
-          "[data-testid='product-title']",
-        ],
-      },
-    },
-
-    // ┌─────────────────────────────────────────────────────┐
-    // │ BREADCRUMB LIST - Navigation Hierarchy              │
-    // └─────────────────────────────────────────────────────┘
-    {
-      "@type": "BreadcrumbList",
-      "@id": "https://gharkaorganic.com/#breadcrumb",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: "https://gharkaorganic.com/",
-        },
-      ],
-    },
-
-    // ┌─────────────────────────────────────────────────────┐
-    // │ SITELINKS SEARCH BOX - Google SERP Feature          │
-    // └─────────────────────────────────────────────────────┘
-    {
-      "@type": "SiteLinksSearchBox",
-      "@id": "https://gharkaorganic.com/#searchbox",
-      url: "https://gharkaorganic.com/",
-      potentialAction: {
-        "@type": "SearchAction",
-        target:
-          "https://gharkaorganic.com/collections?search={search_term_string}",
-        "query-input": "required name=search_term_string",
-      },
-    },
-
-    // ┌─────────────────────────────────────────────────────┐
-    // │ ✅ AGGREGATE OFFER - Shows price range in results   │
-    // └─────────────────────────────────────────────────────┘
-    {
-      "@type": "AggregateOffer",
-      "@id": "https://gharkaorganic.com/#offer-aggregate",
-      priceCurrency: "INR",
-      lowPrice: "249",
-      highPrice: "1499",
-      offerCount: 5,
-      availability: "https://schema.org/InStock",
-    },
-
-    // ┌─────────────────────────────────────────────────────┐
-    // │ ✅ ITEM LIST - SITELINKS (Google SERP)              │
-    // │ 5 Products + Reviews page for navigation            │
-    // └─────────────────────────────────────────────────────┘
-    {
-      "@type": "ItemList",
-      "@id": "https://gharkaorganic.com/#bestsellers",
-      name: "Ghar Ka Organic Best Sellers",
-      description:
-        "Most popular Himalayan organic food products from Ghar Ka Organic",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Bilona Desi Ghee from Uttarakhand",
-          url: "https://gharkaorganic.com/buy-desi-ghee-online",
-          image:
-            "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779804926/uttarakhand-desi-ghee_mhth1n_kwdmv9.webp",
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "Raw Pahadi Honey from Uttarakhand",
-          url: "https://gharkaorganic.com/raw-honey-uttarakhand",
-          image:
-            "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779805346/6b28f8bd-630a-4ad8-99c2-38a0fb306d15.png",
-        },
-        {
-          "@type": "ListItem",
-          position: 3,
-          name: "Kumaoni Aam Achar – Traditional Mango Pickle",
-          url: "https://gharkaorganic.com/pahadi-achar-online",
-          image:
-            "https://res.cloudinary.com/dwgro3zo7/image/upload/q_auto/f_auto/v1779805758/a332c4ef-1765-4f47-b4d4-4012140de26e.png",
-        },
-        {
-          "@type": "ListItem",
-          position: 4,
-          name: "Nimbu Achar – Lemon Pickle",
-          url: "https://gharkaorganic.com/nimbu-achar-online",
-          image:
-            "https://res.cloudinary.com/dwgro3zo7/image/upload/w_1200,h_1200,c_fill,q_auto,f_auto/v1779806656/c2153e88-16ac-498e-a526-1976f375a691_un6xul.png",
-        },
-        {
-          "@type": "ListItem",
-          position: 5,
-          name: "Bhang Chutney – Traditional Kumaoni Recipe",
-          url: "https://gharkaorganic.com/pahadi-products-online",
-          image:
-            "https://res.cloudinary.com/dwgro3zo7/image/upload/w_1200,h_1200,c_fill,q_auto,f_auto/v1779806954/5fbff796-8d70-4624-931e-f7d36a5ec9a9_leazcc.png",
-        },
-        {
-          "@type": "ListItem",
-          position: 6,
-          name: "Customer Reviews",
-          url: "https://gharkaorganic.com/reviews",
-          description:
-            "50+ verified customer reviews of Ghar Ka Organic products",
-        },
-      ],
-    },
-
-    // ┌─────────────────────────────────────────────────────┐
-    // │ ✅ FAQ PAGE - Featured Snippets                     │
-    // │ Product-specific questions for better visibility     │
-    // └─────────────────────────────────────────────────────┘
-    {
-      "@type": "FAQPage",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "What products does Ghar Ka Organic offer?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Ghar Ka Organic offers authentic Himalayan organic food products from Uttarakhand including: Bilona Desi Ghee (A2 cow milk), Raw Pahadi Honey (forest honey), Kumaoni Aam Achar (mango pickle), Nimbu Achar (lemon pickle), and Bhang Chutney (traditional Kumaoni recipe).",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Are Ghar Ka Organic products 100% natural and organic?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Yes. All our products are made with natural Himalayan ingredients sourced directly from Uttarakhand farms. They are completely free from artificial preservatives, chemicals, or additives. Our Bilona Desi Ghee uses A2 cow milk, and all pickles are homemade using traditional recipes.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Do you deliver across India?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "We deliver across many locations in India. Our team confirms delivery availability, timelines, and any delivery charges with you on WhatsApp before your order is finalized.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "What makes your Bilona Desi Ghee special?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Our Bilona Desi Ghee is made using the ancient hand-churning method (Bilona process) from A2 cow milk sourced in Uttarakhand. This traditional method retains all natural nutrients, vitamins, and the pure aroma, unlike commercial ghee production.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Can I return products if unsatisfied?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Yes, we offer a 7-day return policy on all products. If you're unsatisfied, you can return the product within 7 days for a full refund. No restocking fees apply.",
-          },
-        },
-      ],
-    },
-
-    // ┌─────────────────────────────────────────────────────┐
-    // │ ALL 5 PRODUCTS WITH FULL SCHEMA                     │
-    // │ ✅ Now includes: Lemon Pickle & Bhang Chutney       │
-    // └─────────────────────────────────────────────────────┘
-    ...HOMEPAGE_PRODUCT_SCHEMAS,
+  MIRCH_ACHAR: [
+    "https://res.cloudinary.com/dwgro3zo7/image/upload/v1790511602/gharka-organic/products/oqkqmdl1gul3fapq2vvc.jpg",
+    "https://res.cloudinary.com/dwgro3zo7/image/upload/v1790511797/gharka-organic/products/avxfuurudyzfkfxr5tuk.jpg",
+    "https://res.cloudinary.com/dwgro3zo7/image/upload/v1790511855/gharka-organic/products/gdem6cwiwmqstxfmcevg.jpg",
+  ],
+  HONEY: [
+    "https://res.cloudinary.com/dwgro3zo7/image/upload/v1790510595/gharka-organic/products/e6qmitnpen0qsgfimte0.jpg",
+    "https://res.cloudinary.com/dwgro3zo7/image/upload/v1790510847/gharka-organic/products/kuphlur3ibfrxvvtedyn.jpg",
+    "https://res.cloudinary.com/dwgro3zo7/image/upload/v1790510937/gharka-organic/products/ytvgvtbryywgo8lping9.jpg",
+    "https://res.cloudinary.com/dwgro3zo7/image/upload/v1790510934/gharka-organic/products/mreipmyktszouigab3ym.jpg",
+  ],
+  PAHADI_SALT: [
+    "https://res.cloudinary.com/dwgro3zo7/image/upload/v1790512823/gharka-organic/products/fttrz26ukuxngr2knc7f.jpg",
+    "https://res.cloudinary.com/dwgro3zo7/image/upload/v1783342423/gharka-organic/products/ub37cgkucwvi3soe6eay.jpg",
+    "https://res.cloudinary.com/dwgro3zo7/image/upload/v1790512828/gharka-organic/products/n3afebifisjqjmavitwi.jpg",
+    "https://res.cloudinary.com/dwgro3zo7/image/upload/v1790512877/gharka-organic/products/pil8isw0yt2souupx8bj.jpg",
   ],
 };
+
+// ────────────────────────────────────────────────────────────────────────────
+// VALID MERCHANT LISTING POLICY & SHIPPING (ZERO GSC WARNINGS)
+// ────────────────────────────────────────────────────────────────────────────
+
+const MERCHANT_RETURN_POLICY = {
+  "@type": "MerchantReturnPolicy",
+  applicableCountry: "IN",
+  returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+  merchantReturnDays: 7,
+  returnMethod: "https://schema.org/ReturnByMail",
+  returnFees: "https://schema.org/FreeReturn",
+};
+
+const OFFER_SHIPPING_DETAILS = {
+  "@type": "OfferShippingDetails",
+  shippingRate: {
+    "@type": "MonetaryAmount",
+    value: "0.00",
+    currency: "INR",
+  },
+  shippingDestination: {
+    "@type": "DefinedRegion",
+    addressCountry: "IN",
+  },
+  deliveryTime: {
+    "@type": "ShippingDeliveryTime",
+    handlingTime: {
+      "@type": "QuantitativeValue",
+      minValue: 0,
+      maxValue: 1,
+      unitCode: "DAY",
+    },
+    transitTime: {
+      "@type": "QuantitativeValue",
+      minValue: 4,
+      maxValue: 7,
+      unitCode: "DAY",
+    },
+  },
+};
+
+const buildOffer = (url, price) => ({
+  "@type": "Offer",
+  url,
+  priceCurrency: "INR",
+  price,
+  availability: "https://schema.org/InStock",
+  itemCondition: "https://schema.org/NewCondition",
+  seller: { "@id": `${SITE_URL}/#organization` },
+  hasMerchantReturnPolicy: MERCHANT_RETURN_POLICY,
+  shippingDetails: OFFER_SHIPPING_DETAILS,
+});
+
+// ────────────────────────────────────────────────────────────────────────────
+// PRODUCT & PRODUCTGROUP SCHEMAS (1:1 PARITY WITH products.xml)
+// ────────────────────────────────────────────────────────────────────────────
+
+const BASE_CATALOG_SCHEMAS = [
+  // 1. MIRCH KA ACHAR (ProductGroup with 400g & 200g variants)
+  {
+    "@type": "ProductGroup",
+    "@id": `${SITE_URL}/product/ghar-ka-mirch-ka-achar-green-chilly-pickle#productgroup`,
+    name: "GHAR KA Mirch Ka Achar (Green Chilly Pickle)",
+    description:
+      "Add a bold, chilli-forward accompaniment to everyday meals with Ghar Ka Mirch Ka Achar. Serve alongside dal, rice, roti, or paratha. Made with green chillies, mustard oil, salt and spices.",
+    url: `${SITE_URL}/product/ghar-ka-mirch-ka-achar-green-chilly-pickle`,
+    image: PRODUCT_IMAGES.MIRCH_ACHAR,
+    brand: { "@type": "Brand", name: SITE_NAME },
+    productGroupID: "ZWofOslgko0mL5rSPn70",
+    variesBy: ["https://schema.org/size"],
+    hasVariant: [
+      {
+        "@type": "Product",
+        "@id": `${SITE_URL}/product/ghar-ka-mirch-ka-achar-green-chilly-pickle#400g`,
+        sku: "ZWofOslgko0mL5rSPn70",
+        mpn: "GKO-MKA-400",
+        name: "GHAR KA Mirch Ka Achar (Green Chilly Pickle) - 400g",
+        description:
+          "Add a bold, chilli-forward accompaniment to everyday meals with Ghar Ka Mirch Ka Achar. Serve alongside dal, rice, roti, or paratha. 400g pack.",
+        size: "400g",
+        image: PRODUCT_IMAGES.MIRCH_ACHAR,
+        brand: { "@type": "Brand", name: SITE_NAME },
+        countryOfOrigin: { "@type": "Country", name: "India" },
+        category:
+          "Food, Beverages & Tobacco > Food Items > Condiments & Sauces > Pickles",
+        additionalProperty: [
+          {
+            "@type": "PropertyValue",
+            name: "Ingredients",
+            value: "Green chillies, mustard oil, salt and spices",
+          },
+          {
+            "@type": "PropertyValue",
+            name: "Pack Size",
+            value: "400g",
+          },
+        ],
+        offers: buildOffer(
+          `${SITE_URL}/product/ghar-ka-mirch-ka-achar-green-chilly-pickle`,
+          "219.00",
+        ),
+      },
+      {
+        "@type": "Product",
+        "@id": `${SITE_URL}/product/ghar-ka-mirch-ka-achar-green-chilly-pickle#200g`,
+        sku: "ZWofOslgko0mL5rSPn70-200g",
+        mpn: "GKO-MKA-200",
+        name: "GHAR KA Mirch Ka Achar - 200g",
+        description:
+          "Add a bold, chilli-forward accompaniment to everyday meals with Ghar Ka Mirch Ka Achar. Convenient 200g pack.",
+        size: "200g",
+        image: PRODUCT_IMAGES.MIRCH_ACHAR,
+        brand: { "@type": "Brand", name: SITE_NAME },
+        countryOfOrigin: { "@type": "Country", name: "India" },
+        category:
+          "Food, Beverages & Tobacco > Food Items > Condiments & Sauces > Pickles",
+        additionalProperty: [
+          {
+            "@type": "PropertyValue",
+            name: "Ingredients",
+            value: "Green chillies, mustard oil, salt and spices",
+          },
+          {
+            "@type": "PropertyValue",
+            name: "Pack Size",
+            value: "200g",
+          },
+        ],
+        offers: buildOffer(
+          `${SITE_URL}/product/ghar-ka-mirch-ka-achar-green-chilly-pickle`,
+          "219.00",
+        ),
+      },
+    ],
+  },
+
+  // 2. GHAR KA HONEY (ProductGroup with 200ml & 500g variants)
+  {
+    "@type": "ProductGroup",
+    "@id": `${SITE_URL}/product/ghar-ka-honey#productgroup`,
+    name: "GHAR KA HONEY",
+    description:
+      "Enjoy the natural sweetness, delicate floral notes, and rich aroma of Ghar Ka Honey. Drizzle over breakfast, stir into a warm drink, or use in desserts.",
+    url: `${SITE_URL}/product/ghar-ka-honey`,
+    image: PRODUCT_IMAGES.HONEY,
+    brand: { "@type": "Brand", name: SITE_NAME },
+    productGroupID: "ao89cm2OF6P7grMhxriz",
+    variesBy: ["https://schema.org/size"],
+    hasVariant: [
+      {
+        "@type": "Product",
+        "@id": `${SITE_URL}/product/ghar-ka-honey#200ml`,
+        sku: "ao89cm2OF6P7grMhxriz",
+        mpn: "GKO-HNY-200",
+        name: "GHAR KA HONEY - 200ml",
+        description:
+          "Natural raw honey with delicate floral notes and a rich aroma. 200ml pack.",
+        size: "200ml",
+        image: PRODUCT_IMAGES.HONEY,
+        brand: { "@type": "Brand", name: SITE_NAME },
+        countryOfOrigin: { "@type": "Country", name: "India" },
+        category:
+          "Food, Beverages & Tobacco > Food Items > Condiments & Sauces > Honey",
+        additionalProperty: [
+          {
+            "@type": "PropertyValue",
+            name: "Ingredients",
+            value: "Natural raw honey",
+          },
+          {
+            "@type": "PropertyValue",
+            name: "Pack Size",
+            value: "200ml",
+          },
+        ],
+        offers: buildOffer(`${SITE_URL}/product/ghar-ka-honey`, "299.00"),
+      },
+      {
+        "@type": "Product",
+        "@id": `${SITE_URL}/product/ghar-ka-honey#500g`,
+        sku: "ao89cm2OF6P7grMhxriz-500g",
+        mpn: "GKO-HNY-500",
+        name: "GHAR KA HONEY - 500g",
+        description:
+          "Enjoy the natural sweetness, delicate floral notes, and rich aroma of Ghar Ka Honey. Convenient 500g pack.",
+        size: "500g",
+        image: PRODUCT_IMAGES.HONEY,
+        brand: { "@type": "Brand", name: SITE_NAME },
+        countryOfOrigin: { "@type": "Country", name: "India" },
+        category:
+          "Food, Beverages & Tobacco > Food Items > Condiments & Sauces > Honey",
+        additionalProperty: [
+          {
+            "@type": "PropertyValue",
+            name: "Ingredients",
+            value: "Natural raw honey",
+          },
+          {
+            "@type": "PropertyValue",
+            name: "Pack Size",
+            value: "500g",
+          },
+        ],
+        offers: buildOffer(`${SITE_URL}/product/ghar-ka-honey`, "499.00"),
+      },
+    ],
+  },
+
+  // 3. PAHADI SALT (Single Product - 100g)
+  {
+    "@type": "Product",
+    "@id": `${SITE_URL}/product/pahadi-salt-with-dhaniya-garlic-and-green-chillies#product`,
+    sku: "ehZZCz1I6DHi4w6dhLRg",
+    mpn: "GKO-SLT-100",
+    name: "Pahadi Salt with Dhaniya, Garlic and Green Chillies",
+    description:
+      "Bring an aromatic Pahadi-style seasoning to everyday meals. Himalayan salt is combined with coriander, garlic, and green chilli for savory, herby flavor with a gentle chilli kick.",
+    size: "100g",
+    image: PRODUCT_IMAGES.PAHADI_SALT,
+    brand: { "@type": "Brand", name: SITE_NAME },
+    countryOfOrigin: { "@type": "Country", name: "India" },
+    category: "Food, Beverages & Tobacco > Food Items > Seasonings & Spices",
+    additionalProperty: [
+      {
+        "@type": "PropertyValue",
+        name: "Ingredients",
+        value: "Salt, garlic, coriander and green chilli",
+      },
+      {
+        "@type": "PropertyValue",
+        name: "Pack Size",
+        value: "100g",
+      },
+    ],
+    offers: buildOffer(
+      `${SITE_URL}/product/pahadi-salt-with-dhaniya-garlic-and-green-chillies`,
+      "99.00",
+    ),
+  },
+];
 
 // ────────────────────────────────────────────────────────────────────────────
 // HOOKS FOR RESPONSIVE DESIGN & VIEWPORT DETECTION
@@ -607,7 +332,7 @@ const useIsMobile = () => {
 };
 
 // ────────────────────────────────────────────────────────────────────────────
-// VIEWPORT LAZY LOADER - REDUCES INITIAL LOAD, IMPROVES CORE WEB VITALS
+// VIEWPORT LAZY LOADER
 // ────────────────────────────────────────────────────────────────────────────
 
 const ViewportLoader = memo(({ children, rootMargin = "250px" }) => {
@@ -636,20 +361,18 @@ const ViewportLoader = memo(({ children, rootMargin = "250px" }) => {
 ViewportLoader.displayName = "ViewportLoader";
 
 // ────────────────────────────────────────────────────────────────────────────
-// MAIN HOMEPAGE COMPONENT WITH HELMET SEO OPTIMIZATION
+// MAIN HOMEPAGE COMPONENT
 // ────────────────────────────────────────────────────────────────────────────
 
 const HomePage = () => {
   const isMobile = useIsMobile();
   const {
     products: homeProducts = {},
-    categories = [],
-    collections = [],
-    loading = false,
     loadingKeys = [],
     errors = {},
     refetchProducts,
   } = useHomepageProducts(homepageSections);
+
   const allHomepageProducts = useMemo(() => {
     const productsById = new Map();
     Object.values(homeProducts)
@@ -661,6 +384,260 @@ const HomePage = () => {
       });
     return [...productsById.values()];
   }, [homeProducts]);
+
+  // Attach genuine backend ratings & reviews dynamically (never static fake reviews)
+  const enrichedCatalogSchemas = useMemo(() => {
+    const attachRealReviews = (productNode, groupId) => {
+      const matched = allHomepageProducts.find(
+        (p) =>
+          p?.id === productNode.sku ||
+          p?.id === groupId ||
+          (p?.slug && productNode.offers?.url?.includes(p.slug)),
+      );
+      if (!matched) return productNode;
+
+      const updated = { ...productNode };
+      const ratingVal = Number(matched.rating || matched.averageRating || 0);
+      const countVal = Number(
+        matched.reviewCount || matched.reviews?.length || 0,
+      );
+
+      if (ratingVal > 0 && countVal > 0) {
+        updated.aggregateRating = {
+          "@type": "AggregateRating",
+          ratingValue: ratingVal.toFixed(1),
+          reviewCount: String(countVal),
+          bestRating: "5",
+          worstRating: "1",
+        };
+      }
+
+      if (Array.isArray(matched.reviews) && matched.reviews.length > 0) {
+        const validReviews = matched.reviews
+          .filter((r) => Number(r?.rating) > 0 && (r?.comment || r?.reviewBody))
+          .slice(0, 3)
+          .map((r) => ({
+            "@type": "Review",
+            author: {
+              "@type": "Person",
+              name: r.userName || r.author || "Verified Buyer",
+            },
+            datePublished: r.createdAt
+              ? new Date(r.createdAt).toISOString().split("T")[0]
+              : "2026-11-01",
+            reviewBody: r.comment || r.reviewBody,
+            reviewRating: {
+              "@type": "Rating",
+              ratingValue: String(r.rating),
+              bestRating: "5",
+              worstRating: "1",
+            },
+          }));
+
+        if (validReviews.length > 0) {
+          updated.review = validReviews;
+        }
+      }
+
+      return updated;
+    };
+
+    return BASE_CATALOG_SCHEMAS.map((entry) => {
+      if (
+        entry["@type"] === "ProductGroup" &&
+        Array.isArray(entry.hasVariant)
+      ) {
+        return {
+          ...entry,
+          hasVariant: entry.hasVariant.map((variant) =>
+            attachRealReviews(variant, entry.productGroupID),
+          ),
+        };
+      }
+      return attachRealReviews(entry, entry.sku);
+    });
+  }, [allHomepageProducts]);
+
+  // Master Schema.org Graph unlocking Google Shopping, Brand Profile & Rich Snippets
+  const masterSchema = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "LocalBusiness",
+          "@id": `${SITE_URL}/#localbusiness`,
+          name: SITE_NAME,
+          alternateName: ["Ghar Ka Organic Uttarakhand", "GKO"],
+          description:
+            "Authentic Himalayan organic food brand from Nainital, Uttarakhand offering homemade Mirch Ka Achar (Green Chilly Pickle), natural raw honey, and Pahadi Salt.",
+          image: OG_COVER,
+          logo: `${SITE_URL}/logo/gharka-logo-full.png`,
+          telephone: "+91-9897447525",
+          email: "gharkaorganic@gmail.com",
+          url: `${SITE_URL}/`,
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "Ward No. 2, Nalni",
+            addressLocality: "Nainital",
+            addressRegion: "Uttarakhand",
+            postalCode: "263002",
+            addressCountry: "IN",
+          },
+          geo: {
+            "@type": "GeoCoordinates",
+            latitude: 29.3459,
+            longitude: 79.5618,
+          },
+          areaServed: {
+            "@type": "Country",
+            name: "India",
+          },
+          sameAs: [
+            "https://www.instagram.com/gharkaorganic/",
+            "https://www.facebook.com/gharkaorganic",
+          ],
+          priceRange: "₹99 – ₹499",
+          openingHoursSpecification: [
+            {
+              "@type": "OpeningHoursSpecification",
+              dayOfWeek: [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+              ],
+              opens: "09:00",
+              closes: "18:00",
+            },
+            {
+              "@type": "OpeningHoursSpecification",
+              dayOfWeek: "Sunday",
+              opens: "10:00",
+              closes: "16:00",
+            },
+          ],
+        },
+        {
+          "@type": "WebPage",
+          "@id": `${SITE_URL}/#webpage`,
+          url: `${SITE_URL}/`,
+          name: "Ghar Ka Organic – Mirch Ka Achar, Natural Raw Honey & Pahadi Salt from Uttarakhand",
+          description:
+            "Buy authentic Himalayan organic food from Uttarakhand. Ghar Ka Organic offers homemade Mirch Ka Achar, natural raw honey & Pahadi Salt with free shipping across India.",
+          isPartOf: { "@id": `${SITE_URL}/#website` },
+          about: { "@id": `${SITE_URL}/#organization` },
+          primaryImageOfPage: {
+            "@type": "ImageObject",
+            url: OG_COVER,
+            width: 1200,
+            height: 630,
+          },
+          speakable: {
+            "@type": "SpeakableSpecification",
+            cssSelector: [
+              "h1",
+              "h2",
+              ".our-story",
+              "[data-testid='product-title']",
+            ],
+          },
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": `${SITE_URL}/#breadcrumb`,
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: `${SITE_URL}/`,
+            },
+          ],
+        },
+        {
+          "@type": "SiteLinksSearchBox",
+          "@id": `${SITE_URL}/#searchbox`,
+          url: `${SITE_URL}/`,
+          potentialAction: {
+            "@type": "SearchAction",
+            target: `${SITE_URL}/collections?search={search_term_string}`,
+            "query-input": "required name=search_term_string",
+          },
+        },
+        {
+          "@type": "ItemList",
+          "@id": `${SITE_URL}/#bestsellers`,
+          name: "Ghar Ka Organic Products",
+          description:
+            "Authentic Himalayan organic food products from Ghar Ka Organic",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "GHAR KA Mirch Ka Achar (Green Chilly Pickle)",
+              url: `${SITE_URL}/product/ghar-ka-mirch-ka-achar-green-chilly-pickle`,
+              image: PRODUCT_IMAGES.MIRCH_ACHAR[0],
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "GHAR KA HONEY",
+              url: `${SITE_URL}/product/ghar-ka-honey`,
+              image: PRODUCT_IMAGES.HONEY[0],
+            },
+            {
+              "@type": "ListItem",
+              position: 3,
+              name: "Pahadi Salt with Dhaniya, Garlic and Green Chillies",
+              url: `${SITE_URL}/product/pahadi-salt-with-dhaniya-garlic-and-green-chillies`,
+              image: PRODUCT_IMAGES.PAHADI_SALT[0],
+            },
+          ],
+        },
+        {
+          "@type": "FAQPage",
+          mainEntity: [
+            {
+              "@type": "Question",
+              name: "What products does Ghar Ka Organic offer?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Ghar Ka Organic offers authentic Himalayan organic food products from Uttarakhand including GHAR KA Mirch Ka Achar (Green Chilly Pickle in 200g and 400g packs), GHAR KA HONEY (natural raw honey in 200ml and 500g packs), and Pahadi Salt with Dhaniya, Garlic and Green Chillies (100g pack).",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "Are Ghar Ka Organic products free from artificial preservatives?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Yes. Every product is made in small batches in Uttarakhand using simple, natural ingredients—such as green chillies, mustard oil, Himalayan salt, coriander, garlic, and raw honey—without artificial colors or synthetic preservatives.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "Do you offer free shipping across India?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Yes, we deliver across India with free shipping (₹0) and typical delivery in 4–7 business days.",
+              },
+            },
+            {
+              "@type": "Question",
+              name: "What is your return policy?",
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "We offer a 7-day return window via mail-in return with free return shipping and no restocking fees.",
+              },
+            },
+          ],
+        },
+        ...enrichedCatalogSchemas,
+      ],
+    }),
+    [enrichedCatalogSchemas],
+  );
 
   const getProducts = useCallback(
     (key) => {
@@ -711,163 +688,128 @@ const HomePage = () => {
 
   return (
     <main className="min-h-screen bg-white">
-      {/* ┌─────────────────────────────────────────────────────────────┐ */}
-      {/* │ HELMET - DYNAMIC SEO TAGS (TITLE, OG, SCHEMA, PRELOAD)     │ */}
-      {/* └─────────────────────────────────────────────────────────────┘ */}
       <Helmet>
-        {/* PERFORMANCE: RESOURCE HINTS FOR CORE WEB VITALS */}
         <link rel="preconnect" href="https://res.cloudinary.com" />
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
-        {/* ┌───────────────────────────────────────────────────────┐ */}
-        {/* │ CRITICAL SEO TAGS - TITLE, DESCRIPTION, CANONICAL    │ */}
-        {/* └───────────────────────────────────────────────────────┘ */}
-        <title>Ghar Ka Organic – Pahadi Pickles, Honey & Desi Ghee</title>
+
+        <title>
+          Ghar Ka Organic – Mirch Ka Achar, Raw Honey &amp; Pahadi Salt from
+          Uttarakhand
+        </title>
         <meta
           name="description"
-          content="Buy authentic Himalayan organic food from Uttarakhand. Ghar Ka Organic offers homemade pahadi pickles, kumaoni achar, raw forest honey, bilona desi ghee & traditional chutneys. Free shipping across India."
+          content="Shop authentic Himalayan organic food from Uttarakhand. Ghar Ka Organic offers homemade Mirch Ka Achar (Green Chilly Pickle), natural raw honey &amp; Pahadi Salt with dhaniya, garlic and green chillies. Free shipping across India."
         />
         <meta
           name="keywords"
-          content="pahadi achar, kumaoni achar, bilona desi ghee, pahadi honey, Uttarakhand organic food, homemade pickles, organic desi ghee, traditional food products"
+          content="ghar ka organic, mirch ka achar, green chilly pickle, pahadi achar, ghar ka honey, raw honey uttarakhand, pahadi salt, himalayan organic food"
         />
-        <link rel="canonical" href="https://gharkaorganic.com/" />
+        <link rel="canonical" href={`${SITE_URL}/`} />
 
-        {/* ┌───────────────────────────────────────────────────────┐ */}
-        {/* │ OPEN GRAPH - SOCIAL & AI CRAWLER SHARING             │ */}
-        {/* └───────────────────────────────────────────────────────┘ */}
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content={SITE_NAME} />
         <meta
           property="og:title"
-          content="Ghar Ka Organic – Himalayan Homemade Pickles, Honey & Desi Ghee"
+          content="Ghar Ka Organic – Mirch Ka Achar, Raw Honey &amp; Pahadi Salt"
         />
         <meta
           property="og:description"
-          content="Traditional Uttarakhand food products — pahadi pickles, kumaoni achar, raw pahadi honey, bilona desi ghee. Made at home, delivered across India."
+          content="Authentic Himalayan organic food products from Uttarakhand — Mirch Ka Achar, natural raw honey, and Pahadi Salt. Free shipping across India."
         />
-        <meta property="og:url" content="https://gharkaorganic.com/" />
-        <meta
-          property="og:image"
-          content="https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/og-cover-gko.webp"
-        />
+        <meta property="og:url" content={`${SITE_URL}/`} />
+        <meta property="og:image" content={OG_COVER} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:locale" content="en_IN" />
 
-        {/* ┌───────────────────────────────────────────────────────┐ */}
-        {/* │ TWITTER CARD - X / TWITTER SHARING                   │ */}
-        {/* └───────────────────────────────────────────────────────┘ */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta
           name="twitter:title"
-          content="Ghar Ka Organic – Pahadi Pickles, Honey & Desi Ghee"
+          content="Ghar Ka Organic – Mirch Ka Achar, Raw Honey &amp; Pahadi Salt"
         />
         <meta
           name="twitter:description"
-          content="Pure Pahadi food products from Uttarakhand. Homemade, chemical-free, delivered across India."
+          content="Pure Himalayan organic food products from Uttarakhand with free shipping across India."
         />
-        <meta
-          name="twitter:image"
-          content="https://res.cloudinary.com/dwgro3zo7/image/upload/v1776691741/og-cover-gko.webp"
-        />
+        <meta name="twitter:image" content={OG_COVER} />
 
-        {/* ┌───────────────────────────────────────────────────────┐ */}
-        {/* │ 🚀 MASTER SCHEMA GRAPH 🚀                             │ */}
-        {/* │ ✅ Organization, LocalBusiness, WebSite, WebPage       │ */}
-        {/* │ ✅ BreadcrumbList, SiteLinksSearchBox                  │ */}
-        {/* │ ✅ ItemList (6 items), FAQPage                        │ */}
-        {/* │ ✅ AggregateOffer (price range)                       │ */}
-        {/* │ ✅ 5 Products with Reviews + Complete Offer Fields    │ */}
-        {/* │ ✅ hasMerchantReturnPolicy + shippingDetails          │ */}
-        {/* └───────────────────────────────────────────────────────┘ */}
         <script type="application/ld+json">
-          {JSON.stringify(MASTER_SCHEMA)}
+          {JSON.stringify(masterSchema)}
         </script>
       </Helmet>
 
-      {/* ┌─────────────────────────────────────────────────────────────┐ */}
-      {/* │ HERO SECTION                                                 │ */}
-      {/* └─────────────────────────────────────────────────────────────┘ */}
+      {/* HERO SECTION */}
       <section className="w-full">
         <HeroSection />
       </section>
 
       <ProductSectionTabs title="New to Ghar Ka Organic? Start Here" />
 
-      {/* ── 2. NEW ARRIVALS / BEST SELLERS ── */}
+      {/* NEW ARRIVALS / BEST SELLERS */}
       {renderSection("new")}
 
-      {/* ── 3. OUR STORY SIGNATURE 2-COLUMN COMPONENT ── */}
+      {/* OUR STORY */}
       <ViewportLoader>
         <OurStoryComponent />
       </ViewportLoader>
 
-
-      {/* ── 4. SIGNATURE PAHADI PICKLES & ACHAR ── */}
+      {/* SIGNATURE PAHADI PICKLES & ACHAR */}
       {renderSection("pickle")}
 
-      {/* ── 6. RAW FOREST HONEY ── */}
+      {/* RAW FOREST HONEY */}
       {renderSection("honey")}
 
-      {/* ── 7. TRADITIONAL A2 BILONA GHEE ── */}
+      {/* TRADITIONAL A2 BILONA GHEE */}
       {renderSection("ghee")}
 
-      {/* ┌─────────────────────────────────────────────────────────────┐ */}
-      {/* │ CUSTOMER REVIEWS - SOCIAL PROOF FOR RICH RESULTS            │ */}
-      {/* └─────────────────────────────────────────────────────────────┘ */}
+      {/* CUSTOMER REVIEWS */}
       <ViewportLoader rootMargin="300px">
         <ReviewsGrid showSchema={false} />
       </ViewportLoader>
 
+      {/* LATEST BLOGS */}
       <ViewportLoader rootMargin="300px">
         <Suspense fallback={null}>
           <LatestBlogSection />
         </Suspense>
       </ViewportLoader>
 
-      {/* ┌─────────────────────────────────────────────────────────────┐ */}
-      {/* │ FAQ SECTION - FEATURED SNIPPETS                             │ */}
-      {/* └─────────────────────────────────────────────────────────────┘ */}
+      {/* FAQ SECTION */}
       <FAQSection />
 
-      {/* ┌─────────────────────────────────────────────────────────────┐ */}
-      {/* │ FOOTER CATEGORY & SITELINKS NAV - SEMANTIC SEO              │ */}
-      {/* │ ✅ Includes Customer Reviews link for sitelinks             │ */}
-      {/* └─────────────────────────────────────────────────────────────┘ */}
+      {/* FOOTER CATEGORY & PRODUCT LINKS */}
       <nav
         className="max-w-7xl mx-auto px-4 py-8"
         aria-label="Footer category links">
         <div className="flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm">
           {[
-            { label: "Pahadi Achar Online", link: "/pahadi-achar-online" },
             {
-              label: "Homemade Mango Pickle",
-              link: "/buy-mango-pickle-online",
-            },
-            { label: "Nimbu Achar Online", link: "/nimbu-achar-online" },
-            { label: "Buy Desi Ghee Online", link: "/buy-desi-ghee-online" },
-            {
-              label: "Bilona Ghee Uttarakhand",
-              link: "/bilona-ghee-uttarakhand",
-            },
-            { label: "Raw Honey Uttarakhand", link: "/raw-honey-uttarakhand" },
-            { label: "Natural Forest Honey", link: "/natural-honey-india" },
-            {
-              label: "Pahadi Products Online",
-              link: "/pahadi-products-online",
+              label: "Mirch Ka Achar (Green Chilly Pickle)",
+              to: "/product/ghar-ka-mirch-ka-achar-green-chilly-pickle",
             },
             {
-              label: "Traditional Kumaoni Food",
-              link: "/traditional-kumaoni-food",
+              label: "GHAR KA HONEY",
+              to: "/product/ghar-ka-honey",
             },
-            { label: "Customer Reviews", link: "/reviews" },
+            {
+              label: "Pahadi Salt with Dhaniya, Garlic & Green Chillies",
+              to: "/product/pahadi-salt-with-dhaniya-garlic-and-green-chillies",
+            },
+            {
+              label: "All Organic Products",
+              to: "/collections",
+            },
+            {
+              label: "Customer Reviews",
+              to: "/reviews",
+            },
           ].map((item) => (
-            <a
-              key={item.link}
-              href={item.link}
+            <Link
+              key={item.to}
+              to={item.to}
               className="font-medium text-gray-500 transition-colors hover:text-[#315c3c] hover:underline underline-offset-4">
               {item.label}
-            </a>
+            </Link>
           ))}
         </div>
       </nav>

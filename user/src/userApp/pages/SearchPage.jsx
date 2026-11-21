@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { Loader2 } from "lucide-react";
-import { useSearchParams, useNavigate, Link } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import {
   MagnifyingGlassIcon,
@@ -41,7 +41,7 @@ const SearchPage = () => {
   const [inputValue, setInputValue] = useState(queryParam);
   const [showLiveDropdown, setShowLiveDropdown] = useState(false);
 
-  // Filters state (matching Screenshot: Availability, Price, Product)
+  // Filters state (Availability, Price, Product)
   const [filterAvailability, setFilterAvailability] = useState("all");
   const [filterPrice, setFilterPrice] = useState("all");
   const [filterProduct, setFilterProduct] = useState("all");
@@ -155,7 +155,7 @@ const SearchPage = () => {
       );
     }).slice(0, 4);
 
-    // 3. Generate Search Query Suggestions
+    // 3. Generate Search Query Suggestions synced with current catalog
     const rawSuggestions = new Set();
     allProducts.forEach((p) => {
       const name = p.name || "";
@@ -169,18 +169,18 @@ const SearchPage = () => {
     });
 
     const staplePhrases = [
-      "a2 badri cow ghee",
-      "himalayan village a2 ghee",
-      "bhimtal raw forest honey",
-      "pahadi aam achar",
-      "kumaoni nimbu achar",
-      "pisyu loon flavoured salt",
-      "himalayan herbal salt",
-      "wild himalayan timur pepper",
-      "jakhiya seeds uttarakhand",
-      "munsiyari white pahadi rajma",
-      "organic bhatt ki dal",
-      "pure pahadi haldi powder",
+      "ghar ka mirch ka achar",
+      "green chilly pickle",
+      "pahadi mirch achar 200g",
+      "pahadi mirch achar 400g",
+      "ghar ka honey",
+      "natural raw honey",
+      "ghar ka honey 200ml",
+      "ghar ka honey 500g",
+      "pahadi salt",
+      "pahadi salt with dhaniya garlic and green chillies",
+      "himalayan salt seasoning",
+      "uttarakhand organic products",
     ];
 
     staplePhrases.forEach((phrase) => {
@@ -233,20 +233,21 @@ const SearchPage = () => {
     }
 
     // Price filter
-    if (filterPrice === "under500") {
-      result = result.filter((p) => Number(p.price || 0) < 500);
-    } else if (filterPrice === "500to1500") {
+    if (filterPrice === "under250") {
+      result = result.filter((p) => Number(p.price || 0) < 250);
+    } else if (filterPrice === "250to500") {
       result = result.filter(
-        (p) => Number(p.price || 0) >= 500 && Number(p.price || 0) <= 1500
+        (p) => Number(p.price || 0) >= 250 && Number(p.price || 0) <= 500,
       );
-    } else if (filterPrice === "above1500") {
-      result = result.filter((p) => Number(p.price || 0) > 1500);
+    } else if (filterPrice === "above500") {
+      result = result.filter((p) => Number(p.price || 0) > 500);
     }
 
     // Product Category filter
     if (filterProduct !== "all") {
       result = result.filter((p) => {
-        const text = `${p.name} ${p.collectionTypes?.join(" ")} ${p.slug}`.toLowerCase();
+        const text =
+          `${p.name || ""} ${p.collectionTypes?.join(" ") || ""} ${p.slug || ""}`.toLowerCase();
         return text.includes(filterProduct.toLowerCase());
       });
     }
@@ -258,91 +259,81 @@ const SearchPage = () => {
       result.sort((a, b) => Number(b.price || 0) - Number(a.price || 0));
     } else if (sortBy === "newest") {
       const getMs = (val) =>
-        val?.toMillis?.() ?? (typeof val?.seconds === "number" ? val.seconds * 1000 : 0);
+        val?.toMillis?.() ??
+        (typeof val?.seconds === "number" ? val.seconds * 1000 : 0);
       result.sort((a, b) => getMs(b.createdAt) - getMs(a.createdAt));
     }
 
     return result;
-  }, [allProducts, queryParam, filterAvailability, filterPrice, filterProduct, sortBy]);
+  }, [
+    allProducts,
+    queryParam,
+    filterAvailability,
+    filterPrice,
+    filterProduct,
+    sortBy,
+  ]);
 
   /* ─────────────────────────────────────────────────────────────
-     DYNAMIC SECTION HEADER (MATCHING USER SCREENSHOT EXACTLY)
-     e.g. "Pure Pahadi Honey"
-     "Raw forest honey collected from Himalayan flowers, unprocessed and chemical-free."
+     DYNAMIC SECTION HEADER (SYNCED WITH CURRENT CATALOG)
   ───────────────────────────────────────────────────────────── */
   const sectionHeader = useMemo(() => {
     const q = queryParam.trim().toLowerCase();
     const effectiveKey = filterProduct !== "all" ? filterProduct : q;
 
-    // Check matching section from productCollection.js
     if (effectiveKey.includes("honey")) {
       const s = productSections.find((x) => x.key === "honey");
       return {
-        title: s?.title || "Pure Pahadi Honey",
+        title: s?.title || "GHAR KA HONEY",
         subtitle:
           s?.subtitle ||
-          "Raw forest honey collected from Himalayan flowers, unprocessed and chemical-free.",
+          "Natural raw honey with delicate floral notes and a rich aroma in 200ml and 500g packs.",
       };
     }
-    if (effectiveKey.includes("ghee")) {
-      const s = productSections.find((x) => x.key === "ghee");
-      return {
-        title: s?.title || "Pure Desi Cow Ghee",
-        subtitle:
-          s?.subtitle ||
-          "Traditional A2 cow ghee made using bilona method for authentic taste and nutrition.",
-      };
-    }
-    if (effectiveKey.includes("pickle") || effectiveKey.includes("achar") || effectiveKey.includes("aam") || effectiveKey.includes("nimbu")) {
+    if (
+      effectiveKey.includes("pickle") ||
+      effectiveKey.includes("achar") ||
+      effectiveKey.includes("mirch") ||
+      effectiveKey.includes("chilly") ||
+      effectiveKey.includes("chilli")
+    ) {
       const s = productSections.find((x) => x.key === "pickle");
       return {
-        title: s?.title || "Homemade Pahadi Pickles",
+        title: s?.title || "GHAR KA Mirch Ka Achar (Green Chilly Pickle)",
         subtitle:
           s?.subtitle ||
-          "Traditional Kumaoni pickles made using authentic recipes without preservatives.",
+          "Made with green chillies, mustard oil, salt and spices for dal, rice, roti, or paratha.",
       };
     }
-    if (effectiveKey.includes("spice") || effectiveKey.includes("masala") || effectiveKey.includes("timur") || effectiveKey.includes("jakhiya")) {
-      const s = productSections.find((x) => x.key === "spices");
-      return {
-        title: s?.title || "Fresh Pahadi Spices",
-        subtitle:
-          s?.subtitle ||
-          "Aromatic hand-ground spices from Uttarakhand for authentic Indian cooking.",
-      };
-    }
-    if (effectiveKey.includes("salt") || effectiveKey.includes("loon") || effectiveKey.includes("namak")) {
+    if (
+      effectiveKey.includes("salt") ||
+      effectiveKey.includes("dhaniya") ||
+      effectiveKey.includes("garlic") ||
+      effectiveKey.includes("pahadi")
+    ) {
       const s = productSections.find((x) => x.key === "pahadiSalts");
       return {
-        title: s?.title || "Pahadi Herbal Salts",
+        title:
+          s?.title || "Pahadi Salt with Dhaniya, Garlic and Green Chillies",
         subtitle:
           s?.subtitle ||
-          "Unique Himalayan salts infused with natural herbs and traditional minerals.",
-      };
-    }
-    if (effectiveKey.includes("dal") || effectiveKey.includes("rajma") || effectiveKey.includes("bhatt")) {
-      const s = productSections.find((x) => x.key === "pahadiDals");
-      return {
-        title: s?.title || "Organic Pahadi Dals",
-        subtitle:
-          s?.subtitle ||
-          "Nutritious and naturally grown pulses from Himalayan farms.",
+          "Himalayan salt combined with coriander, garlic, and green chilli for fruit, curd, salads, chaas, vegetables and snacks.",
       };
     }
 
     if (q) {
       return {
         title: `Results for "${queryParam}"`,
-        subtitle: `Found ${filteredProducts.length} authentic Himalayan staple${
+        subtitle: `Found ${filteredProducts.length} Himalayan organic product${
           filteredProducts.length === 1 ? "" : "s"
         } matching your search.`,
       };
     }
 
     return {
-      title: "All Himalayan Organic Products",
+      title: "Ghar Ka Organic Products",
       subtitle:
-        "Browse our complete range of natural Himalayan foods handcrafted in Uttarakhand.",
+        "Browse authentic Himalayan organic food products from Uttarakhand with free shipping across India.",
     };
   }, [queryParam, filterProduct, filteredProducts.length]);
 
@@ -391,16 +382,17 @@ const SearchPage = () => {
           <Loader2 className="animate-spin text-[#315c3c] w-12 h-12" />
         </div>
       )}
+
       {/* ─────────────── SEO HELMET ─────────────── */}
       <Helmet>
         <title>
           {queryParam
             ? `Search: ${filteredProducts.length} results found for "${queryParam}" | Ghar Ka Organic`
-            : "Search Organic Himalayan Products & Pages | Ghar Ka Organic"}
+            : "Search Mirch Ka Achar, Raw Honey & Pahadi Salt | Ghar Ka Organic"}
         </title>
         <meta
           name="description"
-          content="Search authentic Himalayan A2 cow ghee, raw forest honey, sun-dried pickles, and direct site pages on Ghar Ka Organic."
+          content="Search Ghar Ka Mirch Ka Achar (Green Chilly Pickle), Ghar Ka Honey, and Pahadi Salt with Dhaniya, Garlic and Green Chillies from Uttarakhand."
         />
         <link rel="canonical" href="https://gharkaorganic.com/search" />
       </Helmet>
@@ -411,12 +403,11 @@ const SearchPage = () => {
           Search results
         </h1>
 
-        {/* ─────────────── SEARCH INPUT (MATCHING SCREENSHOT) ─────────────── */}
+        {/* ─────────────── SEARCH INPUT ─────────────── */}
         <div ref={searchBoxRef} className="relative max-w-2xl mx-auto mb-8">
           <form
             onSubmit={handleSubmit}
             className="relative flex items-center border border-gray-400 focus-within:border-gray-900 bg-white transition-colors">
-            {/* INPUT WRAPPER WITH TINY "Search" LABEL */}
             <div className="flex-1 py-1.5 px-4">
               <label
                 htmlFor="search-results-input"
@@ -439,7 +430,6 @@ const SearchPage = () => {
               />
             </div>
 
-            {/* ICONS: CLEAR (×) & SEARCH MAGNIFYING GLASS */}
             <div className="flex items-center pr-3 gap-2">
               {inputValue && (
                 <button
@@ -460,18 +450,12 @@ const SearchPage = () => {
             </div>
           </form>
 
-          {/* ─────────────────────────────────────────────────────────────
-             AUTOCOMPLETE DROPDOWN (MATCHING SCREENSHOT + PAGE SUGGESTIONS)
-             Left: SUGGESTIONS & PAGE SUGGESTIONS
-             Right: PRODUCTS
-             Bottom: Search for "{query}" →
-          ───────────────────────────────────────────────────────────── */}
+          {/* ─────────────── AUTOCOMPLETE DROPDOWN ─────────────── */}
           {showLiveDropdown && inputValue.trim().length > 0 && (
             <div className="absolute left-0 right-0 top-full bg-white border border-gray-300 border-t-0 shadow-2xl z-50 overflow-hidden text-left">
               <div className="grid grid-cols-1 md:grid-cols-12 divide-y md:divide-y-0 md:divide-x divide-gray-100 p-4">
                 {/* LEFT COLUMN: SUGGESTIONS & PAGE SUGGESTIONS */}
                 <div className="md:col-span-5 pr-0 md:pr-4 flex flex-col justify-between">
-                  {/* QUERY SUGGESTIONS */}
                   <div>
                     <h4 className="text-[11px] font-semibold tracking-wider text-gray-400 uppercase mb-2.5">
                       Suggestions
@@ -489,23 +473,25 @@ const SearchPage = () => {
                           </li>
                         ))
                       ) : (
-                        <li className="text-xs text-gray-400">No suggestions</li>
+                        <li className="text-xs text-gray-400">
+                          No suggestions
+                        </li>
                       )}
                     </ul>
                   </div>
 
-                  {/* PAGE SUGGESTIONS (SHOWING URL & DIRECT REDIRECT) */}
                   {autocompleteData.pages.length > 0 && (
                     <div className="pt-3 mt-3 border-t border-gray-100">
                       <h4 className="text-[11px] font-semibold tracking-wider text-gray-400 uppercase mb-2">
-                        Pages & Collections
+                        Pages &amp; Collections
                       </h4>
                       <ul className="space-y-2">
                         {autocompleteData.pages.map((pg) => (
                           <li key={pg.id}>
-                            <div
+                            <button
+                              type="button"
                               onClick={() => handleSelectPage(pg)}
-                              className="cursor-pointer group flex items-center justify-between py-0.5">
+                              className="w-full text-left cursor-pointer group flex items-center justify-between py-0.5">
                               <div className="min-w-0 pr-2">
                                 <span className="text-xs text-gray-900 group-hover:text-[#8F6646] group-hover:underline truncate block">
                                   {pg.title}
@@ -515,7 +501,7 @@ const SearchPage = () => {
                                 </span>
                               </div>
                               <ArrowRightIcon className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#8F6646] flex-shrink-0" />
-                            </div>
+                            </button>
                           </li>
                         ))}
                       </ul>
@@ -532,30 +518,32 @@ const SearchPage = () => {
                     {autocompleteData.products.length > 0 ? (
                       autocompleteData.products.map((prod) => {
                         const price = Number(prod.price || 0);
-                        const orig = Number(prod.originalPrice ?? prod.mrp ?? 0);
+                        const orig = Number(
+                          prod.originalPrice ?? prod.mrp ?? 0,
+                        );
                         const img =
                           prod.banner ||
                           prod.images?.[0] ||
-                          "/banners/ghee-1500x500.webp";
+                          "https://res.cloudinary.com/dwgro3zo7/image/upload/v1790511602/gharka-organic/products/oqkqmdl1gul3fapq2vvc.jpg";
 
                         return (
-                          <div
+                          <button
                             key={prod.id}
+                            type="button"
                             onClick={() => handleSelectProduct(prod)}
-                            className="flex items-center gap-3 cursor-pointer group py-1">
-                            {/* MINI SQUARE THUMBNAIL */}
+                            className="w-full text-left flex items-center gap-3 cursor-pointer group py-1">
                             <div className="w-11 h-11 flex-shrink-0 bg-gray-50 border border-gray-200 p-0.5 rounded overflow-hidden flex items-center justify-center">
                               <img
                                 src={img}
                                 alt={prod.name}
                                 className="w-full h-full object-contain"
                                 onError={(e) => {
-                                  e.target.src = "/banners/ghee-1500x500.webp";
+                                  e.target.src =
+                                    "https://res.cloudinary.com/dwgro3zo7/image/upload/v1790511602/gharka-organic/products/oqkqmdl1gul3fapq2vvc.jpg";
                                 }}
                               />
                             </div>
 
-                            {/* DETAILS */}
                             <div className="min-w-0 flex-1">
                               <p className="text-xs sm:text-sm text-gray-900 group-hover:text-[#8F6646] group-hover:underline truncate font-normal leading-snug">
                                 {prod.name}
@@ -571,7 +559,7 @@ const SearchPage = () => {
                                 )}
                               </div>
                             </div>
-                          </div>
+                          </button>
                         );
                       })
                     ) : (
@@ -582,12 +570,13 @@ const SearchPage = () => {
               </div>
 
               {/* BOTTOM ROW: Search for "{query}" → */}
-              <div
+              <button
+                type="button"
                 onClick={handleSubmit}
-                className="border-t border-gray-200 px-4 py-3 flex items-center justify-between text-xs sm:text-sm text-gray-800 hover:bg-gray-50 cursor-pointer font-normal">
-                <span>Search for "{inputValue}"</span>
+                className="w-full border-t border-gray-200 px-4 py-3 flex items-center justify-between text-xs sm:text-sm text-gray-800 hover:bg-gray-50 cursor-pointer font-normal">
+                <span>Search for &ldquo;{inputValue}&rdquo;</span>
                 <ArrowRightIcon className="w-4 h-4 text-gray-500" />
-              </div>
+              </button>
             </div>
           )}
         </div>
@@ -605,9 +594,7 @@ const SearchPage = () => {
               <button
                 type="button"
                 onClick={() =>
-                  setOpenFilterMenu(
-                    openFilterMenu === "avail" ? null : "avail"
-                  )
+                  setOpenFilterMenu(openFilterMenu === "avail" ? null : "avail")
                 }
                 className="flex items-center gap-1 hover:text-black">
                 Availability{" "}
@@ -622,7 +609,9 @@ const SearchPage = () => {
                       setOpenFilterMenu(null);
                     }}
                     className={`block w-full text-left px-3 py-1.5 hover:bg-gray-50 ${
-                      filterAvailability === "all" ? "font-bold text-[#8F6646]" : ""
+                      filterAvailability === "all"
+                        ? "font-bold text-[#8F6646]"
+                        : ""
                     }`}>
                     All
                   </button>
@@ -661,9 +650,7 @@ const SearchPage = () => {
               <button
                 type="button"
                 onClick={() =>
-                  setOpenFilterMenu(
-                    openFilterMenu === "price" ? null : "price"
-                  )
+                  setOpenFilterMenu(openFilterMenu === "price" ? null : "price")
                 }
                 className="flex items-center gap-1 hover:text-black">
                 Price <ChevronDownIcon className="w-3.5 h-3.5 text-gray-500" />
@@ -684,39 +671,41 @@ const SearchPage = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      setFilterPrice("under500");
+                      setFilterPrice("under250");
                       setOpenFilterMenu(null);
                     }}
                     className={`block w-full text-left px-3 py-1.5 hover:bg-gray-50 ${
-                      filterPrice === "under500" ? "font-bold text-[#8F6646]" : ""
+                      filterPrice === "under250"
+                        ? "font-bold text-[#8F6646]"
+                        : ""
                     }`}>
-                    Under ₹500
+                    Under ₹250
                   </button>
                   <button
                     type="button"
                     onClick={() => {
-                      setFilterPrice("500to1500");
+                      setFilterPrice("250to500");
                       setOpenFilterMenu(null);
                     }}
                     className={`block w-full text-left px-3 py-1.5 hover:bg-gray-50 ${
-                      filterPrice === "500to1500"
+                      filterPrice === "250to500"
                         ? "font-bold text-[#8F6646]"
                         : ""
                     }`}>
-                    ₹500 – ₹1,500
+                    ₹250 – ₹500
                   </button>
                   <button
                     type="button"
                     onClick={() => {
-                      setFilterPrice("above1500");
+                      setFilterPrice("above500");
                       setOpenFilterMenu(null);
                     }}
                     className={`block w-full text-left px-3 py-1.5 hover:bg-gray-50 ${
-                      filterPrice === "above1500"
+                      filterPrice === "above500"
                         ? "font-bold text-[#8F6646]"
                         : ""
                     }`}>
-                    Above ₹1,500
+                    Above ₹500
                   </button>
                 </div>
               )}
@@ -728,14 +717,15 @@ const SearchPage = () => {
                 type="button"
                 onClick={() =>
                   setOpenFilterMenu(
-                    openFilterMenu === "product" ? null : "product"
+                    openFilterMenu === "product" ? null : "product",
                   )
                 }
                 className="flex items-center gap-1 hover:text-black">
-                Product <ChevronDownIcon className="w-3.5 h-3.5 text-gray-500" />
+                Product{" "}
+                <ChevronDownIcon className="w-3.5 h-3.5 text-gray-500" />
               </button>
               {openFilterMenu === "product" && (
-                <div className="absolute left-0 top-full mt-2 w-44 bg-white border border-gray-200 shadow-lg rounded py-1 z-30">
+                <div className="absolute left-0 top-full mt-2 w-48 bg-white border border-gray-200 shadow-lg rounded py-1 z-30">
                   <button
                     type="button"
                     onClick={() => {
@@ -750,13 +740,15 @@ const SearchPage = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      setFilterProduct("ghee");
+                      setFilterProduct("achar");
                       setOpenFilterMenu(null);
                     }}
                     className={`block w-full text-left px-3 py-1.5 hover:bg-gray-50 ${
-                      filterProduct === "ghee" ? "font-bold text-[#8F6646]" : ""
+                      filterProduct === "achar"
+                        ? "font-bold text-[#8F6646]"
+                        : ""
                     }`}>
-                    Desi Ghee
+                    Mirch Ka Achar
                   </button>
                   <button
                     type="button"
@@ -765,20 +757,11 @@ const SearchPage = () => {
                       setOpenFilterMenu(null);
                     }}
                     className={`block w-full text-left px-3 py-1.5 hover:bg-gray-50 ${
-                      filterProduct === "honey" ? "font-bold text-[#8F6646]" : ""
+                      filterProduct === "honey"
+                        ? "font-bold text-[#8F6646]"
+                        : ""
                     }`}>
-                    Raw Honey
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFilterProduct("pickle");
-                      setOpenFilterMenu(null);
-                    }}
-                    className={`block w-full text-left px-3 py-1.5 hover:bg-gray-50 ${
-                      filterProduct === "pickle" ? "font-bold text-[#8F6646]" : ""
-                    }`}>
-                    Pahadi Pickles
+                    GHAR KA HONEY
                   </button>
                   <button
                     type="button"
@@ -789,29 +772,7 @@ const SearchPage = () => {
                     className={`block w-full text-left px-3 py-1.5 hover:bg-gray-50 ${
                       filterProduct === "salt" ? "font-bold text-[#8F6646]" : ""
                     }`}>
-                    Herbal Salts
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFilterProduct("spices");
-                      setOpenFilterMenu(null);
-                    }}
-                    className={`block w-full text-left px-3 py-1.5 hover:bg-gray-50 ${
-                      filterProduct === "spices" ? "font-bold text-[#8F6646]" : ""
-                    }`}>
-                    Pahadi Spices
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFilterProduct("dal");
-                      setOpenFilterMenu(null);
-                    }}
-                    className={`block w-full text-left px-3 py-1.5 hover:bg-gray-50 ${
-                      filterProduct === "dal" ? "font-bold text-[#8F6646]" : ""
-                    }`}>
-                    Organic Dals
+                    Pahadi Salt
                   </button>
                 </div>
               )}
@@ -832,10 +793,10 @@ const SearchPage = () => {
                   {sortBy === "relevance"
                     ? "Relevance"
                     : sortBy === "newest"
-                    ? "Date, new to old"
-                    : sortBy === "priceAsc"
-                    ? "Price, low to high"
-                    : "Price, high to low"}
+                      ? "Date, new to old"
+                      : sortBy === "priceAsc"
+                        ? "Price, low to high"
+                        : "Price, high to low"}
                 </span>
                 <ChevronDownIcon className="w-3.5 h-3.5 text-gray-500" />
               </button>
@@ -897,14 +858,14 @@ const SearchPage = () => {
           </div>
         </div>
 
-        {/* ─────────────── MATCHING PAGES & COLLECTIONS BAR (IF MATCHED) ─────────────── */}
+        {/* ─────────────── MATCHING PAGES & COLLECTIONS BAR ─────────────── */}
         {matchingPages.length > 0 && (
           <div className="mb-10 p-4 sm:p-5 bg-[#fbfaf8] border border-gray-200 rounded-sm">
             <div className="flex items-center justify-between mb-3 border-b border-gray-200 pb-2">
               <div className="flex items-center gap-2">
                 <DocumentTextIcon className="w-4 h-4 text-[#8F6646]" />
                 <h3 className="text-xs font-semibold tracking-wider text-gray-700 uppercase">
-                  Matching Pages & Categories ({matchingPages.length})
+                  Matching Pages &amp; Categories ({matchingPages.length})
                 </h3>
               </div>
               <span className="text-xs text-[#8F6646] font-medium hidden sm:inline">
@@ -914,10 +875,11 @@ const SearchPage = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {matchingPages.slice(0, 6).map((pg) => (
-                <div
+                <button
                   key={pg.id}
+                  type="button"
                   onClick={() => navigate(pg.path)}
-                  className="p-3 bg-white border border-gray-200 hover:border-[#8F6646] cursor-pointer transition-all flex items-center justify-between group shadow-sm hover:shadow">
+                  className="text-left p-3 bg-white border border-gray-200 hover:border-[#8F6646] cursor-pointer transition-all flex items-center justify-between group shadow-sm hover:shadow">
                   <div className="min-w-0 pr-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[#8F6646] block">
                       {pg.categoryLabel || pg.type}
@@ -930,13 +892,13 @@ const SearchPage = () => {
                     </span>
                   </div>
                   <ArrowRightIcon className="w-4 h-4 text-gray-400 group-hover:text-[#8F6646] group-hover:translate-x-0.5 transition-all flex-shrink-0" />
-                </div>
+                </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* ─────────────── DYNAMIC SECTION HEADER (MATCHING USER SCREENSHOT) ─────────────── */}
+        {/* ─────────────── DYNAMIC SECTION HEADER ─────────────── */}
         <div className="mb-8 border-b border-gray-100 pb-4">
           <h2 className="text-2xl sm:text-3xl font-normal text-gray-900 tracking-tight">
             {sectionHeader.title}
@@ -948,7 +910,7 @@ const SearchPage = () => {
           )}
         </div>
 
-        {/* ─────────────── PRODUCTS GRID (USING FULL PRODUCTCARD) ─────────────── */}
+        {/* ─────────────── PRODUCTS GRID ─────────────── */}
         {isLoading ? (
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10 py-12">
             {[...Array(8)].map((_, i) => (
@@ -975,10 +937,11 @@ const SearchPage = () => {
         ) : (
           <div className="text-center py-16 px-4">
             <h3 className="text-lg font-normal text-gray-800 mb-2">
-              No results found for "{queryParam}"
+              No results found for &ldquo;{queryParam}&rdquo;
             </h3>
             <p className="text-sm text-gray-500 mb-6">
-              Check your spelling or use different keywords like "ghee", "honey", or "pickle".
+              Check your spelling or use different keywords like &ldquo;mirch ka
+              achar&rdquo;, &ldquo;honey&rdquo;, or &ldquo;pahadi salt&rdquo;.
             </p>
             <button
               type="button"

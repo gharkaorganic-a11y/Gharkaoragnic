@@ -11,6 +11,8 @@ export const DEV_PHONE_TEL = "+918392856993";
 export const DEV_EMAIL = "ravisharmabhimtal@gmail.com";
 export const DEV_INSTAGRAM = "https://www.instagram.com/raviiiiii._0/";
 export const DEV_INSTAGRAM_HANDLE = "@raviiiiii._0";
+export const DEV_LINKEDIN = "https://www.linkedin.com/in/ravi-sharma-13031b312";
+export const DEV_LINKEDIN_LABEL = "linkedin.com/in/ravi-sharma-13031b312";
 export const DEV_LOCATION = "Nainital & Bhimtal, Uttarakhand, India";
 export const DEV_WHATSAPP =
   "https://wa.me/918392856993?text=Hi%20Ravi%20Sharma,%20I%20visited%20gharkaorganic.com%20and%20want%20to%20discuss%20a%20website";
@@ -58,6 +60,14 @@ export const CONTACT_CARDS = [
     hint: "Send your business or store requirements",
     href: `mailto:${DEV_EMAIL}?subject=Website%20Development%20Inquiry`,
     external: false,
+  },
+  {
+    key: "linkedin",
+    label: "LinkedIn",
+    value: DEV_LINKEDIN_LABEL,
+    hint: "Connect on LinkedIn",
+    href: DEV_LINKEDIN,
+    external: true,
   },
   {
     key: "instagram",
@@ -164,11 +174,11 @@ export const DEVELOPER_FAQS = [
   },
   {
     q: "Is Ravi Sharma an owner or seller of Ghar Ka Organic food products?",
-    a: "No. Ravi Sharma (RSDEV) is strictly the independent website developer who designed, built, and maintains the gharkaorganic.com website. For homemade pickles, pure ghee, natural honey, orders, or delivery support, please contact the Ghar Ka Organic store team directly.",
+    a: "No. Ravi Sharma (RSDEV) is strictly the independent website developer who designed, built, and maintains the gharkaorganic.com website. For Mirch Ka Achar, natural raw honey, Pahadi Salt, orders, or delivery support, please contact the Ghar Ka Organic store team directly.",
   },
   {
     q: "How can I hire or contact Ravi Sharma to build a website?",
-    a: "You can call or WhatsApp +91 83928 56993, email ravisharmabhimtal@gmail.com, or send a direct message to @raviiiiii._0 on Instagram to discuss a custom business website or online store.",
+    a: "You can call or WhatsApp +91 83928 56993, email ravisharmabhimtal@gmail.com, connect on LinkedIn (linkedin.com/in/ravi-sharma-13031b312), or send a direct message to @raviiiiii._0 on Instagram to discuss a custom business website or online store.",
   },
   {
     q: "What kind of websites does Ravi Sharma (RSDEV) develop?",
@@ -199,7 +209,7 @@ export const WEBSITE_DEVELOPER_JSONLD = JSON.stringify({
       description: SEO_META.description,
       inLanguage: "en-IN",
       datePublished: "2026-06-04T00:00:00+05:30",
-      dateModified: "2026-11-12T09:15:00+05:30",
+      dateModified: "2026-11-21T09:58:00+05:30",
       isPartOf: {
         "@id": `${BASE_URL}/#website`,
       },
@@ -236,13 +246,13 @@ export const WEBSITE_DEVELOPER_JSONLD = JSON.stringify({
       description:
         "Independent full-stack website and eCommerce developer based in Nainital and Bhimtal, Uttarakhand, India. Designer and developer of gharkaorganic.com, specializing in React, Firebase, custom online stores, and technical SEO.",
       image: OG_IMAGE,
-      telephone: "+91-8392856993",
+      telephone: DEV_PHONE_TEL,
       email: DEV_EMAIL,
       url: CANONICAL,
       mainEntityOfPage: {
         "@id": `${CANONICAL}#webpage`,
       },
-      sameAs: [DEV_INSTAGRAM],
+      sameAs: [DEV_INSTAGRAM, DEV_LINKEDIN],
       homeLocation: {
         "@type": "Place",
         name: "Bhimtal, Nainital, Uttarakhand, India",
@@ -276,7 +286,7 @@ export const WEBSITE_DEVELOPER_JSONLD = JSON.stringify({
         "Custom business websites, D2C eCommerce online stores, hotel & homestay websites, and technical SEO services in Nainital, Bhimtal, Haldwani, Uttarakhand, and across India.",
       url: CANONICAL,
       image: OG_IMAGE,
-      telephone: "+91-8392856993",
+      telephone: DEV_PHONE_TEL,
       email: DEV_EMAIL,
       priceRange: "₹₹",
       founder: {
@@ -286,7 +296,7 @@ export const WEBSITE_DEVELOPER_JSONLD = JSON.stringify({
         "@type": "PostalAddress",
         addressLocality: "Nainital",
         addressRegion: "Uttarakhand",
-        postalCode: "263136",
+        postalCode: "263002",
         addressCountry: "IN",
       },
       geo: {
@@ -362,7 +372,7 @@ export const WEBSITE_DEVELOPER_JSONLD = JSON.stringify({
       contactPoint: {
         "@type": "ContactPoint",
         contactType: "Sales & Website Consultation",
-        telephone: "+91-8392856993",
+        telephone: DEV_PHONE_TEL,
         email: DEV_EMAIL,
         areaServed: "IN",
         availableLanguage: ["English", "Hindi"],
@@ -389,7 +399,7 @@ export const WEBSITE_DEVELOPER_JSONLD = JSON.stringify({
           "@type": "ListItem",
           position: 1,
           name: "Home",
-          item: BASE_URL,
+          item: `${BASE_URL}/`,
         },
         {
           "@type": "ListItem",
@@ -435,7 +445,7 @@ export function renderStaticDeveloperRootHtml() {
     (f) => `<article><h3>${escapeHtml(f.q)}</h3><p>${escapeHtml(f.a)}</p></article>`,
   ).join("");
 
-  return `<div class="bg-white text-[#222222] font-sans min-h-screen"><header class="border-b border-[#e8e8e8] bg-[#FAF8F5]"><div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><p>${escapeHtml(DEV_BRAND)} • ${escapeHtml(DEV_TITLE_ROLE)} • ${escapeHtml(DEV_LOCATION)}</p><h1 class="text-3xl sm:text-4xl font-light text-[#1a1a1a]">${escapeHtml(DEV_NAME)} (${escapeHtml(DEV_BRAND)}) — Website &amp; eCommerce Developer in Nainital, Uttarakhand</h1><p id="developer-intro">${escapeHtml(SEO_META.description)}</p><p><a href="${escapeHtml(DEV_WHATSAPP)}">WhatsApp ${escapeHtml(DEV_PHONE_DISPLAY)}</a> | <a href="tel:${escapeHtml(DEV_PHONE_TEL)}">Call ${escapeHtml(DEV_PHONE_DISPLAY)}</a> | <a href="mailto:${escapeHtml(DEV_EMAIL)}">${escapeHtml(DEV_EMAIL)}</a></p></div></header><main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10"><section aria-labelledby="developer-contact-heading"><h2 id="developer-contact-heading">Developer Contact Details</h2><address>${escapeHtml(DEV_NAME)} (${escapeHtml(DEV_BRAND)}), ${escapeHtml(DEV_LOCATION)} — Phone: ${escapeHtml(DEV_PHONE_DISPLAY)}, Email: ${escapeHtml(DEV_EMAIL)}, Instagram: ${escapeHtml(DEV_INSTAGRAM_HANDLE)}</address></section><section aria-labelledby="websites-heading"><h2 id="websites-heading">Website Design, eCommerce &amp; Technical SEO Services</h2><ul>${servicesHtml}</ul></section><section aria-labelledby="featured-project-heading"><h2 id="featured-project-heading">Live Case Study: Ghar Ka Organic (gharkaorganic.com)</h2><p>Designed, built, and maintained by ${escapeHtml(DEV_NAME)} (${escapeHtml(DEV_BRAND)}) with React, Vite, Tailwind CSS, Firebase, Schema.org structured data, and technical SEO.</p></section><section aria-labelledby="areas-served-heading"><h2 id="areas-served-heading">Service Areas in Uttarakhand &amp; Across India</h2><ul>${areasHtml}</ul></section><section aria-labelledby="developer-faq-heading"><h2 id="developer-faq-heading">Frequently Asked Questions</h2>${faqsHtml}</section><nav aria-label="Related links"><a href="/">Ghar Ka Organic Home</a> | <a href="/all-products">All Products</a> | <a href="/our-story">Our Story</a> | <a href="/contact">Store Contact</a></nav></main></div>`;
+  return `<div class="bg-white text-[#222222] font-sans min-h-screen"><header class="border-b border-[#e8e8e8] bg-[#FAF8F5]"><div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12"><p>${escapeHtml(DEV_BRAND)} • ${escapeHtml(DEV_TITLE_ROLE)} • ${escapeHtml(DEV_LOCATION)}</p><h1 class="text-3xl sm:text-4xl font-light text-[#1a1a1a]">${escapeHtml(DEV_NAME)} (${escapeHtml(DEV_BRAND)}) — Website &amp; eCommerce Developer in Nainital, Uttarakhand</h1><p id="developer-intro">${escapeHtml(SEO_META.description)}</p><p><a href="${escapeHtml(DEV_WHATSAPP)}">WhatsApp ${escapeHtml(DEV_PHONE_DISPLAY)}</a> | <a href="tel:${escapeHtml(DEV_PHONE_TEL)}">Call ${escapeHtml(DEV_PHONE_DISPLAY)}</a> | <a href="mailto:${escapeHtml(DEV_EMAIL)}">${escapeHtml(DEV_EMAIL)}</a> | <a href="${escapeHtml(DEV_LINKEDIN)}">LinkedIn</a></p></div></header><main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10"><section aria-labelledby="developer-contact-heading"><h2 id="developer-contact-heading">Developer Contact Details</h2><address>${escapeHtml(DEV_NAME)} (${escapeHtml(DEV_BRAND)}), ${escapeHtml(DEV_LOCATION)} — Phone: ${escapeHtml(DEV_PHONE_DISPLAY)}, Email: ${escapeHtml(DEV_EMAIL)}, LinkedIn: ${escapeHtml(DEV_LINKEDIN_LABEL)}, Instagram: ${escapeHtml(DEV_INSTAGRAM_HANDLE)}</address></section><section aria-labelledby="websites-heading"><h2 id="websites-heading">Website Design, eCommerce &amp; Technical SEO Services</h2><ul>${servicesHtml}</ul></section><section aria-labelledby="featured-project-heading"><h2 id="featured-project-heading">Live Case Study: Ghar Ka Organic (gharkaorganic.com)</h2><p>Designed, built, and maintained by ${escapeHtml(DEV_NAME)} (${escapeHtml(DEV_BRAND)}) with React, Vite, Tailwind CSS, Firebase, Schema.org structured data, and technical SEO.</p></section><section aria-labelledby="areas-served-heading"><h2 id="areas-served-heading">Service Areas in Uttarakhand &amp; Across India</h2><ul>${areasHtml}</ul></section><section aria-labelledby="developer-faq-heading"><h2 id="developer-faq-heading">Frequently Asked Questions</h2>${faqsHtml}</section><nav aria-label="Related links"><a href="/">Ghar Ka Organic Home</a> | <a href="/collections">All Products</a> | <a href="/our-story">Our Story</a> | <a href="/contact">Store Contact</a></nav></main></div>`;
 }
 
 export function buildWebsiteDeveloperStaticHtml(baseDistHtml) {

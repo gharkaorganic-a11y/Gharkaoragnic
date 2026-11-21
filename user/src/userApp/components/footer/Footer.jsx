@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import {
+  Briefcase,
   Instagram,
-  Facebook,
-  Twitter,
-  Youtube,
   Mail,
   Phone,
   MapPin,
@@ -22,7 +20,8 @@ import {
   STORY_SHORT_SUMMARY,
 } from "../../homepage/ourStoryContent";
 
-// Sharp, crisp WhatsApp SVG Icon matching official styling
+const DEV_LINKEDIN = "https://www.linkedin.com/in/ravi-sharma-13031b312";
+
 const WhatsAppIcon = ({ size = 16, className = "" }) => (
   <svg
     width={size}
@@ -39,17 +38,24 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   const [showFullSeo, setShowFullSeo] = useState(false);
 
-  // Structured SEO Footer Links
   const footerSections = [
     {
       title: "Himalayan Pantry",
       links: [
+        {
+          name: "Mirch Ka Achar (Green Chilly Pickle)",
+          url: "/product/ghar-ka-mirch-ka-achar-green-chilly-pickle",
+        },
+        {
+          name: "GHAR KA HONEY",
+          url: "/product/ghar-ka-honey",
+        },
+        {
+          name: "Pahadi Salt with Dhaniya, Garlic & Green Chillies",
+          url: "/product/pahadi-salt-with-dhaniya-garlic-and-green-chillies",
+        },
         { name: "Best Selling Products", url: "/shop/best-sellers" },
-        { name: "Natural Forest Honey", url: "/raw-honey-uttarakhand" },
-        { name: "Authentic Kumaoni Pickles", url: "/pahadi-achar-online" },
-        { name: "Sun-Dried Mango Achar", url: "/buy-mango-pickle-online" },
-        { name: "A2 Bilona Desi Ghee", url: "/buy-desi-ghee-online" },
-        { name: "All Organic Products", url: "/all-products" },
+        { name: "All Organic Products", url: "/collections" },
       ],
     },
     {
@@ -69,19 +75,11 @@ const Footer = () => {
   return (
     <footer
       className="w-full font-sans text-[#F7EFE6] bg-[#8F6646]"
-      itemScope
-      itemType="https://schema.org/Organization"
       role="contentinfo">
-      {/* ── ORGANIZATION SCHEMA METADATA (100% Intact for Google/SEO) ── */}
-      <meta itemProp="name" content="Ghar Ka Organic" />
-      <meta itemProp="url" content="https://gharkaorganic.com" />
-      <meta
-        itemProp="logo"
-        content={SITE_CONFIG.logo}
-      />
-      <meta itemProp="description" content={STORY_META_DESCRIPTION} />
+      <meta name="description" content={STORY_META_DESCRIPTION} />
+      {SITE_CONFIG?.logo ? null : null}
 
-      {/* ── 1. ARTWORK BANNER (Mountain Soil Seam) ── */}
+      {/* 1. ARTWORK BANNER */}
       <div className="w-full bg-white overflow-hidden leading-none border-b border-[#8F6646]">
         <picture>
           <img
@@ -95,9 +93,9 @@ const Footer = () => {
         </picture>
       </div>
 
-      {/* ── 2. FOOTER BODY (Warm Terracotta Soil #8F6646) ── */}
+      {/* 2. FOOTER BODY */}
       <div className="w-full bg-[#8F6646]">
-        {/* COMPACT KUMAON HERITAGE VALUE BAR */}
+        {/* KUMAON HERITAGE VALUE BAR */}
         <div className="border-b border-white/15 bg-black/5">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-3 sm:py-3.5 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 text-center sm:text-left">
             <div className="flex items-center justify-center sm:justify-start gap-3">
@@ -144,18 +142,17 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* ── 3. WANT A WEBSITE LIKE THIS? CONTACT SECTION (Matching Uploaded Screenshot Style) ── */}
+        {/* 3. DEVELOPER CONTACT SECTION */}
         <div className="border-b border-white/15 bg-black/10">
           <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-10 py-7 sm:py-9">
             <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
-              {/* Top Underlined Heading */}
               <Link
                 to="/website-developer"
                 className="text-base sm:text-lg text-white hover:text-[#FFE3B3] font-medium underline underline-offset-4 decoration-white/50 hover:decoration-[#FFE3B3] transition-colors mb-2 inline-block">
-                Want a Website Like This? Hire Website Developer Ravi Sharma (RSDEV)
+                Want a Website Like This? Hire Website Developer Ravi Sharma
+                (RSDEV)
               </Link>
 
-              {/* Subtitle */}
               <p className="text-xs sm:text-sm text-[#F7EFE6]/85 font-light max-w-lg mb-6 leading-relaxed">
                 Designed &amp; Developed by{" "}
                 <Link
@@ -163,7 +160,8 @@ const Footer = () => {
                   className="font-semibold text-[#FFE3B3] hover:underline">
                   Website Developer Ravi Sharma (RSDEV) – Nainital, Uttarakhand
                 </Link>
-                . Get a custom eCommerce store or SEO-ready business website. Call or WhatsApp:{" "}
+                . Get a custom eCommerce store or SEO-ready business website.
+                Call or WhatsApp:{" "}
                 <a
                   href="https://wa.me/918392856993?text=Hi%20Ravi%20Sharma,%20I%20want%20a%20website%20like%20Ghar%20Ka%20Organic"
                   target="_blank"
@@ -173,9 +171,7 @@ const Footer = () => {
                 </a>
               </p>
 
-              {/* Direct Platform Redirect Buttons (No input form needed) */}
               <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
-                {/* Direct 1-Click WhatsApp Redirect Bar Matching Reference Box */}
                 <a
                   href="https://wa.me/918392856993?text=Hi%20Ravi%20Sharma,%20I%20want%20a%20website%20like%20Ghar%20Ka%20Organic"
                   target="_blank"
@@ -190,9 +186,17 @@ const Footer = () => {
                   </span>
                 </a>
 
-                {/* Circular Platform Action Icons */}
-                <div className="flex items-center gap-3 shrink-0">
-                  {/* Instagram: https://www.instagram.com/raviiiiii._0/ */}
+                <div className="flex items-center gap-2.5 shrink-0">
+                  <a
+                    href={DEV_LINKEDIN}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Ravi Sharma on LinkedIn"
+                    title="LinkedIn: Ravi Sharma"
+                    className="w-9 h-9 rounded-full border border-white/30 flex items-center justify-center text-white hover:bg-[#0A66C2] hover:border-[#0A66C2] hover:text-white transition-all duration-300">
+                    <Briefcase size={15} />
+                  </a>
+
                   <a
                     href="https://www.instagram.com/raviiiiii._0/"
                     target="_blank"
@@ -203,7 +207,6 @@ const Footer = () => {
                     <Instagram size={15} />
                   </a>
 
-                  {/* WhatsApp */}
                   <a
                     href="https://wa.me/918392856993?text=Hi%20Ravi%20Sharma,%20I%20want%20a%20website%20like%20Ghar%20Ka%20Organic"
                     target="_blank"
@@ -214,7 +217,6 @@ const Footer = () => {
                     <WhatsAppIcon size={16} />
                   </a>
 
-                  {/* Phone Call */}
                   <a
                     href="tel:+918392856993"
                     aria-label="Call Ravi Sharma (+91 83928 56993)"
@@ -223,7 +225,6 @@ const Footer = () => {
                     <Phone size={15} />
                   </a>
 
-                  {/* Email */}
                   <a
                     href="mailto:ravisharmabhimtal@gmail.com?subject=Website%20Inquiry%20from%20Ghar%20Ka%20Organic"
                     aria-label="Email Ravi Sharma"
@@ -237,10 +238,10 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* ── 4. MAIN CONTENT (Compact & Short, 100% SEO preserved) ── */}
+        {/* 4. MAIN CONTENT */}
         <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-10 pt-8 sm:pt-9 pb-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-7 lg:gap-8">
-            {/* BRAND SECTION (Spans 4 columns) */}
+            {/* BRAND SECTION */}
             <div className="lg:col-span-4 space-y-4">
               <div>
                 <Link
@@ -257,7 +258,7 @@ const Footer = () => {
                 <p
                   style={{ color: "#FFE3B3" }}
                   className="!text-[#FFE3B3] text-[11px] mt-1 uppercase tracking-[0.2em] font-semibold">
-                  Mangoli, Nainital (Uttarakhand)
+                  Nalni, Nainital (Uttarakhand)
                 </p>
               </div>
 
@@ -265,7 +266,6 @@ const Footer = () => {
                 {STORY_SHORT_SUMMARY}
               </p>
 
-              {/* TRUST BADGE (Compact) */}
               <div className="pt-1">
                 <div className="inline-flex items-center gap-2.5 bg-white/95 px-3 py-1.5 rounded-lg shadow-xs">
                   <img
@@ -285,7 +285,7 @@ const Footer = () => {
               </div>
             </div>
 
-            {/* NAVIGATION - HIMALAYAN PANTRY (Spans 3 columns) */}
+            {/* NAVIGATION - HIMALAYAN PANTRY */}
             <div className="lg:col-span-3">
               <nav aria-label="Himalayan Pantry navigation">
                 <h3
@@ -315,7 +315,7 @@ const Footer = () => {
               </nav>
             </div>
 
-            {/* NAVIGATION - OUR HERITAGE (Spans 2 columns) */}
+            {/* NAVIGATION - OUR HERITAGE */}
             <div className="lg:col-span-2">
               <nav aria-label="Our Heritage navigation">
                 <h3
@@ -345,7 +345,7 @@ const Footer = () => {
               </nav>
             </div>
 
-            {/* CONTACT & ORIGIN (Spans 3 columns) */}
+            {/* CONTACT & ORIGIN */}
             <div className="lg:col-span-3 space-y-3.5">
               <h3
                 style={{ color: "#FFE3B3" }}
@@ -355,7 +355,6 @@ const Footer = () => {
               </h3>
 
               <div className="space-y-3 text-xs sm:text-[13px]">
-                {/* PHONE */}
                 <div className="flex items-start gap-2.5">
                   <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center shrink-0 text-[#FFE3B3] mt-0.5">
                     <Phone size={13} aria-hidden="true" />
@@ -366,14 +365,12 @@ const Footer = () => {
                     </p>
                     <a
                       href="tel:+919897447525"
-                      className="text-white hover:text-[#FFE3B3] font-medium transition block mt-0.5"
-                      itemProp="telephone">
+                      className="text-white hover:text-[#FFE3B3] font-medium transition block mt-0.5">
                       +91 98974 47525
                     </a>
                   </div>
                 </div>
 
-                {/* EMAIL */}
                 <div className="flex items-start gap-2.5">
                   <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center shrink-0 text-[#FFE3B3] mt-0.5">
                     <Mail size={13} aria-hidden="true" />
@@ -384,19 +381,13 @@ const Footer = () => {
                     </p>
                     <a
                       href="mailto:gharkaorganic@gmail.com"
-                      className="text-white hover:text-[#FFE3B3] font-medium transition block mt-0.5"
-                      itemProp="email">
+                      className="text-white hover:text-[#FFE3B3] font-medium transition block mt-0.5">
                       gharkaorganic@gmail.com
                     </a>
                   </div>
                 </div>
 
-                {/* ADDRESS */}
-                <div
-                  className="flex items-start gap-2.5"
-                  itemProp="address"
-                  itemScope
-                  itemType="https://schema.org/PostalAddress">
+                <div className="flex items-start gap-2.5">
                   <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center shrink-0 text-[#FFE3B3] mt-0.5">
                     <MapPin size={13} aria-hidden="true" />
                   </div>
@@ -405,12 +396,11 @@ const Footer = () => {
                       Kitchen &amp; HQ
                     </p>
                     <address className="not-italic text-[12px] leading-relaxed text-[#F7EFE6]/80 font-light mt-0.5">
-                      Ward No. 2, Nalni, Mangoli,
+                      Ward No. 2, Nalni,
                       <br />
-                      <span itemProp="addressLocality">Nainital</span>,{" "}
-                      <span itemProp="addressRegion">Uttarakhand</span> – 263136
+                      Nainital, Uttarakhand – 263002
                       <br />
-                      <span itemProp="addressCountry">India</span>
+                      India
                     </address>
                   </div>
                 </div>
@@ -418,28 +408,26 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* ── 5. SEO FOOTER TEXT (Compact View for Users, 100% In DOM for Googlebot) ── */}
+          {/* 5. SEO FOOTER TEXT */}
           <div className="border-t border-white/15 mt-6 pt-5">
             <div className="max-w-4xl">
               <h2
                 style={{ color: "#FFE3B3" }}
                 className="!text-[#FFE3B3] text-xs font-semibold mb-2 uppercase tracking-wider">
-                About Ghar Ka Organic (GHAR KA) • Mangoli, Nainital, Uttarakhand
+                About Ghar Ka Organic (GHAR KA) • Nalni, Nainital, Uttarakhand
               </h2>
               <p
                 className={`text-xs leading-relaxed text-[#F7EFE6]/75 font-light ${
                   !showFullSeo ? "line-clamp-2 md:line-clamp-none" : ""
                 }`}>
                 GHAR KA began its journey in Mangoli, Nainital, Uttarakhand, to
-                bring the goodness, authenticity, and familiar taste of
-                homemade food (Ghar Ka Khana) back into every household. From
-                homemade pickles and pure ghee to natural honey, traditional
-                pahadi dals, spices, and pahadi salts, every product is made the
-                way it belongs in our homes — with carefully selected
-                ingredients, traditional recipes, and zero unnecessary chemicals
-                or artificial preservatives.
+                bring the goodness, authenticity, and familiar taste of homemade
+                food (Ghar Ka Khana) back into every household. Our Mirch Ka
+                Achar (Green Chilly Pickle), GHAR KA HONEY, and Pahadi Salt with
+                dhaniya, garlic, and green chillies are prepared with carefully
+                selected ingredients, traditional recipes, and zero unnecessary
+                chemicals or artificial preservatives.
               </p>
-              {/* Mobile Read More Toggle for Short Clean Display */}
               <button
                 type="button"
                 onClick={() => setShowFullSeo(!showFullSeo)}
@@ -457,10 +445,11 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* ── 6. BOTTOM - COPYRIGHT & FOOTER POLICIES (Compact) ── */}
+          {/* 6. BOTTOM - COPYRIGHT & FOOTER POLICIES */}
           <div className="border-t border-white/15 mt-5 pt-4 flex flex-col md:flex-row items-center justify-between gap-3 text-[11px] text-[#F7EFE6]/70">
             <p className="text-center md:text-left">
-              © {currentYear}, Ghar Ka Organic (GHAR KA). From our home in Mangoli, Nainital, Uttarakhand to yours.
+              &copy; {currentYear}, Ghar Ka Organic (GHAR KA). From our home in
+              Nalni, Nainital, Uttarakhand to yours.
             </p>
 
             <nav
@@ -469,27 +458,27 @@ const Footer = () => {
               <Link to="/pages/terms" className="hover:text-white transition">
                 Refund policy
               </Link>
-              <span className="text-white/30">•</span>
+              <span className="text-white/30">&bull;</span>
               <Link
                 to="/pages/privacy-policy"
                 className="hover:text-white transition">
                 Privacy policy
               </Link>
-              <span className="text-white/30">•</span>
+              <span className="text-white/30">&bull;</span>
               <Link to="/pages/terms" className="hover:text-white transition">
                 Terms of service
               </Link>
-              <span className="text-white/30">•</span>
+              <span className="text-white/30">&bull;</span>
               <Link
                 to="/pages/shipping"
                 className="hover:text-white transition">
                 Shipping policy
               </Link>
-              <span className="text-white/30">•</span>
+              <span className="text-white/30">&bull;</span>
               <Link to="/contact" className="hover:text-white transition">
                 Contact information
               </Link>
-              <span className="text-white/30">•</span>
+              <span className="text-white/30">&bull;</span>
               <a
                 href="https://gharkaorganic.com/sitemap.xml"
                 className="hover:text-white transition">
@@ -499,7 +488,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* ── 7. COMPACT BOTTOM DEVELOPER CREDIT ── */}
+        {/* 7. COMPACT BOTTOM DEVELOPER CREDIT */}
         <div className="border-t border-white/15 bg-black/15 py-3">
           <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-10 flex flex-wrap items-center justify-center gap-2 text-[11px] text-[#F7EFE6]/70 text-center">
             <span>Website Designed &amp; Developed by</span>
@@ -508,7 +497,7 @@ const Footer = () => {
               className="font-semibold text-[#FFE3B3] hover:underline">
               Ravi Sharma (RSDEV) – Website Developer Uttarakhand
             </Link>
-            <span className="hidden sm:inline text-white/30">•</span>
+            <span className="hidden sm:inline text-white/30">&bull;</span>
             <span>
               WhatsApp / Call:{" "}
               <a
@@ -519,7 +508,15 @@ const Footer = () => {
                 +91 83928 56993
               </a>
             </span>
-            <span className="hidden sm:inline text-white/30">•</span>
+            <span className="hidden sm:inline text-white/30">&bull;</span>
+            <a
+              href={DEV_LINKEDIN}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#FFE3B3] hover:text-white hover:underline">
+              LinkedIn
+            </a>
+            <span className="hidden sm:inline text-white/30">&bull;</span>
             <a
               href="https://www.instagram.com/raviiiiii._0/"
               target="_blank"

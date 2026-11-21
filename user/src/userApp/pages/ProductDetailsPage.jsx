@@ -12,10 +12,8 @@ import {
   ChevronDown,
   Check,
   Zap,
-  MapPin,
   Share2,
   CheckCircle2,
-  Clock,
   Sparkles,
 } from "lucide-react";
 
@@ -34,6 +32,44 @@ import RelatedProducts from "../components/product/RelatedProducts";
 import CustomerReviewsSectionNew from "../reviews/componenst/CustomerReviewsSectionnew";
 
 const WEBSITE_URL = "https://gharkaorganic.com";
+const DEFAULT_BRAND_NAME = "Ghar Ka Organic";
+
+const MERCHANT_RETURN_POLICY = {
+  "@type": "MerchantReturnPolicy",
+  applicableCountry: "IN",
+  returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+  merchantReturnDays: 7,
+  returnMethod: "https://schema.org/ReturnByMail",
+  returnFees: "https://schema.org/FreeReturn",
+};
+
+const OFFER_SHIPPING_DETAILS = {
+  "@type": "OfferShippingDetails",
+  shippingRate: {
+    "@type": "MonetaryAmount",
+    value: "0.00",
+    currency: "INR",
+  },
+  shippingDestination: {
+    "@type": "DefinedRegion",
+    addressCountry: "IN",
+  },
+  deliveryTime: {
+    "@type": "ShippingDeliveryTime",
+    handlingTime: {
+      "@type": "QuantitativeValue",
+      minValue: 0,
+      maxValue: 1,
+      unitCode: "DAY",
+    },
+    transitTime: {
+      "@type": "QuantitativeValue",
+      minValue: 4,
+      maxValue: 7,
+      unitCode: "DAY",
+    },
+  },
+};
 
 /* ----------------------------------
    FALLBACK COMPONENTS
@@ -54,7 +90,8 @@ const ErrorState = ({ navigate }) => (
     </h2>
 
     <p className="mt-3 max-w-md text-sm leading-7 text-gray-500">
-      The product you're looking for does not exist or may have been removed.
+      The product you&apos;re looking for does not exist or may have been
+      removed.
     </p>
 
     <button
@@ -228,6 +265,188 @@ const ProductDetailsPage = () => {
     return [product?.banner, ...(product?.images || [])].filter(Boolean);
   }, [product]);
 
+  const faqItems = useMemo(() => {
+    if (!product) return [];
+    if (Array.isArray(product.faq) && product.faq.length > 0) {
+      return product.faq;
+    }
+    return [
+      {
+        question: `How is Ghar Ka Organic ${product.name} prepared?`,
+        answer:
+          "Prepared in small artisanal batches in Nainital, Uttarakhand using authentic Himalayan recipes, unadulterated ingredients, and zero synthetic chemical preservatives.",
+      },
+      {
+        question:
+          "How long does shipping take and is Cash on Delivery available?",
+        answer:
+          "All orders are dispatched within 24-48 hours directly from Uttarakhand with free shipping across India. Delivery takes 4-7 business days. Cash on Delivery (COD) is available at checkout.",
+      },
+      {
+        question: "What is the shelf life and how should I store this product?",
+        answer: `The shelf life is ${product.shelfLife || "12 months"}. Store in a clean, dry place away from direct moisture and always use a clean, dry spoon.`,
+      },
+      {
+        question: "What if the product arrives damaged during transit?",
+        answer:
+          "We use shock-absorbent eco-friendly packaging. In the rare event of transit damage, message us on WhatsApp with a photo and we will send a free immediate replacement.",
+      },
+    ];
+  }, [product]);
+
+  /* STRUCTURED DATA (JSON-LD) */
+  const structuredData = useMemo(() => {
+    if (!product) return null;
+
+    const productUrl =
+      product.canonicalUrl ||
+      `${WEBSITE_URL}/product/${product.slug || product.id}`;
+    const currentPrice = Number(product.price || 0).toFixed(2);
+    const isInStock = Number(product.stock ?? 1) > 0;
+    const brandName = product.brand || DEFAULT_BRAND_NAME;
+
+    const baseOffer = {
+      "@type": "Offer",
+      url: productUrl,
+      priceCurrency: "INR",
+      price: currentPrice,
+      availability: isInStock
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      itemCondition: "https://schema.org/NewCondition",
+      seller: { "@id": `${WEBSITE_URL}/#organization` },
+      hasMerchantReturnPolicy: MERCHANT_RETURN_POLICY,
+      shippingDetails: OFFER_SHIPPING_DETAILS,
+    };
+
+    const ratingNum = Number(product.rating || 0);
+    const totalReviewsNum = Number(product.totalReviews || 0);
+
+    const ratingAndReviewFields = {};
+    if (ratingNum > 0 && totalReviewsNum > 0) {
+      ratingAndReviewFields.aggregateRating = {
+        "@type": "AggregateRating",
+        ratingValue: ratingNum.toFixed(1),
+        reviewCount: String(totalReviewsNum),
+        bestRating: "5",
+        worstRating: "1",
+      };
+    }
+
+    if (Array.isArray(product.reviews) && product.reviews.length > 0) {
+      const validReviews = product.reviews
+        .filter((r) => Number(r?.rating) > 0 && (r?.comment || r?.reviewBody))
+        .slice(0, 5)
+        .map((r) => ({
+          "@type": "Review",
+          author: {
+            "@type": "Person",
+            name: r.userName || r.author || "Verified Buyer",
+          },
+          datePublished: r.createdAt
+            ? new Date(r.createdAt).toISOString().split("T")[0]
+            : "2026-11-01",
+          reviewBody: r.comment || r.reviewBody,
+          reviewRating: {
+            "@type": "Rating",
+            ratingValue: String(r.rating),
+            bestRating: "5",
+            worstRating: "1",
+          },
+        }));
+
+      if (validReviews.length > 0) {
+        ratingAndReviewFields.review = validReviews;
+      }
+    }
+
+    const productEntity =
+      Array.isArray(product.sizes) && product.sizes.length > 1
+        ? {
+            "@type": "ProductGroup",
+            "@id": `${productUrl}#productgroup`,
+            name: product.name,
+            description:
+              product.shortDescription ||
+              product.description ||
+              `${product.name} from ${brandName}`,
+            url: productUrl,
+            image: allImages.length > 0 ? allImages : undefined,
+            brand: { "@type": "Brand", name: brandName },
+            productGroupID: String(product.id || product.slug || product.name),
+            variesBy: ["https://schema.org/size"],
+            hasVariant: product.sizes.map((sz, idx) => ({
+              "@type": "Product",
+              "@id": `${productUrl}#variant-${idx + 1}`,
+              sku: product.id
+                ? `${product.id}-${sz}`
+                : `${product.slug}-${idx + 1}`,
+              name: `${product.name} - ${sz}`,
+              size: String(sz),
+              image: allImages.length > 0 ? allImages : undefined,
+              brand: { "@type": "Brand", name: brandName },
+              countryOfOrigin: { "@type": "Country", name: "India" },
+              category: product.category || "Organic Food Products",
+              offers: baseOffer,
+              ...ratingAndReviewFields,
+            })),
+          }
+        : {
+            "@type": "Product",
+            "@id": `${productUrl}#product`,
+            sku: String(product.id || product.slug || ""),
+            name: product.name,
+            description:
+              product.shortDescription ||
+              product.description ||
+              `${product.name} from ${brandName}`,
+            url: productUrl,
+            image: allImages.length > 0 ? allImages : undefined,
+            brand: { "@type": "Brand", name: brandName },
+            countryOfOrigin: { "@type": "Country", name: "India" },
+            category: product.category || "Organic Food Products",
+            offers: baseOffer,
+            ...ratingAndReviewFields,
+          };
+
+    return {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "BreadcrumbList",
+          "@id": `${productUrl}#breadcrumb`,
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Home",
+              item: `${WEBSITE_URL}/`,
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: product.name,
+              item: productUrl,
+            },
+          ],
+        },
+        productEntity,
+        {
+          "@type": "FAQPage",
+          "@id": `${productUrl}#faq`,
+          mainEntity: faqItems.map((item) => ({
+            "@type": "Question",
+            name: item.question,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: item.answer,
+            },
+          })),
+        },
+      ],
+    };
+  }, [product, allImages, faqItems]);
+
   /* LOADING / ERROR */
   if (productLoading) return <LoadingSkeleton />;
   if (productError || !product) {
@@ -255,8 +474,7 @@ const ProductDetailsPage = () => {
   const canonicalUrl =
     product.canonicalUrl || `${WEBSITE_URL}/product/${product.slug}`;
 
-  const displaySizes =
-    product.sizes?.length > 0 ? product.sizes : ["Standard"];
+  const displaySizes = product.sizes?.length > 0 ? product.sizes : ["Standard"];
 
   return (
     <>
@@ -269,9 +487,12 @@ const ProductDetailsPage = () => {
         {product.ogImage && (
           <meta property="og:image" content={product.ogImage} />
         )}
+        {structuredData && (
+          <script type="application/ld+json">
+            {JSON.stringify(structuredData)}
+          </script>
+        )}
       </Helmet>
-
-
 
       <div className="min-h-screen bg-white pb-24 font-sans text-gray-900">
         <NewBreadcrumb product={product} />
@@ -325,7 +546,7 @@ const ProductDetailsPage = () => {
                   </button>
                 </div>
 
-                {/* PRODUCT TITLE - MATCHING HOMEPAGE TYPOGRAPHY */}
+                {/* PRODUCT TITLE */}
                 <h1 className="text-2xl sm:text-3xl font-normal sm:font-medium text-gray-900 tracking-tight leading-snug">
                   {product.name}
                 </h1>
@@ -343,7 +564,7 @@ const ProductDetailsPage = () => {
                   </span>
                 </div>
 
-                {/* PRICE & DISCOUNT - MATCHING HOMEPAGE TYPOGRAPHY */}
+                {/* PRICE & DISCOUNT */}
                 <div className="mt-4 p-4 rounded-xl bg-[#faf9f5] border border-stone-200/80">
                   <div className="flex flex-wrap items-baseline gap-3">
                     <span className="text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900">
@@ -368,7 +589,7 @@ const ProductDetailsPage = () => {
                     <span>Inclusive of all taxes</span>
                     <span className="text-gray-300">•</span>
                     <span className="font-normal text-[#315c3c]">
-                      Shipping charges confirmed when order is confirmed
+                      Free shipping across India
                     </span>
                   </p>
                 </div>
@@ -458,7 +679,7 @@ const ProductDetailsPage = () => {
                         aria-label="Increase quantity"
                         onClick={() =>
                           setQuantity((q) =>
-                            Math.min(Number(product.stock || 20), q + 1)
+                            Math.min(Number(product.stock || 20), q + 1),
                           )
                         }
                         disabled={quantity >= Number(product.stock || 20)}
@@ -479,8 +700,8 @@ const ProductDetailsPage = () => {
                         {isAdding
                           ? "Adding..."
                           : product.stock === 0
-                          ? "Out Of Stock"
-                          : "Add To Cart"}
+                            ? "Out Of Stock"
+                            : "Add To Cart"}
                       </button>
                     </div>
                   </div>
@@ -500,13 +721,16 @@ const ProductDetailsPage = () => {
                 <div className="mt-6 rounded-xl border border-stone-200 bg-[#faf9f5] p-4 sm:p-5">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="flex items-start gap-3">
-                      <Truck size={18} className="shrink-0 text-[#315c3c] mt-0.5" />
+                      <Truck
+                        size={18}
+                        className="shrink-0 text-[#315c3c] mt-0.5"
+                      />
                       <div>
                         <p className="text-xs sm:text-sm font-semibold text-gray-900">
-                          Fast Dispatch
+                          Free Shipping
                         </p>
                         <p className="mt-0.5 text-xs text-gray-500 font-normal">
-                          Direct from Uttarakhand
+                          Across India in 4–7 days
                         </p>
                       </div>
                     </div>
@@ -518,10 +742,10 @@ const ProductDetailsPage = () => {
                       />
                       <div>
                         <p className="text-xs sm:text-sm font-semibold text-gray-900">
-                          Cash on Delivery
+                          7-Day Returns
                         </p>
                         <p className="mt-0.5 text-xs text-gray-500 font-normal">
-                          Available at checkout
+                          Free mail-in return
                         </p>
                       </div>
                     </div>
@@ -530,14 +754,18 @@ const ProductDetailsPage = () => {
                   {/* QUICK PRODUCT HIGHLIGHTS */}
                   <div className="mt-4 pt-4 border-t border-stone-200/80 grid grid-cols-2 gap-y-2 text-xs">
                     <div>
-                      <span className="text-gray-500 font-normal">Origin: </span>
+                      <span className="text-gray-500 font-normal">
+                        Origin:{" "}
+                      </span>
                       <span className="font-medium text-gray-900">
                         Nainital, Uttarakhand
                       </span>
                     </div>
 
                     <div>
-                      <span className="text-gray-500 font-normal">Shelf Life: </span>
+                      <span className="text-gray-500 font-normal">
+                        Shelf Life:{" "}
+                      </span>
                       <span className="font-medium text-gray-900">
                         {product.shelfLife || "12 Months"}
                       </span>
@@ -566,7 +794,6 @@ const ProductDetailsPage = () => {
 
           {/* =================================
               PRODUCT STORY & INFOGRAPHIC IMAGE
-              Full width of outer <main> container (margins & max-width match sibling sections)
           ================================= */}
           {product.detailsImage && (
             <section className="mt-12 sm:mt-16 border-t border-gray-200/80 pt-10 sm:pt-12">
@@ -582,14 +809,14 @@ const ProductDetailsPage = () => {
           )}
 
           {/* =================================
-              PRODUCT DESCRIPTION & INGREDIENTS (DIRECT ADMIN DATA)
+              PRODUCT DESCRIPTION & INGREDIENTS
           ================================= */}
           {(product.description || product.ingredients) && (
             <section className="mt-12 sm:mt-16 border-t border-gray-200/80 pt-10 sm:pt-12">
               <div className="grid gap-8 md:grid-cols-12 items-start">
-                {/* DETAILED DESCRIPTION (FROM ADMIN) */}
                 {product.description && (
-                  <div className={`${product.ingredients ? "md:col-span-7" : "md:col-span-12"}`}>
+                  <div
+                    className={`${product.ingredients ? "md:col-span-7" : "md:col-span-12"}`}>
                     <div className="mb-3.5 flex items-center gap-2">
                       <Sparkles size={17} className="text-[#315c3c]" />
                       <h2 className="text-xl sm:text-2xl font-normal sm:font-medium text-gray-900 tracking-tight">
@@ -603,9 +830,9 @@ const ProductDetailsPage = () => {
                   </div>
                 )}
 
-                {/* INGREDIENTS & SPECIFICATIONS (FROM ADMIN) */}
                 {product.ingredients && (
-                  <div className={`${product.description ? "md:col-span-5" : "md:col-span-12"}`}>
+                  <div
+                    className={`${product.description ? "md:col-span-5" : "md:col-span-12"}`}>
                     <div className="rounded-xl border border-stone-200 bg-[#faf9f5] p-5 sm:p-6">
                       <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.16em] text-[#315c3c]">
                         PRODUCT INFORMATION
@@ -615,13 +842,19 @@ const ProductDetailsPage = () => {
                       </h3>
 
                       <div className="mt-3.5 text-xs sm:text-sm leading-relaxed text-gray-600">
-                        <p className="font-medium text-gray-900 mb-1">Ingredients:</p>
-                        <p className="whitespace-pre-wrap">{product.ingredients}</p>
+                        <p className="font-medium text-gray-900 mb-1">
+                          Ingredients:
+                        </p>
+                        <p className="whitespace-pre-wrap">
+                          {product.ingredients}
+                        </p>
                       </div>
 
                       <div className="mt-5 pt-4 border-t border-stone-200/90 space-y-2.5 text-xs sm:text-sm">
                         <div className="flex justify-between gap-4">
-                          <span className="text-gray-500 font-normal">Origin:</span>
+                          <span className="text-gray-500 font-normal">
+                            Origin:
+                          </span>
                           <span className="font-medium text-gray-900 text-right">
                             Mangoli, Nainital, Uttarakhand
                           </span>
@@ -629,7 +862,9 @@ const ProductDetailsPage = () => {
 
                         {product.shelfLife && (
                           <div className="flex justify-between gap-4">
-                            <span className="text-gray-500 font-normal">Shelf Life:</span>
+                            <span className="text-gray-500 font-normal">
+                              Shelf Life:
+                            </span>
                             <span className="font-medium text-gray-900 text-right">
                               {product.shelfLife}
                             </span>
@@ -637,7 +872,9 @@ const ProductDetailsPage = () => {
                         )}
 
                         <div className="flex justify-between gap-4">
-                          <span className="text-gray-500 font-normal">Brand:</span>
+                          <span className="text-gray-500 font-normal">
+                            Brand:
+                          </span>
                           <span className="font-medium text-gray-900 text-right">
                             {product.brand || "Ghar Ka Organic"}
                           </span>
@@ -651,9 +888,11 @@ const ProductDetailsPage = () => {
           )}
 
           {/* =================================
-              CUSTOMER REVIEWS (DIRECT FIRESTORE & ADMIN DATA)
+              CUSTOMER REVIEWS
           ================================= */}
-          <section id="reviews" className="mt-14 sm:mt-18 border-t border-[#eaece5] pt-10 sm:pt-12">
+          <section
+            id="reviews"
+            className="mt-14 sm:mt-18 border-t border-[#eaece5] pt-10 sm:pt-12">
             <CustomerReviewsSectionNew
               productId={product?.id}
               product={product}
@@ -661,7 +900,7 @@ const ProductDetailsPage = () => {
           </section>
 
           {/* =================================
-              FREQUENTLY ASKED QUESTIONS (FROM ADMIN OR STORE FAQ)
+              FREQUENTLY ASKED QUESTIONS
           ================================= */}
           <section className="mt-14 sm:mt-18 border-t border-gray-200/80 pt-10 sm:pt-12">
             <div className="mb-8 text-center">
@@ -675,30 +914,7 @@ const ProductDetailsPage = () => {
             </div>
 
             <div className="max-w-3xl mx-auto divide-y divide-gray-200">
-              {(product.faq?.length > 0
-                ? product.faq
-                : [
-                  {
-                    question: `How is Ghar Ka Organic ${product.name} prepared?`,
-                    answer:
-                      "Prepared in small artisanal batches in Nainital, Uttarakhand using authentic Himalayan recipes, unadulterated ingredients, and zero synthetic chemical preservatives.",
-                  },
-                  {
-                    question: "How long does shipping take and is Cash on Delivery available?",
-                    answer:
-                      "All orders are dispatched within 24-48 hours directly from Uttarakhand. Delivery takes 3-5 business days across India. Cash on Delivery (COD) is available at checkout.",
-                  },
-                  {
-                    question: "What is the shelf life and how should I store this product?",
-                    answer: `The shelf life is ${product.shelfLife || "12 months"}. Store in a clean, dry place away from direct moisture and always use a clean, dry spoon.`,
-                  },
-                  {
-                    question: "What if the product arrives damaged during transit?",
-                    answer:
-                      "We use shock-absorbent eco-friendly packaging. In the rare event of transit damage, message us on WhatsApp with a photo and we will send a free immediate replacement.",
-                  },
-                ]
-              ).map((item, idx) => {
+              {faqItems.map((item, idx) => {
                 const isOpen = openFaqIndex === idx;
                 return (
                   <div key={idx} className="py-4">
@@ -709,8 +925,9 @@ const ProductDetailsPage = () => {
                       <span>{item.question}</span>
                       <ChevronDown
                         size={17}
-                        className={`text-gray-500 transition-transform duration-200 shrink-0 ml-4 ${isOpen ? "rotate-180 text-[#315c3c]" : ""
-                          }`}
+                        className={`text-gray-500 transition-transform duration-200 shrink-0 ml-4 ${
+                          isOpen ? "rotate-180 text-[#315c3c]" : ""
+                        }`}
                       />
                     </button>
                     {isOpen && (
