@@ -15,18 +15,43 @@ import ShippingPage from "./userApp/pages/ShippingPolicyPage";
 import PrivacyPolicyPage from "./userApp/pages/PrivacyPolicyPage";
 
 /* ───────── LAZY ───────── */
-const HomePage = lazy(() => import("./userApp/pages/HomePage"));
-const CollectionPage = lazy(
+const lazyWithChunkRecovery = (loadPage) =>
+  lazy(() => {
+    const reloadKey = `chunk-reload:${window.location.pathname}`;
+    return loadPage()
+      .then((module) => {
+        sessionStorage.removeItem(reloadKey);
+        return module;
+      })
+      .catch((error) => {
+        const alreadyReloaded = sessionStorage.getItem(reloadKey);
+
+        if (
+          !alreadyReloaded &&
+          /importing a module script|failed to fetch dynamically imported module|loading chunk/i.test(
+            error?.message ?? "",
+          )
+        ) {
+          sessionStorage.setItem(reloadKey, "1");
+          window.location.reload();
+        }
+
+        throw error;
+      });
+  });
+
+const HomePage = lazyWithChunkRecovery(() => import("./userApp/pages/HomePage"));
+const CollectionPage = lazyWithChunkRecovery(
   () => import("./userApp/features/p/CollectionPage"),
 );
 const CategoriesPage = lazy(
   () => import("./userApp/features/category/pages/CategoriesPage"),
 );
-const ProductDetailsPage = lazy(
+const ProductDetailsPage = lazyWithChunkRecovery(
   () => import("./userApp/pages/ProductDetailsPage"),
 );
 // const BlogListPage = lazy(() => import("./userApp/pages/blog/BlogListPage"));
-const ContactUsPage = lazy(() => import("./userApp/pages/ContactUsPage"));
+const ContactUsPage = lazyWithChunkRecovery(() => import("./userApp/pages/ContactUsPage"));
 const OurStoryPage = lazy(() => import("./userApp/pages/OurStoryPage"));
 const FaqPage = lazy(() => import("./userApp/pages/FaqPage"));
 const WebsiteDeveloperPage = lazy(
@@ -142,9 +167,9 @@ const AppRoutes = () => (
         />
 
         {/* COLLECTION LISTING */}
-        <Route path="/collections" element={<CollectionPage />} />
-        <Route path="/all-products" element={<CollectionPage />} />
-        <Route path="/shop" element={<CollectionPage />} />
+        <Route path="/collections" element={<SafeCollectionPage />} />
+        <Route path="/all-products" element={<SafeCollectionPage />} />
+        <Route path="/shop" element={<SafeCollectionPage />} />
 
         {/* BLOGS */}
         <Route path="/blogs" element={<BlogListPage />} />
